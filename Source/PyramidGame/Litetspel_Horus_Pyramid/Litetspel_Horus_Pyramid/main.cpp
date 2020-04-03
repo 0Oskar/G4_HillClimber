@@ -6,3 +6,5 @@ int main()
 
 	return 0;
 }
+
+// Test edit by Viktor
