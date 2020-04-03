@@ -1,0 +1,1 @@
+Build folder for different builds. EX: debug/64bit etc

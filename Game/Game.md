@@ -1,0 +1,1 @@
+Folder to store launchable game(Should be able to be sent to outsiders).
