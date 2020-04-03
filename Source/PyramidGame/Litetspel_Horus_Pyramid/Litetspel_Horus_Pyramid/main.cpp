@@ -2,7 +2,7 @@
 
 int main()
 {
-	std::cout << "Hello World!\n";
+	std::cout << "Hello \tWorld!\n";
 	int Edvin = 69;
 	float Kevin = 3.14159265358979;
 
