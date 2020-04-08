@@ -51,6 +51,8 @@ void DisplayMetaData(FbxScene* pScene);
 
 static bool gVerbose = true;
 
+//Make a file
+
 int main(int argc, char** argv)
 {
     FbxManager* lSdkManager = NULL;
