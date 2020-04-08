@@ -22,19 +22,14 @@ FileWrite::~FileWrite()
 void FileWrite::writeToFile(std::string input)
 {
 	std::string outData = input;
-
-	//outputFile << input;
 	
-	
-	outputFile.write(outData.c_str(), outData.size());
-
-	int number = (int)MAX_STRING_LENGTH - outData.size();
+	int number = 64 - outData.size();
 	for (int i = 0; i < number; i++) 
 	{
-		//input += "Î";
-		outputFile.write("Î", 1);
+		outData += "Î";
 	}
-	
+
+	outputFile.write(outData.c_str(), outData.size());
 }
 
 //outData.size() - bara data
