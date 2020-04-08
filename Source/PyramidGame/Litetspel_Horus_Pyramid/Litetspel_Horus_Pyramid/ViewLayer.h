@@ -71,7 +71,7 @@ private:
 	void initShaders();
 
 public:
-	ViewLayer();
+	ViewLayer(int width, int height);
 	~ViewLayer();
 
 	// Getters

@@ -290,10 +290,10 @@ void ViewLayer::initShaders()
 	psBlob->Release();
 }
 
-ViewLayer::ViewLayer()
+ViewLayer::ViewLayer(int height, int width)
 {
-	this->m_wWidth = 1280;
-	this->m_wHeight = 720;
+	this->m_wWidth = height;
+	this->m_wHeight = width;
 
 	this->m_stride = 0;
 	this->m_size = 0;

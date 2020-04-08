@@ -36,6 +36,9 @@ bool Application::initApplication(HINSTANCE hInstance, LPWSTR lpCmdLine, HWND hW
 
 
 	this->m_window = hWnd;
+
+	this->p_viewLayer = new ViewLayer(screenWidth, screenHeight);
+	this->p_viewLayer->initialize(this->m_window);
 	
 
 	return true;

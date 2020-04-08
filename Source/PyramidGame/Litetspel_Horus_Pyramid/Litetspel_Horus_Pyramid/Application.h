@@ -13,6 +13,8 @@
 #include <memory>
 #include <wrl/client.h>
 
+
+#include "ViewLayer.h"
 struct GameOptions
 {
 	int width;
@@ -46,6 +48,7 @@ public:
 	HWND m_window;
 	GameOptions m_gameOptions;
 
+	ViewLayer *p_viewLayer;
 };
 
 
