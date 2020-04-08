@@ -10,6 +10,7 @@
  * This work is based on the pugxml parser, which is:
  * Copyright (C) 2003, by Kristen Wegner (kristen@tima.net)
  */
+#include "pch.h"
 
 #ifndef SOURCE_PUGIXML_CPP
 #define SOURCE_PUGIXML_CPP
