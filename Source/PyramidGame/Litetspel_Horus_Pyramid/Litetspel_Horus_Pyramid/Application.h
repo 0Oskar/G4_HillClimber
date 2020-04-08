@@ -1,20 +1,8 @@
 #ifndef _APPLICATION_H_
 #define _APPLICATION_H_
 
-#ifndef UNICODE
-#define UNICODE
-#endif
-
-// Standard
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#include <comdef.h>
-#include <assert.h>
-#include <memory>
-#include <wrl/client.h>
-
-
 #include "ViewLayer.h"
+
 struct GameOptions
 {
 	int width;
