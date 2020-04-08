@@ -193,7 +193,7 @@ void initDeviceAndSwapChain()
 
 	UINT flags = D3D11_CREATE_DEVICE_SINGLETHREADED;
 	#if defined( DEBUG ) || defined( _DEBUG )
-		flags |= D3D11_CREATE_DEVICE_DEBUG;
+		//flags |= D3D11_CREATE_DEVICE_DEBUG;
 	#endif
 
 	HRESULT hr = D3D11CreateDeviceAndSwapChain(
