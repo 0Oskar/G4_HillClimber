@@ -19,6 +19,9 @@
 #include <d3dcompiler.h>
 #include <DirectXMath.h>
 
+#include<string>
+#include"pugixml.hpp"
+
 // DirectX 11 Linking
 #pragma comment (lib, "user32")
 #pragma comment (lib, "d3d11.lib")

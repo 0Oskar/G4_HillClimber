@@ -21,9 +21,9 @@
 
     <ClCompile Include="ViewLayer.cpp">
       <Filter>Source\View</Filter>
+	 </ClCompile>
     <ClCompile Include="pugixml.cpp">
       <Filter>Source</Filter>
-
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

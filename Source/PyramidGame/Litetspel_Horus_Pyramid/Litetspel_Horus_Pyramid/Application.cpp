@@ -98,9 +98,9 @@ bool Application::loadGameOptions(std::string fileName)
 	if (result)
 	{
 		pugi::xml_node node = optionFile.child("GameOptions");
-		pugi::xml_node width = optionFile.first_child();
-		node = node.first_child();
+		node = optionFile.first_child();
 		this->m_gameOptions.width = node.text().as_int();
+		node = node.first_child();
 		this->m_gameOptions.height = node.text().as_int();
 	}
 	
