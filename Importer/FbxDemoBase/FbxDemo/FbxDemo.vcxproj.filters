@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\FileWrite">
+      <UniqueIdentifier>{e9382d28-3781-4622-a70c-0d0ba8cefc9b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DisplayAnimation.h">
@@ -86,6 +89,9 @@
     </ClInclude>
     <ClInclude Include="..\Common\GeometryUtility.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FileWrite.h">
+      <Filter>Header Files\FileWrite</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -163,6 +169,9 @@
     </ClCompile>
     <ClCompile Include="..\Common\GeometryUtility.cxx">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FileWrite.cpp">
+      <Filter>Header Files\FileWrite</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
