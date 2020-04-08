@@ -1,5 +1,5 @@
+#include "pch.h"
 #include "ViewLayer.h"
-
 
 void ViewLayer::initDeviceAndSwapChain()
 {

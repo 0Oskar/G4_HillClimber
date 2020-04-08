@@ -1,26 +1,5 @@
 #pragma once
 
-// Standard
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#include <comdef.h>
-#include <assert.h>
-#include <memory>
-#include <wrl/client.h>
-
-// DirectX 11
-#include <d3d11.h>
-#include <dxgi.h>
-#include <dxgi1_2.h>
-#include <d3dcompiler.h>
-#include <DirectXMath.h>
-
-// DirectX 11 Linking
-#pragma comment (lib, "user32")
-#pragma comment (lib, "d3d11.lib")
-#pragma comment (lib, "gdi32")
-#pragma comment (lib, "d3dcompiler.lib")
-
 class ViewLayer
 {
 private:
