@@ -18,8 +18,12 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+
     <ClCompile Include="ViewLayer.cpp">
       <Filter>Source\View</Filter>
+    <ClCompile Include="pugixml.cpp">
+      <Filter>Source</Filter>
+
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

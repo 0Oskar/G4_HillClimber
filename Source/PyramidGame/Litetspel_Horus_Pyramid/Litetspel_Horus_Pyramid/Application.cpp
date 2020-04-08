@@ -1,6 +1,7 @@
 #include"pch.h"
 #include"Application.h"
 
+
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 
@@ -18,6 +19,8 @@ bool Application::initApplication(HINSTANCE hInstance, LPWSTR lpCmdLine, HWND hW
 	SetCursor(NULL);
 	//TODO: Check if we have sufficient resources
 
+
+	loadGameOptions("GameOptions.xml");
 	if (hWnd == NULL)
 	{
 		this->createWin32Window(hInstance, WINDOWTILE, hWnd);//Create Window
@@ -85,4 +88,21 @@ void Application::createWin32Window(HINSTANCE hInstance, const wchar_t* windowTi
 		NULL						// Additional application data
 	);
 	assert(_d3d11Window);
+}
+
+
+bool Application::loadGameOptions(std::string fileName) 
+{
+	pugi::xml_document optionFile;
+	pugi::xml_parse_result result = optionFile.load_file(fileName.c_str());
+	if (result)
+	{
+		pugi::xml_node node = optionFile.child("GameOptions");
+		pugi::xml_node width = optionFile.first_child();
+		node = node.first_child();
+		this->m_gameOptions.width = node.text().as_int();
+		this->m_gameOptions.height = node.text().as_int();
+	}
+	
+	return result;
 }
