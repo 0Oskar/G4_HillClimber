@@ -18,6 +18,9 @@
     <ClCompile Include="ViewLayer.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="pugixml.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ViewLayer.h">

@@ -12,14 +12,18 @@
 #include <assert.h>
 #include <memory>
 #include <wrl/client.h>
+#include "pugixml.hpp"
+#include <iostream>
 
 
 #include "ViewLayer.h"
+
 struct GameOptions
 {
 	int width;
 	int height;
 
+	
 };
 
 class Application
@@ -35,15 +39,19 @@ public:
 private:
 	Application();
 public:
+	HWND m_window;
+	GameOptions m_gameOptions;
+	ViewLayer* viewLayerPtr;
+
 	Application(Application const&) = delete;
 	void operator=(Application const&) = delete;
 
 	bool initApplication(HINSTANCE hInstance, LPWSTR lpCmdLine, HWND hWnd, int screenWidth, int screenHeight, int showCmd);
 	void createWin32Window(HINSTANCE hInstance, const wchar_t* windowTitle, HWND& _d3d11Window);
-	
-	HWND m_window;
-	GameOptions m_gameOptions;
-	ViewLayer *viewLayerPtr;
+
+	bool loadGameOptions(std::string fileName);
+
+
 };
 
 
