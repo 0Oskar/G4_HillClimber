@@ -24,6 +24,9 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ViewLayer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -37,6 +40,8 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
+
+    <ClInclude Include="ViewLayer.h">
     <ClInclude Include="Application.h">
       <Filter>Header Files</Filter>
     </ClInclude>
