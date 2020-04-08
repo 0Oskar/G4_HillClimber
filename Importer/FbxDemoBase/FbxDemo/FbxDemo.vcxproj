@@ -43,6 +43,7 @@
     <ClInclude Include="DisplaySkeleton.h" />
     <ClInclude Include="DisplayTexture.h" />
     <ClInclude Include="DisplayUserProperties.h" />
+    <ClInclude Include="FileWrite.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Common\AnimationUtility.cxx" />
@@ -69,13 +70,14 @@
     <ClCompile Include="DisplaySkeleton.cxx" />
     <ClCompile Include="DisplayTexture.cxx" />
     <ClCompile Include="DisplayUserProperties.cxx" />
+    <ClCompile Include="FileWrite.cpp" />
     <ClCompile Include="main.cxx" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{C328F85A-3C5B-43C3-921D-C8617DB5129C}</ProjectGuid>
     <RootNamespace>FbxDemo</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.10240.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -94,7 +96,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">

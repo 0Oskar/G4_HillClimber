@@ -37,6 +37,8 @@
 #include "DisplayUserProperties.h"
 #include "DisplayGenericInfo.h"
 
+#include "FileWrite.h"
+
 #pragma comment(lib,"libfbxsdk-mt.lib")
 #pragma comment(lib,"libxml2-mt.lib")
 #pragma comment(lib,"zlib-mt.lib")
@@ -55,6 +57,10 @@ static bool gVerbose = true;
 
 int main(int argc, char** argv)
 {
+
+    //FileWrite myFile;
+    //myFile.writeToFile("test line from main");
+
     FbxManager* lSdkManager = NULL;
     FbxScene* lScene = NULL;
     bool lResult;
@@ -73,7 +79,8 @@ int main(int argc, char** argv)
 
 	if( lFilePath.IsEmpty() )
 	{
-		lFilePath = "box.fbx";
+		//lFilePath = "box.fbx";
+        lFilePath = "../OneTri.fbx";
 		lResult = LoadScene(lSdkManager, lScene, lFilePath.Buffer());
         //lResult = false;
         //FBXSDK_printf("\n\nUsage: ImportScene <FBX file name>\n\n");

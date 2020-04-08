@@ -17,6 +17,8 @@
 #include "DisplayShape.h"
 #include "DisplayCache.h"
 
+#include "FileWrite.h"
+
 #if defined (FBXSDK_ENV_MAC)
 // disable the “format not a string literal and no format arguments” warning since
 // the FBXSDK_printf calls made here are all valid calls and there is no secuity risk
@@ -34,11 +36,17 @@ void DisplayMaterialConnections(FbxMesh* pMesh);
 void DisplayMaterialTextureConnections( FbxSurfaceMaterial* pMaterial, 
                                        char * header, int pMatId, int l );
 
+FileWrite myFile;
+
 void DisplayMesh(FbxNode* pNode)
 {
     FbxMesh* lMesh = (FbxMesh*) pNode->GetNodeAttribute ();
 
     DisplayString("Mesh Name: ", (char *) pNode->GetName());
+
+	myFile.writeToFile((char*)pNode->GetName());
+	myFile.writeToFile("test");
+
     DisplayMetaDataConnections(lMesh);
     DisplayControlsPoints(lMesh);
     DisplayPolygons(lMesh);
