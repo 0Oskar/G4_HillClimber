@@ -33,22 +33,17 @@ public:
 
 	}
 private:
-
 	Application();
-
-
-
 public:
-	
-
 	Application(Application const&) = delete;
 	void operator=(Application const&) = delete;
+
 	bool initApplication(HINSTANCE hInstance, LPWSTR lpCmdLine, HWND hWnd, int screenWidth, int screenHeight, int showCmd);
 	void createWin32Window(HINSTANCE hInstance, const wchar_t* windowTitle, HWND& _d3d11Window);
+	
 	HWND m_window;
 	GameOptions m_gameOptions;
-
-	ViewLayer *p_viewLayer;
+	ViewLayer *viewLayerPtr;
 };
 
 

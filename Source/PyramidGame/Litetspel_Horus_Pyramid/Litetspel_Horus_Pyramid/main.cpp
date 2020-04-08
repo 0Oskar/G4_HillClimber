@@ -1,6 +1,6 @@
 #include"Application.h"
 
-extern Application* g_App;
+Application* g_App;
 
 
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nShowCmd)
@@ -25,7 +25,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 			}
 			else // Render/Logic Loop
 			{
-				g_App->p_viewLayer->render();
+				g_App->viewLayerPtr->render();
 				//Call engine member function here.
 			}
 		}

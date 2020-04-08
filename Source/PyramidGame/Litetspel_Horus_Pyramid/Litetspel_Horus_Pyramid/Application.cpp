@@ -1,8 +1,7 @@
 #include"Application.h"
 
-Application* g_App;
-
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+
 
 Application::Application()
 {
@@ -11,18 +10,12 @@ Application::Application()
 	
 }
 
-
 bool Application::initApplication(HINSTANCE hInstance, LPWSTR lpCmdLine, HWND hWnd, int screenWidth, int screenHeight, int nShowCmd)
 {
 	const wchar_t WINDOWTILE[] = L"Litetspel Horus Pyramid";
 
-	
 	SetCursor(NULL);
-
-	//Check if we have sufficient resources
-
-
-
+	//TODO: Check if we have sufficient resources
 
 	if (hWnd == NULL)
 	{
@@ -33,12 +26,10 @@ bool Application::initApplication(HINSTANCE hInstance, LPWSTR lpCmdLine, HWND hW
 	{
 		//Set window
 	}
-
-
 	this->m_window = hWnd;
 
-	this->p_viewLayer = new ViewLayer(screenWidth, screenHeight);
-	this->p_viewLayer->initialize(this->m_window);
+	this->viewLayerPtr = new ViewLayer(screenWidth, screenHeight);
+	this->viewLayerPtr->initialize(this->m_window);
 	
 
 	return true;
@@ -85,8 +76,8 @@ void Application::createWin32Window(HINSTANCE hInstance, const wchar_t* windowTi
 		WS_OVERLAPPEDWINDOW,        // Window style
 		CW_USEDEFAULT,				// Position, X
 		CW_USEDEFAULT,				// Position, Y
-		g_App->m_gameOptions.width,				// Width
-		g_App->m_gameOptions.height,				// Height
+		this->m_gameOptions.width,				// Width
+		this->m_gameOptions.height,				// Height
 		NULL,						// Parent window    
 		NULL,						// Menu
 		hInstance,					// Instance handle
