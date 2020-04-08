@@ -1,5 +1,5 @@
+#include "pch.h"
 #include "ViewLayer.h"
-
 
 void ViewLayer::initDeviceAndSwapChain()
 {
@@ -133,9 +133,6 @@ void ViewLayer::initDepthStencilBuffer()
 
 void ViewLayer::initVertexBuffer()
 {
-	this->m_size = 3;
-	this->m_stride = UINT(sizeof(Vertex));
-
 	Vertex vertices[]
 	{
 		Vertex(
@@ -152,24 +149,7 @@ void ViewLayer::initVertexBuffer()
 		)
 	};
 
-	// Buffer Description
-	D3D11_BUFFER_DESC vertexBufferDesc;
-	ZeroMemory(&vertexBufferDesc, sizeof(vertexBufferDesc));
-
-	vertexBufferDesc.ByteWidth = this->m_stride * this->m_size;
-	vertexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
-	vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	vertexBufferDesc.CPUAccessFlags = 0;
-	vertexBufferDesc.MiscFlags = 0;
-
-	// Subresource Data
-	D3D11_SUBRESOURCE_DATA vertexData;
-	ZeroMemory(&vertexData, sizeof(vertexData));
-	vertexData.pSysMem = vertices;
-	vertexData.SysMemPitch = 0;
-	vertexData.SysMemSlicePitch = 0;
-
-	HRESULT hr = this->m_device->CreateBuffer(&vertexBufferDesc, &vertexData, &this->m_vertexBuffer);
+	HRESULT hr = this->m_vertexBuffer.initialize(this->m_device.Get(), vertices, 3);
 	assert(SUCCEEDED(hr) && "Error, vertex buffer could not be created!");
 }
 
@@ -294,9 +274,6 @@ ViewLayer::ViewLayer(int height, int width)
 {
 	this->m_wWidth = height;
 	this->m_wHeight = width;
-
-	this->m_stride = 0;
-	this->m_size = 0;
 }
 
 ViewLayer::~ViewLayer() {}
@@ -332,7 +309,7 @@ void ViewLayer::render()
 
 	// Set Vertex Buffers
 	UINT vertexOffset = 0;
-	this->m_deviceContext->IASetVertexBuffers(0, 1, this->m_vertexBuffer.GetAddressOf(), &this->m_stride, &vertexOffset);
+	this->m_deviceContext->IASetVertexBuffers(0, 1, this->m_vertexBuffer.GetAddressOf(), this->m_vertexBuffer.getStridePointer(), &vertexOffset);
 
 	// Set Shaders
 	this->m_deviceContext->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -342,7 +319,7 @@ void ViewLayer::render()
 	this->m_deviceContext->PSSetShader(this->m_pixelShader.Get(), nullptr, 0);
 
 	// Draw
-	this->m_deviceContext->Draw(this->m_size, 0);
+	this->m_deviceContext->Draw(this->m_vertexBuffer.getSize(), 0);
 
 	// Swap Frames
 	this->m_swapChain->Present(0, 0);

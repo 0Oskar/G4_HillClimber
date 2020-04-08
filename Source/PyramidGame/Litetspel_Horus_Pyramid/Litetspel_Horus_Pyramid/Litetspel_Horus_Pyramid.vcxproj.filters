@@ -15,19 +15,29 @@
     <ClCompile Include="main.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="ViewLayer.cpp">
+    <ClCompile Include="pch.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+
+    <ClCompile Include="ViewLayer.cpp">
+      <Filter>Source\View</Filter>
     <ClCompile Include="pugixml.cpp">
       <Filter>Source</Filter>
+
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ViewLayer.h">
-      <Filter>Header</Filter>
-    </ClInclude>
     <ClInclude Include="Application.h">
       <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="ViewLayer.h">
+      <Filter>Header\View</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexBuffer.h">
+      <Filter>Header\View</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -42,6 +52,12 @@
     </Filter>
     <Filter Include="Source">
       <UniqueIdentifier>{f46278f2-671b-489f-bf85-756d106189ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header\View">
+      <UniqueIdentifier>{4c07c2d2-43c7-408c-a089-862bfaf0a2ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\View">
+      <UniqueIdentifier>{f32f945d-d78a-4e88-920d-611972532cee}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
