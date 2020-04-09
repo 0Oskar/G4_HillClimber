@@ -37,7 +37,7 @@
 #include "DisplayUserProperties.h"
 #include "DisplayGenericInfo.h"
 
-#include "FileWrite.h"
+//#include "FileWrite.h"
 
 #pragma comment(lib,"libfbxsdk-mt.lib")
 #pragma comment(lib,"libxml2-mt.lib")
@@ -58,7 +58,8 @@ static bool gVerbose = true;
 int main(int argc, char** argv)
 {
 
-    //FileWrite myFile;
+    FileWrite myFile;
+    myFile.EmptyFile();
     //myFile.writeToFile("test line from main");
 
     FbxManager* lSdkManager = NULL;

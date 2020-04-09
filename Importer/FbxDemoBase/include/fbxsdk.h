@@ -267,6 +267,7 @@
 #include <fbxsdk/utils/fbxusernotification.h>
 #include <fbxsdk/utils/fbxscenecheckutility.h>
 
+
 //---------------------------------------------------------------------------------------
 #if defined(FBXSDK_NAMESPACE) && (FBXSDK_NAMESPACE_USING == 1)
 	using namespace FBXSDK_NAMESPACE;

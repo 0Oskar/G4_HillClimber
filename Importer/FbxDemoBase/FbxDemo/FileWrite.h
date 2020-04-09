@@ -11,7 +11,7 @@ private:
 	std::string fileName;
 	std::ofstream outputFile;
 
-	const int MAX_STRING_LEN = 64;
+	const int MAX_STRING_LEN = 26;
 
 
 public:
@@ -19,6 +19,6 @@ public:
 	~FileWrite();
 
 	void writeToFile(std::string input);
-
+	void EmptyFile();
 
 };

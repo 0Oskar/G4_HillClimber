@@ -8,11 +8,14 @@
    this software in either electronic or hard copy form.
 
 ****************************************************************************************/
+#pragma once
+#include "FileWrite.h"
 
 #ifndef _DISPLAY_COMMON_H
 #define _DISPLAY_COMMON_H
 
 #include <fbxsdk.h>
+//#include "FileWrite.h"
 
 void DisplayMetaDataConnections(FbxObject* pNode);
 void DisplayString(const char* pHeader, const char* pValue  = "", const char* pSuffix  = "");

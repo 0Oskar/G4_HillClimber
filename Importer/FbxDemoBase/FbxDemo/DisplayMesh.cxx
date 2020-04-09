@@ -17,7 +17,8 @@
 #include "DisplayShape.h"
 #include "DisplayCache.h"
 
-#include "FileWrite.h"
+//#include "FileWrite.h"
+//#include "FileWrite.h"
 
 #if defined (FBXSDK_ENV_MAC)
 // disable the “format not a string literal and no format arguments” warning since
@@ -36,16 +37,15 @@ void DisplayMaterialConnections(FbxMesh* pMesh);
 void DisplayMaterialTextureConnections( FbxSurfaceMaterial* pMaterial, 
                                        char * header, int pMatId, int l );
 
-FileWrite myFile;
 
+FileWrite myFile;
 void DisplayMesh(FbxNode* pNode)
 {
     FbxMesh* lMesh = (FbxMesh*) pNode->GetNodeAttribute ();
 
     DisplayString("Mesh Name: ", (char *) pNode->GetName());
-
+	
 	myFile.writeToFile((char*)pNode->GetName());
-	myFile.writeToFile("test");
 
     DisplayMetaDataConnections(lMesh);
     DisplayControlsPoints(lMesh);
@@ -67,11 +67,15 @@ void DisplayControlsPoints(FbxMesh* pMesh)
     FbxVector4* lControlPoints = pMesh->GetControlPoints();
 
     DisplayString("    Control Points");
-
+	std::string VertexPos = "";
     for (i = 0; i < lControlPointsCount; i++)
     {
         DisplayInt("        Control Point ", i);
         Display3DVector("            Coordinates: ", lControlPoints[i]);
+		VertexPos += ( std::to_string(lControlPoints[i][0]) + 
+					   std::to_string(lControlPoints[i][1]) + 
+					   std::to_string(lControlPoints[i][2]) );
+		
 
         for (int j = 0; j < pMesh->GetElementNormalCount(); j++)
         {
@@ -85,7 +89,7 @@ void DisplayControlsPoints(FbxMesh* pMesh)
 			}
         }
     }
-
+	myFile.writeToFile(VertexPos);
     DisplayString("");
 }
 
@@ -97,6 +101,7 @@ void DisplayPolygons(FbxMesh* pMesh)
     char header[100];
 
     DisplayString("    Polygons");
+	
 
     int vertexId = 0;
     for (i = 0; i < lPolygonCount; i++)
@@ -134,8 +139,15 @@ void DisplayPolygons(FbxMesh* pMesh)
 				DisplayString("            Coordinates: Invalid index found!");
 				continue;
 			}
+			//------------------------------------------------------------------------------------------------------------------------------------
 			else
+			{
 				Display3DVector("            Coordinates: ", lControlPoints[lControlPointIndex]);
+
+				std::string vertexPos;
+				vertexPos = std::to_string(lControlPoints[lControlPointIndex][0]);
+			}
+
 
 			for (l = 0; l < pMesh->GetElementVertexColorCount(); l++)
 			{

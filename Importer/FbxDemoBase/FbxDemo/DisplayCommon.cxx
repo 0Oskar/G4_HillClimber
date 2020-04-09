@@ -10,6 +10,10 @@
 ****************************************************************************************/
 
 #include "DisplayCommon.h"
+
+//#include "FileWrite.h"
+//FileWrite myFile;
+
 #if defined (FBXSDK_ENV_MAC)
 // disable the “format not a string literal and no format arguments” warning since
 // the FBXSDK_printf calls made here are all valid calls and there is no secuity risk
@@ -124,6 +128,17 @@ void Display3DVector(const char* pHeader, FbxVector4 pValue, const char* pSuffix
     lString += lFloatValue3;
     lString += pSuffix;
     lString += "\n";
+
+    //std::string veretxPos = std::to_string(pValue[0]) + std::to_string(pValue[1]) + std::to_string(pValue[2]);
+    
+    //myFile.writeToFile(std::to_string(float(pValue[0])));
+    //myFile.writeToFile(std::to_string(pValue[1]));
+    //myFile.writeToFile(std::to_string(pValue[2]));
+    
+    //myFile.writeToFile(std::to_string((float)pValue[0]));
+    //myFile.writeToFile(std::to_string((float)pValue[1]));
+    //myFile.writeToFile(std::to_string((float)pValue[2]));
+
     FBXSDK_printf(lString);
 }
 
