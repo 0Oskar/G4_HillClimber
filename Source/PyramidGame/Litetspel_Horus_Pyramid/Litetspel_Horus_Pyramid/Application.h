@@ -24,8 +24,9 @@ public:
 
 	bool initApplication(HINSTANCE hInstance, LPWSTR lpCmdLine, HWND hWnd, int showCmd);
 	void createWin32Window(HINSTANCE hInstance, const wchar_t* windowTitle, HWND& _d3d11Window);
-
 	bool loadGameOptions(std::string fileName);
+
+	void applicationLoop();
 };
 
 #endif // !_APPLICATION_H_

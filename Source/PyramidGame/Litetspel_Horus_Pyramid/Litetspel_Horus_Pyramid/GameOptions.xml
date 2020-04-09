@@ -2,7 +2,7 @@
 
 
 <GameOptions>
-  <Width>700</Width>
-  <Height>600</Height>
+  <Width>1200</Width>
+  <Height>800</Height>
   <FOV>75</FOV>
 </GameOptions>

@@ -13,6 +13,7 @@
 #include <wrl/client.h>
 #define NOMINMAX // std::min/std::max wont work without this
 #include <algorithm>
+#include<map>
 
 // DirectX 11
 #include <d3d11.h>
@@ -23,6 +24,7 @@
 
 #include <string>
 #include "pugixml.hpp"
+
 
 // DirectX 11 Linking
 #pragma comment (lib, "user32")

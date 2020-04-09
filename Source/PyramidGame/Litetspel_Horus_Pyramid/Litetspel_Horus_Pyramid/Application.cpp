@@ -28,7 +28,8 @@ bool Application::initApplication(HINSTANCE hInstance, LPWSTR lpCmdLine, HWND hW
 
 	this->m_viewLayerPtr = std::make_unique<ViewLayer>();
 	this->m_viewLayerPtr->initialize(this->m_window, &this->m_gameOptions);
-	
+
+	ShowWindow(this->m_window, nShowCmd);
 	return true;
 }
 
@@ -84,18 +85,43 @@ void Application::createWin32Window(HINSTANCE hInstance, const wchar_t* windowTi
 
 bool Application::loadGameOptions(std::string fileName) 
 {
+	std::map<std::string, std::string> optionsMap;
 	pugi::xml_document optionFile;
 	pugi::xml_parse_result result = optionFile.load_file(fileName.c_str());
 	if (result)
 	{
 		pugi::xml_node node = optionFile.child("GameOptions");
-		node = node.first_child();
-		this->m_gameOptions.width = node.text().as_int();
-		node = node.next_sibling();
-		this->m_gameOptions.height = node.text().as_int();
-		node = node.next_sibling();
-		this->m_gameOptions.fov = node.text().as_float();
+
+		for (pugi::xml_node options = node.first_child(); options; options = options.next_sibling())
+		{
+			optionsMap[options.name()] = options.text().as_string();
+		}
+		
+		//Here you can load any options you add into GameOptions.xml
+		this->m_gameOptions.height = std::stoi(optionsMap.at("Height"));
+		this->m_gameOptions.width = std::stoi(optionsMap.at("Width"));
+		this->m_gameOptions.fov = std::stoi(optionsMap.at("FOV"));
 	}
 	
 	return result;
+}
+
+
+void Application::applicationLoop()
+{
+
+	MSG msg = { };
+	while (WM_QUIT != msg.message)
+	{
+		if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) // Message loop
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+		else // Render/Logic Loop
+		{
+			this->viewLayerPtr->render();
+			//Call engine member function here.
+		}
+	}
 }
