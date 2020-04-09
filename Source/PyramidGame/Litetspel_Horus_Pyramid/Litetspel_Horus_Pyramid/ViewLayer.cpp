@@ -16,8 +16,8 @@ void ViewLayer::initDeviceAndSwapChain()
 	swapChainDesc.BufferCount = 2;
 	swapChainDesc.OutputWindow = this->m_window;
 	swapChainDesc.Windowed = true;
-	swapChainDesc.BufferDesc.Width = this->m_wWidth;
-	swapChainDesc.BufferDesc.Height = this->m_wHeight;
+	swapChainDesc.BufferDesc.Width = this->m_options->width;
+	swapChainDesc.BufferDesc.Height = this->m_options->height;
 	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
 
 	D3D_FEATURE_LEVEL feature_level[] =
@@ -67,8 +67,8 @@ void ViewLayer::initViewPort()
 	D3D11_VIEWPORT viewport;
 	viewport.TopLeftX = (FLOAT)winRect.left;
 	viewport.TopLeftY = (FLOAT)winRect.top;
-	viewport.Width = (FLOAT)this->m_wWidth;
-	viewport.Height = (FLOAT)this->m_wHeight;
+	viewport.Width = (FLOAT)this->m_options->width;
+	viewport.Height = (FLOAT)this->m_options->height;
 	viewport.MinDepth = 0.f;
 	viewport.MaxDepth = 1.f;
 	this->m_deviceContext->RSSetViewports(1, &viewport);
@@ -78,8 +78,8 @@ void ViewLayer::initDepthStencilBuffer()
 {
 	// Create Depth Stencil Buffer Texture
 	D3D11_TEXTURE2D_DESC dsBufferDesc;
-	dsBufferDesc.Width = this->m_wWidth;
-	dsBufferDesc.Height = this->m_wHeight;
+	dsBufferDesc.Width = this->m_options->width;
+	dsBufferDesc.Height = this->m_options->height;
 	dsBufferDesc.MipLevels = 1;
 	dsBufferDesc.ArraySize = 1;
 	dsBufferDesc.Format = DXGI_FORMAT_R24G8_TYPELESS;
@@ -270,32 +270,55 @@ void ViewLayer::initShaders()
 	psBlob->Release();
 }
 
-ViewLayer::ViewLayer(int height, int width)
+void ViewLayer::initConstantBuffer()
 {
-	this->m_wWidth = height;
-	this->m_wHeight = width;
+	this->m_triangleCBufferData.wvp = DirectX::XMMatrixIdentity() * this->m_camera.getViewMatrix() * this->m_camera.getProjectionMatrix();
+
+	D3D11_BUFFER_DESC constantBufferDesc;
+	ZeroMemory(&constantBufferDesc, sizeof(D3D11_BUFFER_DESC));
+	constantBufferDesc.ByteWidth = sizeof(VS_CONSTANT_BUFFER);
+	constantBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	constantBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	constantBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	constantBufferDesc.MiscFlags = 0;
+	constantBufferDesc.StructureByteStride = 0;
+
+	D3D11_SUBRESOURCE_DATA constantBufferData;
+	ZeroMemory(&constantBufferData, sizeof(D3D11_SUBRESOURCE_DATA));
+	constantBufferData.pSysMem = &this->m_triangleCBufferData;
+	constantBufferData.SysMemPitch = 0;
+	constantBufferData.SysMemSlicePitch = 0;
+
+	HRESULT hr = this->m_device->CreateBuffer(&constantBufferDesc, &constantBufferData, &this->m_constantBuffer);
+	assert(SUCCEEDED(hr) && "Error, failed to create constant buffer!");
 }
+
+ViewLayer::ViewLayer() {}
 
 ViewLayer::~ViewLayer() {}
 
-UINT ViewLayer::getWindowWidth() const
-{
-	return this->m_wWidth;
-}
-
-UINT ViewLayer::getWindowHeight() const
-{
-	return this->m_wHeight;
-}
-
-void ViewLayer::initialize(HWND window)
+void ViewLayer::initialize(HWND window, GameOptions* options)
 {
 	this->m_window = window;
+	this->m_options = options;
+	
+	// Camera
+	this->m_camera.initialize(
+		this->m_device.Get(), 
+		this->m_deviceContext.Get(), 
+		2.f, 
+		this->m_options->fov, 
+		(float)this->m_options->width / (float)this->m_options->height,
+		0.1f, 
+		1000.f
+	);
+	
 	this->initDeviceAndSwapChain();
 	this->initViewPort();
 	this->initDepthStencilBuffer();
 	this->initVertexBuffer();
 	this->initShaders();
+	this->initConstantBuffer();
 }
 
 void ViewLayer::render()
@@ -317,6 +340,9 @@ void ViewLayer::render()
 
 	this->m_deviceContext->VSSetShader(this->m_vertexShader.Get(), nullptr, 0);
 	this->m_deviceContext->PSSetShader(this->m_pixelShader.Get(), nullptr, 0);
+
+	// Set Constant Buffer
+	this->m_deviceContext->VSSetConstantBuffers(0, 1, this->m_constantBuffer.GetAddressOf());
 
 	// Draw
 	this->m_deviceContext->Draw(this->m_vertexBuffer.getSize(), 0);

@@ -13,16 +13,11 @@ private:
 public:
 	VertexBuffer()
 	{
-		this->m_buffer = nullptr;
 		this->m_stride = 0;
 		this->m_nrOf = 0;
 	}
 
-	~VertexBuffer()
-	{
-		if (this->m_buffer)
-			this->m_buffer->Release();
-	}
+	~VertexBuffer() {}
 
 	HRESULT initialize(ID3D11Device* device, T* data, int nrOfVertices)
 	{

@@ -4,4 +4,5 @@
 <GameOptions>
   <Width>1200</Width>
   <Height>800</Height>
+  <FOV>75</FOV>
 </GameOptions>
