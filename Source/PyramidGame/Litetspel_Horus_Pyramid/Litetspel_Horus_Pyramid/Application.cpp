@@ -93,15 +93,21 @@ void Application::createWin32Window(HINSTANCE hInstance, const wchar_t* windowTi
 
 bool Application::loadGameOptions(std::string fileName) 
 {
+	std::map<std::string, std::string> optionsMap;
 	pugi::xml_document optionFile;
 	pugi::xml_parse_result result = optionFile.load_file(fileName.c_str());
 	if (result)
 	{
 		pugi::xml_node node = optionFile.child("GameOptions");
-		node = node.first_child();
-		this->m_gameOptions.width = node.text().as_int();
-		node = node.next_sibling();
-		this->m_gameOptions.height = node.text().as_int();
+
+		for (pugi::xml_node options = node.first_child(); options; options = options.next_sibling())
+		{
+			optionsMap[options.name()] = options.text().as_string();
+		}
+		
+		this->m_gameOptions.height = std::stoi(optionsMap.at("Height"));
+		this->m_gameOptions.width = std::stoi(optionsMap.at("Width"));
+
 	}
 	
 	return result;

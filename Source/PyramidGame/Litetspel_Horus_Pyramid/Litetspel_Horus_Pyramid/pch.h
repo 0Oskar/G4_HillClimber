@@ -11,6 +11,7 @@
 #include <assert.h>
 #include <memory>
 #include <wrl/client.h>
+#include<map>
 
 // DirectX 11
 #include <d3d11.h>
@@ -21,6 +22,7 @@
 
 #include<string>
 #include"pugixml.hpp"
+
 
 // DirectX 11 Linking
 #pragma comment (lib, "user32")
