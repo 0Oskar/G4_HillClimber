@@ -12,24 +12,8 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
 	if (initOK)
 	{
-
-	OutputDebugStringA("Window Created!\n");
-	ShowWindow(g_App->m_window, nShowCmd);
-
-		MSG msg = { };
-		while (WM_QUIT != msg.message)
-		{
-			if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) // Message loop
-			{
-				TranslateMessage(&msg);
-				DispatchMessage(&msg);
-			}
-			else // Render/Logic Loop
-			{
-				g_App->viewLayerPtr->render();
-				//Call engine member function here.
-			}
-		}
+		OutputDebugStringA("Window Created!\n");
+		g_App->applicationLoop();
 	}
 
 	return 0;

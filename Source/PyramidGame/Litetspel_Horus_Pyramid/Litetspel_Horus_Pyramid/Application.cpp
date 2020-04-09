@@ -36,6 +36,8 @@ bool Application::initApplication(HINSTANCE hInstance, LPWSTR lpCmdLine, HWND hW
 	this->viewLayerPtr->initialize(this->m_window);
 	
 
+	ShowWindow(this->m_window, nShowCmd);
+
 	return true;
 }
 
@@ -105,10 +107,31 @@ bool Application::loadGameOptions(std::string fileName)
 			optionsMap[options.name()] = options.text().as_string();
 		}
 		
+		//Here you can load any options you add into GameOptions.xml
 		this->m_gameOptions.height = std::stoi(optionsMap.at("Height"));
 		this->m_gameOptions.width = std::stoi(optionsMap.at("Width"));
 
 	}
 	
 	return result;
+}
+
+
+void Application::applicationLoop()
+{
+
+	MSG msg = { };
+	while (WM_QUIT != msg.message)
+	{
+		if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) // Message loop
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+		else // Render/Logic Loop
+		{
+			this->viewLayerPtr->render();
+			//Call engine member function here.
+		}
+	}
 }
