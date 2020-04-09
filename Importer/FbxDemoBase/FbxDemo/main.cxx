@@ -81,7 +81,7 @@ int main(int argc, char** argv)
 	if( lFilePath.IsEmpty() )
 	{
 		//lFilePath = "box.fbx";
-        lFilePath = "../OneTri.fbx";
+        lFilePath = "../TriMesh.fbx";
 		lResult = LoadScene(lSdkManager, lScene, lFilePath.Buffer());
         //lResult = false;
         //FBXSDK_printf("\n\nUsage: ImportScene <FBX file name>\n\n");

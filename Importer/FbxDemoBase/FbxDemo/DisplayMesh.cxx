@@ -67,14 +67,14 @@ void DisplayControlsPoints(FbxMesh* pMesh)
     FbxVector4* lControlPoints = pMesh->GetControlPoints();
 
     DisplayString("    Control Points");
-	std::string VertexPos = "";
+	std::string VertexData = "";
     for (i = 0; i < lControlPointsCount; i++)
     {
         DisplayInt("        Control Point ", i);
         Display3DVector("            Coordinates: ", lControlPoints[i]);
-		VertexPos += ( std::to_string(lControlPoints[i][0]) + 
+		VertexData += ( "V" + std::to_string(lControlPoints[i][0]) + 
 					   std::to_string(lControlPoints[i][1]) + 
-					   std::to_string(lControlPoints[i][2]) );
+					   std::to_string(lControlPoints[i][2]) ); //Add VertexPos
 		
 
         for (int j = 0; j < pMesh->GetElementNormalCount(); j++)
@@ -85,11 +85,18 @@ void DisplayControlsPoints(FbxMesh* pMesh)
 				char header[100];
 				FBXSDK_sprintf(header, 100, "            Normal Vector: "); 
 				if (leNormals->GetReferenceMode() == FbxGeometryElement::eDirect)
+				{
 					Display3DVector(header, leNormals->GetDirectArray().GetAt(i));
+					VertexData += ( "N" + std::to_string(leNormals->GetDirectArray().GetAt(i)[0]) +
+									std::to_string(leNormals->GetDirectArray().GetAt(i)[1]) +
+									std::to_string(leNormals->GetDirectArray().GetAt(i)[2]) ); //Add Normals
+				}
+					
 			}
         }
     }
-	myFile.writeToFile(VertexPos);
+
+	//myFile.writeToFile(VertexData);
     DisplayString("");
 }
 
@@ -102,6 +109,7 @@ void DisplayPolygons(FbxMesh* pMesh)
 
     DisplayString("    Polygons");
 	
+	std::string list = "";
 
     int vertexId = 0;
     for (i = 0; i < lPolygonCount; i++)
@@ -139,13 +147,13 @@ void DisplayPolygons(FbxMesh* pMesh)
 				DisplayString("            Coordinates: Invalid index found!");
 				continue;
 			}
-			//------------------------------------------------------------------------------------------------------------------------------------
+
 			else
 			{
 				Display3DVector("            Coordinates: ", lControlPoints[lControlPointIndex]);
-
-				std::string vertexPos;
-				vertexPos = std::to_string(lControlPoints[lControlPointIndex][0]);
+				list += ( "V" + std::to_string(lControlPoints[lControlPointIndex][0]) +
+							   std::to_string(lControlPoints[lControlPointIndex][1]) +
+							   std::to_string(lControlPoints[lControlPointIndex][2]) ); //Add VertexPos <------------------------------------------
 			}
 
 
@@ -202,9 +210,9 @@ void DisplayPolygons(FbxMesh* pMesh)
 			}
 			for (l = 0; l < pMesh->GetElementUVCount(); ++l)
 			{
-				FbxGeometryElementUV* leUV = pMesh->GetElementUV( l);
+				FbxGeometryElementUV* leUV = pMesh->GetElementUV( l); 
 				FBXSDK_sprintf(header, 100, "            Texture UV: "); 
-
+				
 				switch (leUV->GetMappingMode())
 				{
 				default:
@@ -234,7 +242,9 @@ void DisplayPolygons(FbxMesh* pMesh)
 						case FbxGeometryElement::eDirect:
 						case FbxGeometryElement::eIndexToDirect:
 							{
-								Display2DVector(header, leUV->GetDirectArray().GetAt(lTextureUVIndex));
+								Display2DVector(header, leUV->GetDirectArray().GetAt(lTextureUVIndex)); 
+								list += ("UV" + std::to_string(leUV->GetDirectArray().GetAt(lTextureUVIndex)[0]) +
+											    std::to_string(leUV->GetDirectArray().GetAt(lTextureUVIndex)[1]) ); //Add UV <------------------------------------------
 							}
 							break;
 						default:
@@ -260,18 +270,22 @@ void DisplayPolygons(FbxMesh* pMesh)
 					{
 					case FbxGeometryElement::eDirect:
 						Display3DVector(header, leNormal->GetDirectArray().GetAt(vertexId));
+
 						break;
 					case FbxGeometryElement::eIndexToDirect:
 						{
 							int id = leNormal->GetIndexArray().GetAt(vertexId);
 							Display3DVector(header, leNormal->GetDirectArray().GetAt(id));
+
 						}
 						break;
 					default:
 						break; // other reference modes not shown here!
 					}
 				}
-
+				list += ("N" + std::to_string(leNormal->GetDirectArray().GetAt(vertexId)[0]) +
+							   std::to_string(leNormal->GetDirectArray().GetAt(vertexId)[1]) +
+							   std::to_string(leNormal->GetDirectArray().GetAt(vertexId)[2]) ); //Add Normal <------------------------------------------
 			}
 			for( l = 0; l < pMesh->GetElementTangentCount(); ++l)
 			{
@@ -325,6 +339,7 @@ void DisplayPolygons(FbxMesh* pMesh)
 		} // for polygonSize
     } // for polygonCount
 
+	myFile.writeToFile(list);
 
     //check visibility for the edges of the mesh
 	for(int l = 0; l < pMesh->GetElementVisibilityCount(); ++l)
@@ -620,3 +635,4 @@ void DisplayMaterialMapping(FbxMesh* pMesh)
 
     DisplayString("");
 }
+
