@@ -23,7 +23,7 @@ void FileWrite::writeToFile(std::string input)
 {
 	std::string outData = input;
 	
-	int number = 64 - outData.size();
+	int number = MAX_STRING_LEN - outData.size();
 	for (int i = 0; i < number; i++) 
 	{
 		outData += "Î";

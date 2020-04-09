@@ -11,7 +11,7 @@ private:
 	std::string fileName;
 	std::ofstream outputFile;
 
-	char MAX_STRING_LENGTH[8];
+	const int MAX_STRING_LEN = 64;
 
 
 public:
