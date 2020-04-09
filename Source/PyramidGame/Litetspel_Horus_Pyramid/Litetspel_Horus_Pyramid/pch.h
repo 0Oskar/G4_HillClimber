@@ -11,6 +11,8 @@
 #include <assert.h>
 #include <memory>
 #include <wrl/client.h>
+#define NOMINMAX // std::min/std::max wont work without this
+#include <algorithm>
 
 // DirectX 11
 #include <d3d11.h>
@@ -19,11 +21,19 @@
 #include <d3dcompiler.h>
 #include <DirectXMath.h>
 
-#include<string>
-#include"pugixml.hpp"
+#include <string>
+#include "pugixml.hpp"
 
 // DirectX 11 Linking
 #pragma comment (lib, "user32")
 #pragma comment (lib, "d3d11.lib")
 #pragma comment (lib, "gdi32")
 #pragma comment (lib, "d3dcompiler.lib")
+
+// Helper Struct
+struct GameOptions
+{
+	int width;
+	int height;
+	float fov;
+};

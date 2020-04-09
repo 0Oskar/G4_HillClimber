@@ -18,12 +18,14 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-
     <ClCompile Include="ViewLayer.cpp">
       <Filter>Source\View</Filter>
-	 </ClCompile>
+    </ClCompile>
     <ClCompile Include="pugixml.cpp">
       <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Source\View</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -37,6 +39,9 @@
       <Filter>Header\View</Filter>
     </ClInclude>
     <ClInclude Include="VertexBuffer.h">
+      <Filter>Header\View</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
       <Filter>Header\View</Filter>
     </ClInclude>
   </ItemGroup>

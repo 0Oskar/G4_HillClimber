@@ -3,18 +3,16 @@
 
 Application* g_App;
 
-
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nShowCmd)
 {
 	bool initOK = false;
 	g_App = &Application::getInstance();
-	initOK = g_App->initApplication(hInstance, lpCmdLine, g_App->m_window, g_App->m_gameOptions.width, g_App->m_gameOptions.height, nShowCmd);
+	initOK = g_App->initApplication(hInstance, lpCmdLine, g_App->m_window, nShowCmd);
 
 	if (initOK)
 	{
-
-	OutputDebugStringA("Window Created!\n");
-	ShowWindow(g_App->m_window, nShowCmd);
+		OutputDebugStringA("Window Created!\n");
+		ShowWindow(g_App->m_window, nShowCmd);
 
 		MSG msg = { };
 		while (WM_QUIT != msg.message)
@@ -26,7 +24,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 			}
 			else // Render/Logic Loop
 			{
-				g_App->viewLayerPtr->render();
+				g_App->m_viewLayerPtr->render();
 				//Call engine member function here.
 			}
 		}

@@ -10,10 +10,15 @@ struct VS_OUT
     float3 color : COLOR;
 };
 
+cbuffer constantBuffer : register(b0)
+{
+    matrix wvp;
+};
+
 VS_OUT main(VS_IN input)
 {
     VS_OUT output;
-    output.pos = float4(input.pos, 1.f);
+    output.pos = mul(wvp, float4(input.pos, 1.f));
     output.color = input.color;
 	
 	return output;

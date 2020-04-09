@@ -1,14 +1,14 @@
 #pragma once
 
 #include "VertexBuffer.h"
+#include "Camera.h"
 
 class ViewLayer
 {
 private:
 	// Window
 	HWND m_window;
-	int m_wWidth;
-	int m_wHeight;
+	GameOptions* m_options;
 
 	// Device
 	Microsoft::WRL::ComPtr< ID3D11Device > m_device;
@@ -27,7 +27,15 @@ private:
 	// Shaders
 	Microsoft::WRL::ComPtr< ID3D11VertexShader > m_vertexShader;
 	Microsoft::WRL::ComPtr< ID3D11PixelShader > m_pixelShader;
-	Microsoft::WRL::ComPtr< ID3D11InputLayout >m_vertexLayout;
+	Microsoft::WRL::ComPtr< ID3D11InputLayout > m_vertexLayout;
+
+	// Constant Buffer
+	Microsoft::WRL::ComPtr< ID3D11Buffer > m_constantBuffer;
+	struct VS_CONSTANT_BUFFER
+	{
+		DirectX::XMMATRIX wvp;
+	};
+	VS_CONSTANT_BUFFER m_triangleCBufferData;
 
 	// Vertex Buffer
 	struct Vertex
@@ -42,25 +50,24 @@ private:
 	};
 	VertexBuffer<Vertex> m_vertexBuffer;
 
+	// Camera
+	Camera m_camera;
+
 	// Initialization Functions
 	void initDeviceAndSwapChain();
 	void initViewPort();
 	void initDepthStencilBuffer();
 	void initVertexBuffer();
 	void initShaders();
+	void initConstantBuffer();
 
 public:
-	ViewLayer(int width, int height);
+	ViewLayer();
 	~ViewLayer();
 
-	// Getters
-	UINT getWindowWidth() const;
-	UINT getWindowHeight() const;
-
 	// Initialization
-	void initialize(HWND window);
+	void initialize(HWND window, GameOptions* options);
 
 	// Render
 	void render();
-
 };
