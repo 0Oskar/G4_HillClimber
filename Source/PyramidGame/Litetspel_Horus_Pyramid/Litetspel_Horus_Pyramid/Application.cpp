@@ -1,7 +1,6 @@
 #include"pch.h"
 #include"Application.h"
 
-
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 Application::Application()
