@@ -100,7 +100,7 @@ bool Application::loadGameOptions(std::string fileName)
 		//Here you can load any options you add into GameOptions.xml
 		this->m_gameOptions.height = std::stoi(optionsMap.at("Height"));
 		this->m_gameOptions.width = std::stoi(optionsMap.at("Width"));
-		this->m_gameOptions.fov = std::stoi(optionsMap.at("FOV"));
+		this->m_gameOptions.fov = std::stof(optionsMap.at("FOV"));
 	}
 	
 	return result;
@@ -109,7 +109,6 @@ bool Application::loadGameOptions(std::string fileName)
 
 void Application::applicationLoop()
 {
-
 	MSG msg = { };
 	while (WM_QUIT != msg.message)
 	{
@@ -120,7 +119,7 @@ void Application::applicationLoop()
 		}
 		else // Render/Logic Loop
 		{
-			this->viewLayerPtr->render();
+			this->m_viewLayerPtr->render();
 			//Call engine member function here.
 		}
 	}
