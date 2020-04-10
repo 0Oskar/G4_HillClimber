@@ -272,25 +272,10 @@ void ViewLayer::initShaders()
 
 void ViewLayer::initConstantBuffer()
 {
-	this->m_triangleCBufferData.wvp = DirectX::XMMatrixIdentity() * this->m_camera.getViewMatrix() * this->m_camera.getProjectionMatrix();
+	this->m_triangleCBufferData.init(this->m_device.Get(), this->m_deviceContext.Get());
+	this->m_triangleCBufferData.m_data.wvp = DirectX::XMMatrixIdentity() * this->m_camera.getViewMatrix() * this->m_camera.getProjectionMatrix();
 
-	D3D11_BUFFER_DESC constantBufferDesc;
-	ZeroMemory(&constantBufferDesc, sizeof(D3D11_BUFFER_DESC));
-	constantBufferDesc.ByteWidth = sizeof(VS_CONSTANT_BUFFER);
-	constantBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	constantBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	constantBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	constantBufferDesc.MiscFlags = 0;
-	constantBufferDesc.StructureByteStride = 0;
-
-	D3D11_SUBRESOURCE_DATA constantBufferData;
-	ZeroMemory(&constantBufferData, sizeof(D3D11_SUBRESOURCE_DATA));
-	constantBufferData.pSysMem = &this->m_triangleCBufferData;
-	constantBufferData.SysMemPitch = 0;
-	constantBufferData.SysMemSlicePitch = 0;
-
-	HRESULT hr = this->m_device->CreateBuffer(&constantBufferDesc, &constantBufferData, &this->m_constantBuffer);
-	assert(SUCCEEDED(hr) && "Error, failed to create constant buffer!");
+	this->m_triangleCBufferData.upd();
 }
 
 ViewLayer::ViewLayer() {}
@@ -342,7 +327,7 @@ void ViewLayer::render()
 	this->m_deviceContext->PSSetShader(this->m_pixelShader.Get(), nullptr, 0);
 
 	// Set Constant Buffer
-	this->m_deviceContext->VSSetConstantBuffers(0, 1, this->m_constantBuffer.GetAddressOf());
+	this->m_deviceContext->VSSetConstantBuffers(0, 1, m_triangleCBufferData.GetAdressOf());
 
 	// Draw
 	this->m_deviceContext->Draw(this->m_vertexBuffer.getSize(), 0);

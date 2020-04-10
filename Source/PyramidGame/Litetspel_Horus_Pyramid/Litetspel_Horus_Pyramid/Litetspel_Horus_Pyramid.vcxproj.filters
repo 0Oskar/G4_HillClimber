@@ -44,6 +44,9 @@
     <ClInclude Include="Camera.h">
       <Filter>Header\View</Filter>
     </ClInclude>
+    <ClInclude Include="ConstantBuffer.h">
+      <Filter>Header\View</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
