@@ -27,6 +27,9 @@
     <ClCompile Include="Camera.cpp">
       <Filter>Source\View</Filter>
     </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Source\Game Logic</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -47,6 +50,9 @@
     <ClInclude Include="ConstantBuffer.h">
       <Filter>Header\View</Filter>
     </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Header\Game Logic</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -66,6 +72,12 @@
     </Filter>
     <Filter Include="Source\View">
       <UniqueIdentifier>{f32f945d-d78a-4e88-920d-611972532cee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header\Game Logic">
+      <UniqueIdentifier>{87335f24-2bb1-4c9c-87e7-1c6269fd7fea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Game Logic">
+      <UniqueIdentifier>{cd5f00ab-8e73-4d95-a5e7-9d1dc118c879}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

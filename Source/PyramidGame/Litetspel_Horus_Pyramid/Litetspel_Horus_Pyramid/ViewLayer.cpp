@@ -287,6 +287,9 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 	this->m_window = window;
 	this->m_options = options;
 	
+	// Player
+	this->m_player.setPosition(DirectX::XMVectorSet(0.f, 0.f, -1.f, 0.f));
+
 	// Camera
 	this->m_camera.initialize(
 		this->m_device.Get(), 
@@ -297,7 +300,8 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 		0.1f, 
 		1000.f
 	);
-	
+	this->m_camera.setPosition(this->m_player.getPosition());
+
 	this->initDeviceAndSwapChain();
 	this->initViewPort();
 	this->initDepthStencilBuffer();

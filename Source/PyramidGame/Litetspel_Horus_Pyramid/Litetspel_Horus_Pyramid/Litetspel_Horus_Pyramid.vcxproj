@@ -156,6 +156,7 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="Player.cpp" />
     <ClCompile Include="pugixml.cpp" />
     <ClCompile Include="ViewLayer.cpp" />
   </ItemGroup>
@@ -177,6 +178,7 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ConstantBuffer.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="Player.h" />
     <ClInclude Include="VertexBuffer.h" />
     <ClInclude Include="ViewLayer.h" />
   </ItemGroup>
