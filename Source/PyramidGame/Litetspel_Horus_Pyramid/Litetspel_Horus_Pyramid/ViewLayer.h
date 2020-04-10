@@ -2,6 +2,7 @@
 
 #include "VertexBuffer.h"
 #include "Camera.h"
+#include "ConstantBuffer.h"
 
 class ViewLayer
 {
@@ -31,11 +32,8 @@ private:
 
 	// Constant Buffer
 	Microsoft::WRL::ComPtr< ID3D11Buffer > m_constantBuffer;
-	struct VS_CONSTANT_BUFFER
-	{
-		DirectX::XMMATRIX wvp;
-	};
-	VS_CONSTANT_BUFFER m_triangleCBufferData;
+
+	ConstBuffer<VS_CONSTANT_BUFFER> m_triangleCBufferData;
 
 	// Vertex Buffer
 	struct Vertex
