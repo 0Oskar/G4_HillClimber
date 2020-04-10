@@ -13,7 +13,8 @@
 #include <wrl/client.h>
 #define NOMINMAX // std::min/std::max wont work without this
 #include <algorithm>
-#include<map>
+#include <map>
+#include <vector>
 
 // DirectX 11
 #include <d3d11.h>

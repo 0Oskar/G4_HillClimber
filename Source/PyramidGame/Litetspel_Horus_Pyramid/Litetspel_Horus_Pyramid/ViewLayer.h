@@ -34,7 +34,7 @@ private:
 	// Constant Buffer
 	Microsoft::WRL::ComPtr< ID3D11Buffer > m_constantBuffer;
 
-	ConstBuffer<VS_CONSTANT_BUFFER> m_triangleCBufferData;
+	ConstBuffer<VS_CONSTANT_BUFFER> m_triangleCBuffer;
 
 	// Vertex Buffer
 	struct Vertex

@@ -53,6 +53,9 @@
     <ClInclude Include="Player.h">
       <Filter>Header\Game Logic</Filter>
     </ClInclude>
+    <ClInclude Include="MovementComponent.h">
+      <Filter>Header\Component</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -78,6 +81,9 @@
     </Filter>
     <Filter Include="Source\Game Logic">
       <UniqueIdentifier>{cd5f00ab-8e73-4d95-a5e7-9d1dc118c879}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header\Component">
+      <UniqueIdentifier>{4fce57e3-555f-450d-8c3b-dce75d072a1a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
