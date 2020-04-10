@@ -2,6 +2,7 @@
 
 #include "VertexBuffer.h"
 #include "Camera.h"
+#include "Player.h"
 #include "ConstantBuffer.h"
 
 class ViewLayer
@@ -47,6 +48,9 @@ private:
 		}
 	};
 	VertexBuffer<Vertex> m_vertexBuffer;
+
+	// Player
+	Player m_player;
 
 	// Camera
 	Camera m_camera;

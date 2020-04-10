@@ -21,6 +21,7 @@
 #include <dxgi1_2.h>
 #include <d3dcompiler.h>
 #include <DirectXMath.h>
+#include <DirectXCollision.h>
 
 #include <string>
 #include "pugixml.hpp"

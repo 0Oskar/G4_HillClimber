@@ -84,6 +84,11 @@ void Camera::update(DirectX::XMFLOAT2 mouseDelta)
 	this->updateViewMatrix();
 }
 
+DirectX::XMVECTOR Camera::getPosition() const
+{
+	return this->m_position;
+}
+
 DirectX::XMMATRIX Camera::getProjectionMatrix() const
 {
 	return m_projectionMatrix;
@@ -92,4 +97,14 @@ DirectX::XMMATRIX Camera::getProjectionMatrix() const
 DirectX::XMMATRIX Camera::getViewMatrix() const
 {
 	return m_viewMatrix;
+}
+
+void Camera::setPosition(DirectX::XMVECTOR newPosition)
+{
+	this->m_position = newPosition;
+}
+
+void Camera::move(DirectX::XMVECTOR moveDistance)
+{
+	this->m_position = DirectX::XMVectorAdd(moveDistance, this->m_position);
 }

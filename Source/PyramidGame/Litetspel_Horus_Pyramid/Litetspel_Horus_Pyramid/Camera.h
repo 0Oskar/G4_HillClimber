@@ -35,7 +35,12 @@ public:
 	// Update
 	void update(DirectX::XMFLOAT2 mouseDelta);
 
-	// View and Projection
+	// Getters
+	DirectX::XMVECTOR getPosition() const;
 	DirectX::XMMATRIX getProjectionMatrix() const;
 	DirectX::XMMATRIX getViewMatrix() const;
+
+	// Setters
+	void setPosition(DirectX::XMVECTOR newPosition);
+	void move(DirectX::XMVECTOR moveDistance);
 };

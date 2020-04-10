@@ -4,12 +4,11 @@
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-
 Application::Application()
 {
 	this->m_gameOptions.height = 600;
 	this->m_gameOptions.width = 600;
-	
+	this->m_gameOptions.fov = 40;
 }
 
 bool Application::initApplication(HINSTANCE hInstance, LPWSTR lpCmdLine, HWND hWnd, int nShowCmd)
@@ -20,7 +19,7 @@ bool Application::initApplication(HINSTANCE hInstance, LPWSTR lpCmdLine, HWND hW
 	//TODO: Check if we have sufficient resources
 
 
-	loadGameOptions("GameOptions.xml");
+	this->loadGameOptions("GameOptions.xml");
 	if (hWnd == NULL)
 	{
 		this->createWin32Window(hInstance, WINDOWTILE, hWnd);//Create Window
@@ -34,12 +33,10 @@ bool Application::initApplication(HINSTANCE hInstance, LPWSTR lpCmdLine, HWND hW
 	this->m_viewLayerPtr = std::make_unique<ViewLayer>();
 	this->m_viewLayerPtr->initialize(this->m_window, &this->m_gameOptions);
 	
-
 	ShowWindow(this->m_window, nShowCmd);
 
 	return true;
 }
-
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -81,8 +78,8 @@ void Application::createWin32Window(HINSTANCE hInstance, const wchar_t* windowTi
 		WS_OVERLAPPEDWINDOW,        // Window style
 		CW_USEDEFAULT,				// Position, X
 		CW_USEDEFAULT,				// Position, Y
-		this->m_gameOptions.width,				// Width
-		this->m_gameOptions.height,				// Height
+		this->m_gameOptions.width,	// Width
+		this->m_gameOptions.height,	// Height
 		NULL,						// Parent window    
 		NULL,						// Menu
 		hInstance,					// Instance handle
@@ -90,7 +87,6 @@ void Application::createWin32Window(HINSTANCE hInstance, const wchar_t* windowTi
 	);
 	assert(_d3d11Window);
 }
-
 
 bool Application::loadGameOptions(std::string fileName) 
 {
@@ -114,7 +110,6 @@ bool Application::loadGameOptions(std::string fileName)
 	
 	return result;
 }
-
 
 void Application::applicationLoop()
 {
