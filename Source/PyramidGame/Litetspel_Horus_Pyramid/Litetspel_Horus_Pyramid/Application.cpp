@@ -110,7 +110,6 @@ bool Application::loadGameOptions(std::string fileName)
 		this->m_gameOptions.height = std::stoi(optionsMap.at("Height"));
 		this->m_gameOptions.width = std::stoi(optionsMap.at("Width"));
 		this->m_gameOptions.fov = std::stof(optionsMap.at("FOV"));
-
 	}
 	
 	return result;
@@ -119,7 +118,6 @@ bool Application::loadGameOptions(std::string fileName)
 
 void Application::applicationLoop()
 {
-
 	MSG msg = { };
 	while (WM_QUIT != msg.message)
 	{
