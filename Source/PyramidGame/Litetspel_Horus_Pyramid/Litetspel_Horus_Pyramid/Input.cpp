@@ -143,7 +143,7 @@ void Input::readBuffers()
 		std::string keyInfo = "KeyEvent";
 		KeyboardEvent readEvent = this->m_Keyboard.readKey();
 		keyInfo += readEvent.getKey();
-		OutputDebugStringA(keyInfo.c_str());
+		//OutputDebugStringA(keyInfo.c_str());
 	}
 
 	if (!this->m_Mouse.empty())
@@ -151,6 +151,16 @@ void Input::readBuffers()
 		std::string mouseInfo = "MousePos: X:";
 		MouseEvent mouseEvnt = this->m_Mouse.readEvent();
 		mouseInfo += std::to_string(mouseEvnt.getPosX()) + " Y: " + std::to_string(mouseEvnt.getPosY()) + "\n";
-		OutputDebugStringA(mouseInfo.c_str());
+		//OutputDebugStringA(mouseInfo.c_str());
 	}
+}
+
+MouseEvent Input::getMouseEvent()
+{
+	return this->m_Mouse.readEvent();
+}
+
+Keyboard* Input::getKeyboard()
+{
+	return &this->m_Keyboard;
 }

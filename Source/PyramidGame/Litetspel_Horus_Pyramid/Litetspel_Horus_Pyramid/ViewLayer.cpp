@@ -273,34 +273,35 @@ void ViewLayer::initShaders()
 void ViewLayer::initConstantBuffer()
 {
 	this->m_triangleCBuffer.init(this->m_device.Get(), this->m_deviceContext.Get());
-	this->m_triangleCBuffer.m_data.wvp = DirectX::XMMatrixIdentity() * this->m_camera.getViewMatrix() * this->m_camera.getProjectionMatrix();
+	this->m_triangleCBuffer.m_data.wvp = DirectX::XMMatrixIdentity() * (*m_viewMatrix) * (*m_projectionMatrix);
 	this->m_triangleCBuffer.upd();
 }
 
-ViewLayer::ViewLayer() {}
+ViewLayer::ViewLayer()
+{
+	this->m_viewMatrix = nullptr;
+	this->m_projectionMatrix = nullptr;
+}
 
 ViewLayer::~ViewLayer() {}
 
-void ViewLayer::initialize(HWND window, GameOptions* options)
+void ViewLayer::setViewMatrix(DirectX::XMMATRIX* newViewMatrix)
+{
+	this->m_viewMatrix = newViewMatrix;
+}
+
+void ViewLayer::setProjectionMatrix(DirectX::XMMATRIX* newProjectionMatrix)
+{
+	this->m_projectionMatrix = newProjectionMatrix;
+}
+
+void ViewLayer::initialize(HWND window, GameOptions* options, DirectX::XMMATRIX* viewMatrix, DirectX::XMMATRIX* projectionMatrix)
 {
 	this->m_window = window;
 	this->m_options = options;
-	
-	// Player
-	this->m_player.initialize();
-	this->m_player.setPosition(DirectX::XMVectorSet(0.f, 0.f, -1.f, 1.f));
 
-	// Camera
-	this->m_camera.followMoveComp(this->m_player.getMoveCompPtr());
-	this->m_camera.initialize(
-		this->m_device.Get(), 
-		this->m_deviceContext.Get(), 
-		2.f, 
-		this->m_options->fov, 
-		(float)this->m_options->width / (float)this->m_options->height,
-		0.1f, 
-		1000.f
-	);
+	this->m_viewMatrix = viewMatrix;
+	this->m_projectionMatrix = projectionMatrix;
 
 	this->initDeviceAndSwapChain();
 	this->initViewPort();
@@ -308,6 +309,12 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 	this->initVertexBuffer();
 	this->initShaders();
 	this->initConstantBuffer();
+}
+
+void ViewLayer::update(float dt)
+{
+	this->m_triangleCBuffer.m_data.wvp = DirectX::XMMatrixIdentity() * (*m_viewMatrix) * (*m_projectionMatrix);
+	this->m_triangleCBuffer.upd();
 }
 
 void ViewLayer::render()
