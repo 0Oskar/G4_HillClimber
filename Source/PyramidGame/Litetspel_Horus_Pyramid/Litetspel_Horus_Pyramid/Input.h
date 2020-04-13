@@ -1,7 +1,6 @@
 #pragma once
-#include "pch.h"
-#include"Input_Mouse.h"
-#include"Input_Keyboard.h"
+#include "Input_Mouse.h"
+#include "Input_Keyboard.h"
 
 class Input
 {
@@ -12,5 +11,4 @@ public:
 	Input();
 	LRESULT handleMessages(HWND hwind, UINT uMsg, WPARAM& wParam, LPARAM& lParam);
 	void readBuffers();
-	
 };

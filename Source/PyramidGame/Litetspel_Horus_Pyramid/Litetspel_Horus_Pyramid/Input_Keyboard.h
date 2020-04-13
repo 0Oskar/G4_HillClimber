@@ -1,5 +1,4 @@
 #pragma once
-#include"Event.h"
 
 
 class KeyboardEvent
@@ -32,6 +31,4 @@ public:
 	bool isKeyPressed(unsigned char key);
 	bool empty();
 	KeyboardEvent readKey();
-
-
 };

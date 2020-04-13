@@ -1,5 +1,4 @@
 #pragma once
-#include"Event.h"
 
 struct MousePos
 {
@@ -20,8 +19,6 @@ public:
 	Event getEvent();
 	MousePos getPos();
 	bool isValid();
-
-
 };
 
 
@@ -57,6 +54,4 @@ public:
 	int getPosx();
 	int getPosY();
 	MousePos getPos();
-
-
 };

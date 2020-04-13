@@ -15,7 +15,11 @@
 #include <algorithm>
 #include <map>
 #include <vector>
-#include<queue>
+#include <queue>
+#include <string>
+
+// Utilities
+#include "pugixml.hpp"
 
 // DirectX 11
 #include <d3d11.h>
@@ -24,12 +28,6 @@
 #include <d3dcompiler.h>
 #include <DirectXMath.h>
 #include <DirectXCollision.h>
-
-
-
-#include <string>
-#include "pugixml.hpp"
-
 
 // DirectX 11 Linking
 #pragma comment (lib, "user32")
@@ -43,4 +41,21 @@ struct GameOptions
 	int width;
 	int height;
 	float fov;
+};
+
+enum class Event
+{
+	Invalid,
+	Pressed,
+	Released,
+	MouseLPressed,
+	MouseLReleased,
+	MouseRPressed,
+	MouseRReleased,
+	MouseMPressed,
+	MouseMReleased,
+	MouseWheelUp,
+	MouseWheelDown,
+	MouseMove,
+	MouseRAW_MOVE
 };

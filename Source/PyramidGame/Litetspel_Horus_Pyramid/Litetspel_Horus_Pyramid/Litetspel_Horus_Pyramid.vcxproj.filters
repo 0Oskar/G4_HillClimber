@@ -68,9 +68,6 @@
     <ClInclude Include="Input.h">
       <Filter>Header\Application</Filter>
     </ClInclude>
-    <ClInclude Include="Event.h">
-      <Filter>Header\Application</Filter>
-    </ClInclude>
     <ClInclude Include="Input_Mouse.h">
       <Filter>Header\Application</Filter>
     </ClInclude>
