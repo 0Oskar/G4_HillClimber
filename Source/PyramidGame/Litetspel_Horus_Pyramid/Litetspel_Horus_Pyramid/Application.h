@@ -2,6 +2,7 @@
 #define _APPLICATION_H_
 
 #include "ViewLayer.h"
+#include "Input.h"
 
 class Application
 {
@@ -15,6 +16,7 @@ public:
 		return instance;
 	}
 
+	Input m_input;
 	HWND m_window;
 	GameOptions m_gameOptions;
 	std::unique_ptr< ViewLayer > m_viewLayerPtr;

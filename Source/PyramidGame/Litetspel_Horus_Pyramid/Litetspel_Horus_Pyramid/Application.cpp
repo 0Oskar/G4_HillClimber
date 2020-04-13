@@ -3,6 +3,8 @@
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
+extern Application* g_App;
+
 Application::Application()
 {
 	this->m_gameOptions.height = 600;
@@ -12,6 +14,7 @@ Application::Application()
 
 bool Application::initApplication(HINSTANCE hInstance, LPWSTR lpCmdLine, HWND hWnd, int nShowCmd)
 {
+	if (hWnd != NULL) return true; // Should not be ran twice due to setup of mouse device.
 	const wchar_t WINDOWTILE[] = L"Litetspel Horus Pyramid";
 
 	SetCursor(NULL);
@@ -19,19 +22,29 @@ bool Application::initApplication(HINSTANCE hInstance, LPWSTR lpCmdLine, HWND hW
 
 
 	this->loadGameOptions("GameOptions.xml");
-	if (hWnd == NULL)
-	{
-		this->createWin32Window(hInstance, WINDOWTILE, hWnd);//Create Window
-		OutputDebugStringA("Window Created!\n");
-	}
-	else
-	{
-		//Set window
-	}
+
+	
+	this->createWin32Window(hInstance, WINDOWTILE, hWnd);//Create Window
+	OutputDebugStringA("Window Created!\n");
+	
+
+
 	this->m_window = hWnd;
 	this->m_viewLayerPtr = std::make_unique<ViewLayer>();
 	this->m_viewLayerPtr->initialize(this->m_window, &this->m_gameOptions);
 	
+	RAWINPUTDEVICE rawIDevice;
+	rawIDevice.usUsagePage = 0x01;
+	rawIDevice.usUsage = 0x02;
+	rawIDevice.dwFlags = 0;
+	rawIDevice.hwndTarget = NULL;
+
+	if(RegisterRawInputDevices(&rawIDevice, 1, sizeof(rawIDevice)) == FALSE)
+	{
+		return false;
+	}
+
+
 	ShowWindow(this->m_window, nShowCmd);
 
 	return true;
@@ -39,6 +52,7 @@ bool Application::initApplication(HINSTANCE hInstance, LPWSTR lpCmdLine, HWND hW
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+	g_App->m_input.handleMessages(hwnd, uMsg, wParam, lParam);
 	switch (uMsg)
 	{
 	case WM_DESTROY:
@@ -54,6 +68,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		EndPaint(hwnd, &ps);
 		break;
 	}
+
 	return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
 
@@ -122,6 +137,7 @@ void Application::applicationLoop()
 		}
 		else // Render/Logic Loop
 		{
+			this->m_input.readBuffers();
 			this->m_viewLayerPtr->render();
 		}
 	}

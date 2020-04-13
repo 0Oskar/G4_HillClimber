@@ -30,6 +30,15 @@
     <ClCompile Include="Player.cpp">
       <Filter>Source\Game Logic</Filter>
     </ClCompile>
+    <ClCompile Include="Input.cpp">
+      <Filter>Source\Application</Filter>
+    </ClCompile>
+    <ClCompile Include="Input_Keyboard.cpp">
+      <Filter>Source\Application</Filter>
+    </ClCompile>
+    <ClCompile Include="Input_Mouse.cpp">
+      <Filter>Source\Application</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -55,6 +64,18 @@
     </ClInclude>
     <ClInclude Include="MovementComponent.h">
       <Filter>Header\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Input.h">
+      <Filter>Header\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="Event.h">
+      <Filter>Header\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="Input_Mouse.h">
+      <Filter>Header\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="Input_Keyboard.h">
+      <Filter>Header\Application</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -84,6 +105,12 @@
     </Filter>
     <Filter Include="Header\Component">
       <UniqueIdentifier>{4fce57e3-555f-450d-8c3b-dce75d072a1a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header\Application">
+      <UniqueIdentifier>{b1a38e30-6e4b-416e-ab0b-f5780fb82f57}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Application">
+      <UniqueIdentifier>{f8445f47-a972-44ab-9744-372cc19a2fbc}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
