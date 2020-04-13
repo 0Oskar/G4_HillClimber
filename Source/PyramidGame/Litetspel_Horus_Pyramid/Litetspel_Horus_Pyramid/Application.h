@@ -1,6 +1,7 @@
 #ifndef _APPLICATION_H_
 #define _APPLICATION_H_
 
+#include "GameState.h"
 #include "ViewLayer.h"
 #include "Input.h"
 
@@ -18,6 +19,7 @@ public:
 
 	Input m_input;
 	HWND m_window;
+	GameState m_gameState;
 	GameOptions m_gameOptions;
 	std::unique_ptr< ViewLayer > m_viewLayerPtr;
 
