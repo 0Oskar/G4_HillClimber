@@ -20,18 +20,15 @@ bool Application::initApplication(HINSTANCE hInstance, LPWSTR lpCmdLine, HWND hW
 	SetCursor(NULL);
 	//TODO: Check if we have sufficient resources
 
-
 	this->loadGameOptions("GameOptions.xml");
 
-	
 	this->createWin32Window(hInstance, WINDOWTILE, hWnd);//Create Window
 	OutputDebugStringA("Window Created!\n");
 	
-
-
 	this->m_window = hWnd;
+	this->m_gameState.initlialize(this->m_gameOptions);
 	this->m_viewLayerPtr = std::make_unique<ViewLayer>();
-	this->m_viewLayerPtr->initialize(this->m_window, &this->m_gameOptions);
+	this->m_viewLayerPtr->initialize(this->m_window, &this->m_gameOptions, this->m_gameState.getViewMatrix(), this->m_gameState.getProjectionMatrix());
 	
 	RAWINPUTDEVICE rawIDevice;
 	rawIDevice.usUsagePage = 0x01;
@@ -137,7 +134,9 @@ void Application::applicationLoop()
 		}
 		else // Render/Logic Loop
 		{
+			this->m_gameState.update(this->m_input.getKeyboard(), this->m_input.getMouseEvent(), .005f);
 			this->m_input.readBuffers();
+			this->m_viewLayerPtr->update(1.f);
 			this->m_viewLayerPtr->render();
 		}
 	}

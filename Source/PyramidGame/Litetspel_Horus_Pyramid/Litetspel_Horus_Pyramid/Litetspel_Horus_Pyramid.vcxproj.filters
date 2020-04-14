@@ -42,6 +42,9 @@
     <ClCompile Include="Model.cpp">
       <Filter>Source\View</Filter>
     </ClCompile>
+    <ClCompile Include="GameState.cpp">
+      <Filter>Source\Game Logic</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -79,6 +82,9 @@
     </ClInclude>
     <ClInclude Include="Model.h">
       <Filter>Header\View</Filter>
+    </ClInclude>
+    <ClInclude Include="GameState.h">
+      <Filter>Header\Game Logic</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
