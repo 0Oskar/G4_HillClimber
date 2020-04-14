@@ -44,7 +44,7 @@ void Camera::initialize(float speed, float fovAngle, float aspectRatio, float ne
 
 	this->setProjectionMatrix(fovAngle, aspectRatio, nearZ, farZ);
 	this->updateViewMatrix();
-	
+
 	// Components
 	if (!this->m_movementComp)
 		this->m_movementComp = new MovementComponent();

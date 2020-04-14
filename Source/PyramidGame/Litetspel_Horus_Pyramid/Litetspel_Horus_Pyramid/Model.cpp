@@ -11,6 +11,17 @@ Model::Model()
 	this->m_worldMatrix = DirectX::XMMatrixIdentity();
 }
 
+Model::Model(DirectX::XMVECTOR pos)
+{
+	this->m_constBufferPtr = nullptr;
+	this->m_deviceContextPtr = nullptr;
+	this->m_devicePtr = nullptr;
+	this->m_movementComponent = new MovementComponent();
+
+	this->m_movementComponent->position = pos;
+	
+}
+
 void Model::initModel(ID3D11Device* device, ID3D11DeviceContext* dContext, ConstBuffer<VS_CONSTANT_BUFFER>& constBufferVS)
 {
 	this->m_devicePtr = device;

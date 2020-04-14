@@ -275,25 +275,7 @@ void ViewLayer::initialize(HWND window, GameOptions* options, DirectX::XMMATRIX*
 {
 	this->m_window = window;
 	this->m_options = options;
-
-
-	//Simulate model creation
 	
-	// Player
-	this->m_player.initialize();
-	this->m_player.setPosition(DirectX::XMVectorSet(0.f, 0.f, -1.f, 1.f));
-
-	// Camera
-	this->m_camera.followMoveComp(this->m_player.getMoveCompPtr());
-	this->m_camera.initialize(
-		this->m_device.Get(), 
-		this->m_deviceContext.Get(), 
-		2.f, 
-		this->m_options->fov, 
-		(float)this->m_options->width / (float)this->m_options->height,
-		0.1f, 
-		1000.f
-	);
 	this->m_viewMatrix = viewMatrix;
 	this->m_projectionMatrix = projectionMatrix;
 
@@ -303,23 +285,23 @@ void ViewLayer::initialize(HWND window, GameOptions* options, DirectX::XMMATRIX*
 	this->initShaders();
 	this->initConstantBuffer();
 
-	for (int i = 0; i < 5; i++) //Sets up a "Scene"
-	{
-		m_models.push_back(Model());
-	}
+	DirectX::XMVECTOR vec = DirectX::XMVectorSet(0, 0.4f, 0, 1);
+	m_models.push_back(Model(vec));
+	vec = DirectX::XMVectorSet(0, -0.4f, 0.01f, 1);
+	m_models.push_back(Model(vec));
+
 
 	for (int i = 0; i < m_models.size(); i++)
 	{
 		
 		m_models[i].initModel(this->m_device.Get(), this->m_deviceContext.Get(), this->m_triangleCBuffer);
-		m_models[i].setPosition(DirectX::XMVectorSet(i * 1.0f, i * 1.0f , i*1.0f, 1));
+
 	}
 }
 
 void ViewLayer::update(float dt)
 {
-	this->m_triangleCBuffer.m_data.wvp = DirectX::XMMatrixIdentity() * (*m_viewMatrix) * (*m_projectionMatrix);
-	this->m_triangleCBuffer.upd();
+	
 }
 
 void ViewLayer::render()
@@ -342,7 +324,7 @@ void ViewLayer::render()
 	this->m_deviceContext->VSSetConstantBuffers(0, 1, this->m_triangleCBuffer.GetAdressOf());
 
 	// Draw
-	DirectX::XMMATRIX viewPMtrx = this->m_camera.getViewMatrix() * this->m_camera.getProjectionMatrix();
+	DirectX::XMMATRIX viewPMtrx = *m_viewMatrix * *this->m_projectionMatrix;
 	for (int i = 0; i < this->m_models.size(); i++)
 	{
 		this->m_models[i].draw(viewPMtrx);

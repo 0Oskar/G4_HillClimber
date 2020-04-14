@@ -31,7 +31,7 @@ public:
 
 	// Initialization
 	void initialize(float speed, float fovAngle, float aspectRatio, float nearZ, float farZ);
-	
+
 	// Update
 	void update(DirectX::XMFLOAT2 mouseDelta);
 

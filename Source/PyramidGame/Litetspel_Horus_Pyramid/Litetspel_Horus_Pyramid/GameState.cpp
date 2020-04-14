@@ -35,23 +35,23 @@ void GameState::initlialize(GameOptions options)
 void GameState::update(Keyboard* keyboard, MouseEvent mouseEvent, float dt)
 {
 	// Move Camera
-		if (keyboard->isKeyPressed('W'))
-			this->m_camera.move(Direction::FORWARD, dt);
+	if (keyboard->isKeyPressed('W'))
+		this->m_camera.move(Direction::FORWARD, dt);
 
-		if (keyboard->isKeyPressed('S'))
-			this->m_camera.move(Direction::BACKWARD, dt);
+	if (keyboard->isKeyPressed('S'))
+		this->m_camera.move(Direction::BACKWARD, dt);
 
-		if (keyboard->isKeyPressed('A'))
-			this->m_camera.move(Direction::LEFT, dt);
+	if (keyboard->isKeyPressed('A'))
+		this->m_camera.move(Direction::LEFT, dt);
 
-		if (keyboard->isKeyPressed('D'))
-			this->m_camera.move(Direction::RIGHT, dt);
+	if (keyboard->isKeyPressed('D'))
+		this->m_camera.move(Direction::RIGHT, dt);
 
-		if (keyboard->isKeyPressed(' '))
-			this->m_camera.move(Direction::UP, dt);
+	if (keyboard->isKeyPressed(' '))
+		this->m_camera.move(Direction::UP, dt);
 
-		if (keyboard->isKeyPressed((unsigned char)16))
-			this->m_camera.move(Direction::DOWN, dt);
+	if (keyboard->isKeyPressed((unsigned char)16))
+		this->m_camera.move(Direction::DOWN, dt);
 
 	// Rotate Camera
 	if (mouseEvent.getEvent() == Event::MouseRAW_MOVE)
