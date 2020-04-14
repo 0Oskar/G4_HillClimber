@@ -34,9 +34,9 @@ public:
 	Model(DirectX::XMVECTOR pos);
 	void initModel(ID3D11Device* device, ID3D11DeviceContext* dContext, ConstBuffer<VS_CONSTANT_BUFFER>& constBufferVS);
 	void draw(DirectX::XMMATRIX &mtrx);
-
 	void setPosition(DirectX::XMVECTOR pos);
-
+	void loadVertexVector(ID3D11Device* device, ID3D11DeviceContext* dContext, ConstBuffer<VS_CONSTANT_BUFFER>& constBufferVS, std::vector<Vertex> vertexVector);
+	
 	
 
 

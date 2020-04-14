@@ -51,6 +51,18 @@ void Model::initModel(ID3D11Device* device, ID3D11DeviceContext* dContext, Const
 	this->updateWorldMatrix();
 }
 
+void Model::loadVertexVector(ID3D11Device* device, ID3D11DeviceContext* dContext, ConstBuffer<VS_CONSTANT_BUFFER>& constBufferVS, std::vector<Vertex> vertexVector)
+{
+	this->m_devicePtr = device;
+	this->m_deviceContextPtr = dContext;
+
+	this->m_constBufferPtr = &constBufferVS;
+
+	HRESULT hr = this->m_vertexBuffer.initialize(this->m_devicePtr, vertexVector.data(), (int)vertexVector.size());
+	assert(SUCCEEDED(hr) && "Error, vertex buffer could not be created!");
+
+}
+
 void Model::draw(DirectX::XMMATRIX& viewProjMtx)
 {
 	this->m_constBufferPtr->m_data.wvp = this->m_worldMatrix * viewProjMtx;
