@@ -17,6 +17,8 @@
 #include <vector>
 #include <queue>
 #include <string>
+#include <sstream>
+#include <fstream>
 
 // Utilities
 #include "pugixml.hpp"

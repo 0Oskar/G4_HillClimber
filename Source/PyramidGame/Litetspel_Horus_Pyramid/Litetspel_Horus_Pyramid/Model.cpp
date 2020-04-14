@@ -61,6 +61,134 @@ void Model::loadVertexVector(ID3D11Device* device, ID3D11DeviceContext* dContext
 	HRESULT hr = this->m_vertexBuffer.initialize(this->m_devicePtr, vertexVector.data(), (int)vertexVector.size());
 	assert(SUCCEEDED(hr) && "Error, vertex buffer could not be created!");
 
+	this->updateWorldMatrix();
+}
+
+void Model::loadVertexFromOBJ(ID3D11Device* device, ID3D11DeviceContext* dContext, ConstBuffer<VS_CONSTANT_BUFFER>& constBufferVS, std::wstring objFilePath, DirectX::XMFLOAT3 color)
+{
+	this->m_devicePtr = device;
+	this->m_deviceContextPtr = dContext;
+
+	this->m_constBufferPtr = &constBufferVS;
+
+	// Values Contained
+	bool hasNormals = false;
+	bool hasTexcoords = false;
+
+	// Vertices
+	std::vector<DirectX::XMFLOAT3> vertexPositions;
+	std::vector<DirectX::XMFLOAT3> vertexNormals;
+	std::vector<DirectX::XMFLOAT2> vertexTexcoords;
+
+	// Faces
+	std::vector<UINT> vertexPosIndices;
+	std::vector<UINT> vertexNormIndices;
+	std::vector<UINT> vertexTexIndices;
+
+	// Material
+	std::string materialFilePath = "";
+
+	// File Stream
+	std::stringstream sStream;
+	std::ifstream inFileStream(objFilePath);
+	std::string line = "";
+	std::string prefix = "";
+	DirectX::XMFLOAT3 tempF3;
+	DirectX::XMFLOAT2 tempF2;
+	UINT tempUINT;
+
+	if (!inFileStream.is_open())
+		assert(false && "Error, could not open OBJ file!");
+
+	while (std::getline(inFileStream, line))
+	{
+		sStream.clear();
+		sStream.str(line);
+		sStream >> prefix;
+
+		if (prefix == "mtllib")
+			sStream >> materialFilePath;
+		else if (prefix == "v")
+		{
+			sStream >> tempF3.x >> tempF3.y >> tempF3.z;
+			vertexPositions.push_back(tempF3);
+		}
+		else if (prefix == "vt")
+		{
+			hasTexcoords = true;
+			sStream >> tempF2.x >> tempF2.y;
+			vertexTexcoords.push_back(tempF2);
+		}
+		else if (prefix == "vn")
+		{
+			hasNormals = true;
+			sStream >> tempF3.x >> tempF3.y >> tempF3.z;
+			vertexNormals.push_back(tempF3);
+		}
+		else if (prefix == "f")
+		{
+			int counter = 0;
+			int counterCap = 2;
+			if (!hasNormals)
+				counterCap--;
+
+			if (!hasTexcoords)
+				counterCap--;
+
+			while (sStream >> tempUINT)
+			{
+				if (counter == 0)
+					vertexPosIndices.push_back(tempUINT);
+				else if (counter == 1)
+				{
+					if (hasTexcoords)
+						vertexTexIndices.push_back(tempUINT);
+					else if (hasNormals)
+						vertexNormIndices.push_back(tempUINT);
+				}
+				else if (counter == 2)
+				{
+					if (hasNormals)
+						vertexNormIndices.push_back(tempUINT);
+				}
+
+				if (sStream.peek() == '/')
+				{
+					++counter;
+					sStream.ignore(1, '/');
+					if (sStream.peek() == '/')
+						sStream.ignore(1, '/');
+				}
+				else if (sStream.peek() == ' ')
+				{
+					++counter;
+					sStream.ignore(1, ' ');
+				}
+
+				if (counter > counterCap)
+					counter = 0;
+			}
+		}
+	}
+	inFileStream.close();
+
+	this->m_vertices.resize(vertexPosIndices.size(), Vertex());
+
+	//Load in all indices
+	for (size_t i = 0; i < this->m_vertices.size(); ++i)
+	{
+		this->m_vertices[i].position = vertexPositions[vertexPosIndices[i] - 1];
+		this->m_vertices[i].color = color;
+		/*if (vertexTexcoords.size())
+			this->m_vertices[i].texcoord = vertexTexcoords[vertexTexIndices[i] - 1];
+		if (vertexNormals.size())
+			this->m_vertices[i].normal = vertexNormals[vertexNormIndices[i] - 1];*/
+	}
+
+	HRESULT hr = this->m_vertexBuffer.initialize(this->m_devicePtr, this->m_vertices.data(), (int)this->m_vertices.size());
+	assert(SUCCEEDED(hr) && "Error, vertex buffer could not be created!");
+
+	this->updateWorldMatrix();
 }
 
 void Model::draw(DirectX::XMMATRIX& viewProjMtx)
@@ -84,4 +212,9 @@ void Model::updateWorldMatrix()
 void Model::setPosition(DirectX::XMVECTOR pos)
 {
 	this->m_movementComponent->position = pos;
+}
+
+void Model::setScale(DirectX::XMVECTOR scale)
+{
+	this->m_movementComponent->scale = scale;
 }
