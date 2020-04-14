@@ -39,6 +39,12 @@
     <ClCompile Include="Input_Mouse.cpp">
       <Filter>Source\Application</Filter>
     </ClCompile>
+<<<<<<< HEAD
+=======
+    <ClCompile Include="GameState.cpp">
+      <Filter>Source\Game Logic</Filter>
+    </ClCompile>
+>>>>>>> parent of 0eb5e3e... Merge pull request #46 from 0Oskar/model_1
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -74,6 +80,12 @@
     <ClInclude Include="Input_Keyboard.h">
       <Filter>Header\Application</Filter>
     </ClInclude>
+<<<<<<< HEAD
+=======
+    <ClInclude Include="GameState.h">
+      <Filter>Header\Game Logic</Filter>
+    </ClInclude>
+>>>>>>> parent of 0eb5e3e... Merge pull request #46 from 0Oskar/model_1
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

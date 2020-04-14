@@ -1,8 +1,11 @@
 #pragma once
 
 #include "VertexBuffer.h"
+<<<<<<< HEAD
 #include "Camera.h"
 #include "Player.h"
+=======
+>>>>>>> parent of 0eb5e3e... Merge pull request #46 from 0Oskar/model_1
 #include "ConstantBuffer.h"
 
 class ViewLayer
@@ -49,11 +52,16 @@ private:
 	};
 	VertexBuffer<Vertex> m_vertexBuffer;
 
+<<<<<<< HEAD
 	// Player
 	Player m_player;
 
 	// Camera
 	Camera m_camera;
+=======
+	DirectX::XMMATRIX* m_viewMatrix;
+	DirectX::XMMATRIX* m_projectionMatrix;
+>>>>>>> parent of 0eb5e3e... Merge pull request #46 from 0Oskar/model_1
 
 	// Initialization Functions
 	void initDeviceAndSwapChain();
