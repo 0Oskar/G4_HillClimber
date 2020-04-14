@@ -39,9 +39,6 @@
     <ClCompile Include="Input_Mouse.cpp">
       <Filter>Source\Application</Filter>
     </ClCompile>
-    <ClCompile Include="Model.cpp">
-      <Filter>Source\View</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -76,9 +73,6 @@
     </ClInclude>
     <ClInclude Include="Input_Keyboard.h">
       <Filter>Header\Application</Filter>
-    </ClInclude>
-    <ClInclude Include="Model.h">
-      <Filter>Header\View</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
