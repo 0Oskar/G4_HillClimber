@@ -45,6 +45,9 @@
     <ClCompile Include="Model.cpp">
       <Filter>Source\View</Filter>
     </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>Source\Application</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -85,6 +88,9 @@
     </ClInclude>
     <ClInclude Include="Model.h">
       <Filter>Header\View</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.h">
+      <Filter>Header\Application</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

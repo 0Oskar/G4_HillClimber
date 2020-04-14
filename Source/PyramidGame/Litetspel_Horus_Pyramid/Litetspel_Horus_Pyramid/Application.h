@@ -4,12 +4,13 @@
 #include "GameState.h"
 #include "ViewLayer.h"
 #include "Input.h"
+#include"Timer.h"
 
 class Application
 {
 private:
 	Application();
-
+	Timer m_timer;
 public:
 	static Application& getInstance()
 	{

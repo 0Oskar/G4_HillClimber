@@ -276,6 +276,7 @@ void ViewLayer::initialize(HWND window, GameOptions* options, DirectX::XMMATRIX*
 
 	this->m_viewMatrix = viewMatrix;
 	this->m_projectionMatrix = projectionMatrix;
+	this->m_timer.start();
 
 	this->initDeviceAndSwapChain();
 	this->initViewPort();
@@ -335,6 +336,13 @@ void ViewLayer::render()
 		this->m_models[i].draw(viewPMtrx);
 	}
 
+	this->m_fps++;
+	if (1000.0 < m_timer.timeElapsed())
+	{
+		std::string fps = "FPS: " + std::to_string(this->m_fps);
+		OutputDebugStringA(fps.c_str());
+		m_timer.restart();
+	}
 
 	// Swap Frames
 	this->m_swapChain->Present(0, 0);
