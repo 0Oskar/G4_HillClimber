@@ -45,8 +45,13 @@ void DisplayMesh(FbxNode* pNode)
 
     DisplayString("Mesh Name: ", (char *) pNode->GetName());
 	
+<<<<<<< HEAD
 	myFile.writeToFile( pNode->GetName(), strlen(pNode->GetName()) + 1 ); //strcpy_s()
 	//c string func
+=======
+	myFile.writeToFile((char*)pNode->GetName()); 
+
+>>>>>>> c1617e2b5d486fb9146c658f18f9294c2030a821
     DisplayMetaDataConnections(lMesh);
     DisplayControlsPoints(lMesh);
     DisplayPolygons(lMesh);
@@ -73,8 +78,8 @@ void DisplayControlsPoints(FbxMesh* pMesh)
         DisplayInt("        Control Point ", i);
         Display3DVector("            Coordinates: ", lControlPoints[i]);
 		VertexData += ( "V" + std::to_string(lControlPoints[i][0]) + 
-					   std::to_string(lControlPoints[i][1]) + 
-					   std::to_string(lControlPoints[i][2]) ); //Add VertexPos
+							  std::to_string(lControlPoints[i][1]) + 
+							  std::to_string(lControlPoints[i][2]) ); //Add VertexPos
 		
 
         for (int j = 0; j < pMesh->GetElementNormalCount(); j++)
@@ -100,8 +105,11 @@ void DisplayControlsPoints(FbxMesh* pMesh)
     DisplayString("");
 }
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> c1617e2b5d486fb9146c658f18f9294c2030a821
 void DisplayPolygons(FbxMesh* pMesh)
 {
     int i, j, lPolygonCount = pMesh->GetPolygonCount();
@@ -110,8 +118,15 @@ void DisplayPolygons(FbxMesh* pMesh)
 
     DisplayString("    Polygons");
 	
+<<<<<<< HEAD
 	//std::string list = "";
 	Vertex vertexData;
+=======
+	std::string list = "";
+	VertexStruct* myVTXStruct = new VertexStruct();
+	//PosUvNorm *temp, d;
+	//temp = &d;
+>>>>>>> c1617e2b5d486fb9146c658f18f9294c2030a821
 
     int vertexId = 0;
     for (i = 0; i < lPolygonCount; i++)
@@ -153,9 +168,19 @@ void DisplayPolygons(FbxMesh* pMesh)
 			else
 			{
 				Display3DVector("            Coordinates: ", lControlPoints[lControlPointIndex]);
+<<<<<<< HEAD
 				vertexData.pos[0] = lControlPoints[lControlPointIndex][0];
 				vertexData.pos[1] = lControlPoints[lControlPointIndex][1];
 				vertexData.pos[2] = lControlPoints[lControlPointIndex][2]; //Add VertexPos <------------------------------------------
+=======
+				myVTXStruct->pos[0] = lControlPoints[lControlPointIndex][0];
+				myVTXStruct->pos[1] = lControlPoints[lControlPointIndex][1];
+				myVTXStruct->pos[2] = lControlPoints[lControlPointIndex][2];
+
+				//list += ( "V" + std::to_string(lControlPoints[lControlPointIndex][0]) +
+				//			   std::to_string(lControlPoints[lControlPointIndex][1]) +
+				//			   std::to_string(lControlPoints[lControlPointIndex][2]) ); //Add VertexPos <------------------------------------------
+>>>>>>> c1617e2b5d486fb9146c658f18f9294c2030a821
 			}
 
 
@@ -245,8 +270,16 @@ void DisplayPolygons(FbxMesh* pMesh)
 						case FbxGeometryElement::eIndexToDirect:
 							{
 								Display2DVector(header, leUV->GetDirectArray().GetAt(lTextureUVIndex)); 
+<<<<<<< HEAD
 								vertexData.uv[0] = leUV->GetDirectArray().GetAt(lTextureUVIndex)[0];
 								vertexData.uv[1] = leUV->GetDirectArray().GetAt(lTextureUVIndex)[1]; //Add UV <------------------------------------------
+=======
+								//myFile.myVertexStruct.uv[0] = leUV->GetDirectArray().GetAt(lTextureUVIndex)[0];
+								//myFile.myVertexStruct.uv[1] = leUV->GetDirectArray().GetAt(lTextureUVIndex)[1];
+
+								//list += ("UV" + std::to_string(leUV->GetDirectArray().GetAt(lTextureUVIndex)[0]) +
+								//			    std::to_string(leUV->GetDirectArray().GetAt(lTextureUVIndex)[1]) ); //Add UV <------------------------------------------
+>>>>>>> c1617e2b5d486fb9146c658f18f9294c2030a821
 							}
 							break;
 						default:
@@ -285,9 +318,19 @@ void DisplayPolygons(FbxMesh* pMesh)
 						break; // other reference modes not shown here!
 					}
 				}
+<<<<<<< HEAD
 				vertexData.norm[0] = leNormal->GetDirectArray().GetAt(vertexId)[0];
 				vertexData.norm[1] = leNormal->GetDirectArray().GetAt(vertexId)[1];
 				vertexData.norm[2] = leNormal->GetDirectArray().GetAt(vertexId)[2]; //Add Normal <------------------------------------------
+=======
+				//myFile.myVertexStruct.norm[0] = leNormal->GetDirectArray().GetAt(vertexId)[0];
+				//myFile.myVertexStruct.norm[1] = leNormal->GetDirectArray().GetAt(vertexId)[1];
+				//myFile.myVertexStruct.norm[2] = leNormal->GetDirectArray().GetAt(vertexId)[2];
+
+				//list += ("N" + std::to_string(leNormal->GetDirectArray().GetAt(vertexId)[0]) +
+				//			   std::to_string(leNormal->GetDirectArray().GetAt(vertexId)[1]) +
+				//			   std::to_string(leNormal->GetDirectArray().GetAt(vertexId)[2]) ); //Add Normal <------------------------------------------
+>>>>>>> c1617e2b5d486fb9146c658f18f9294c2030a821
 			}
 			for( l = 0; l < pMesh->GetElementTangentCount(); ++l)
 			{
@@ -341,8 +384,15 @@ void DisplayPolygons(FbxMesh* pMesh)
 		} // for polygonSize
     } // for polygonCount
 
+<<<<<<< HEAD
 	myFile.writeToFile((const char*)&vertexData, sizeof(Vertex));
 
+=======
+	//myFile.writeToFile(list);
+	//PosUvNorm *test = tmep;
+	myFile.writeToFile((char*)myVTXStruct);
+	delete myVTXStruct;
+>>>>>>> c1617e2b5d486fb9146c658f18f9294c2030a821
 
     //check visibility for the edges of the mesh
 	for(int l = 0; l < pMesh->GetElementVisibilityCount(); ++l)
