@@ -251,31 +251,18 @@ void ViewLayer::initShaders()
 void ViewLayer::initConstantBuffer()
 {
 	this->m_triangleCBuffer.init(this->m_device.Get(), this->m_deviceContext.Get());
+
+
 }
 
-ViewLayer::ViewLayer()
-{
-	this->m_viewMatrix = nullptr;
-	this->m_projectionMatrix = nullptr;
-}
+ViewLayer::ViewLayer() {}
 
 ViewLayer::~ViewLayer() {}
 
-void ViewLayer::setViewMatrix(DirectX::XMMATRIX* newViewMatrix)
-{
-	this->m_viewMatrix = newViewMatrix;
-}
-
-void ViewLayer::setProjectionMatrix(DirectX::XMMATRIX* newProjectionMatrix)
-{
-	this->m_projectionMatrix = newProjectionMatrix;
-}
-
-void ViewLayer::initialize(HWND window, GameOptions* options, DirectX::XMMATRIX* viewMatrix, DirectX::XMMATRIX* projectionMatrix)
+void ViewLayer::initialize(HWND window, GameOptions* options)
 {
 	this->m_window = window;
 	this->m_options = options;
-
 
 	//Simulate model creation
 	
@@ -294,8 +281,6 @@ void ViewLayer::initialize(HWND window, GameOptions* options, DirectX::XMMATRIX*
 		0.1f, 
 		1000.f
 	);
-	this->m_viewMatrix = viewMatrix;
-	this->m_projectionMatrix = projectionMatrix;
 
 	this->initDeviceAndSwapChain();
 	this->initViewPort();
@@ -314,12 +299,6 @@ void ViewLayer::initialize(HWND window, GameOptions* options, DirectX::XMMATRIX*
 		m_models[i].initModel(this->m_device.Get(), this->m_deviceContext.Get(), this->m_triangleCBuffer);
 		m_models[i].setPosition(DirectX::XMVectorSet(i * 1.0f, i * 1.0f , i*1.0f, 1));
 	}
-}
-
-void ViewLayer::update(float dt)
-{
-	this->m_triangleCBuffer.m_data.wvp = DirectX::XMMatrixIdentity() * (*m_viewMatrix) * (*m_projectionMatrix);
-	this->m_triangleCBuffer.upd();
 }
 
 void ViewLayer::render()

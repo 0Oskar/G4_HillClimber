@@ -4,7 +4,7 @@
 void Camera::setProjectionMatrix(float fovAngle, float aspectRatio, float nearZ, float farZ)
 {
 	float fov = (fovAngle / 360.f) * DirectX::XM_2PI;
-	*m_projectionMatrix = DirectX::XMMatrixPerspectiveFovLH(fov, aspectRatio, nearZ, farZ);
+	this->m_projectionMatrix = DirectX::XMMatrixPerspectiveFovLH(fov, aspectRatio, nearZ, farZ);
 }
 
 void Camera::updateViewMatrix()
@@ -18,7 +18,7 @@ void Camera::updateViewMatrix()
 	DirectX::XMVECTOR up = XMVector3TransformCoord(DirectX::XMVectorSet(0.f, 1.f, 0.f, 0.f), rotationMatrix);
 
 	// Update View Matrix with new Rotation
-	*m_viewMatrix = DirectX::XMMatrixLookAtLH(this->m_movementComp->position, lookAt, up);
+	this->m_viewMatrix = DirectX::XMMatrixLookAtLH(this->m_movementComp->position, lookAt, up);
 
 	// Update Direction Vectors
 	this->m_movementComp->updateDirVectors();
@@ -26,20 +26,19 @@ void Camera::updateViewMatrix()
 
 Camera::Camera()
 {
-	this->m_projectionMatrix = new DirectX::XMMATRIX(DirectX::XMMatrixIdentity());
-	this->m_viewMatrix = new DirectX::XMMATRIX(DirectX::XMMatrixIdentity());
+	this->m_deviceContext = nullptr;
+
+	this->m_projectionMatrix = DirectX::XMMatrixIdentity();
+	this->m_viewMatrix = DirectX::XMMatrixIdentity();
 
 	this->m_movementComp = nullptr;
 }
 
-Camera::~Camera()
-{
-	delete this->m_viewMatrix;
-	delete this->m_projectionMatrix;
-}
+Camera::~Camera() {}
 
-void Camera::initialize(float speed, float fovAngle, float aspectRatio, float nearZ, float farZ)
+void Camera::initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, float speed, float fovAngle, float aspectRatio, float nearZ, float farZ)
 {
+	this->m_deviceContext = deviceContext;
 	this->m_movementComp->speed = speed;
 
 	this->setProjectionMatrix(fovAngle, aspectRatio, nearZ, farZ);
@@ -79,14 +78,14 @@ void Camera::update(DirectX::XMFLOAT2 mouseDelta)
 	this->updateViewMatrix();
 }
 
-DirectX::XMMATRIX* Camera::getProjectionMatrix() const
+DirectX::XMMATRIX Camera::getProjectionMatrix() const
 {
-	return this->m_projectionMatrix;
+	return m_projectionMatrix;
 }
 
-DirectX::XMMATRIX* Camera::getViewMatrix() const
+DirectX::XMMATRIX Camera::getViewMatrix() const
 {
-	return this->m_viewMatrix;
+	return m_viewMatrix;
 }
 
 void Camera::followMoveComp(MovementComponent* moveComp)
@@ -97,11 +96,4 @@ void Camera::followMoveComp(MovementComponent* moveComp)
 void Camera::setPosition(DirectX::XMVECTOR newPosition)
 {
 	this->m_movementComp->position = newPosition;
-	this->updateViewMatrix();
-}
-
-void Camera::move(Direction dir, float dt)
-{
-	this->m_movementComp->move(dir, dt);
-	this->updateViewMatrix();
 }
