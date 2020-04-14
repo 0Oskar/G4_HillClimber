@@ -273,11 +273,7 @@ void ViewLayer::initShaders()
 void ViewLayer::initConstantBuffer()
 {
 	this->m_triangleCBuffer.init(this->m_device.Get(), this->m_deviceContext.Get());
-<<<<<<< HEAD
 	this->m_triangleCBuffer.m_data.wvp = DirectX::XMMatrixIdentity() * this->m_camera.getViewMatrix() * this->m_camera.getProjectionMatrix();
-=======
-	this->m_triangleCBuffer.m_data.wvp = DirectX::XMMatrixIdentity() * (*m_viewMatrix) * (*m_projectionMatrix);
->>>>>>> parent of 0eb5e3e... Merge pull request #46 from 0Oskar/model_1
 	this->m_triangleCBuffer.upd();
 }
 
@@ -289,7 +285,6 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 {
 	this->m_window = window;
 	this->m_options = options;
-<<<<<<< HEAD
 	
 	// Player
 	this->m_player.initialize();
@@ -306,11 +301,6 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 		0.1f, 
 		1000.f
 	);
-=======
-
-	this->m_viewMatrix = viewMatrix;
-	this->m_projectionMatrix = projectionMatrix;
->>>>>>> parent of 0eb5e3e... Merge pull request #46 from 0Oskar/model_1
 
 	this->initDeviceAndSwapChain();
 	this->initViewPort();
@@ -318,15 +308,6 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 	this->initVertexBuffer();
 	this->initShaders();
 	this->initConstantBuffer();
-<<<<<<< HEAD
-=======
-}
-
-void ViewLayer::update(float dt)
-{
-	this->m_triangleCBuffer.m_data.wvp = DirectX::XMMatrixIdentity() * (*m_viewMatrix) * (*m_projectionMatrix);
-	this->m_triangleCBuffer.upd();
->>>>>>> parent of 0eb5e3e... Merge pull request #46 from 0Oskar/model_1
 }
 
 void ViewLayer::render()
