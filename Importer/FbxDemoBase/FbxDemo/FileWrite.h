@@ -3,6 +3,12 @@
 #include <iostream>
 #include <fstream>
 
+struct Vertex
+{
+	float pos[3];
+	float uv[2];
+	float norm[3];
+};
 
 class FileWrite
 {
@@ -18,7 +24,8 @@ public:
 	FileWrite();
 	~FileWrite();
 
-	void writeToFile(std::string input);
+	void writeToFile(const char* input, size_t size);
 	void EmptyFile();
+
 
 };

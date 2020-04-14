@@ -19,22 +19,23 @@ FileWrite::~FileWrite()
 	this->outputFile.close();
 }
 
-void FileWrite::writeToFile(std::string input)
+void FileWrite::writeToFile(const char* input, size_t size)
 {
-	std::string outData = input;
-	int timesBigger = 1;
+
+	//int timesBigger = 1;
 	//if (outData.size() > MAX_STRING_LEN)
 	//{
 	//	timesBigger = std::ceil(float(outData.size()) / float(MAX_STRING_LEN));
 	//}
 
-	int number = (MAX_STRING_LEN * timesBigger) - outData.size();
+	//int number = (MAX_STRING_LEN * timesBigger) - outData.size();
 	//for (int i = 0; i < number; i++)
 	//{
 	//	outData += "Î";
 	//}
 
-	outputFile.write(outData.c_str(), outData.size());
+	outputFile.write(input, size);
+
 }
 
 void FileWrite::EmptyFile()
