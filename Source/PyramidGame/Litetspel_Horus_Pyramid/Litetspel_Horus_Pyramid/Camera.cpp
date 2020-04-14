@@ -43,7 +43,7 @@ void Camera::initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext
 
 	this->setProjectionMatrix(fovAngle, aspectRatio, nearZ, farZ);
 	this->updateViewMatrix();
-	
+
 	// Components
 	if (!this->m_movementComp)
 		this->m_movementComp = new MovementComponent();
@@ -96,4 +96,12 @@ void Camera::followMoveComp(MovementComponent* moveComp)
 void Camera::setPosition(DirectX::XMVECTOR newPosition)
 {
 	this->m_movementComp->position = newPosition;
+	this->updateViewMatrix();
 }
+
+void Camera::move(Direction dir, float dt)
+{
+	this->m_movementComp->move(dir, dt);
+	this->updateViewMatrix();
+}
+

@@ -24,7 +24,7 @@ public:
 	~Camera();
 
 	// Initialization
-	void initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, float speed, float fovAngle, float aspectRatio, float nearZ, float farZ);
+	void initialize(float speed, float fovAngle, float aspectRatio, float nearZ, float farZ);
 	
 	// Update
 	void update(DirectX::XMFLOAT2 mouseDelta);
