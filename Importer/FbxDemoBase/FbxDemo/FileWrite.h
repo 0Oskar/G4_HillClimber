@@ -2,6 +2,13 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <vector>
+
+struct Mesh
+{
+	char name[64];
+	unsigned int nrOfVertex;
+};
 
 struct Vertex
 {
@@ -9,6 +16,7 @@ struct Vertex
 	float uv[2];
 	float norm[3];
 };
+
 
 class FileWrite
 {
@@ -21,10 +29,11 @@ private:
 
 
 public:
-	FileWrite();
+	FileWrite(std::string path);
 	~FileWrite();
 
 	void writeToFile(const char* input, size_t size);
+	void writeToStringFile(std::string input);
 	void EmptyFile();
 
 

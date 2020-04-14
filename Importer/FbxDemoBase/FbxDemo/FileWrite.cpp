@@ -1,9 +1,9 @@
 #include "FileWrite.h"
 
-FileWrite::FileWrite()
+FileWrite::FileWrite(std::string path)
 {
 	//this->fileName = "C:/Users/vibbo/OneDrive/Skrivbord/LitetSpel-HillClimbers/G4_HillClimber/Importer/FbxDemoBase/testFile.bff";
-	this->fileName = "../biFile.bff";
+	this->fileName = path; 
 	this->outputFile.open(fileName.c_str(), std::ofstream::binary | std::ios_base::app);
 	//std::ios_base::app
 
@@ -21,7 +21,11 @@ FileWrite::~FileWrite()
 
 void FileWrite::writeToFile(const char* input, size_t size)
 {
+	outputFile.write(input, size);
+}
 
+void FileWrite::writeToStringFile(std::string input)
+{
 	//int timesBigger = 1;
 	//if (outData.size() > MAX_STRING_LEN)
 	//{
@@ -33,9 +37,7 @@ void FileWrite::writeToFile(const char* input, size_t size)
 	//{
 	//	outData += "Î";
 	//}
-
-	outputFile.write(input, size);
-
+	outputFile.write(input.c_str(), input.size());
 }
 
 void FileWrite::EmptyFile()

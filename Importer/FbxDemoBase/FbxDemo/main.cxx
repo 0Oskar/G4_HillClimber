@@ -57,9 +57,6 @@ static bool gVerbose = true;
 
 int main(int argc, char** argv)
 {
-
-    FileWrite myFile;
-    myFile.EmptyFile();
     //myFile.writeToFile("test line from main");
 
     FbxManager* lSdkManager = NULL;
