@@ -1,9 +1,9 @@
 #pragma once
 
-#include "VertexBuffer.h"
+#include "Model.h"
 #include "Camera.h"
 #include "Player.h"
-#include "ConstantBuffer.h"
+
 
 class ViewLayer
 {
@@ -36,18 +36,8 @@ private:
 
 	ConstBuffer<VS_CONSTANT_BUFFER> m_triangleCBuffer;
 
-	// Vertex Buffer
-	struct Vertex
-	{
-		DirectX::XMFLOAT3 position;
-		DirectX::XMFLOAT3 color;
-		Vertex(float x, float y, float z, float r, float g, float b)
-		{
-			position = DirectX::XMFLOAT3(x, y, z);
-			color = DirectX::XMFLOAT3(r, g, b);
-		}
-	};
-	VertexBuffer<Vertex> m_vertexBuffer;
+	std::vector<Model> m_models;
+	
 
 	// Player
 	Player m_player;
@@ -59,7 +49,6 @@ private:
 	void initDeviceAndSwapChain();
 	void initViewPort();
 	void initDepthStencilBuffer();
-	void initVertexBuffer();
 	void initShaders();
 	void initConstantBuffer();
 
