@@ -1,9 +1,6 @@
 #pragma once
 
-#include "VertexBuffer.h"
-#include "Camera.h"
-#include "Player.h"
-#include "ConstantBuffer.h"
+#include"Model.h"
 
 class ViewLayer
 {
@@ -35,40 +32,31 @@ private:
 	Microsoft::WRL::ComPtr< ID3D11Buffer > m_constantBuffer;
 
 	ConstBuffer<VS_CONSTANT_BUFFER> m_triangleCBuffer;
+	std::vector<Model> m_models;
 
-	// Vertex Buffer
-	struct Vertex
-	{
-		DirectX::XMFLOAT3 position;
-		DirectX::XMFLOAT3 color;
-		Vertex(float x, float y, float z, float r, float g, float b)
-		{
-			position = DirectX::XMFLOAT3(x, y, z);
-			color = DirectX::XMFLOAT3(r, g, b);
-		}
-	};
-	VertexBuffer<Vertex> m_vertexBuffer;
 
-	// Player
-	Player m_player;
-
-	// Camera
-	Camera m_camera;
+	DirectX::XMMATRIX* m_viewMatrix;
+	DirectX::XMMATRIX* m_projectionMatrix;
 
 	// Initialization Functions
 	void initDeviceAndSwapChain();
 	void initViewPort();
 	void initDepthStencilBuffer();
-	void initVertexBuffer();
 	void initShaders();
 	void initConstantBuffer();
-
 public:
 	ViewLayer();
 	~ViewLayer();
 
+	// Setters
+	void setViewMatrix(DirectX::XMMATRIX* newViewMatrix);
+	void setProjectionMatrix(DirectX::XMMATRIX* newProjectionMatrix);
+
 	// Initialization
-	void initialize(HWND window, GameOptions* options);
+	void initialize(HWND window, GameOptions* options, DirectX::XMMATRIX* viewMatrix, DirectX::XMMATRIX* projectionMatrix);
+
+	// Update
+	void update(float dt);
 
 	// Render
 	void render();

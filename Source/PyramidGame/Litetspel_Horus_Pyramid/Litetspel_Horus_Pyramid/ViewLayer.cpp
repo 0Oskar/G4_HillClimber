@@ -44,7 +44,7 @@ void ViewLayer::initDeviceAndSwapChain()
 		&this->m_device,
 		feature_level,
 		&this->m_deviceContext
-		);
+	);
 	assert(SUCCEEDED(hr) && "Error, failed to create device and swapchain!");
 
 	// Back Buffer Texture
@@ -131,27 +131,7 @@ void ViewLayer::initDepthStencilBuffer()
 	assert(SUCCEEDED(hr) && "Error, failed to create depth stencil state!");
 }
 
-void ViewLayer::initVertexBuffer()
-{
-	std::vector<Vertex> vertices
-	{
-		Vertex(
-			-0.5f, -0.5f, 0.f,
-			1.f, 0.f, 0.f
-		),
-		Vertex(
-			0.f, 0.5f, 0.f,
-			0.f, 1.f, 0.f
-		),
-		Vertex(
-			0.5f, -0.5f, 0.f,
-			0.f, 0.f, 1.f
-		)
-	};
 
-	HRESULT hr = this->m_vertexBuffer.initialize(this->m_device.Get(), vertices.data(), 3);
-	assert(SUCCEEDED(hr) && "Error, vertex buffer could not be created!");
-}
 
 void ViewLayer::initShaders()
 {
@@ -177,7 +157,7 @@ void ViewLayer::initShaders()
 		0,									// IGNORE...DEPRECATED.
 		&vsBlob,							// double pointer to ID3DBlob		
 		&errorBlob							// pointer for Error Blob messages.
-		);
+	);
 
 	if (FAILED(hr))
 	{
@@ -196,7 +176,7 @@ void ViewLayer::initShaders()
 		vsBlob->GetBufferSize(),
 		nullptr,
 		&this->m_vertexShader
-		);
+	);
 	assert(SUCCEEDED(hr) && "Error, failed to create vertex shader!");
 
 	// Vertex Layout
@@ -227,7 +207,7 @@ void ViewLayer::initShaders()
 		vsBlob->GetBufferPointer(),
 		vsBlob->GetBufferSize(),
 		&this->m_vertexLayout
-		);
+	);
 	assert(SUCCEEDED(hr) && "Error, failed to create vertex layout!");
 	vsBlob->Release();
 
@@ -246,7 +226,7 @@ void ViewLayer::initShaders()
 		0,
 		&psBlob,
 		&errorBlob
-		);
+	);
 
 	if (FAILED(hr))
 	{
@@ -265,34 +245,41 @@ void ViewLayer::initShaders()
 		psBlob->GetBufferSize(),
 		nullptr,
 		&this->m_pixelShader
-		);
+	);
 	assert(SUCCEEDED(hr) && "Error, failed to create pixel shader!");
 	psBlob->Release();
 }
 
-void ViewLayer::initConstantBuffer()
-{
-	this->m_triangleCBuffer.init(this->m_device.Get(), this->m_deviceContext.Get());
-	this->m_triangleCBuffer.m_data.wvp = DirectX::XMMatrixIdentity() * this->m_camera.getViewMatrix() * this->m_camera.getProjectionMatrix();
-	this->m_triangleCBuffer.upd();
-}
 
-ViewLayer::ViewLayer() {}
+ViewLayer::ViewLayer()
+{
+	this->m_viewMatrix = nullptr;
+	this->m_projectionMatrix = nullptr;
+}
 
 ViewLayer::~ViewLayer() {}
 
-void ViewLayer::initialize(HWND window, GameOptions* options)
+void ViewLayer::setViewMatrix(DirectX::XMMATRIX* newViewMatrix)
+{
+	this->m_viewMatrix = newViewMatrix;
+}
+
+void ViewLayer::setProjectionMatrix(DirectX::XMMATRIX* newProjectionMatrix)
+{
+	this->m_projectionMatrix = newProjectionMatrix;
+}
+
+void ViewLayer::initialize(HWND window, GameOptions* options, DirectX::XMMATRIX* viewMatrix, DirectX::XMMATRIX* projectionMatrix)
 {
 	this->m_window = window;
 	this->m_options = options;
-	
+
 	this->m_viewMatrix = viewMatrix;
 	this->m_projectionMatrix = projectionMatrix;
 
 	this->initDeviceAndSwapChain();
 	this->initViewPort();
 	this->initDepthStencilBuffer();
-	this->initVertexBuffer();
 	this->initShaders();
 	this->initConstantBuffer();
 
@@ -301,9 +288,10 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 	vec = DirectX::XMVectorSet(0, -0.4f, 0.01f, 1);
 	m_models.push_back(Model(vec));
 
+
 	for (int i = 0; i < m_models.size(); i++)
 	{
-		
+
 		m_models[i].initModel(this->m_device.Get(), this->m_deviceContext.Get(), this->m_triangleCBuffer);
 
 	}
@@ -311,21 +299,23 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 
 void ViewLayer::update(float dt)
 {
-	
+
+}
+
+void ViewLayer::initConstantBuffer()
+{
+	this->m_triangleCBuffer.init(this->m_device.Get(), this->m_deviceContext.Get());
+
 }
 
 void ViewLayer::render()
-{	
+{
 	// Clear Frame
 	this->m_deviceContext->ClearRenderTargetView(this->m_outputRTV.Get(), clearColor);
 	this->m_deviceContext->ClearDepthStencilView(this->m_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 	// Set Render Target
 	this->m_deviceContext->OMSetRenderTargets(1, this->m_outputRTV.GetAddressOf(), this->m_depthStencilView.Get());
-
-	// Set Vertex Buffers
-	UINT vertexOffset = 0;
-	this->m_deviceContext->IASetVertexBuffers(0, 1, this->m_vertexBuffer.GetAddressOf(), this->m_vertexBuffer.getStridePointer(), &vertexOffset);
 
 	// Set Shaders
 	this->m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -334,16 +324,18 @@ void ViewLayer::render()
 	this->m_deviceContext->VSSetShader(this->m_vertexShader.Get(), nullptr, 0);
 	this->m_deviceContext->PSSetShader(this->m_pixelShader.Get(), nullptr, 0);
 
+
 	// Set Constant Buffer
 	this->m_deviceContext->VSSetConstantBuffers(0, 1, this->m_triangleCBuffer.GetAdressOf());
 
 	// Draw
-	DirectX::XMMATRIX viewPMtrx = *m_viewMatrix * *this->m_projectionMatrix;
+	DirectX::XMMATRIX viewPMtrx = (*m_viewMatrix) * (*m_projectionMatrix);
 	for (int i = 0; i < this->m_models.size(); i++)
 	{
 		this->m_models[i].draw(viewPMtrx);
 	}
-	
+
+
 	// Swap Frames
 	this->m_swapChain->Present(0, 0);
 }
