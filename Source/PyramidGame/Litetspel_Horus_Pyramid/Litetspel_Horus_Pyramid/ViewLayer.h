@@ -1,6 +1,7 @@
 #pragma once
 
 #include"Model.h"
+#include"Timer.h"
 
 class ViewLayer
 {
@@ -37,6 +38,8 @@ private:
 
 	DirectX::XMMATRIX* m_viewMatrix;
 	DirectX::XMMATRIX* m_projectionMatrix;
+	Timer m_timer;
+	int m_fps;
 
 	// Initialization Functions
 	void initDeviceAndSwapChain();

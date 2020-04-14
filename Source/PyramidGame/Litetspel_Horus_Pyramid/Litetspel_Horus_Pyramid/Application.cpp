@@ -29,6 +29,7 @@ bool Application::initApplication(HINSTANCE hInstance, LPWSTR lpCmdLine, HWND hW
 	this->m_gameState.initlialize(this->m_gameOptions);
 	this->m_viewLayerPtr = std::make_unique<ViewLayer>();
 	this->m_viewLayerPtr->initialize(this->m_window, &this->m_gameOptions, this->m_gameState.getViewMatrix(), this->m_gameState.getProjectionMatrix());
+	this->m_timer.start();
 
 	RAWINPUTDEVICE rawIDevice;
 	rawIDevice.usUsagePage = 0x01;
@@ -40,9 +41,8 @@ bool Application::initApplication(HINSTANCE hInstance, LPWSTR lpCmdLine, HWND hW
 	{
 		return false;
 	}
-
-
 	ShowWindow(this->m_window, nShowCmd);
+
 
 	return true;
 }
@@ -124,6 +124,8 @@ bool Application::loadGameOptions(std::string fileName)
 
 void Application::applicationLoop()
 {
+	float deltaTime = m_timer.timeElapsed();
+	m_timer.restart();
 	MSG msg = { };
 	while (WM_QUIT != msg.message)
 	{
@@ -134,9 +136,9 @@ void Application::applicationLoop()
 		}
 		else // Render/Logic Loop
 		{
-			this->m_gameState.update(this->m_input.getKeyboard(), this->m_input.getMouseEvent(), .005f);
+			this->m_gameState.update(this->m_input.getKeyboard(), this->m_input.getMouseEvent(), deltaTime);
 			this->m_input.readBuffers();
-			this->m_viewLayerPtr->update(1.f);
+			this->m_viewLayerPtr->update(deltaTime);
 			this->m_viewLayerPtr->render();
 		}
 	}
