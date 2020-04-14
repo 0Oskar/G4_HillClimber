@@ -56,7 +56,7 @@ void GameState::update(Keyboard* keyboard, MouseEvent mouseEvent, float dt)
 	// Rotate Camera
 	if (mouseEvent.getEvent() == Event::MouseRAW_MOVE)
 	{
-		DirectX::XMFLOAT2 mouseDelta = DirectX::XMFLOAT2((float)mouseEvent.getPosX() * dt, (float)mouseEvent.getPosY() * dt);
+		DirectX::XMFLOAT2 mouseDelta = DirectX::XMFLOAT2((float)mouseEvent.getPosX() / 1000 * dt, (float)mouseEvent.getPosY() / 1000 * dt);
 		this->m_camera.update(mouseDelta);
 	}
 }
