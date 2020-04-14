@@ -131,28 +131,6 @@ void ViewLayer::initDepthStencilBuffer()
 	assert(SUCCEEDED(hr) && "Error, failed to create depth stencil state!");
 }
 
-void ViewLayer::initVertexBuffer()
-{
-	std::vector<Vertex> vertices
-	{
-		Vertex(
-			-0.5f, -0.5f, 0.f,
-			1.f, 0.f, 0.f
-		),
-		Vertex(
-			0.f, 0.5f, 0.f,
-			0.f, 1.f, 0.f
-		),
-		Vertex(
-			0.5f, -0.5f, 0.f,
-			0.f, 0.f, 1.f
-		)
-	};
-
-	HRESULT hr = this->m_vertexBuffer.initialize(this->m_device.Get(), vertices.data(), 3);
-	assert(SUCCEEDED(hr) && "Error, vertex buffer could not be created!");
-}
-
 void ViewLayer::initShaders()
 {
 	// Binary Large OBject (BLOB), for compiled shader, and errors.
@@ -273,8 +251,6 @@ void ViewLayer::initShaders()
 void ViewLayer::initConstantBuffer()
 {
 	this->m_triangleCBuffer.init(this->m_device.Get(), this->m_deviceContext.Get());
-	this->m_triangleCBuffer.m_data.wvp = DirectX::XMMatrixIdentity() * (*m_viewMatrix) * (*m_projectionMatrix);
-	this->m_triangleCBuffer.upd();
 }
 
 ViewLayer::ViewLayer()
@@ -300,15 +276,44 @@ void ViewLayer::initialize(HWND window, GameOptions* options, DirectX::XMMATRIX*
 	this->m_window = window;
 	this->m_options = options;
 
+
+	//Simulate model creation
+	
+	// Player
+	this->m_player.initialize();
+	this->m_player.setPosition(DirectX::XMVectorSet(0.f, 0.f, -1.f, 1.f));
+
+	// Camera
+	this->m_camera.followMoveComp(this->m_player.getMoveCompPtr());
+	this->m_camera.initialize(
+		this->m_device.Get(), 
+		this->m_deviceContext.Get(), 
+		2.f, 
+		this->m_options->fov, 
+		(float)this->m_options->width / (float)this->m_options->height,
+		0.1f, 
+		1000.f
+	);
 	this->m_viewMatrix = viewMatrix;
 	this->m_projectionMatrix = projectionMatrix;
 
 	this->initDeviceAndSwapChain();
 	this->initViewPort();
 	this->initDepthStencilBuffer();
-	this->initVertexBuffer();
 	this->initShaders();
 	this->initConstantBuffer();
+
+	for (int i = 0; i < 5; i++) //Sets up a "Scene"
+	{
+		m_models.push_back(Model());
+	}
+
+	for (int i = 0; i < m_models.size(); i++)
+	{
+		
+		m_models[i].initModel(this->m_device.Get(), this->m_deviceContext.Get(), this->m_triangleCBuffer);
+		m_models[i].setPosition(DirectX::XMVectorSet(i * 1.0f, i * 1.0f , i*1.0f, 1));
+	}
 }
 
 void ViewLayer::update(float dt)
@@ -326,10 +331,6 @@ void ViewLayer::render()
 	// Set Render Target
 	this->m_deviceContext->OMSetRenderTargets(1, this->m_outputRTV.GetAddressOf(), this->m_depthStencilView.Get());
 
-	// Set Vertex Buffers
-	UINT vertexOffset = 0;
-	this->m_deviceContext->IASetVertexBuffers(0, 1, this->m_vertexBuffer.GetAddressOf(), this->m_vertexBuffer.getStridePointer(), &vertexOffset);
-
 	// Set Shaders
 	this->m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	this->m_deviceContext->IASetInputLayout(this->m_vertexLayout.Get());
@@ -341,7 +342,11 @@ void ViewLayer::render()
 	this->m_deviceContext->VSSetConstantBuffers(0, 1, this->m_triangleCBuffer.GetAdressOf());
 
 	// Draw
-	this->m_deviceContext->Draw(this->m_vertexBuffer.getSize(), 0);
+	DirectX::XMMATRIX viewPMtrx = this->m_camera.getViewMatrix() * this->m_camera.getProjectionMatrix();
+	for (int i = 0; i < this->m_models.size(); i++)
+	{
+		this->m_models[i].draw(viewPMtrx);
+	}
 
 	// Swap Frames
 	this->m_swapChain->Present(0, 0);
