@@ -1,6 +1,7 @@
 #include"pch.h"
 #include"Model.h"
 
+
 Model::Model()
 {
 	this->m_constBufferPtr = nullptr;
@@ -19,17 +20,13 @@ Model::Model(DirectX::XMVECTOR pos)
 	this->m_devicePtr = nullptr;
 	this->m_movementComponent = new MovementComponent();
 	this->drawWithIndex = false;
-
-
 	this->m_movementComponent->position = pos;
-	
 }
 
-void Model::initModel(ID3D11Device* device, ID3D11DeviceContext* dContext, ConstBuffer<VS_CONSTANT_BUFFER>& constBufferVS)
+void Model::initModel(ID3D11Device* device, ID3D11DeviceContext* dContext, ConstBuffer<VS_CONSTANT_BUFFER>& constBufferVS, MaterialData material)
 {
 	this->m_devicePtr = device;
 	this->m_deviceContextPtr = dContext;
-
 	this->m_constBufferPtr = &constBufferVS;
 
 	std::vector<Vertex> vertices
@@ -61,10 +58,10 @@ void Model::initModel(ID3D11Device* device, ID3D11DeviceContext* dContext, Const
 	};
 	hr = this->indexBuffer.init(this->m_devicePtr, indicies, ARRAYSIZE(indicies));
 	assert(SUCCEEDED(hr) && "Error, index buffer could not be created!");
+	
+
+	this->m_material.init(device, dContext, material);
 	this->drawWithIndex = true;
-
-
-
 	this->updateWorldMatrix();
 }
 
@@ -72,7 +69,6 @@ void Model::loadVertexVector(ID3D11Device* device, ID3D11DeviceContext* dContext
 {
 	this->m_devicePtr = device;
 	this->m_deviceContextPtr = dContext;
-
 	this->m_constBufferPtr = &constBufferVS;
 
 	HRESULT hr = this->m_vertexBuffer.initialize(this->m_devicePtr, vertexVector.data(), (int)vertexVector.size());
@@ -81,11 +77,10 @@ void Model::loadVertexVector(ID3D11Device* device, ID3D11DeviceContext* dContext
 	this->updateWorldMatrix();
 }
 
-void Model::loadVertexFromOBJ(ID3D11Device* device, ID3D11DeviceContext* dContext, ConstBuffer<VS_CONSTANT_BUFFER>& constBufferVS, std::wstring objFilePath, DirectX::XMFLOAT3 color)
+void Model::loadVertexFromOBJ(ID3D11Device* device, ID3D11DeviceContext* dContext, ConstBuffer<VS_CONSTANT_BUFFER>& constBufferVS, std::wstring objFilePath, DirectX::XMFLOAT3 color, MaterialData materialData)
 {
 	this->m_devicePtr = device;
 	this->m_deviceContextPtr = dContext;
-
 	this->m_constBufferPtr = &constBufferVS;
 
 	// Values Contained
@@ -204,7 +199,7 @@ void Model::loadVertexFromOBJ(ID3D11Device* device, ID3D11DeviceContext* dContex
 
 	HRESULT hr = this->m_vertexBuffer.initialize(this->m_devicePtr, this->m_vertices.data(), (int)this->m_vertices.size());
 	assert(SUCCEEDED(hr) && "Error, vertex buffer could not be created!");
-
+	this->m_material.init(device, dContext, materialData);
 	this->updateWorldMatrix();
 }
 
@@ -212,6 +207,7 @@ void Model::draw(DirectX::XMMATRIX& viewProjMtx)
 {
 	this->m_constBufferPtr->m_data.wvp = this->m_worldMatrix * viewProjMtx;
 	this->m_constBufferPtr->upd();
+	this->m_material.upd(this->m_deviceContextPtr);
 
 	UINT vertexOffset = 0;
 	this->m_deviceContextPtr->IASetVertexBuffers(0, 1, this->m_vertexBuffer.GetAddressOf(), this->m_vertexBuffer.getStridePointer(), &vertexOffset);

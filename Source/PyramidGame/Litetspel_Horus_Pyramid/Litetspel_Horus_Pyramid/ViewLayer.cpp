@@ -281,20 +281,26 @@ void ViewLayer::initialize(HWND window, GameOptions* options, DirectX::XMMATRIX*
 	this->initShaders();
 	this->initConstantBuffer();
 
+	MaterialData mat;
+	DirectX::XMFLOAT4 defSet = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
+	mat.diffuse = defSet;
+
 	DirectX::XMVECTOR vec = DirectX::XMVectorSet(0.f, 0.4f, 0.f, 1.f);
 	this->m_models.push_back(Model(vec));
 
 	vec = DirectX::XMVectorSet(0, -0.4f, 0.01f, 1.f);
 	this->m_models.push_back(Model(vec));
-
+	
 	for (int i = 0; i < this->m_models.size(); i++)
-		this->m_models[i].initModel(this->m_device.Get(), this->m_deviceContext.Get(), this->m_triangleCBuffer);
+		this->m_models[i].initModel(this->m_device.Get(), this->m_deviceContext.Get(), this->m_triangleCBuffer, mat);
 
 	vec = DirectX::XMVectorSet(0.f, 0.f, 100.f, 1.f);
 	this->m_models.push_back(Model(vec));
 	/*vec = DirectX::XMVectorSet(0.2f, 0.2f, 0.2f, 1);
 	this->m_models.back().setScale(vec);*/
-	this->m_models.back().loadVertexFromOBJ(this->m_device.Get(), this->m_deviceContext.Get(), this->m_triangleCBuffer, L"Models/BasePyr.obj", DirectX::XMFLOAT3(0.f, 1.f, 0.f));
+	defSet = DirectX::XMFLOAT4(0.f, 0.f, 1.f, 1.0f);
+	mat.diffuse = defSet;
+	this->m_models.back().loadVertexFromOBJ(this->m_device.Get(), this->m_deviceContext.Get(), this->m_triangleCBuffer, L"Models/BasePyr.obj", DirectX::XMFLOAT3(0.f, 1.f, 0.f), mat);
 
 	//vec = DirectX::XMVectorSet(0.f, 0.f, 0.f, 1);
 	//this->m_models.push_back(Model(vec));

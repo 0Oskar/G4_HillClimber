@@ -3,7 +3,7 @@
 #include"ConstantBuffer.h"
 #include"MovementComponent.h"
 #include"IndexBuffer.h"
-
+#include"Material.h"
 
 struct Vertex
 {
@@ -32,6 +32,7 @@ private:
 	VertexBuffer<Vertex> m_vertexBuffer;
 	std::vector<Vertex> m_vertices;
 	IndexBuffer indexBuffer;
+	Material m_material;
 
 	DirectX::XMMATRIX m_worldMatrix;
 	void updateWorldMatrix();
@@ -42,10 +43,10 @@ private:
 public:
 	Model();
 	Model(DirectX::XMVECTOR pos);
-	void initModel(ID3D11Device* device, ID3D11DeviceContext* dContext, ConstBuffer<VS_CONSTANT_BUFFER>& constBufferVS);
+	void initModel(ID3D11Device* device, ID3D11DeviceContext* dContext, ConstBuffer<VS_CONSTANT_BUFFER>& constBufferVS, MaterialData material);
 	void draw(DirectX::XMMATRIX &mtrx);
 	void setPosition(DirectX::XMVECTOR pos);
 	void setScale(DirectX::XMVECTOR scale);
 	void loadVertexVector(ID3D11Device* device, ID3D11DeviceContext* dContext, ConstBuffer<VS_CONSTANT_BUFFER>& constBufferVS, std::vector<Vertex> vertexVector);
-	void loadVertexFromOBJ(ID3D11Device* device, ID3D11DeviceContext* dContext, ConstBuffer<VS_CONSTANT_BUFFER>& constBufferVS, std::wstring objFilePath, DirectX::XMFLOAT3 color);
+	void loadVertexFromOBJ(ID3D11Device* device, ID3D11DeviceContext* dContext, ConstBuffer<VS_CONSTANT_BUFFER>& constBufferVS, std::wstring objFilePath, DirectX::XMFLOAT3 color, MaterialData material);
 };

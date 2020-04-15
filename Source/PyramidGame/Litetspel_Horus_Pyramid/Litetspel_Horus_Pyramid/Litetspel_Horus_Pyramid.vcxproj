@@ -188,6 +188,7 @@
     <ClInclude Include="Input.h" />
     <ClInclude Include="Input_Keyboard.h" />
     <ClInclude Include="Input_Mouse.h" />
+    <ClInclude Include="Material.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="MovementComponent.h" />
     <ClInclude Include="pch.h" />
