@@ -252,6 +252,7 @@ ViewLayer::ViewLayer()
 {
 	this->m_viewMatrix = nullptr;
 	this->m_projectionMatrix = nullptr;
+	this->m_fps = 0;
 }
 
 ViewLayer::~ViewLayer() {}
@@ -287,7 +288,7 @@ void ViewLayer::initialize(HWND window, GameOptions* options, DirectX::XMMATRIX*
 	vec = DirectX::XMVectorSet(0, -0.4f, 0.01f, 1.f);
 	this->m_models.push_back(Model(vec));
 
-	for (int i = 0; i < this->m_models.size(); i++)
+	for (std::size_t i = 0; i < this->m_models.size(); i++)
 		this->m_models[i].initModel(this->m_device.Get(), this->m_deviceContext.Get(), this->m_triangleCBuffer);
 
 	vec = DirectX::XMVectorSet(0.f, 0.f, 100.f, 1.f);
@@ -309,7 +310,6 @@ void ViewLayer::update(float dt)
 void ViewLayer::initConstantBuffer()
 {
 	this->m_triangleCBuffer.init(this->m_device.Get(), this->m_deviceContext.Get());
-
 }
 
 void ViewLayer::render()
@@ -334,10 +334,8 @@ void ViewLayer::render()
 
 	// Draw
 	DirectX::XMMATRIX viewPMtrx = (*m_viewMatrix) * (*m_projectionMatrix);
-	for (int i = 0; i < this->m_models.size(); i++)
-	{
+	for (size_t i = 0; i < this->m_models.size(); i++)
 		this->m_models[i].draw(viewPMtrx);
-	}
 
 	this->m_fps++;
 	if (1000.0 < m_timer.timeElapsed())

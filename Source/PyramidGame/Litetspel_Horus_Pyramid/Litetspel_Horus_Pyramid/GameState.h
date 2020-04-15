@@ -2,7 +2,6 @@
 
 #include "Camera.h"
 #include "Player.h"
-#include "Input.h"
 
 class GameState
 {

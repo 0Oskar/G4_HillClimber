@@ -124,7 +124,7 @@ bool Application::loadGameOptions(std::string fileName)
 
 void Application::applicationLoop()
 {
-	float deltaTime = m_timer.timeElapsed() / 1000;
+	float deltaTime = (float)m_timer.timeElapsed() / 1000.0;
 	m_timer.restart();
 	MSG msg = { };
 	while (WM_QUIT != msg.message)

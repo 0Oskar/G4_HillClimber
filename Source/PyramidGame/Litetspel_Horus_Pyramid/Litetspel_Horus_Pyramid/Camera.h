@@ -1,13 +1,13 @@
 #pragma once
 
 #include "MovementComponent.h"
+#include "Input.h"
 
 class Camera
 {
 private:
 	// View and Projection
 	DirectX::XMMATRIX* m_projectionMatrix;
-	DirectX::XMMATRIX* m_viewMatrix;
 	float m_mouseSense;
 
 	// Comonents
@@ -15,7 +15,6 @@ private:
 
 	// Functions
 	void setProjectionMatrix(float fovAngle, float aspectRatio, float nearZ, float farZ);
-	void updateViewMatrix();
 
 public:
 	Camera();
@@ -28,12 +27,11 @@ public:
 	// Setters
 	void followMoveComp(MovementComponent* moveComp);
 	void setPosition(DirectX::XMVECTOR newPosition);
-	void move(Direction dir, float dt);
 
 	// Initialization
-	void initialize(float speed, float mouseSense, float fovAngle, float aspectRatio, float nearZ, float farZ);
+	void initialize(float mouseSense, float fovAngle, float aspectRatio, float nearZ, float farZ);
 
 	// Update
-	void update(DirectX::XMFLOAT2 mouseDelta);
+	void update(MouseEvent mouseEvent, float dt);
 
 };
