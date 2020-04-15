@@ -8,6 +8,7 @@ private:
 	// View and Projection
 	DirectX::XMMATRIX* m_projectionMatrix;
 	DirectX::XMMATRIX* m_viewMatrix;
+	float m_mouseSense;
 
 	// Comonents
 	MovementComponent* m_movementComp;
@@ -30,7 +31,7 @@ public:
 	void move(Direction dir, float dt);
 
 	// Initialization
-	void initialize(float speed, float fovAngle, float aspectRatio, float nearZ, float farZ);
+	void initialize(float speed, float mouseSense, float fovAngle, float aspectRatio, float nearZ, float farZ);
 
 	// Update
 	void update(DirectX::XMFLOAT2 mouseDelta);

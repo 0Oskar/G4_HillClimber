@@ -195,7 +195,7 @@ void Model::loadVertexFromOBJ(ID3D11Device* device, ID3D11DeviceContext* dContex
 	for (size_t i = 0; i < this->m_vertices.size(); ++i)
 	{
 		this->m_vertices[i].position = vertexPositions[vertexPosIndices[i] - 1];
-		this->m_vertices[i].color = color;
+		this->m_vertices[i].color = vertexPositions[vertexPosIndices[i] - 1];
 		/*if (vertexTexcoords.size())
 			this->m_vertices[i].texcoord = vertexTexcoords[vertexTexIndices[i] - 1];
 		if (vertexNormals.size())

@@ -281,20 +281,20 @@ void ViewLayer::initialize(HWND window, GameOptions* options, DirectX::XMMATRIX*
 	this->initShaders();
 	this->initConstantBuffer();
 
-	DirectX::XMVECTOR vec = DirectX::XMVectorSet(0, 0.4f, 0, 1);
+	DirectX::XMVECTOR vec = DirectX::XMVectorSet(0.f, 0.4f, 0.f, 1.f);
 	this->m_models.push_back(Model(vec));
 
-	vec = DirectX::XMVectorSet(0, -0.4f, 0.01f, 1);
+	vec = DirectX::XMVectorSet(0, -0.4f, 0.01f, 1.f);
 	this->m_models.push_back(Model(vec));
 
 	for (int i = 0; i < this->m_models.size(); i++)
 		this->m_models[i].initModel(this->m_device.Get(), this->m_deviceContext.Get(), this->m_triangleCBuffer);
 
-	//vec = DirectX::XMVectorSet(1.f, 0.f, 1.f, 1);
-	//this->m_models.push_back(Model(vec));
-	//vec = DirectX::XMVectorSet(0.2f, 0.2f, 0.2f, 1);
-	//this->m_models.back().setScale(vec);
-	//this->m_models.back().loadVertexFromOBJ(this->m_device.Get(), this->m_deviceContext.Get(), this->m_triangleCBuffer, L"Models/teapot.obj", DirectX::XMFLOAT3(0.f, 1.f, 0.f));
+	vec = DirectX::XMVectorSet(0.f, 0.f, 100.f, 1.f);
+	this->m_models.push_back(Model(vec));
+	/*vec = DirectX::XMVectorSet(0.2f, 0.2f, 0.2f, 1);
+	this->m_models.back().setScale(vec);*/
+	this->m_models.back().loadVertexFromOBJ(this->m_device.Get(), this->m_deviceContext.Get(), this->m_triangleCBuffer, L"Models/BasePyr.obj", DirectX::XMFLOAT3(0.f, 1.f, 0.f));
 
 	//vec = DirectX::XMVectorSet(0.f, 0.f, 0.f, 1);
 	//this->m_models.push_back(Model(vec));
@@ -342,9 +342,10 @@ void ViewLayer::render()
 	this->m_fps++;
 	if (1000.0 < m_timer.timeElapsed())
 	{
-		std::string fps = "FPS: " + std::to_string(this->m_fps);
+		std::string fps = "FPS: " + std::to_string(this->m_fps) + "\n";
 		OutputDebugStringA(fps.c_str());
 		m_timer.restart();
+		this->m_fps = 0;
 	}
 
 	// Swap Frames

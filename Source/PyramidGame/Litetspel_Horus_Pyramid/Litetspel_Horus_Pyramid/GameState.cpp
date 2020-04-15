@@ -24,7 +24,8 @@ void GameState::initlialize(GameOptions options)
 	// Camera
 	this->m_camera.followMoveComp(this->m_player.getMoveCompPtr());
 	this->m_camera.initialize(
-		0.001f,
+		0.2f,
+		0.2f,
 		options.fov,
 		(float)options.width / (float)options.height,
 		0.1f,
@@ -56,7 +57,7 @@ void GameState::update(Keyboard* keyboard, MouseEvent mouseEvent, float dt)
 	// Rotate Camera
 	if (mouseEvent.getEvent() == Event::MouseRAW_MOVE)
 	{
-		DirectX::XMFLOAT2 mouseDelta = DirectX::XMFLOAT2((float)mouseEvent.getPosX() / 1000 * dt, (float)mouseEvent.getPosY() / 1000 * dt);
+		DirectX::XMFLOAT2 mouseDelta = DirectX::XMFLOAT2((float)mouseEvent.getPosX() * dt, (float)mouseEvent.getPosY() * dt);
 		this->m_camera.update(mouseDelta);
 	}
 }

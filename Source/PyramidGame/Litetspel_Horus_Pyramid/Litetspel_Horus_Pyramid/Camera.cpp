@@ -29,6 +29,8 @@ Camera::Camera()
 	this->m_projectionMatrix = new DirectX::XMMATRIX(DirectX::XMMatrixIdentity());
 	this->m_viewMatrix = new DirectX::XMMATRIX(DirectX::XMMatrixIdentity());
 
+	this->m_mouseSense = 0;
+
 	this->m_movementComp = nullptr;
 }
 
@@ -38,9 +40,10 @@ Camera::~Camera()
 	delete this->m_projectionMatrix;
 }
 
-void Camera::initialize(float speed, float fovAngle, float aspectRatio, float nearZ, float farZ)
+void Camera::initialize(float speed, float mouseSense, float fovAngle, float aspectRatio, float nearZ, float farZ)
 {
 	this->m_movementComp->speed = speed;
+	this->m_mouseSense = mouseSense / 10.f;
 
 	this->setProjectionMatrix(fovAngle, aspectRatio, nearZ, farZ);
 	this->updateViewMatrix();
@@ -55,7 +58,7 @@ void Camera::update(DirectX::XMFLOAT2 mouseDelta)
 	// Set Pitch
 	DirectX::XMFLOAT3 rotationF3;
 	DirectX::XMStoreFloat3(&rotationF3, this->m_movementComp->rotation);
-	rotationF3.x += mouseDelta.y;
+	rotationF3.x += mouseDelta.y * this->m_mouseSense;
 
 	// limit pitch to straight up or straight down
 	// with a little fudge-factor to avoid gimbal lock
@@ -65,7 +68,7 @@ void Camera::update(DirectX::XMFLOAT2 mouseDelta)
 	rotationF3.x = min(+limit, rotationF3.x);
 
 	// Set Yaw
-	rotationF3.y += mouseDelta.x;
+	rotationF3.y += mouseDelta.x * this->m_mouseSense;;
 
 	// keep longitude in sane range by wrapping
 	if (rotationF3.x > DirectX::XM_PI)
