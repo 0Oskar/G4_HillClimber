@@ -290,15 +290,15 @@ void ViewLayer::initialize(HWND window, GameOptions* options, DirectX::XMMATRIX*
 	for (int i = 0; i < this->m_models.size(); i++)
 		this->m_models[i].initModel(this->m_device.Get(), this->m_deviceContext.Get(), this->m_triangleCBuffer);
 
-	vec = DirectX::XMVectorSet(1.f, 0.f, 1.f, 1);
-	this->m_models.push_back(Model(vec));
-	vec = DirectX::XMVectorSet(0.2f, 0.2f, 0.2f, 1);
-	this->m_models.back().setScale(vec);
-	this->m_models.back().loadVertexFromOBJ(this->m_device.Get(), this->m_deviceContext.Get(), this->m_triangleCBuffer, L"Models/teapot.obj", DirectX::XMFLOAT3(0.f, 1.f, 0.f));
+	//vec = DirectX::XMVectorSet(1.f, 0.f, 1.f, 1);
+	//this->m_models.push_back(Model(vec));
+	//vec = DirectX::XMVectorSet(0.2f, 0.2f, 0.2f, 1);
+	//this->m_models.back().setScale(vec);
+	//this->m_models.back().loadVertexFromOBJ(this->m_device.Get(), this->m_deviceContext.Get(), this->m_triangleCBuffer, L"Models/teapot.obj", DirectX::XMFLOAT3(0.f, 1.f, 0.f));
 
-	vec = DirectX::XMVectorSet(0.f, 0.f, 0.f, 1);
-	this->m_models.push_back(Model(vec));
-	this->m_models.back().loadVertexFromOBJ(this->m_device.Get(), this->m_deviceContext.Get(), this->m_triangleCBuffer, L"Models/dounut.obj", DirectX::XMFLOAT3(0.f, 0.f, 1.f));
+	//vec = DirectX::XMVectorSet(0.f, 0.f, 0.f, 1);
+	//this->m_models.push_back(Model(vec));
+	//this->m_models.back().loadVertexFromOBJ(this->m_device.Get(), this->m_deviceContext.Get(), this->m_triangleCBuffer, L"Models/dounut.obj", DirectX::XMFLOAT3(0.f, 0.f, 1.f));
 }
 
 void ViewLayer::update(float dt)

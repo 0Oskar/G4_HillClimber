@@ -92,6 +92,9 @@
     <ClInclude Include="Timer.h">
       <Filter>Header\Application</Filter>
     </ClInclude>
+    <ClInclude Include="IndexBuffer.h">
+      <Filter>Header\View</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

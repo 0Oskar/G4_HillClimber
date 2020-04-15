@@ -2,6 +2,7 @@
 #include"VertexBuffer.h"
 #include"ConstantBuffer.h"
 #include"MovementComponent.h"
+#include"IndexBuffer.h"
 
 
 struct Vertex
@@ -30,10 +31,13 @@ private:
 	ConstBuffer<VS_CONSTANT_BUFFER>* m_constBufferPtr;
 	VertexBuffer<Vertex> m_vertexBuffer;
 	std::vector<Vertex> m_vertices;
+	IndexBuffer indexBuffer;
 
 	DirectX::XMMATRIX m_worldMatrix;
 	void updateWorldMatrix();
 	MovementComponent* m_movementComponent;
+
+	bool drawWithIndex;
 
 public:
 	Model();
