@@ -73,13 +73,19 @@ void DisplayMesh(FbxNode* pNode)
 	for (int i = 0; i < vertexCount; i++)
 	{
 		myFile.writeToFile((const char*)&vertexData[i], sizeof(Vertex)); //Add vertex data to output <------------------------------------------ 
-		myStringFile.writeToStringFile(
-			"\nPos:\n" + 
-			std::to_string(vertexData[i].pos[0]) + "\n" + std::to_string(vertexData[i].pos[1]) + "\n" + std::to_string(vertexData[i].pos[2]) + "\n" +
-			"uv:\n" +
-			std::to_string(vertexData[i].uv[0]) + "\n" + std::to_string(vertexData[i].uv[1]) + "\n" +
-			"Norm:\n" +
-			std::to_string(vertexData[i].norm[0]) + "\n" + std::to_string(vertexData[i].norm[1]) + "\n" + std::to_string(vertexData[i].norm[2]) + "\n");
+		
+		myStringFile.writeToStringFile( 
+			"\n------------- Index " + std::to_string(i) + ")\n\n" +
+			"PosX: " + std::to_string(vertexData[i].pos[0]) + "\n" + 
+			"PosY: " + std::to_string(vertexData[i].pos[1]) + "\n" + 
+			"PosZ: " + std::to_string(vertexData[i].pos[2]) + "\n" +
+			"\n" +
+			"U: " + std::to_string(vertexData[i].uv[0]) + "\n" + 
+			"V: " + std::to_string(vertexData[i].uv[1]) + "\n" +
+			"\n" +
+			"NormX: " + std::to_string(vertexData[i].norm[0]) + "\n" + 
+			"NormY: " + std::to_string(vertexData[i].norm[1]) + "\n" + 
+			"NormZ: " + std::to_string(vertexData[i].norm[2]) + "\n");
 	}
 
 	DisplayMaterialMapping(lMesh);
