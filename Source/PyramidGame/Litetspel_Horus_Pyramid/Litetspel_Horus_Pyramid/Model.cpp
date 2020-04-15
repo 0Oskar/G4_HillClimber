@@ -7,6 +7,7 @@ Model::Model()
 	this->m_deviceContextPtr = nullptr;
 	this->m_devicePtr = nullptr;
 	this->m_movementComponent = new MovementComponent();
+	this->drawWithIndex = false;
 	
 	this->m_worldMatrix = DirectX::XMMatrixIdentity();
 }
@@ -17,6 +18,8 @@ Model::Model(DirectX::XMVECTOR pos)
 	this->m_deviceContextPtr = nullptr;
 	this->m_devicePtr = nullptr;
 	this->m_movementComponent = new MovementComponent();
+	this->drawWithIndex = false;
+
 
 	this->m_movementComponent->position = pos;
 	
@@ -36,17 +39,31 @@ void Model::initModel(ID3D11Device* device, ID3D11DeviceContext* dContext, Const
 			1.f, 0.f, 0.f
 		),
 		Vertex(
-			0.f, 0.5f, 0.f,
+			-0.5f, 0.5f, 0.f,
 			0.f, 1.f, 0.f
+		),
+		Vertex(
+			0.5f, 0.5f, 0.f,
+			0.f, 0.f, 1.f
 		),
 		Vertex(
 			0.5f, -0.5f, 0.f,
 			0.f, 0.f, 1.f
 		)
 	};
-
 	HRESULT hr = this->m_vertexBuffer.initialize(this->m_devicePtr, vertices.data(), (int)vertices.size());
 	assert(SUCCEEDED(hr) && "Error, vertex buffer could not be created!");
+
+	DWORD indicies[] =
+	{
+		0, 1, 2,
+		0, 2, 3
+	};
+	hr = this->indexBuffer.init(this->m_devicePtr, indicies, ARRAYSIZE(indicies));
+	assert(SUCCEEDED(hr) && "Error, index buffer could not be created!");
+	this->drawWithIndex = true;
+
+
 
 	this->updateWorldMatrix();
 }
@@ -198,7 +215,13 @@ void Model::draw(DirectX::XMMATRIX& viewProjMtx)
 
 	UINT vertexOffset = 0;
 	this->m_deviceContextPtr->IASetVertexBuffers(0, 1, this->m_vertexBuffer.GetAddressOf(), this->m_vertexBuffer.getStridePointer(), &vertexOffset);
-	this->m_deviceContextPtr->Draw(this->m_vertexBuffer.getSize(), 0);
+	this->m_deviceContextPtr->IASetIndexBuffer(this->indexBuffer.Get(), DXGI_FORMAT::DXGI_FORMAT_R32_UINT, 0);
+	if (this->drawWithIndex)
+	{
+		this->m_deviceContextPtr->DrawIndexed(this->indexBuffer.getSize(), 0, 0);
+	}
+	else
+		this->m_deviceContextPtr->Draw(this->m_vertexBuffer.getSize(), 0);
 }
 
 void Model::updateWorldMatrix()
