@@ -47,6 +47,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	);
 
 	// Models
+	this->m_gameObjects.resize(5);
 	// Ground Object
 	std::vector<Vertex> groundvertices =
 	{
@@ -82,11 +83,12 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_wvpCBuffers.emplace_back();
 	this->m_wvpCBuffers[0].init(device, dContext);
 
-	this->m_gameObjects.push_back(GameObject());
 	this->m_gameObjects[0].initializeStatic(true, 0, 0);
 
 	DirectX::XMVECTOR vec = DirectX::XMVectorSet(100.f, 100.f, 100.f, 1.f);
 	this->m_gameObjects[0].setScale(vec);
+	this->m_gameObjects[0].setBoundingBox(DirectX::XMFLOAT3(100.f, 1.f, 100.f));
+	this->m_player.addAABB(this->m_gameObjects[0].getAABBPtr()); // add Bounding Box to player collidables
 
 	// Quads
 	//,	Model
@@ -99,8 +101,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_wvpCBuffers[1].init(device, dContext);
 
 	//,	Game Object
-	this->m_gameObjects.push_back(GameObject());
-	this->m_gameObjects[1].initializeStatic(true, 1, 1);
+	this->m_gameObjects[1].initializeStatic(false, 1, 1);
 
 	//,	Movement changes
 	vec = DirectX::XMVectorSet(0.f, 3.f, 0.f, 1.f);
@@ -112,8 +113,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_wvpCBuffers[2].init(device, dContext);
 
 	//,	Game Object
-	this->m_gameObjects.push_back(GameObject());
-	this->m_gameObjects[2].initializeStatic(true, 1, 2); // Same Model
+	this->m_gameObjects[2].initializeStatic(false, 1, 2); // Same Model
 
 	//,	Movement changes
 	vec = DirectX::XMVectorSet(0.f, 2.f, 0.01f, 1.f);
@@ -127,11 +127,25 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_wvpCBuffers.emplace_back();
 	this->m_wvpCBuffers[3].init(device, dContext);
 	
-	this->m_gameObjects.emplace_back();
-	this->m_gameObjects[3].initializeStatic(true, 2, 3);
+	this->m_gameObjects[3].initializeStatic(false, 2, 3);
 
 	vec = DirectX::XMVectorSet(0.f, 0.f, 100.f, 1.f);
 	this->m_gameObjects[3].setPosition(vec);
+
+	// Cube
+	this->m_models.emplace_back();
+	this->m_models[3].loadVertexFromOBJ(device, dContext, L"Models/cube.obj", DirectX::XMFLOAT3(1.f, 0.f, 0.f));
+
+	this->m_wvpCBuffers.emplace_back();
+	this->m_wvpCBuffers[4].init(device, dContext);
+
+	this->m_gameObjects[4].initializeStatic(true, 3, 4);
+
+	vec = DirectX::XMVectorSet(-5.f, 1.f, 0.f, 1.f);
+	this->m_gameObjects[4].setPosition(vec);
+
+	this->m_gameObjects[4].setBoundingBox(DirectX::XMFLOAT3(1.f, 1.f, 1.f));
+	this->m_player.addAABB(this->m_gameObjects[4].getAABBPtr()); // add Bounding Box to player collidables
 }
 
 void GameState::update(Keyboard* keyboard, MouseEvent mouseEvent, float dt)

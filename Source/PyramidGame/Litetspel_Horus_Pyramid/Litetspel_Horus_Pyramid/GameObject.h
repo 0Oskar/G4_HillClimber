@@ -20,6 +20,7 @@ public:
 	GameObject();
 	GameObject(const GameObject& otherGameObject);
 	virtual ~GameObject();
+	GameObject& operator=(const GameObject& otherGameObject);
 
 	// Initialization
 	void initializeStatic(bool collidable, int modelIndex, int wvpCBufferIndex);
@@ -29,14 +30,17 @@ public:
 	virtual void update(float dt);
 
 	// Getters
+	bool collidable() const;
 	DirectX::XMVECTOR getPosition() const;
 	DirectX::XMMATRIX getWorldMatrix() const;
 	int getModelIndex() const;
 	int getWvpCBufferIndex() const;
 	MovementComponent* getMoveCompPtr();
+	DirectX::BoundingBox* getAABBPtr();
 
 	// Setters
 	void setScale(DirectX::XMVECTOR newScale);
 	void setPosition(DirectX::XMVECTOR newPosition);
+	void setBoundingBox(DirectX::XMFLOAT3 extends);
 	void move(Direction dir, float dt);
 };

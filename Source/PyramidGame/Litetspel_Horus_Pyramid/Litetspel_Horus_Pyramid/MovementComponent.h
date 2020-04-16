@@ -50,7 +50,14 @@ public:
 		this->up = otherMoveComponent.up;
 		this->down = otherMoveComponent.down;
 
-		this->viewMatrix = new DirectX::XMMATRIX(*otherMoveComponent.viewMatrix);
+		// View Matrix
+		if (this->viewMatrix)
+		{
+			delete this->viewMatrix;
+			this->viewMatrix = nullptr;
+		}
+		if (otherMoveComponent.viewMatrix != nullptr)
+			this->viewMatrix = new DirectX::XMMATRIX(*otherMoveComponent.viewMatrix);
 	}
 	~MovementComponent()
 	{
@@ -63,6 +70,9 @@ public:
 
 	MovementComponent& operator=(const MovementComponent& otherMoveComponent)
 	{
+		if (this == &otherMoveComponent)
+			return *this;
+
 		this->scale = otherMoveComponent.scale;
 		this->rotation = otherMoveComponent.rotation;
 		this->position = otherMoveComponent.position;
@@ -74,8 +84,23 @@ public:
 		this->up = otherMoveComponent.up;
 		this->down = otherMoveComponent.down;
 
-		this->viewMatrix = new DirectX::XMMATRIX(*otherMoveComponent.viewMatrix);
+		// View Matrix
+		if (this->viewMatrix)
+		{
+			delete this->viewMatrix;
+			this->viewMatrix = nullptr;
+		}
+		if (otherMoveComponent.viewMatrix != nullptr)
+			this->viewMatrix = new DirectX::XMMATRIX(*otherMoveComponent.viewMatrix);
+
 		return *this;
+	}
+
+	DirectX::XMFLOAT3 getPositionF3() const
+	{
+		DirectX::XMFLOAT3 positionF3;
+		DirectX::XMStoreFloat3(&positionF3, this->position);
+		return positionF3;
 	}
 
 	void move(DirectX::XMVECTOR moveVector)
@@ -103,7 +128,7 @@ public:
 
 	void updateDirVectors()
 	{
-		DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationRollPitchYawFromVector(this->rotation);
+		DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationY(DirectX::XMVectorGetY(this->rotation));
 		this->forward = XMVector3TransformCoord(DirectX::XMVectorSet(0.f, 0.f, 1.f, 0.f), rotationMatrix);
 		this->left = XMVector3TransformCoord(DirectX::XMVectorSet(-1.f, 0.f, 0.f, 0.f), rotationMatrix);
 		this->right = XMVector3TransformCoord(DirectX::XMVectorSet(1.f, 0.f, 0.f, 0.f), rotationMatrix);
