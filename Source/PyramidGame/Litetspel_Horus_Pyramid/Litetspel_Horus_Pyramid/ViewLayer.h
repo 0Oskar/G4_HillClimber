@@ -1,7 +1,8 @@
 #pragma once
 
-#include"Model.h"
-#include"Timer.h"
+#include "GameObject.h"
+#include "Model.h"
+#include "Timer.h"
 
 class ViewLayer
 {
@@ -31,13 +32,14 @@ private:
 
 	// Constant Buffer
 	Microsoft::WRL::ComPtr< ID3D11Buffer > m_constantBuffer;
+  
+	// Objects from state
+	std::vector<GameObject>* m_gameObjectsFromState;
+	std::vector<Model>* m_modelsFromState;
+	std::vector< ConstBuffer<VS_CONSTANT_BUFFER> >* m_wvpCBufferFromState;
 
-	ConstBuffer<VS_CONSTANT_BUFFER> m_triangleCBuffer;
 	ConstBuffer<PS_LIGHT_BUFFER> m_lightBuffer;
 	ConstBuffer<PS_DIR_BUFFER> m_dirLightBuffer;
-
-	std::vector<Model> m_models;
-
 
 	DirectX::XMMATRIX* m_viewMatrix;
 	DirectX::XMMATRIX* m_projectionMatrix;
@@ -49,17 +51,25 @@ private:
 	void initViewPort();
 	void initDepthStencilBuffer();
 	void initShaders();
-	void initConstantBuffer();
 public:
 	ViewLayer();
 	~ViewLayer();
+
+	// Getters
+	ID3D11Device* getDevice();
+	ID3D11DeviceContext* getContextDevice();
 
 	// Setters
 	void setViewMatrix(DirectX::XMMATRIX* newViewMatrix);
 	void setProjectionMatrix(DirectX::XMMATRIX* newProjectionMatrix);
 
+	// Setters for State Pointers
+	void setgameObjectsFromState(std::vector<GameObject>* gameObjectsFromState);
+	void setModelsFromState(std::vector<Model>* models);
+	void setWvpCBufferFromState(std::vector< ConstBuffer<VS_CONSTANT_BUFFER> >* models);
+
 	// Initialization
-	void initialize(HWND window, GameOptions* options, DirectX::XMMATRIX* viewMatrix, DirectX::XMMATRIX* projectionMatrix);
+	void initialize(HWND window, GameOptions* options);
 
 	// Update
 	void update(float dt);

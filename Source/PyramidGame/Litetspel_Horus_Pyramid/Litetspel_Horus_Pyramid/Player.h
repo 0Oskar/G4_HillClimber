@@ -1,28 +1,25 @@
 #pragma once
 
+#include "GameObject.h"
 #include "MovementComponent.h"
+#include "PhysicsComponent.h"
+#include "Input.h"
 
-class Player
+class Player : public GameObject
 {
 private:
-	// Physics component
-	DirectX::BoundingBox aabb;
-
-	// Comonents
-	MovementComponent* m_movementComp;
+	std::vector<DirectX::BoundingBox*> m_collidableAABBoxes;
 
 public:
 	Player();
 	~Player();
 
 	// Initialization
-	void initialize();
+	void initialize(int modelIndex, int wvpCBufferIndex, float mass, DirectX::XMFLOAT3 acceleration, DirectX::XMFLOAT3 deceleration);
 
-	// Getters
-	DirectX::XMVECTOR getPosition() const;
-	DirectX::XMMATRIX getWorldMatrix() const;
-	MovementComponent* getMoveCompPtr();
+	// Collidable Bounding Boxes
+	void addAABB(DirectX::BoundingBox* aabb);
 
-	// Setters
-	void setPosition(DirectX::XMVECTOR newPosition);
+	// Update
+	void update(Keyboard* keyboard, MouseEvent mouseEvent, float dt);
 };

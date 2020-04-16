@@ -26,9 +26,17 @@ bool Application::initApplication(HINSTANCE hInstance, LPWSTR lpCmdLine, HWND hW
 	OutputDebugStringA("Window Created!\n");
 
 	this->m_window = hWnd;
-	this->m_gameState.initlialize(this->m_gameOptions);
+
 	this->m_viewLayerPtr = std::make_unique<ViewLayer>();
-	this->m_viewLayerPtr->initialize(this->m_window, &this->m_gameOptions, this->m_gameState.getViewMatrix(), this->m_gameState.getProjectionMatrix());
+	this->m_viewLayerPtr->initialize(this->m_window, &this->m_gameOptions);
+
+	this->m_gameState.initlialize(this->m_viewLayerPtr->getDevice(), this->m_viewLayerPtr->getContextDevice(), this->m_gameOptions);
+
+	this->m_viewLayerPtr->setViewMatrix(this->m_gameState.getViewMatrix());
+	this->m_viewLayerPtr->setProjectionMatrix(this->m_gameState.getProjectionMatrix());
+	this->m_viewLayerPtr->setModelsFromState(this->m_gameState.getModelsPtr());
+	this->m_viewLayerPtr->setgameObjectsFromState(this->m_gameState.getGameObjectsPtr());
+	this->m_viewLayerPtr->setWvpCBufferFromState(this->m_gameState.getWvpCBuffersPtr());
 	this->m_timer.start();
 
 	RAWINPUTDEVICE rawIDevice;
@@ -38,11 +46,9 @@ bool Application::initApplication(HINSTANCE hInstance, LPWSTR lpCmdLine, HWND hW
 	rawIDevice.hwndTarget = NULL;
 
 	if (RegisterRawInputDevices(&rawIDevice, 1, sizeof(rawIDevice)) == FALSE)
-	{
 		return false;
-	}
-	ShowWindow(this->m_window, nShowCmd);
 
+	ShowWindow(this->m_window, nShowCmd);
 
 	return true;
 }
@@ -124,7 +130,7 @@ bool Application::loadGameOptions(std::string fileName)
 
 void Application::applicationLoop()
 {
-	float deltaTime = m_timer.timeElapsed() / 1000;
+	float deltaTime = (float)m_timer.timeElapsed() / 1000.0;
 	m_timer.restart();
 	MSG msg = { };
 	while (WM_QUIT != msg.message)
