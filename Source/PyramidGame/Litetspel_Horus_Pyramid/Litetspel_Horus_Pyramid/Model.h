@@ -36,11 +36,8 @@ private:
 
 public:
 	Model();
-	Model(DirectX::XMVECTOR pos);
 	void initModel(ID3D11Device* device, ID3D11DeviceContext* dContext, MaterialData material);
 	void draw(DirectX::XMMATRIX &mtrx);
-	void setPosition(DirectX::XMVECTOR pos);
-	void setScale(DirectX::XMVECTOR scale);
-	void loadVertexVector(ID3D11Device* device, ID3D11DeviceContext* dContext, std::vector<Vertex> vertexVector);
+	void loadVertexVector(ID3D11Device* device, ID3D11DeviceContext* dContext, std::vector<Vertex> vertexVector, MaterialData material);
 	void loadVertexFromOBJ(ID3D11Device* device, ID3D11DeviceContext* dContext, std::wstring objFilePath, DirectX::XMFLOAT3 color, MaterialData material);
 };

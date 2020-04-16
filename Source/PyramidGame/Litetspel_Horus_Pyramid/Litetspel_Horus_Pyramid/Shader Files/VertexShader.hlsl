@@ -16,15 +16,11 @@ cbuffer constantBuffer : register(b0)
     matrix wMatrix;
 };
 
-
-
-
 VS_OUT main(VS_IN input)
 {
     VS_OUT output;
     output.pos = mul(wvp, float4(input.pos, 1.f));
     output.normal = normalize(mul(wMatrix, float4(input.normal, 0.f))).xyz;
-    
     
 	return output;
 }

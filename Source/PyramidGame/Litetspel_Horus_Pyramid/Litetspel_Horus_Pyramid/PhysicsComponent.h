@@ -3,7 +3,8 @@
 #include "pch.h"
 #include "MovementComponent.h"
 
-const float GRAVITY = .01f; // 9.82f
+const float GRAVITY = 0.05f; // 9.82f
+const float MAX_GRAVITY = 5.f;
 
 class PhysicsComponent
 {
@@ -162,7 +163,9 @@ public:
 
 	void addGravity(float dt)
 	{
-		this->m_velocity.y += this->m_mass * -GRAVITY * dt;
+		float force = this->m_mass * -GRAVITY * dt;
+		if (this->m_velocity.y > -MAX_GRAVITY * dt)
+			this->m_velocity.y += force;
 	}
 
 	// Update

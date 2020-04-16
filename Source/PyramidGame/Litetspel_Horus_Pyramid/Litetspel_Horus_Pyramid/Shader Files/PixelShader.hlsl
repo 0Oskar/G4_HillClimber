@@ -21,11 +21,8 @@ cbuffer lightBuffer : register(b1) //Ambient
 cbuffer directionalLight : register(b2)
 {
     float4 dirLightDirection;
-    float4 dirLightColor;
-    
+    float4 dirLightColor;  
 };
-
-
 
 float4 main(PS_IN input) : SV_TARGET
 {

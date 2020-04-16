@@ -51,6 +51,8 @@ private:
 	void initViewPort();
 	void initDepthStencilBuffer();
 	void initShaders();
+	void initConstantBuffer();
+
 public:
 	ViewLayer();
 	~ViewLayer();

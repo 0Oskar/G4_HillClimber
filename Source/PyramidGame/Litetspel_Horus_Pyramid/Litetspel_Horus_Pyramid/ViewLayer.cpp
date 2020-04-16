@@ -319,16 +319,11 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 	this->initViewPort();
 	this->initDepthStencilBuffer();
 	this->initShaders();
+	this->initConstantBuffer();
 
 	MaterialData mat;
 	DirectX::XMFLOAT4 defSet = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
 	mat.diffuse = defSet;
-
-	DirectX::XMVECTOR vec = DirectX::XMVectorSet(0.f, 0.4f, 0.f, 1.f);
-	this->m_models.push_back(Model(vec));
-
-	vec = DirectX::XMVectorSet(0, -0.4f, 0.01f, 1.f);
-	this->m_models.push_back(Model(vec));
 
 	//Ambient Light buffer
 	PS_LIGHT_BUFFER lightBuffer;
@@ -357,8 +352,6 @@ void ViewLayer::initConstantBuffer()
 {
 	this->m_lightBuffer.init(this->m_device.Get(), this->m_deviceContext.Get());
 	this->m_dirLightBuffer.init(this->m_device.Get(), this->m_deviceContext.Get());
-
-
 }
 
 void ViewLayer::render()

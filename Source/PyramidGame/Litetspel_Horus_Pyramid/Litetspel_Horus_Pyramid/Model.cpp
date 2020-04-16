@@ -9,7 +9,7 @@ Model::Model()
 	this->m_drawWithIndex = false;
 }
 
-void Model::initModel(ID3D11Device* device, ID3D11DeviceContext* dContext)
+void Model::initModel(ID3D11Device* device, ID3D11DeviceContext* dContext, MaterialData material)
 {
 	this->m_devicePtr = device;
 	this->m_deviceContextPtr = dContext;
@@ -47,16 +47,17 @@ void Model::initModel(ID3D11Device* device, ID3D11DeviceContext* dContext)
 	this->m_drawWithIndex = true;
 
 	this->m_material.init(device, dContext, material);
-	this->drawWithIndex = true;
 }
 
-void Model::loadVertexVector(ID3D11Device* device, ID3D11DeviceContext* dContext, std::vector<Vertex> vertexVector)
+void Model::loadVertexVector(ID3D11Device* device, ID3D11DeviceContext* dContext, std::vector<Vertex> vertexVector, MaterialData material)
 {
 	this->m_devicePtr = device;
 	this->m_deviceContextPtr = dContext;
 
 	HRESULT hr = this->m_vertexBuffer.initialize(this->m_devicePtr, vertexVector.data(), (int)vertexVector.size());
 	assert(SUCCEEDED(hr) && "Error, vertex buffer could not be created!");
+
+	this->m_material.init(device, dContext, material);
 }
 
 void Model::loadVertexFromOBJ(ID3D11Device* device, ID3D11DeviceContext* dContext, std::wstring objFilePath, DirectX::XMFLOAT3 color, MaterialData materialData)

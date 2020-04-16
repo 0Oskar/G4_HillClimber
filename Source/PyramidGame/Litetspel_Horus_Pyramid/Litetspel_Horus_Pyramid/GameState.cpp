@@ -46,6 +46,9 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 		1000.f
 	);
 
+	// Material
+	MaterialData mat;
+
 	// Models
 	this->m_gameObjects.resize(5);
 	// Ground Object
@@ -78,7 +81,8 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	};
 
 	this->m_models.emplace_back();
-	this->m_models[0].loadVertexVector(device, dContext, groundvertices);
+	mat.diffuse = DirectX::XMFLOAT4(0.50754f, 0.50754f, 0.50754f, 1.0f);
+	this->m_models[0].loadVertexVector(device, dContext, groundvertices, mat);
 
 	this->m_wvpCBuffers.emplace_back();
 	this->m_wvpCBuffers[0].init(device, dContext);
@@ -93,7 +97,8 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	// Quads
 	//,	Model
 	this->m_models.emplace_back();
-	this->m_models[1].initModel(device, dContext);
+	mat.diffuse = DirectX::XMFLOAT4(0.61424f, 0.04136f, 0.04136f, 1.0f);
+	this->m_models[1].initModel(device, dContext, mat);
 
 	// 1.
 	//,	WVP Buffer
@@ -122,7 +127,8 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 
 	// Pyramid
 	this->m_models.emplace_back();
-	this->m_models[2].loadVertexFromOBJ(device, dContext, L"Models/BasePyr.obj", DirectX::XMFLOAT3(0.f, 1.f, 0.f));
+	mat.diffuse = DirectX::XMFLOAT4(0.75164f, 0.60648f, 0.22648f, 1.0f);
+	this->m_models[2].loadVertexFromOBJ(device, dContext, L"Models/BasePyr.obj", DirectX::XMFLOAT3(0.f, 1.f, 0.f), mat);
 
 	this->m_wvpCBuffers.emplace_back();
 	this->m_wvpCBuffers[3].init(device, dContext);
@@ -134,7 +140,8 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 
 	// Cube
 	this->m_models.emplace_back();
-	this->m_models[3].loadVertexFromOBJ(device, dContext, L"Models/cube.obj", DirectX::XMFLOAT3(1.f, 0.f, 0.f));
+	mat.diffuse = DirectX::XMFLOAT4(0.396f, 0.74151f, 0.69102f, 1.0f);
+	this->m_models[3].loadVertexFromOBJ(device, dContext, L"Models/cube.obj", DirectX::XMFLOAT3(1.f, 0.f, 0.f), mat);
 
 	this->m_wvpCBuffers.emplace_back();
 	this->m_wvpCBuffers[4].init(device, dContext);
@@ -165,6 +172,7 @@ void GameState::update(Keyboard* keyboard, MouseEvent mouseEvent, float dt)
 		VS_CONSTANT_BUFFER wvpData;
 		DirectX::XMMATRIX viewPMtrx = this->m_camera.getViewMatrix() * this->m_camera.getProjectionMatrix();
 		wvpData.wvp = this->m_gameObjects[i].getWorldMatrix() * viewPMtrx;
+		wvpData.worldMatrix = this->m_gameObjects[i].getWorldMatrix();
 
 		this->m_wvpCBuffers[this->m_gameObjects[i].getWvpCBufferIndex()].upd(&wvpData);
 	}
