@@ -11,6 +11,8 @@ private:
 	DirectX::XMFLOAT3 m_deceleration;
 	float m_mass;
 
+	DirectX::BoundingBox aabb;
+
 	// Movement Component
 	MovementComponent* m_moveComp;
 
@@ -23,10 +25,32 @@ public:
 		this->m_mass = 0.f;
 		this->m_moveComp = nullptr;
 	}
+	PhysicsComponent(const PhysicsComponent& otherPhysicsComponent)
+	{
+		this->m_velocity = otherPhysicsComponent.m_velocity;
+		this->m_acceleration = otherPhysicsComponent.m_acceleration;
+		this->m_deceleration = otherPhysicsComponent.m_deceleration;
+		this->m_mass = otherPhysicsComponent.m_mass;
+		
+		if (otherPhysicsComponent.m_moveComp != nullptr)
+			this->m_moveComp = new MovementComponent(*otherPhysicsComponent.m_moveComp);
+		else
+			this->m_moveComp = nullptr;
+	}
 	~PhysicsComponent() {}
 
+	PhysicsComponent& operator=(const PhysicsComponent& otherPhysicsComponent)
+	{
+		this->m_velocity = otherPhysicsComponent.m_velocity;
+		this->m_acceleration = otherPhysicsComponent.m_acceleration;
+		this->m_deceleration = otherPhysicsComponent.m_deceleration;
+		this->m_mass = otherPhysicsComponent.m_mass;
+		*(this->m_moveComp) = *otherPhysicsComponent.m_moveComp;
+		return *this;
+	}
+
 	// Initialization
-	void initialize(MovementComponent* moveComp, float mass, DirectX::XMFLOAT3 acceleration, DirectX::XMFLOAT3 deceleration)
+	void initialize(MovementComponent* moveComp, float mass = 1.f, DirectX::XMFLOAT3 acceleration = DirectX::XMFLOAT3(0.f, 0.f, 0.f), DirectX::XMFLOAT3 deceleration = DirectX::XMFLOAT3(0.f, 0.f, 0.f))
 	{
 		this->m_moveComp = moveComp;
 		this->m_mass = mass;
@@ -94,6 +118,7 @@ public:
 		this->m_velocity = DirectX::XMFLOAT3(this->m_velocity.x + finalForceF3.x, this->m_velocity.y + finalForceF3.y, this->m_velocity.z + finalForceF3.z);
 	}
 
+	// Update
 	void updatePosition(float dt)
 	{
 		this->m_moveComp->position = DirectX::XMVectorAdd(

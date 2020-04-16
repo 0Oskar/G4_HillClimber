@@ -138,9 +138,9 @@ void ViewLayer::initShaders()
 	HRESULT hr;
 
 	UINT flags = D3DCOMPILE_ENABLE_STRICTNESS;
-#if defined( DEBUG ) || defined( _DEBUG )
-	flags |= D3DCOMPILE_DEBUG;
-#endif
+	#if defined( DEBUG ) || defined( _DEBUG )
+		flags |= D3DCOMPILE_DEBUG;
+	#endif
 
 	// Create Vertex Shader
 
@@ -250,12 +250,29 @@ void ViewLayer::initShaders()
 
 ViewLayer::ViewLayer()
 {
+	this->m_gameObjectsFromState = nullptr;
+	this->m_modelsFromState = nullptr;
+	this->m_wvpCBufferFromState = nullptr;
+
 	this->m_viewMatrix = nullptr;
 	this->m_projectionMatrix = nullptr;
 	this->m_fps = 0;
 }
 
-ViewLayer::~ViewLayer() {}
+ViewLayer::~ViewLayer()
+{
+	
+}
+
+ID3D11Device* ViewLayer::getDevice()
+{
+	return this->m_device.Get();
+}
+
+ID3D11DeviceContext* ViewLayer::getContextDevice()
+{
+	return this->m_deviceContext.Get();
+}
 
 void ViewLayer::setViewMatrix(DirectX::XMMATRIX* newViewMatrix)
 {
@@ -267,49 +284,37 @@ void ViewLayer::setProjectionMatrix(DirectX::XMMATRIX* newProjectionMatrix)
 	this->m_projectionMatrix = newProjectionMatrix;
 }
 
-void ViewLayer::initialize(HWND window, GameOptions* options, DirectX::XMMATRIX* viewMatrix, DirectX::XMMATRIX* projectionMatrix)
+void ViewLayer::setgameObjectsFromState(std::vector<GameObject>* gameObjectsFromState)
+{
+	this->m_gameObjectsFromState = gameObjectsFromState;
+}
+
+void ViewLayer::setModelsFromState(std::vector<Model>* models)
+{
+	this->m_modelsFromState = models;
+}
+
+void ViewLayer::setWvpCBufferFromState(std::vector< ConstBuffer<VS_CONSTANT_BUFFER> >* buffers)
+{
+	this->m_wvpCBufferFromState = buffers;
+}
+
+void ViewLayer::initialize(HWND window, GameOptions* options)
 {
 	this->m_window = window;
 	this->m_options = options;
 
-	this->m_viewMatrix = viewMatrix;
-	this->m_projectionMatrix = projectionMatrix;
 	this->m_timer.start();
 
 	this->initDeviceAndSwapChain();
 	this->initViewPort();
 	this->initDepthStencilBuffer();
 	this->initShaders();
-	this->initConstantBuffer();
-
-	DirectX::XMVECTOR vec = DirectX::XMVectorSet(0.f, 0.4f, 0.f, 1.f);
-	this->m_models.push_back(Model(vec));
-
-	vec = DirectX::XMVectorSet(0, -0.4f, 0.01f, 1.f);
-	this->m_models.push_back(Model(vec));
-
-	for (std::size_t i = 0; i < this->m_models.size(); i++)
-		this->m_models[i].initModel(this->m_device.Get(), this->m_deviceContext.Get(), this->m_triangleCBuffer);
-
-	vec = DirectX::XMVectorSet(0.f, 0.f, 100.f, 1.f);
-	this->m_models.push_back(Model(vec));
-	/*vec = DirectX::XMVectorSet(0.2f, 0.2f, 0.2f, 1);
-	this->m_models.back().setScale(vec);*/
-	this->m_models.back().loadVertexFromOBJ(this->m_device.Get(), this->m_deviceContext.Get(), this->m_triangleCBuffer, L"Models/BasePyr.obj", DirectX::XMFLOAT3(0.f, 1.f, 0.f));
-
-	//vec = DirectX::XMVectorSet(0.f, 0.f, 0.f, 1);
-	//this->m_models.push_back(Model(vec));
-	//this->m_models.back().loadVertexFromOBJ(this->m_device.Get(), this->m_deviceContext.Get(), this->m_triangleCBuffer, L"Models/dounut.obj", DirectX::XMFLOAT3(0.f, 0.f, 1.f));
 }
 
 void ViewLayer::update(float dt)
 {
 
-}
-
-void ViewLayer::initConstantBuffer()
-{
-	this->m_triangleCBuffer.init(this->m_device.Get(), this->m_deviceContext.Get());
 }
 
 void ViewLayer::render()
@@ -328,14 +333,17 @@ void ViewLayer::render()
 	this->m_deviceContext->VSSetShader(this->m_vertexShader.Get(), nullptr, 0);
 	this->m_deviceContext->PSSetShader(this->m_pixelShader.Get(), nullptr, 0);
 
-
-	// Set Constant Buffer
-	this->m_deviceContext->VSSetConstantBuffers(0, 1, this->m_triangleCBuffer.GetAdressOf());
-
-	// Draw
+	// Draw Models
 	DirectX::XMMATRIX viewPMtrx = (*m_viewMatrix) * (*m_projectionMatrix);
-	for (size_t i = 0; i < this->m_models.size(); i++)
-		this->m_models[i].draw(viewPMtrx);
+	for (size_t i = 0; i < this->m_gameObjectsFromState->size(); i++)
+	{
+		GameObject* gObject = &this->m_gameObjectsFromState->at(i);
+		int wvpIndex = gObject->getWvpCBufferIndex();
+		int mIndex = gObject->getModelIndex();
+		// Set 
+		this->m_deviceContext->VSSetConstantBuffers(0, 1, this->m_wvpCBufferFromState->at(wvpIndex).GetAdressOf());
+		this->m_modelsFromState->at(mIndex).draw(viewPMtrx);
+	}
 
 	this->m_fps++;
 	if (1000.0 < m_timer.timeElapsed())

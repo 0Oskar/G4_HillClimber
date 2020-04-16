@@ -1,16 +1,23 @@
 #include "pch.h"
 #include "Player.h"
 
-Player::Player()
+Player::Player() : GameObject()
 {
-	this->m_movementComp = new MovementComponent();
-	this->m_physicsComp = new PhysicsComponent();
 }
 
-Player::~Player() {}
-
-void Player::initialize(float mass, DirectX::XMFLOAT3 acceleration, DirectX::XMFLOAT3 deceleration)
+Player::~Player()
 {
+}
+
+void Player::initialize(int modelIndex, int wvpCBufferIndex, float mass, DirectX::XMFLOAT3 acceleration, DirectX::XMFLOAT3 deceleration)
+{
+	this->m_isStatic = true;
+	this->m_collidable = true;
+	this->m_modelIndex = modelIndex;
+	this->m_wvpCBufferIndex = wvpCBufferIndex;
+
+	this->m_movementComp = new MovementComponent();
+	this->m_physicsComp = new PhysicsComponent();
 	this->m_physicsComp->initialize(this->m_movementComp, mass, acceleration, deceleration);
 }
 
@@ -35,33 +42,4 @@ void Player::update(Keyboard* keyboard, MouseEvent mouseEvent, float dt)
 		this->m_physicsComp->addForceDir(Direction::DOWN, dt);
 
 	this->m_physicsComp->updatePosition(dt);
-}
-
-DirectX::XMVECTOR Player::getPosition() const
-{
-	return this->m_movementComp->position;
-}
-
-DirectX::XMMATRIX Player::getWorldMatrix() const
-{
-	return DirectX::XMMATRIX(
-		DirectX::XMMatrixScalingFromVector(this->m_movementComp->scale) *
-		DirectX::XMMatrixRotationRollPitchYawFromVector(this->m_movementComp->rotation) *
-		DirectX::XMMatrixTranslationFromVector(this->m_movementComp->position));
-}
-
-MovementComponent* Player::getMoveCompPtr()
-{
-	return this->m_movementComp;
-}
-
-void Player::setPosition(DirectX::XMVECTOR newPosition)
-{
-	if (this->m_movementComp)
-		this->m_movementComp->position = newPosition;
-}
-
-void Player::move(Direction dir, float dt)
-{
-	this->m_physicsComp->addForceDir(dir, dt);
 }

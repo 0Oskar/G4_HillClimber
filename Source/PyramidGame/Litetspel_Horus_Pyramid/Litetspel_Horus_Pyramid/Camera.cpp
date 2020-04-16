@@ -64,14 +64,24 @@ void Camera::update(MouseEvent mouseEvent, float dt)
 	}
 }
 
-DirectX::XMMATRIX* Camera::getProjectionMatrix() const
+DirectX::XMMATRIX* Camera::getProjectionMatrixPtr() const
 {
 	return this->m_projectionMatrix;
 }
 
-DirectX::XMMATRIX* Camera::getViewMatrix() const
+DirectX::XMMATRIX* Camera::getViewMatrixPtr() const
 {
 	return this->m_movementComp->viewMatrix;
+}
+
+DirectX::XMMATRIX Camera::getProjectionMatrix() const
+{
+	return *this->m_projectionMatrix;
+}
+
+DirectX::XMMATRIX Camera::getViewMatrix() const
+{
+	return *this->m_movementComp->viewMatrix;
 }
 
 void Camera::followMoveComp(MovementComponent* moveComp)

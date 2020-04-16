@@ -21,8 +21,10 @@ public:
 	~Camera();
 
 	// Getters
-	DirectX::XMMATRIX* getProjectionMatrix() const;
-	DirectX::XMMATRIX* getViewMatrix() const;
+	DirectX::XMMATRIX* getProjectionMatrixPtr() const;
+	DirectX::XMMATRIX* getViewMatrixPtr() const;
+	DirectX::XMMATRIX getProjectionMatrix() const;
+	DirectX::XMMATRIX getViewMatrix() const;
 
 	// Setters
 	void followMoveComp(MovementComponent* moveComp);

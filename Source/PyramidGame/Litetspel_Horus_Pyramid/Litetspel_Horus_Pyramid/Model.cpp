@@ -3,34 +3,15 @@
 
 Model::Model()
 {
-	this->m_constBufferPtr = nullptr;
 	this->m_deviceContextPtr = nullptr;
 	this->m_devicePtr = nullptr;
-	this->m_movementComponent = new MovementComponent();
-	this->drawWithIndex = false;
-	
-	this->m_worldMatrix = DirectX::XMMatrixIdentity();
+	this->m_drawWithIndex = false;
 }
 
-Model::Model(DirectX::XMVECTOR pos)
-{
-	this->m_constBufferPtr = nullptr;
-	this->m_deviceContextPtr = nullptr;
-	this->m_devicePtr = nullptr;
-	this->m_movementComponent = new MovementComponent();
-	this->drawWithIndex = false;
-
-
-	this->m_movementComponent->position = pos;
-	
-}
-
-void Model::initModel(ID3D11Device* device, ID3D11DeviceContext* dContext, ConstBuffer<VS_CONSTANT_BUFFER>& constBufferVS)
+void Model::initModel(ID3D11Device* device, ID3D11DeviceContext* dContext)
 {
 	this->m_devicePtr = device;
 	this->m_deviceContextPtr = dContext;
-
-	this->m_constBufferPtr = &constBufferVS;
 
 	std::vector<Vertex> vertices
 	{
@@ -59,34 +40,24 @@ void Model::initModel(ID3D11Device* device, ID3D11DeviceContext* dContext, Const
 		0, 1, 2,
 		0, 2, 3
 	};
-	hr = this->indexBuffer.init(this->m_devicePtr, indicies, ARRAYSIZE(indicies));
+	hr = this->m_indexBuffer.init(this->m_devicePtr, indicies, ARRAYSIZE(indicies));
 	assert(SUCCEEDED(hr) && "Error, index buffer could not be created!");
-	this->drawWithIndex = true;
-
-
-
-	this->updateWorldMatrix();
+	this->m_drawWithIndex = true;
 }
 
-void Model::loadVertexVector(ID3D11Device* device, ID3D11DeviceContext* dContext, ConstBuffer<VS_CONSTANT_BUFFER>& constBufferVS, std::vector<Vertex> vertexVector)
+void Model::loadVertexVector(ID3D11Device* device, ID3D11DeviceContext* dContext, std::vector<Vertex> vertexVector)
 {
 	this->m_devicePtr = device;
 	this->m_deviceContextPtr = dContext;
-
-	this->m_constBufferPtr = &constBufferVS;
 
 	HRESULT hr = this->m_vertexBuffer.initialize(this->m_devicePtr, vertexVector.data(), (int)vertexVector.size());
 	assert(SUCCEEDED(hr) && "Error, vertex buffer could not be created!");
-
-	this->updateWorldMatrix();
 }
 
-void Model::loadVertexFromOBJ(ID3D11Device* device, ID3D11DeviceContext* dContext, ConstBuffer<VS_CONSTANT_BUFFER>& constBufferVS, std::wstring objFilePath, DirectX::XMFLOAT3 color)
+void Model::loadVertexFromOBJ(ID3D11Device* device, ID3D11DeviceContext* dContext, std::wstring objFilePath, DirectX::XMFLOAT3 color)
 {
 	this->m_devicePtr = device;
 	this->m_deviceContextPtr = dContext;
-
-	this->m_constBufferPtr = &constBufferVS;
 
 	// Values Contained
 	bool hasNormals = false;
@@ -204,40 +175,16 @@ void Model::loadVertexFromOBJ(ID3D11Device* device, ID3D11DeviceContext* dContex
 
 	HRESULT hr = this->m_vertexBuffer.initialize(this->m_devicePtr, this->m_vertices.data(), (int)this->m_vertices.size());
 	assert(SUCCEEDED(hr) && "Error, vertex buffer could not be created!");
-
-	this->updateWorldMatrix();
 }
 
 void Model::draw(DirectX::XMMATRIX& viewProjMtx)
 {
-	this->m_constBufferPtr->m_data.wvp = this->m_worldMatrix * viewProjMtx;
-	this->m_constBufferPtr->upd();
-
 	UINT vertexOffset = 0;
 	this->m_deviceContextPtr->IASetVertexBuffers(0, 1, this->m_vertexBuffer.GetAddressOf(), this->m_vertexBuffer.getStridePointer(), &vertexOffset);
-	this->m_deviceContextPtr->IASetIndexBuffer(this->indexBuffer.Get(), DXGI_FORMAT::DXGI_FORMAT_R32_UINT, 0);
-	if (this->drawWithIndex)
-	{
-		this->m_deviceContextPtr->DrawIndexed(this->indexBuffer.getSize(), 0, 0);
-	}
+	this->m_deviceContextPtr->IASetIndexBuffer(this->m_indexBuffer.Get(), DXGI_FORMAT::DXGI_FORMAT_R32_UINT, 0);
+	
+	if (this->m_drawWithIndex)
+		this->m_deviceContextPtr->DrawIndexed(this->m_indexBuffer.getSize(), 0, 0);
 	else
 		this->m_deviceContextPtr->Draw(this->m_vertexBuffer.getSize(), 0);
-}
-
-void Model::updateWorldMatrix()
-{
-	this->m_worldMatrix = DirectX::XMMATRIX(
-		DirectX::XMMatrixScalingFromVector(this->m_movementComponent->scale) *
-		DirectX::XMMatrixRotationRollPitchYawFromVector(this->m_movementComponent->rotation) *
-		DirectX::XMMatrixTranslationFromVector(this->m_movementComponent->position));
-}
-
-void Model::setPosition(DirectX::XMVECTOR pos)
-{
-	this->m_movementComponent->position = pos;
-}
-
-void Model::setScale(DirectX::XMVECTOR scale)
-{
-	this->m_movementComponent->scale = scale;
 }

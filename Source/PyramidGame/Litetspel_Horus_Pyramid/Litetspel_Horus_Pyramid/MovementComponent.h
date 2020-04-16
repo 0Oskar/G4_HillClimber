@@ -37,44 +37,51 @@ public:
 
 		this->viewMatrix = new DirectX::XMMATRIX(DirectX::XMMatrixIdentity());
 	}
+	MovementComponent(const MovementComponent& otherMoveComponent)
+	{
+		this->scale = otherMoveComponent.scale;
+		this->rotation = otherMoveComponent.rotation;
+		this->position = otherMoveComponent.position;
+
+		this->forward = otherMoveComponent.forward;
+		this->left = otherMoveComponent.left;
+		this->right = otherMoveComponent.right;
+		this->backward = otherMoveComponent.backward;
+		this->up = otherMoveComponent.up;
+		this->down = otherMoveComponent.down;
+
+		this->viewMatrix = new DirectX::XMMATRIX(*otherMoveComponent.viewMatrix);
+	}
 	~MovementComponent()
 	{
 		if (this->viewMatrix)
+		{
 			delete this->viewMatrix;
+			this->viewMatrix = nullptr;
+		}
+	}
+
+	MovementComponent& operator=(const MovementComponent& otherMoveComponent)
+	{
+		this->scale = otherMoveComponent.scale;
+		this->rotation = otherMoveComponent.rotation;
+		this->position = otherMoveComponent.position;
+
+		this->forward = otherMoveComponent.forward;
+		this->left = otherMoveComponent.left;
+		this->right = otherMoveComponent.right;
+		this->backward = otherMoveComponent.backward;
+		this->up = otherMoveComponent.up;
+		this->down = otherMoveComponent.down;
+
+		this->viewMatrix = new DirectX::XMMATRIX(*otherMoveComponent.viewMatrix);
+		return *this;
 	}
 
 	void move(DirectX::XMVECTOR moveVector)
 	{
 		this->position = DirectX::XMVectorAdd(moveVector, this->position);
 	}
-
-	//void move(Direction dir, DirectX::XMFLOAT2 acceleration, float dt)
-	//{
-	//	switch (dir)
-	//	{
-	//	case Direction::FORWARD:
-	//		this->position = DirectX::XMVectorAdd(DirectX::XMVectorScale(this->forward, acceleration.x * dt), this->position);
-	//		break;
-	//	case Direction::BACKWARD:
-	//		this->position = DirectX::XMVectorAdd(DirectX::XMVectorScale(this->backward, acceleration.x * dt), this->position);
-	//		break;
-	//	case Direction::LEFT:
-	//		this->position = DirectX::XMVectorAdd(DirectX::XMVectorScale(this->left, acceleration.x * dt), this->position);
-	//		break;
-	//	case Direction::RIGHT:
-	//		this->position = DirectX::XMVectorAdd(DirectX::XMVectorScale(this->right, acceleration.x * dt), this->position);
-	//		break;
-	//	case Direction::UP:
-	//		this->position = DirectX::XMVectorAdd(DirectX::XMVectorScale(this->up, acceleration.y * dt), this->position);
-	//		break;
-	//	case Direction::DOWN:
-	//		this->position = DirectX::XMVectorAdd(DirectX::XMVectorScale(this->down, acceleration.y * dt), this->position);
-	//		break;
-	//	default:
-	//		assert(!"Error, no valid direction found!");
-	//		break;
-	//	}
-	//}
 
 	void updateViewMatrix()
 	{

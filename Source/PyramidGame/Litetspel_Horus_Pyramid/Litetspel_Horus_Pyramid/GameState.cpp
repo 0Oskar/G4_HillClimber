@@ -7,18 +7,33 @@ GameState::~GameState() {}
 
 DirectX::XMMATRIX* GameState::getViewMatrix() const
 {
-	return this->m_camera.getViewMatrix();
+	return this->m_camera.getViewMatrixPtr();
 }
 
 DirectX::XMMATRIX* GameState::getProjectionMatrix() const
 {
-	return this->m_camera.getProjectionMatrix();
+	return this->m_camera.getProjectionMatrixPtr();
 }
 
-void GameState::initlialize(GameOptions options)
+std::vector<Model>* GameState::getModelsPtr()
+{
+	return &this->m_models;
+}
+
+std::vector<GameObject>* GameState::getGameObjectsPtr()
+{
+	return &this->m_gameObjects;
+}
+
+std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* GameState::getWvpCBuffersPtr()
+{
+	return &this->m_wvpCBuffers;
+}
+
+void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext, GameOptions options)
 {
 	// Player
-	this->m_player.initialize(1.f, DirectX::XMFLOAT3(.001f, .001f, .001f), DirectX::XMFLOAT3(.99f, .99f, .99f));
+	this->m_player.initialize(-1, -1, 1.f, DirectX::XMFLOAT3(.01f, .01f, .01f), DirectX::XMFLOAT3(.99f, .99f, .99f));
 	this->m_player.setPosition(DirectX::XMVectorSet(0.f, 4.f, -1.f, 1.f));
 
 	// Camera
@@ -30,6 +45,93 @@ void GameState::initlialize(GameOptions options)
 		0.1f,
 		1000.f
 	);
+
+	// Models
+	// Ground Object
+	std::vector<Vertex> groundvertices =
+	{
+		Vertex(
+			-1.f, 0.f, -1.f,
+			1.f, 0.f, 0.f
+		),
+		Vertex(
+			-1.f, 0.f, 1.f,
+			0.f, 1.f, 0.f
+		),
+		Vertex(
+			1.f, 0.f, 1.f,
+			0.f, 0.f, 1.f
+		),
+		Vertex(
+			-1.f, 0.f, -1.f,
+			1.f, 0.f, 0.f
+		),
+		Vertex(
+			1.f, 0.f, 1.f,
+			0.f, 0.f, 1.f
+		),
+		Vertex(
+			1.f, 0.f, -1.f,
+			0.f, 0.f, 1.f
+		)
+	};
+
+	this->m_models.emplace_back();
+	this->m_models[0].loadVertexVector(device, dContext, groundvertices);
+
+	this->m_wvpCBuffers.emplace_back();
+	this->m_wvpCBuffers[0].init(device, dContext);
+
+	this->m_gameObjects.push_back(GameObject());
+	this->m_gameObjects[0].initializeStatic(true, 0, 0);
+
+	DirectX::XMVECTOR vec = DirectX::XMVectorSet(100.f, 100.f, 100.f, 1.f);
+	this->m_gameObjects[0].setScale(vec);
+
+	// Quads
+	//,	Model
+	this->m_models.emplace_back();
+	this->m_models[1].initModel(device, dContext);
+
+	// 1.
+	//,	WVP Buffer
+	this->m_wvpCBuffers.emplace_back();
+	this->m_wvpCBuffers[1].init(device, dContext);
+
+	//,	Game Object
+	this->m_gameObjects.push_back(GameObject());
+	this->m_gameObjects[1].initializeStatic(true, 1, 1);
+
+	//,	Movement changes
+	vec = DirectX::XMVectorSet(0.f, 3.f, 0.f, 1.f);
+	this->m_gameObjects[1].setPosition(vec);
+
+	// 2.
+	//,	WVP Buffer
+	this->m_wvpCBuffers.emplace_back();
+	this->m_wvpCBuffers[2].init(device, dContext);
+
+	//,	Game Object
+	this->m_gameObjects.push_back(GameObject());
+	this->m_gameObjects[2].initializeStatic(true, 1, 2); // Same Model
+
+	//,	Movement changes
+	vec = DirectX::XMVectorSet(0.f, 2.f, 0.01f, 1.f);
+	this->m_gameObjects[2].setPosition(vec);
+
+
+	// Pyramid
+	this->m_models.emplace_back();
+	this->m_models[2].loadVertexFromOBJ(device, dContext, L"Models/BasePyr.obj", DirectX::XMFLOAT3(0.f, 1.f, 0.f));
+
+	this->m_wvpCBuffers.emplace_back();
+	this->m_wvpCBuffers[3].init(device, dContext);
+	
+	this->m_gameObjects.emplace_back();
+	this->m_gameObjects[3].initializeStatic(true, 2, 3);
+
+	vec = DirectX::XMVectorSet(0.f, 0.f, 100.f, 1.f);
+	this->m_gameObjects[3].setPosition(vec);
 }
 
 void GameState::update(Keyboard* keyboard, MouseEvent mouseEvent, float dt)
@@ -39,4 +141,17 @@ void GameState::update(Keyboard* keyboard, MouseEvent mouseEvent, float dt)
 
 	// Camera
 	this->m_camera.update(mouseEvent, dt);
+
+	// Game Objects
+	for (size_t i = 0; i < this->m_gameObjects.size(); i++)
+	{
+		this->m_gameObjects[i].update(dt);
+
+		// World View Projection Matrix Contruction
+		VS_CONSTANT_BUFFER wvpData;
+		DirectX::XMMATRIX viewPMtrx = this->m_camera.getViewMatrix() * this->m_camera.getProjectionMatrix();
+		wvpData.wvp = this->m_gameObjects[i].getWorldMatrix() * viewPMtrx;
+
+		this->m_wvpCBuffers[this->m_gameObjects[i].getWvpCBufferIndex()].upd(&wvpData);
+	}
 }
