@@ -8,16 +8,16 @@
 struct Vertex
 {
 	DirectX::XMFLOAT3 position;
-	DirectX::XMFLOAT3 color;
+	DirectX::XMFLOAT3 normal;
 	Vertex()
 	{
 		position = DirectX::XMFLOAT3(0.f, 0.f, 0.f);
-		color = DirectX::XMFLOAT3(0.f, 0.f, 0.f);
+		normal = DirectX::XMFLOAT3(0.f, 0.f, 0.f);
 	}
-	Vertex(float x, float y, float z, float r, float g, float b)
+	Vertex(float x, float y, float z, float nx, float ny, float nz)
 	{
 		position = DirectX::XMFLOAT3(x, y, z);
-		color = DirectX::XMFLOAT3(r, g, b);
+		normal = DirectX::XMFLOAT3(nx, ny, nz);
 	}
 };
 

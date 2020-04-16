@@ -5,6 +5,19 @@
 struct VS_CONSTANT_BUFFER
 {
 	DirectX::XMMATRIX wvp;
+	DirectX::XMMATRIX worldMatrix;
+};
+
+struct PS_LIGHT_BUFFER
+{
+	DirectX::XMFLOAT3 lightColor;
+	float strength;
+};
+
+struct PS_DIR_BUFFER
+{
+	DirectX::XMFLOAT4 lightDirection;
+	DirectX::XMFLOAT4 lightColor;
 };
 
 template<class T>
