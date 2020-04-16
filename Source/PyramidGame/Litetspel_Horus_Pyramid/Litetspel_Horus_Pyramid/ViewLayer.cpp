@@ -188,7 +188,7 @@ void ViewLayer::initShaders()
 			D3D11_INPUT_PER_VERTEX_DATA,
 			0
 		},
-		{
+		/*{
 			"COLOR",
 			0,
 			DXGI_FORMAT_R32G32B32_FLOAT,
@@ -196,7 +196,16 @@ void ViewLayer::initShaders()
 			12,
 			D3D11_INPUT_PER_VERTEX_DATA,
 			0
-		}
+		}*/
+		{
+			"NORMAL",
+			0,
+			DXGI_FORMAT_R32G32B32_FLOAT,
+			0,
+			12,
+			D3D11_INPUT_PER_VERTEX_DATA,
+			0
+		},
 	};
 
 	hr = this->m_device->CreateInputLayout(
@@ -290,6 +299,21 @@ void ViewLayer::initialize(HWND window, GameOptions* options, DirectX::XMMATRIX*
 
 	vec = DirectX::XMVectorSet(0, -0.4f, 0.01f, 1.f);
 	this->m_models.push_back(Model(vec));
+
+	//Ambient Ligth buffer
+	PS_LIGHT_BUFFER lightBuffer;
+	lightBuffer.lightColor = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
+	lightBuffer.strength = 0.2f;
+	this->m_lightBuffer.m_data = lightBuffer;
+	this->m_lightBuffer.upd();
+
+	//Directional light buffer
+	PS_DIR_BUFFER dirBuffer;
+	dirBuffer.lightColor = DirectX::XMFLOAT4(.5f, 0.5f, 0.5f, 1.f);
+	dirBuffer.lightDirection = DirectX::XMFLOAT4(0.0f, 1.0f, -1.0f, 0.0f);
+	this->m_dirLightBuffer.m_data = dirBuffer;
+	this->m_dirLightBuffer.upd();
+
 	
 	for (int i = 0; i < this->m_models.size(); i++)
 		this->m_models[i].initModel(this->m_device.Get(), this->m_deviceContext.Get(), this->m_triangleCBuffer, mat);
@@ -315,6 +339,9 @@ void ViewLayer::update(float dt)
 void ViewLayer::initConstantBuffer()
 {
 	this->m_triangleCBuffer.init(this->m_device.Get(), this->m_deviceContext.Get());
+	this->m_lightBuffer.init(this->m_device.Get(), this->m_deviceContext.Get());
+	this->m_dirLightBuffer.init(this->m_device.Get(), this->m_deviceContext.Get());
+
 
 }
 
@@ -337,6 +364,8 @@ void ViewLayer::render()
 
 	// Set Constant Buffer
 	this->m_deviceContext->VSSetConstantBuffers(0, 1, this->m_triangleCBuffer.GetAdressOf());
+	this->m_deviceContext->PSSetConstantBuffers(1, 1, this->m_lightBuffer.GetAdressOf());
+	this->m_deviceContext->PSSetConstantBuffers(2, 1, this->m_dirLightBuffer.GetAdressOf());
 
 	// Draw
 	DirectX::XMMATRIX viewPMtrx = (*m_viewMatrix) * (*m_projectionMatrix);

@@ -33,6 +33,9 @@ private:
 	Microsoft::WRL::ComPtr< ID3D11Buffer > m_constantBuffer;
 
 	ConstBuffer<VS_CONSTANT_BUFFER> m_triangleCBuffer;
+	ConstBuffer<PS_LIGHT_BUFFER> m_lightBuffer;
+	ConstBuffer<PS_DIR_BUFFER> m_dirLightBuffer;
+
 	std::vector<Model> m_models;
 
 

@@ -24,8 +24,8 @@ void GameState::initlialize(GameOptions options)
 	// Camera
 	this->m_camera.followMoveComp(this->m_player.getMoveCompPtr());
 	this->m_camera.initialize(
-		0.2f,
-		0.2f,
+		2.0f,
+		0.5f,
 		options.fov,
 		(float)options.width / (float)options.height,
 		0.1f,

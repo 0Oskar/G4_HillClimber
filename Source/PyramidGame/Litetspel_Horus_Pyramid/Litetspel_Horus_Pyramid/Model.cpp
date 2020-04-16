@@ -33,19 +33,19 @@ void Model::initModel(ID3D11Device* device, ID3D11DeviceContext* dContext, Const
 	{
 		Vertex(
 			-0.5f, -0.5f, 0.f,
-			1.f, 0.f, 0.f
+			0.f, 0.f, -1.f
 		),
 		Vertex(
 			-0.5f, 0.5f, 0.f,
-			0.f, 1.f, 0.f
+			0.f, 1.f, -1.f
 		),
 		Vertex(
 			0.5f, 0.5f, 0.f,
-			0.f, 0.f, 1.f
+			0.f, 0.f, -1.f
 		),
 		Vertex(
 			0.5f, -0.5f, 0.f,
-			0.f, 0.f, 1.f
+			0.f, 0.f, -1.f
 		)
 	};
 	HRESULT hr = this->m_vertexBuffer.initialize(this->m_devicePtr, vertices.data(), (int)vertices.size());
@@ -190,11 +190,12 @@ void Model::loadVertexFromOBJ(ID3D11Device* device, ID3D11DeviceContext* dContex
 	for (size_t i = 0; i < this->m_vertices.size(); ++i)
 	{
 		this->m_vertices[i].position = vertexPositions[vertexPosIndices[i] - 1];
-		this->m_vertices[i].color = vertexPositions[vertexPosIndices[i] - 1];
+		//this->m_vertices[i].color = vertexPositions[vertexPosIndices[i] - 1];
 		/*if (vertexTexcoords.size())
 			this->m_vertices[i].texcoord = vertexTexcoords[vertexTexIndices[i] - 1];
+			*/
 		if (vertexNormals.size())
-			this->m_vertices[i].normal = vertexNormals[vertexNormIndices[i] - 1];*/
+			this->m_vertices[i].normal = vertexNormals[vertexNormIndices[i] - 1];
 	}
 
 	HRESULT hr = this->m_vertexBuffer.initialize(this->m_devicePtr, this->m_vertices.data(), (int)this->m_vertices.size());
@@ -206,6 +207,7 @@ void Model::loadVertexFromOBJ(ID3D11Device* device, ID3D11DeviceContext* dContex
 void Model::draw(DirectX::XMMATRIX& viewProjMtx)
 {
 	this->m_constBufferPtr->m_data.wvp = this->m_worldMatrix * viewProjMtx;
+	this->m_constBufferPtr->m_data.worldMatrix = this->m_worldMatrix;
 	this->m_constBufferPtr->upd();
 	this->m_material.upd(this->m_deviceContextPtr);
 
