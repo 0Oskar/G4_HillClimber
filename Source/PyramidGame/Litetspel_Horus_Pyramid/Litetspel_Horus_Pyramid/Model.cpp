@@ -1,6 +1,7 @@
 #include"pch.h"
 #include"Model.h"
 
+
 Model::Model()
 {
 	this->m_deviceContextPtr = nullptr;
@@ -13,23 +14,24 @@ void Model::initModel(ID3D11Device* device, ID3D11DeviceContext* dContext)
 	this->m_devicePtr = device;
 	this->m_deviceContextPtr = dContext;
 
+
 	std::vector<Vertex> vertices
 	{
 		Vertex(
 			-0.5f, -0.5f, 0.f,
-			1.f, 0.f, 0.f
+			0.f, 0.f, -1.f
 		),
 		Vertex(
 			-0.5f, 0.5f, 0.f,
-			0.f, 1.f, 0.f
+			0.f, 1.f, -1.f
 		),
 		Vertex(
 			0.5f, 0.5f, 0.f,
-			0.f, 0.f, 1.f
+			0.f, 0.f, -1.f
 		),
 		Vertex(
 			0.5f, -0.5f, 0.f,
-			0.f, 0.f, 1.f
+			0.f, 0.f, -1.f
 		)
 	};
 	HRESULT hr = this->m_vertexBuffer.initialize(this->m_devicePtr, vertices.data(), (int)vertices.size());
@@ -43,6 +45,9 @@ void Model::initModel(ID3D11Device* device, ID3D11DeviceContext* dContext)
 	hr = this->m_indexBuffer.init(this->m_devicePtr, indicies, ARRAYSIZE(indicies));
 	assert(SUCCEEDED(hr) && "Error, index buffer could not be created!");
 	this->m_drawWithIndex = true;
+
+	this->m_material.init(device, dContext, material);
+	this->drawWithIndex = true;
 }
 
 void Model::loadVertexVector(ID3D11Device* device, ID3D11DeviceContext* dContext, std::vector<Vertex> vertexVector)
@@ -54,7 +59,7 @@ void Model::loadVertexVector(ID3D11Device* device, ID3D11DeviceContext* dContext
 	assert(SUCCEEDED(hr) && "Error, vertex buffer could not be created!");
 }
 
-void Model::loadVertexFromOBJ(ID3D11Device* device, ID3D11DeviceContext* dContext, std::wstring objFilePath, DirectX::XMFLOAT3 color)
+void Model::loadVertexFromOBJ(ID3D11Device* device, ID3D11DeviceContext* dContext, std::wstring objFilePath, DirectX::XMFLOAT3 color, MaterialData materialData)
 {
 	this->m_devicePtr = device;
 	this->m_deviceContextPtr = dContext;
@@ -166,19 +171,23 @@ void Model::loadVertexFromOBJ(ID3D11Device* device, ID3D11DeviceContext* dContex
 	for (size_t i = 0; i < this->m_vertices.size(); ++i)
 	{
 		this->m_vertices[i].position = vertexPositions[vertexPosIndices[i] - 1];
-		this->m_vertices[i].color = vertexPositions[vertexPosIndices[i] - 1];
+		//this->m_vertices[i].color = vertexPositions[vertexPosIndices[i] - 1];
 		/*if (vertexTexcoords.size())
 			this->m_vertices[i].texcoord = vertexTexcoords[vertexTexIndices[i] - 1];
+			*/
 		if (vertexNormals.size())
-			this->m_vertices[i].normal = vertexNormals[vertexNormIndices[i] - 1];*/
+			this->m_vertices[i].normal = vertexNormals[vertexNormIndices[i] - 1];
 	}
 
 	HRESULT hr = this->m_vertexBuffer.initialize(this->m_devicePtr, this->m_vertices.data(), (int)this->m_vertices.size());
 	assert(SUCCEEDED(hr) && "Error, vertex buffer could not be created!");
+
+	this->m_material.init(device, dContext, materialData);
 }
 
 void Model::draw(DirectX::XMMATRIX& viewProjMtx)
 {
+	this->m_material.upd(this->m_deviceContextPtr);
 	UINT vertexOffset = 0;
 	this->m_deviceContextPtr->IASetVertexBuffers(0, 1, this->m_vertexBuffer.GetAddressOf(), this->m_vertexBuffer.getStridePointer(), &vertexOffset);
 	this->m_deviceContextPtr->IASetIndexBuffer(this->m_indexBuffer.Get(), DXGI_FORMAT::DXGI_FORMAT_R32_UINT, 0);

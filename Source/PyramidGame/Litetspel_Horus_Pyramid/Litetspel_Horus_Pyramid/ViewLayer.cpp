@@ -188,7 +188,7 @@ void ViewLayer::initShaders()
 			D3D11_INPUT_PER_VERTEX_DATA,
 			0
 		},
-		{
+		/*{
 			"COLOR",
 			0,
 			DXGI_FORMAT_R32G32B32_FLOAT,
@@ -196,7 +196,16 @@ void ViewLayer::initShaders()
 			12,
 			D3D11_INPUT_PER_VERTEX_DATA,
 			0
-		}
+		}*/
+		{
+			"NORMAL",
+			0,
+			DXGI_FORMAT_R32G32B32_FLOAT,
+			0,
+			12,
+			D3D11_INPUT_PER_VERTEX_DATA,
+			0
+		},
 	};
 
 	hr = this->m_device->CreateInputLayout(
@@ -310,10 +319,45 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 	this->initViewPort();
 	this->initDepthStencilBuffer();
 	this->initShaders();
+
+	MaterialData mat;
+	DirectX::XMFLOAT4 defSet = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
+	mat.diffuse = defSet;
+
+	DirectX::XMVECTOR vec = DirectX::XMVectorSet(0.f, 0.4f, 0.f, 1.f);
+	this->m_models.push_back(Model(vec));
+
+	vec = DirectX::XMVectorSet(0, -0.4f, 0.01f, 1.f);
+	this->m_models.push_back(Model(vec));
+
+	//Ambient Light buffer
+	PS_LIGHT_BUFFER lightBuffer;
+	lightBuffer.lightColor = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
+	lightBuffer.strength = 0.2f;
+	this->m_lightBuffer.m_data = lightBuffer;
+	this->m_lightBuffer.upd();
+
+	//Directional Light buffer
+	PS_DIR_BUFFER dirBuffer;
+	dirBuffer.lightColor = DirectX::XMFLOAT4(.8f, 0.8f, 0.8f, 1.f);
+	dirBuffer.lightDirection = DirectX::XMFLOAT4(0.0f, 1.0f, -1.0f, 0.0f);
+	this->m_dirLightBuffer.m_data = dirBuffer;
+	this->m_dirLightBuffer.upd();
+
+	defSet = DirectX::XMFLOAT4(0.f, 0.f, 1.f, 1.0f);
+	mat.diffuse = defSet;
 }
 
 void ViewLayer::update(float dt)
 {
+
+}
+
+void ViewLayer::initConstantBuffer()
+{
+	this->m_lightBuffer.init(this->m_device.Get(), this->m_deviceContext.Get());
+	this->m_dirLightBuffer.init(this->m_device.Get(), this->m_deviceContext.Get());
+
 
 }
 
@@ -333,7 +377,11 @@ void ViewLayer::render()
 	this->m_deviceContext->VSSetShader(this->m_vertexShader.Get(), nullptr, 0);
 	this->m_deviceContext->PSSetShader(this->m_pixelShader.Get(), nullptr, 0);
 
-	// Draw Models
+	// Set Constant Buffer
+	this->m_deviceContext->PSSetConstantBuffers(1, 1, this->m_lightBuffer.GetAdressOf());
+	this->m_deviceContext->PSSetConstantBuffers(2, 1, this->m_dirLightBuffer.GetAdressOf());
+
+	// Draw
 	DirectX::XMMATRIX viewPMtrx = (*m_viewMatrix) * (*m_projectionMatrix);
 	for (size_t i = 0; i < this->m_gameObjectsFromState->size(); i++)
 	{

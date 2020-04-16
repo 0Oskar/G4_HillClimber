@@ -32,11 +32,14 @@ private:
 
 	// Constant Buffer
 	Microsoft::WRL::ComPtr< ID3D11Buffer > m_constantBuffer;
-	
+  
 	// Objects from state
 	std::vector<GameObject>* m_gameObjectsFromState;
 	std::vector<Model>* m_modelsFromState;
 	std::vector< ConstBuffer<VS_CONSTANT_BUFFER> >* m_wvpCBufferFromState;
+
+	ConstBuffer<PS_LIGHT_BUFFER> m_lightBuffer;
+	ConstBuffer<PS_DIR_BUFFER> m_dirLightBuffer;
 
 	DirectX::XMMATRIX* m_viewMatrix;
 	DirectX::XMMATRIX* m_projectionMatrix;

@@ -103,6 +103,8 @@
     </ClInclude>
     <ClInclude Include="GameObject.h">
       <Filter>Header\Game Logic</Filter>
+    <ClInclude Include="Material.h">
+      <Filter>Header\View</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
