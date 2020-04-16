@@ -309,7 +309,7 @@ void ViewLayer::initialize(HWND window, GameOptions* options, DirectX::XMMATRIX*
 
 	//Directional light buffer
 	PS_DIR_BUFFER dirBuffer;
-	dirBuffer.lightColor = DirectX::XMFLOAT4(.5f, 0.5f, 0.5f, 1.f);
+	dirBuffer.lightColor = DirectX::XMFLOAT4(.8f, 0.8f, 0.8f, 1.f);
 	dirBuffer.lightDirection = DirectX::XMFLOAT4(0.0f, 1.0f, -1.0f, 0.0f);
 	this->m_dirLightBuffer.m_data = dirBuffer;
 	this->m_dirLightBuffer.upd();
