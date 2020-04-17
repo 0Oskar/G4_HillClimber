@@ -3,7 +3,7 @@
 #include "pch.h"
 #include "MovementComponent.h"
 
-const float GRAVITY = 0.05f; // 9.82f
+const float GRAVITY = 0.01f; // 9.82f
 const float MAX_GRAVITY = 5.f;
 
 class PhysicsComponent
@@ -13,6 +13,9 @@ private:
 	DirectX::XMFLOAT3 m_acceleration;
 	DirectX::XMFLOAT3 m_deceleration;
 	float m_mass;
+
+	// Jump
+	bool m_isJumping;
 
 	DirectX::BoundingBox* m_aabb;
 
@@ -26,6 +29,7 @@ public:
 		this->m_acceleration = DirectX::XMFLOAT3(0.f, 0.f, 0.f);
 		this->m_deceleration = DirectX::XMFLOAT3(0.f, 0.f, 0.f);
 		this->m_mass = 0.f;
+		this->m_isJumping = false;
 		this->m_aabb = nullptr;
 		this->m_moveComp = nullptr;
 	}
@@ -35,6 +39,7 @@ public:
 		this->m_acceleration = otherPhysicsComponent.m_acceleration;
 		this->m_deceleration = otherPhysicsComponent.m_deceleration;
 		this->m_mass = otherPhysicsComponent.m_mass;
+		this->m_isJumping = otherPhysicsComponent.m_isJumping;
 
 		// AABB
 		if (this->m_aabb)
@@ -66,6 +71,7 @@ public:
 		this->m_acceleration = otherPhysicsComponent.m_acceleration;
 		this->m_deceleration = otherPhysicsComponent.m_deceleration;
 		this->m_mass = otherPhysicsComponent.m_mass;
+		this->m_isJumping = otherPhysicsComponent.m_isJumping;
 
 		// AABB
 		if (this->m_aabb)
@@ -121,9 +127,9 @@ public:
 		this->m_acceleration = newAcceleration;
 	}
 
-	void addForce(DirectX::XMFLOAT3 force)
+	void addForce(DirectX::XMFLOAT3 force, float dt)
 	{
-		this->m_velocity = DirectX::XMFLOAT3(this->m_velocity.x + force.x, this->m_velocity.y + force.y, this->m_velocity.z + force.z);
+		this->m_velocity = DirectX::XMFLOAT3(this->m_velocity.x + (force.x * dt), this->m_velocity.y + (force.y * dt), this->m_velocity.z + (force.z * dt));
 	}
 
 	void addForceDir(Direction dir, float dt, float multiplier = 1.f)
@@ -168,6 +174,15 @@ public:
 			this->m_velocity.y += force;
 	}
 
+	void jump(float accelerationMultipler, float dt)
+	{
+		if (!this->m_isJumping)
+		{
+			this->m_isJumping = true;
+			this->m_velocity.y += this->m_acceleration.y * accelerationMultipler * dt;
+		}
+	}
+
 	// Update
 	void handleCollision(std::vector<DirectX::BoundingBox*> boundingBoxes, float dt)
 	{
@@ -204,7 +219,10 @@ public:
 					if (this->m_velocity.y > 0)
 						this->m_moveComp->position = DirectX::XMVectorSetY(this->m_moveComp->position, boundingBoxes[i]->Center.y - boundingBoxes[i]->Extents.y - AABBNextFrame.Extents.y - 0.0001f);
 					else
+					{
 						this->m_moveComp->position = DirectX::XMVectorSetY(this->m_moveComp->position, boundingBoxes[i]->Center.y + boundingBoxes[i]->Extents.y + AABBNextFrame.Extents.y + 0.0001f);
+						this->m_isJumping = false;
+					}
 					
 					this->m_velocity.y = 0;
 				}
