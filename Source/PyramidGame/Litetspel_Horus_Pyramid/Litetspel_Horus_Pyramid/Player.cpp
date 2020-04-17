@@ -19,7 +19,7 @@ void Player::initialize(int modelIndex, int wvpCBufferIndex, float mass, DirectX
 	this->m_movementComp = new MovementComponent();
 	this->m_physicsComp = new PhysicsComponent();
 	this->m_physicsComp->initialize(this->m_movementComp, mass, acceleration, deceleration);
-	this->m_physicsComp->setBoundingBox(this->m_movementComp->getPositionF3(), DirectX::XMFLOAT3(1.f, 2.f, 1.f));
+	this->m_physicsComp->setBoundingBox(this->m_movementComp->getPositionF3(), DirectX::XMFLOAT3(0.5f, 3.f, 0.5f));
 }
 
 void Player::addAABB(DirectX::BoundingBox* aabb)
@@ -54,7 +54,7 @@ void Player::update(Keyboard* keyboard, MouseEvent mouseEvent, float dt)
 	// For Debugging purposes
 	if (keyboard->isKeyPressed('R'))
 	{
-		this->m_movementComp->position = DirectX::XMVectorSet(0.f, 4.f, -1.f, 1.f);
+		this->m_movementComp->position = DirectX::XMVectorSet(0.f, 6.f, -1.f, 1.f);
 		this->m_physicsComp->setVelocity(DirectX::XMFLOAT3()); // Reset Velocity
 	}
 

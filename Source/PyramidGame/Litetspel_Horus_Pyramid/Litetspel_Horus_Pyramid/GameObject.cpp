@@ -158,10 +158,11 @@ void GameObject::setScale(DirectX::XMVECTOR newScale)
 void GameObject::setPosition(DirectX::XMVECTOR newPosition)
 {
 	if (this->m_movementComp)
+	{
 		this->m_movementComp->position = newPosition;
-
-	if (this->m_physicsComp)
-		this->m_physicsComp->getAABBPtr()->Center = this->m_movementComp->getPositionF3();
+		if (this->m_physicsComp)
+			this->m_physicsComp->getAABBPtr()->Center = this->m_movementComp->getPositionF3();
+	}
 }
 
 void GameObject::setBoundingBox(DirectX::XMFLOAT3 extends)

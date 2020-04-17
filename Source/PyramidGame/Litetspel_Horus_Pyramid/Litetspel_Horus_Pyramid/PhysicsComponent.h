@@ -254,7 +254,6 @@ public:
 		this->m_moveComp->updateViewMatrix();
 
 		this->m_velocity.x *= this->m_deceleration.x;
-		//this->m_velocity.y *= this->m_deceleration.y;
 		this->m_velocity.z *= this->m_deceleration.z;
 	}
 };
