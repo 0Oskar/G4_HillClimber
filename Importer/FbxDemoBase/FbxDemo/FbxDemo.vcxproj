@@ -43,6 +43,7 @@
     <ClInclude Include="DisplaySkeleton.h" />
     <ClInclude Include="DisplayTexture.h" />
     <ClInclude Include="DisplayUserProperties.h" />
+    <ClInclude Include="FileWrite.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Common\AnimationUtility.cxx" />
@@ -69,6 +70,7 @@
     <ClCompile Include="DisplaySkeleton.cxx" />
     <ClCompile Include="DisplayTexture.cxx" />
     <ClCompile Include="DisplayUserProperties.cxx" />
+    <ClCompile Include="FileWrite.cpp" />
     <ClCompile Include="main.cxx" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

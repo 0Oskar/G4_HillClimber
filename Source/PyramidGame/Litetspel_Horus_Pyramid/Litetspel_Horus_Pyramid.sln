@@ -5,6 +5,8 @@ VisualStudioVersion = 16.0.29920.165
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Litetspel_Horus_Pyramid", "Litetspel_Horus_Pyramid\Litetspel_Horus_Pyramid.vcxproj", "{7AAC4D20-2479-4219-BF49-8F635D622D7C}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Importer", "Importer\Importer.vcxproj", "{EF76DB75-0AF6-408B-8095-99FFA928DEA4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +23,14 @@ Global
 		{7AAC4D20-2479-4219-BF49-8F635D622D7C}.Release|x64.Build.0 = Release|x64
 		{7AAC4D20-2479-4219-BF49-8F635D622D7C}.Release|x86.ActiveCfg = Release|Win32
 		{7AAC4D20-2479-4219-BF49-8F635D622D7C}.Release|x86.Build.0 = Release|Win32
+		{EF76DB75-0AF6-408B-8095-99FFA928DEA4}.Debug|x64.ActiveCfg = Debug|x64
+		{EF76DB75-0AF6-408B-8095-99FFA928DEA4}.Debug|x64.Build.0 = Debug|x64
+		{EF76DB75-0AF6-408B-8095-99FFA928DEA4}.Debug|x86.ActiveCfg = Debug|Win32
+		{EF76DB75-0AF6-408B-8095-99FFA928DEA4}.Debug|x86.Build.0 = Debug|Win32
+		{EF76DB75-0AF6-408B-8095-99FFA928DEA4}.Release|x64.ActiveCfg = Release|x64
+		{EF76DB75-0AF6-408B-8095-99FFA928DEA4}.Release|x64.Build.0 = Release|x64
+		{EF76DB75-0AF6-408B-8095-99FFA928DEA4}.Release|x86.ActiveCfg = Release|Win32
+		{EF76DB75-0AF6-408B-8095-99FFA928DEA4}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

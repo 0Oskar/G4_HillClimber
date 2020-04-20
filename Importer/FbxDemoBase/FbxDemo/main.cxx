@@ -37,6 +37,8 @@
 #include "DisplayUserProperties.h"
 #include "DisplayGenericInfo.h"
 
+//#include "FileWrite.h"
+
 #pragma comment(lib,"libfbxsdk-mt.lib")
 #pragma comment(lib,"libxml2-mt.lib")
 #pragma comment(lib,"zlib-mt.lib")
@@ -51,8 +53,12 @@ void DisplayMetaData(FbxScene* pScene);
 
 static bool gVerbose = true;
 
+//Make a file
+
 int main(int argc, char** argv)
 {
+    //myFile.writeToFile("test line from main");
+
     FbxManager* lSdkManager = NULL;
     FbxScene* lScene = NULL;
     bool lResult;
@@ -71,7 +77,8 @@ int main(int argc, char** argv)
 
 	if( lFilePath.IsEmpty() )
 	{
-		lFilePath = "box.fbx";
+		//lFilePath = "box.fbx";
+        lFilePath = "../NewTestMesh.fbx";
 		lResult = LoadScene(lSdkManager, lScene, lFilePath.Buffer());
         //lResult = false;
         //FBXSDK_printf("\n\nUsage: ImportScene <FBX file name>\n\n");
