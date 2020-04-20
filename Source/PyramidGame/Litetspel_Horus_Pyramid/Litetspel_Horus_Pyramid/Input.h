@@ -10,7 +10,7 @@ private:
 
 public:
 	Input();
-	LRESULT handleMessages(HWND hwind, UINT uMsg, WPARAM& wParam, LPARAM& lParam);
+	LRESULT handleMessages(HWND hwind, UINT& uMsg, WPARAM& wParam, LPARAM& lParam);
 	void readBuffers();
 
 	MouseEvent getMouseEvent();

@@ -7,7 +7,7 @@ Input::Input()
 
 }
 
-LRESULT Input::handleMessages(HWND hwnd, UINT uMsg, WPARAM& wParam, LPARAM& lParam)
+LRESULT Input::handleMessages(HWND hwnd, UINT& uMsg, WPARAM& wParam, LPARAM& lParam)
 {
 	switch (uMsg)
 	{
@@ -15,11 +15,13 @@ LRESULT Input::handleMessages(HWND hwnd, UINT uMsg, WPARAM& wParam, LPARAM& lPar
 	{
 		bool wasPressed = lParam & 0x40000000;
 		unsigned char key = static_cast<unsigned char>(wParam);
-
 		if (!wasPressed)
 		{
 			m_Keyboard.onKeyPressed(key);
 		}
+		if(key == (char)27)
+			uMsg = WM_DESTROY;
+
 		return 0;
 	}
 	case WM_KEYUP:
@@ -140,18 +142,12 @@ void Input::readBuffers()
 {
 	if (!this->m_Keyboard.empty())
 	{
-		std::string keyInfo = "KeyEvent";
 		KeyboardEvent readEvent = this->m_Keyboard.readKey();
-		keyInfo += readEvent.getKey();
-		//OutputDebugStringA(keyInfo.c_str());
 	}
 
 	if (!this->m_Mouse.empty())
 	{
-		std::string mouseInfo = "MousePos: X:";
 		MouseEvent mouseEvnt = this->m_Mouse.readEvent();
-		mouseInfo += std::to_string(mouseEvnt.getPosX()) + " Y: " + std::to_string(mouseEvnt.getPosY()) + "\n";
-		//OutputDebugStringA(mouseInfo.c_str());
 	}
 }
 
