@@ -38,6 +38,7 @@
 #include "DisplayGenericInfo.h"
 
 //#include "FileWrite.h"
+#include "BiReader.h"
 
 #pragma comment(lib,"libfbxsdk-mt.lib")
 #pragma comment(lib,"libxml2-mt.lib")
@@ -58,6 +59,9 @@ static bool gVerbose = true;
 int main(int argc, char** argv)
 {
     //myFile.writeToFile("test line from main");
+
+    BiReader myFile("../biFile.bff");
+    myFile.printToConsole();
 
     FbxManager* lSdkManager = NULL;
     FbxScene* lScene = NULL;
