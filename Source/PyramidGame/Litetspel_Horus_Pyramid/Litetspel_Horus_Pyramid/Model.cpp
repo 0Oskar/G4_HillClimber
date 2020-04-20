@@ -45,6 +45,7 @@ void Model::initModel(ID3D11Device* device, ID3D11DeviceContext* dContext, Mater
 		0, 1, 2,
 		0, 2, 3
 	};
+	this->m_drawWithIndex = true;
 	hr = this->m_indexBuffer.init(this->m_devicePtr, indicies, ARRAYSIZE(indicies));
 	assert(SUCCEEDED(hr) && "Error, index buffer could not be created!");
 
