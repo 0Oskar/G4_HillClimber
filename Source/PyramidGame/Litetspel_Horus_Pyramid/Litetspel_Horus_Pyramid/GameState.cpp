@@ -56,27 +56,33 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	{
 		Vertex(
 			-1.f, 0.f, -1.f,
-			0.f, 1.f, 0.f
+			0.f, 1.f, 0.f,
+			0, 0
 		),
 		Vertex(
 			-1.f, 0.f, 1.f,
-			0.f, 1.f, 0.f
+			0.f, 1.f, 0.f,
+			0, 0
 		),
 		Vertex(
 			1.f, 0.f, 1.f,
-			0.f, 1.f, 0.f
+			0.f, 1.f, 0.f,
+			0, 0
 		),
 		Vertex(
 			-1.f, 0.f, -1.f,
-			0.f, 1.f, 0.f
+			0.f, 1.f, 0.f,
+			0, 0
 		),
 		Vertex(
 			1.f, 0.f, 1.f,
-			0.f, 1.f, 0.f
+			0.f, 1.f, 0.f,
+			0, 0
 		),
 		Vertex(
 			1.f, 0.f, -1.f,
-			0.f, 1.f, 0.f
+			0.f, 1.f, 0.f,
+			0, 0
 		)
 	};
 
