@@ -11,6 +11,8 @@ class Application
 private:
 	Application();
 	Timer m_timer;
+	float m_deltaTime;
+
 public:
 	static Application& getInstance()
 	{

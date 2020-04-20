@@ -37,7 +37,7 @@ void Camera::update(MouseEvent mouseEvent, float dt)
 	if (mouseEvent.getEvent() == Event::MouseRAW_MOVE)
 	{
 
-		DirectX::XMFLOAT2 mouseDelta = DirectX::XMFLOAT2((float)mouseEvent.getPosX() * dt, (float)mouseEvent.getPosY() * dt);
+		DirectX::XMFLOAT2 mouseDelta = DirectX::XMFLOAT2((float)mouseEvent.getPosX(), (float)mouseEvent.getPosY());
 
 		// Set Pitch
 		DirectX::XMFLOAT3 rotationF3;

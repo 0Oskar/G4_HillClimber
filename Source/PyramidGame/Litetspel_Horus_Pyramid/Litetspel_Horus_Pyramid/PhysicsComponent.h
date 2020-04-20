@@ -3,8 +3,8 @@
 #include "pch.h"
 #include "MovementComponent.h"
 
-const float GRAVITY = 0.01f; // 9.82f
-const float MAX_GRAVITY = 5.f;
+const float GRAVITY = 0.2f; // 9.82f
+const float MAX_GRAVITY = 100.f;
 
 class PhysicsComponent
 {
@@ -129,7 +129,7 @@ public:
 
 	void addForce(DirectX::XMFLOAT3 force, float dt)
 	{
-		this->m_velocity = DirectX::XMFLOAT3(this->m_velocity.x + (force.x * dt), this->m_velocity.y + (force.y * dt), this->m_velocity.z + (force.z * dt));
+		this->m_velocity = DirectX::XMFLOAT3(this->m_velocity.x + force.x, this->m_velocity.y + force.y, this->m_velocity.z + force.z);
 	}
 
 	void addForceDir(Direction dir, float dt, float multiplier = 1.f)
@@ -139,22 +139,22 @@ public:
 		switch (dir)
 		{
 		case Direction::FORWARD:
-			finalForce = DirectX::XMVectorScale(this->m_moveComp->forward, this->m_acceleration.x * multiplier * dt);
+			finalForce = DirectX::XMVectorScale(this->m_moveComp->forward, this->m_acceleration.x * multiplier);
 			break;
 		case Direction::BACKWARD:
-			finalForce = DirectX::XMVectorScale(this->m_moveComp->backward, this->m_acceleration.x * multiplier * dt);
+			finalForce = DirectX::XMVectorScale(this->m_moveComp->backward, this->m_acceleration.x * multiplier);
 			break;
 		case Direction::LEFT:
-			finalForce = DirectX::XMVectorScale(this->m_moveComp->left, this->m_acceleration.x * multiplier * dt);
+			finalForce = DirectX::XMVectorScale(this->m_moveComp->left, this->m_acceleration.x * multiplier);
 			break;
 		case Direction::RIGHT:
-			finalForce = DirectX::XMVectorScale(this->m_moveComp->right, this->m_acceleration.x * multiplier * dt);
+			finalForce = DirectX::XMVectorScale(this->m_moveComp->right, this->m_acceleration.x * multiplier);
 			break;
 		case Direction::UP:
-			finalForce = DirectX::XMVectorScale(this->m_moveComp->up, this->m_acceleration.y * multiplier * dt);
+			finalForce = DirectX::XMVectorScale(this->m_moveComp->up, this->m_acceleration.y * multiplier);
 			break;
 		case Direction::DOWN:
-			finalForce = DirectX::XMVectorScale(this->m_moveComp->down, this->m_acceleration.y * multiplier * dt);
+			finalForce = DirectX::XMVectorScale(this->m_moveComp->down, this->m_acceleration.y * multiplier);
 			break;
 		default:
 			assert(!"Error, no valid direction found!");
@@ -169,9 +169,8 @@ public:
 
 	void addGravity(float dt)
 	{
-		float force = this->m_mass * -GRAVITY * dt;
-		if (this->m_velocity.y > -MAX_GRAVITY * dt)
-			this->m_velocity.y += force;
+		if (this->m_velocity.y > -MAX_GRAVITY)
+			this->m_velocity.y += this->m_mass * -GRAVITY;
 	}
 
 	void jump(float accelerationMultipler, float dt)
@@ -179,7 +178,7 @@ public:
 		if (!this->m_isJumping)
 		{
 			this->m_isJumping = true;
-			this->m_velocity.y += this->m_acceleration.y * accelerationMultipler * dt;
+			this->m_velocity.y += this->m_acceleration.y * accelerationMultipler;
 		}
 	}
 
@@ -253,7 +252,7 @@ public:
 
 		this->m_moveComp->updateViewMatrix();
 
-		this->m_velocity.x *= this->m_deceleration.x;
-		this->m_velocity.z *= this->m_deceleration.z;
+		this->m_velocity.x *= this->m_deceleration.x * dt;
+		this->m_velocity.z *= this->m_deceleration.z * dt;
 	}
 };

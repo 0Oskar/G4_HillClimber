@@ -12,12 +12,12 @@ double Timer::timeElapsed()
 {
 	if (this->m_isRunning)
 	{
-		auto elapsed = std::chrono::duration<double, std::milli>(high_resolution_clock::now() - m_startTime);
+		auto elapsed = std::chrono::duration<double>(high_resolution_clock::now() - m_startTime);
 		return elapsed.count();
 	}
 	else
 	{
-		auto elapsed = std::chrono::duration<double, std::milli>(m_stopTime - m_startTime);
+		auto elapsed = std::chrono::duration<double>(m_stopTime - m_startTime);
 		return elapsed.count();
 	}
 }

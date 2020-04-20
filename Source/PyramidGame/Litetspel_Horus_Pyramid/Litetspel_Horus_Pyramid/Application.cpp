@@ -18,6 +18,7 @@ bool Application::initApplication(HINSTANCE hInstance, LPWSTR lpCmdLine, HWND hW
 	const wchar_t WINDOWTILE[] = L"Litetspel Horus Pyramid";
 
 	SetCursor(NULL);
+	//ShowCursor(FALSE);
 	//TODO: Check if we have sufficient resources
 
 	this->loadGameOptions("GameOptions.xml");
@@ -130,8 +131,6 @@ bool Application::loadGameOptions(std::string fileName)
 
 void Application::applicationLoop()
 {
-	float deltaTime = (float)m_timer.timeElapsed() / 1000.0;
-	m_timer.restart();
 	MSG msg = { };
 	while (WM_QUIT != msg.message)
 	{
@@ -142,9 +141,12 @@ void Application::applicationLoop()
 		}
 		else // Render/Logic Loop
 		{
-			this->m_gameState.update(this->m_input.getKeyboard(), this->m_input.getMouseEvent(), deltaTime);
+			this->m_deltaTime = (float)m_timer.timeElapsed();
+			m_timer.restart();
+
+			this->m_gameState.update(this->m_input.getKeyboard(), this->m_input.getMouseEvent(), this->m_deltaTime);
 			this->m_input.readBuffers();
-			this->m_viewLayerPtr->update(deltaTime);
+			this->m_viewLayerPtr->update(this->m_deltaTime);
 			this->m_viewLayerPtr->render();
 		}
 	}

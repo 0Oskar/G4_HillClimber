@@ -416,7 +416,7 @@ void ViewLayer::render()
 	}
 
 	this->m_fps++;
-	if (1000.0 < m_timer.timeElapsed())
+	if (1.0 < m_timer.timeElapsed())
 	{
 		std::string fps = "FPS: " + std::to_string(this->m_fps) + "\n";
 		OutputDebugStringA(fps.c_str());

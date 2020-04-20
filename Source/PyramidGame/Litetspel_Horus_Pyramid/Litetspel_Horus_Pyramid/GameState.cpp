@@ -33,13 +33,13 @@ std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* GameState::getWvpCBuffersPtr()
 void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext, GameOptions options)
 {
 	// Player
-	this->m_player.initialize(-1, -1, 1.f, DirectX::XMFLOAT3(.02f, .02f, .02f), DirectX::XMFLOAT3(.99f, .99f, .99f));
+	this->m_player.initialize(-1, -1, 1.f, DirectX::XMFLOAT3(20.f, 20.f, 20.f), DirectX::XMFLOAT3(.01f, .01f, .01f));
 	this->m_player.setPosition(DirectX::XMVectorSet(0.f, 5.f, -1.f, 1.f));
 
 	// Camera
 	this->m_camera.followMoveComp(this->m_player.getMoveCompPtr());
 	this->m_camera.initialize(
-		0.2f,
+		0.1f,
 		options.fov,
 		(float)options.width / (float)options.height,
 		0.1f,
