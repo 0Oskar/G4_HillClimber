@@ -1,36 +1,10 @@
 #pragma once
 #include"pch.h"
 #include"WICTextureLoader.h"
-//class Texture
-//{
-//
-//private:
-//
-//public:
-//	Texture() { m_texturePtr = nullptr; };
-//	//Texture() {}
-//	bool init(ID3D11Device* device, const WCHAR* txturePath)
-//	{
-//		bool couldLoad = true;
-//		HRESULT hr = DirectX::CreateWICTextureFromFile(device, L"Textures/pyramidTextur.png", nullptr, &m_texturePtr);
-//		if (FAILED(hr))
-//		{
-//			couldLoad = false;
-//		}
-//
-//		return  couldLoad;
-//	}
-//	ID3D11ShaderResourceView** getTexture()
-//	{
-//		return &m_texturePtr;
-//	}
-//
-//};
 
 class TextureHandler
 {
 private:
-	
 	TextureHandler() {};
 	std::map<const WCHAR*, ID3D11ShaderResourceView*> map;
 
@@ -46,7 +20,6 @@ private:
 
 		return  couldLoad;
 	}
-
 public:
 	static TextureHandler& get()
 	{
@@ -55,6 +28,15 @@ public:
 	}
 	TextureHandler(TextureHandler const&) = delete;
 	void operator=(TextureHandler const&) = delete;
+	~TextureHandler()
+	{
+		std::map<const WCHAR*, ID3D11ShaderResourceView*>::iterator i = map.begin();
+		while(i != map.end())
+		{
+			i->second->Release();
+			i++;
+		}
+	}
 
 	ID3D11ShaderResourceView* getTexture(const WCHAR* texturePath, ID3D11Device* device = nullptr)
 	{
