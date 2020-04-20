@@ -196,6 +196,7 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="PhysicsComponent.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="Texture.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="VertexBuffer.h" />
     <ClInclude Include="ViewLayer.h" />

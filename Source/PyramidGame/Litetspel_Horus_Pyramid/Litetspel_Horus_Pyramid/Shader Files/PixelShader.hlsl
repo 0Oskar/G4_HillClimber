@@ -2,6 +2,7 @@ struct PS_IN
 {
     float4 pos : SV_POSITION;
     float3 normal : NORMAL;
+    float2 inTextureCord : TEXCOORD;
 };
 
 cbuffer materialBuffer : register(b0)
@@ -21,16 +22,21 @@ cbuffer lightBuffer : register(b1) //Ambient
 cbuffer directionalLight : register(b2)
 {
     float4 dirLightDirection;
-    float4 dirLightColor;  
+    float4 dirLightColor;
 };
+
+Texture2D objTexture : TEXTURE : register(t0);
+SamplerState samplerState : SAMPLER : register(s0);
+
 
 float4 main(PS_IN input) : SV_TARGET
 {
+    float3 pixelColorFromTexture = objTexture.Sample(samplerState, input.inTextureCord);
     float3 color = lightColor * strength;
     float diffBright = saturate(dot(input.normal, dirLightDirection.xyz));
     
     color += dirLightColor.xyz * diffBright;
     float3 fColor = diffuse.xyz * color.xyz;
     
-    return float4(fColor.xyz, 1);
+    return float4(pixelColorFromTexture.xyz, 1);
 }

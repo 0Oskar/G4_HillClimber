@@ -206,11 +206,20 @@ void ViewLayer::initShaders()
 			D3D11_INPUT_PER_VERTEX_DATA,
 			0
 		},
+		{
+			"TEXCOORD",
+			0,
+			DXGI_FORMAT_R32G32_FLOAT,
+			0,
+			24,
+			D3D11_INPUT_PER_VERTEX_DATA,
+			0
+		},
 	};
 
 	hr = this->m_device->CreateInputLayout(
 		layoutDesc,
-		2,
+		3,
 		vsBlob->GetBufferPointer(),
 		vsBlob->GetBufferSize(),
 		&this->m_vertexLayout
@@ -317,6 +326,7 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 
 	this->initDeviceAndSwapChain();
 	this->initViewPort();
+	this->initSamplerState();
 	this->initDepthStencilBuffer();
 	this->initShaders();
 	this->initConstantBuffer();
@@ -354,6 +364,23 @@ void ViewLayer::initConstantBuffer()
 	this->m_dirLightBuffer.init(this->m_device.Get(), this->m_deviceContext.Get());
 }
 
+void ViewLayer::initSamplerState()
+{
+	D3D11_SAMPLER_DESC samplerDesc;
+	ZeroMemory(&samplerDesc, sizeof(samplerDesc));
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+	samplerDesc.MinLOD = 0;
+
+	HRESULT hr = this->m_device->CreateSamplerState(&samplerDesc, this->m_samplerState.GetAddressOf());
+	assert(SUCCEEDED(hr) && "Error when creating sampler state!");
+
+}
+
 void ViewLayer::render()
 {
 	// Clear Frame
@@ -366,6 +393,8 @@ void ViewLayer::render()
 	// Set Shaders
 	this->m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	this->m_deviceContext->IASetInputLayout(this->m_vertexLayout.Get());
+
+	this->m_deviceContext->PSSetSamplers(0, 1, m_samplerState.GetAddressOf());
 
 	this->m_deviceContext->VSSetShader(this->m_vertexShader.Get(), nullptr, 0);
 	this->m_deviceContext->PSSetShader(this->m_pixelShader.Get(), nullptr, 0);
