@@ -9,6 +9,8 @@ Model::Model()
 	this->m_devicePtr = nullptr;
 	this->m_movementComponent = new MovementComponent();
 	this->drawWithIndex = false;
+
+
 	
 	this->m_worldMatrix = DirectX::XMMatrixIdentity();
 }
@@ -19,33 +21,43 @@ Model::Model(DirectX::XMVECTOR pos)
 	this->m_deviceContextPtr = nullptr;
 	this->m_devicePtr = nullptr;
 	this->m_movementComponent = new MovementComponent();
+
 	this->drawWithIndex = false;
 	this->m_movementComponent->position = pos;
 }
+
 
 void Model::initModel(ID3D11Device* device, ID3D11DeviceContext* dContext, ConstBuffer<VS_CONSTANT_BUFFER>& constBufferVS, MaterialData material)
 {
 	this->m_devicePtr = device;
 	this->m_deviceContextPtr = dContext;
+
+	this->m_devicePtr = device;
+	this->m_deviceContextPtr = dContext;
+
 	this->m_constBufferPtr = &constBufferVS;
 
 	std::vector<Vertex> vertices
 	{
 		Vertex(
 			-0.5f, -0.5f, 0.f,
-			0.f, 0.f, -1.f
+			0.f, 0.f, -1.f,
+			0.0f, 1.0f
 		),
 		Vertex(
 			-0.5f, 0.5f, 0.f,
-			0.f, 1.f, -1.f
+			0.f, 1.f, -1.f,
+			0.0f, 0.0f
 		),
 		Vertex(
 			0.5f, 0.5f, 0.f,
-			0.f, 0.f, -1.f
+			0.f, 0.f, -1.f,
+			1.0f, 0.0f
 		),
 		Vertex(
 			0.5f, -0.5f, 0.f,
-			0.f, 0.f, -1.f
+			0.f, 0.f, -1.f,
+			1.0f, 1.0f
 		)
 	};
 	HRESULT hr = this->m_vertexBuffer.initialize(this->m_devicePtr, vertices.data(), (int)vertices.size());
@@ -58,9 +70,8 @@ void Model::initModel(ID3D11Device* device, ID3D11DeviceContext* dContext, Const
 	};
 	hr = this->indexBuffer.init(this->m_devicePtr, indicies, ARRAYSIZE(indicies));
 	assert(SUCCEEDED(hr) && "Error, index buffer could not be created!");
-	
 
-	this->m_material.init(device, dContext, material);
+	this->m_material.init(device, dContext, material, L"Textures/pyramidTextur.png");
 	this->drawWithIndex = true;
 	this->updateWorldMatrix();
 }
@@ -191,9 +202,9 @@ void Model::loadVertexFromOBJ(ID3D11Device* device, ID3D11DeviceContext* dContex
 	{
 		this->m_vertices[i].position = vertexPositions[vertexPosIndices[i] - 1];
 		//this->m_vertices[i].color = vertexPositions[vertexPosIndices[i] - 1];
-		/*if (vertexTexcoords.size())
-			this->m_vertices[i].texcoord = vertexTexcoords[vertexTexIndices[i] - 1];
-			*/
+		if (vertexTexcoords.size())
+			this->m_vertices[i].textureCoord = vertexTexcoords[vertexTexIndices[i] - 1];
+			
 		if (vertexNormals.size())
 			this->m_vertices[i].normal = vertexNormals[vertexNormIndices[i] - 1];
 	}
@@ -210,6 +221,7 @@ void Model::draw(DirectX::XMMATRIX& viewProjMtx)
 	this->m_constBufferPtr->m_data.worldMatrix = this->m_worldMatrix;
 	this->m_constBufferPtr->upd();
 	this->m_material.upd(this->m_deviceContextPtr);
+
 
 	UINT vertexOffset = 0;
 	this->m_deviceContextPtr->IASetVertexBuffers(0, 1, this->m_vertexBuffer.GetAddressOf(), this->m_vertexBuffer.getStridePointer(), &vertexOffset);

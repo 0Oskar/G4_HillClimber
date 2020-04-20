@@ -98,6 +98,9 @@
     <ClInclude Include="Material.h">
       <Filter>Header\View</Filter>
     </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Header\View</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

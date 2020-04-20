@@ -23,11 +23,16 @@ private:
 	Microsoft::WRL::ComPtr< ID3D11DepthStencilView > m_depthStencilView;
 	Microsoft::WRL::ComPtr< ID3D11Texture2D > m_depthStencilBuffer;
 	Microsoft::WRL::ComPtr< ID3D11DepthStencilState > m_depthStencilState;
+	
+	//SamplerState
+	Microsoft::WRL::ComPtr<ID3D11SamplerState> m_samplerState;
+
 
 	// Shaders
 	Microsoft::WRL::ComPtr< ID3D11VertexShader > m_vertexShader;
 	Microsoft::WRL::ComPtr< ID3D11PixelShader > m_pixelShader;
 	Microsoft::WRL::ComPtr< ID3D11InputLayout > m_vertexLayout;
+
 
 	// Constant Buffer
 	Microsoft::WRL::ComPtr< ID3D11Buffer > m_constantBuffer;
@@ -48,6 +53,7 @@ private:
 	void initDeviceAndSwapChain();
 	void initViewPort();
 	void initDepthStencilBuffer();
+	void initSamplerState();
 	void initShaders();
 	void initConstantBuffer();
 public:
