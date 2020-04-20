@@ -97,7 +97,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 
 	DirectX::XMVECTOR vec = DirectX::XMVectorSet(100.f, 100.f, 100.f, 1.f);
 	this->m_gameObjects[0].setScale(vec);
-	this->m_gameObjects[0].setBoundingBox(DirectX::XMFLOAT3(100.f, 1.f, 100.f));
+	this->m_gameObjects[0].setBoundingBox(DirectX::XMFLOAT3(100.f, 0.1f, 100.f));
 	this->m_player.addAABB(this->m_gameObjects[0].getAABBPtr()); // add Bounding Box to player collidables
 
 	// Quads
@@ -159,7 +159,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	vec = DirectX::XMVectorSet(1.5f, 1.5f, 1.5f, 1.f);
 	this->m_gameObjects[4].setScale(vec);
 
-	this->m_gameObjects[4].setBoundingBox(DirectX::XMFLOAT3(3.f, 3.f, 3.f));
+	this->m_gameObjects[4].setBoundingBox(DirectX::XMFLOAT3(1.5f, 1.5f, 1.5f));
 	this->m_player.addAABB(this->m_gameObjects[4].getAABBPtr()); // add Bounding Box to player collidables
 
 	// Cube 2
@@ -173,7 +173,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	vec = DirectX::XMVectorSet(1.5f, 1.5f, 1.5f, 1.f);
 	this->m_gameObjects[5].setScale(vec);
 
-	this->m_gameObjects[5].setBoundingBox(DirectX::XMFLOAT3(3.f, 3.f, 3.f));
+	this->m_gameObjects[5].setBoundingBox(DirectX::XMFLOAT3(1.5f, 1.5f, 1.5f));
 	this->m_player.addAABB(this->m_gameObjects[5].getAABBPtr()); // add Bounding Box to player collidables
 
 	// TreeV2

@@ -33,9 +33,11 @@ public:
 	bool collidable() const;
 	DirectX::XMVECTOR getPosition() const;
 	DirectX::XMMATRIX getWorldMatrix() const;
+	DirectX::XMMATRIX getTranslationMatrix() const;
 	int getModelIndex() const;
 	int getWvpCBufferIndex() const;
 	MovementComponent* getMoveCompPtr();
+	DirectX::BoundingBox getAABB();
 	DirectX::BoundingBox* getAABBPtr();
 
 	// Setters

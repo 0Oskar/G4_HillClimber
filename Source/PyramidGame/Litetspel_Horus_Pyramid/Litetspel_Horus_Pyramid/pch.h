@@ -28,8 +28,15 @@
 #include <dxgi.h>
 #include <dxgi1_2.h>
 #include <d3dcompiler.h>
+#include <SimpleMath.h>
 #include <DirectXMath.h>
 #include <DirectXCollision.h>
+#include <CommonStates.h>
+#include <Effects.h>
+#include <PrimitiveBatch.h>
+#include <VertexTypes.h>
+#include <DirectXColors.h>
+#include "DebugDraw.h"
 
 // DirectX 11 Linking
 #pragma comment (lib, "user32")

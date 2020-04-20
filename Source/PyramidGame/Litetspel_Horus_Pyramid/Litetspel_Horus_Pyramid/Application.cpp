@@ -10,6 +10,7 @@ Application::Application()
 	this->m_gameOptions.height = 600;
 	this->m_gameOptions.width = 600;
 	this->m_gameOptions.fov = 40;
+	this->m_deltaTime = 0.f;
 }
 
 bool Application::initApplication(HINSTANCE hInstance, LPWSTR lpCmdLine, HWND hWnd, int nShowCmd)
@@ -141,9 +142,18 @@ void Application::applicationLoop()
 		}
 		else // Render/Logic Loop
 		{
+			// Delta Time
 			this->m_deltaTime = (float)m_timer.timeElapsed();
 			m_timer.restart();
 
+			// Draw Collision Primitives
+			if (this->m_input.getKeyboard()->isKeyPressed('T'))
+				this->m_viewLayerPtr->toggleDrawPrimitives(true);
+
+			if (this->m_input.getKeyboard()->isKeyPressed('G'))
+				this->m_viewLayerPtr->toggleDrawPrimitives(false);
+
+			// Update Layers
 			this->m_gameState.update(this->m_input.getKeyboard(), this->m_input.getMouseEvent(), this->m_deltaTime);
 			this->m_input.readBuffers();
 			this->m_viewLayerPtr->update(this->m_deltaTime);

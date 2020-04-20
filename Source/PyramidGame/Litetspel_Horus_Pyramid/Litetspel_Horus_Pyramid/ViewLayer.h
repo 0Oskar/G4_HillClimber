@@ -25,19 +25,24 @@ private:
 	Microsoft::WRL::ComPtr< ID3D11Texture2D > m_depthStencilBuffer;
 	Microsoft::WRL::ComPtr< ID3D11DepthStencilState > m_depthStencilState;
 	
-	//SamplerState
+	// SamplerState
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> m_samplerState;
-
 
 	// Shaders
 	Microsoft::WRL::ComPtr< ID3D11VertexShader > m_vertexShader;
 	Microsoft::WRL::ComPtr< ID3D11PixelShader > m_pixelShader;
 	Microsoft::WRL::ComPtr< ID3D11InputLayout > m_vertexLayout;
 
-
 	// Constant Buffer
 	Microsoft::WRL::ComPtr< ID3D11Buffer > m_constantBuffer;
-  
+
+	// Primitive Batch
+	std::unique_ptr< DirectX::CommonStates > m_states;
+	std::unique_ptr< DirectX::BasicEffect > m_effect;
+	std::unique_ptr< DirectX::PrimitiveBatch<DirectX::VertexPositionColor> > m_batch;
+	Microsoft::WRL::ComPtr< ID3D11InputLayout > m_batchInputLayout;
+	bool m_drawPrimitives;
+
 	// Objects from state
 	std::vector<GameObject>* m_gameObjectsFromState;
 	std::vector<Model>* m_modelsFromState;
@@ -84,4 +89,5 @@ public:
 
 	// Render
 	void render();
+	void toggleDrawPrimitives(bool toggle);
 };

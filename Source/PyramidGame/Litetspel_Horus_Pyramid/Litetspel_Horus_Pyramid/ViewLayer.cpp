@@ -272,6 +272,8 @@ ViewLayer::ViewLayer()
 	this->m_modelsFromState = nullptr;
 	this->m_wvpCBufferFromState = nullptr;
 
+	this->m_drawPrimitives = false;
+
 	this->m_viewMatrix = nullptr;
 	this->m_projectionMatrix = nullptr;
 	this->m_fps = 0;
@@ -331,26 +333,40 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 	this->initShaders();
 	this->initConstantBuffer();
 
-	MaterialData mat;
-	DirectX::XMFLOAT4 defSet = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
-	mat.diffuse = defSet;
+	// Primitive Batch
+	this->m_states = std::make_unique<DirectX::CommonStates >(this->m_device.Get());
+	this->m_batch = std::make_unique< DirectX::PrimitiveBatch<DirectX::VertexPositionColor> >(this->m_deviceContext.Get());
 
-	//Ambient Light buffer
+	this->m_effect = std::make_unique< DirectX::BasicEffect >(this->m_device.Get());
+	this->m_effect->SetVertexColorEnabled(true);
+
+	void const* shaderByteCode;
+	size_t byteCodeLength;
+
+	this->m_effect->GetVertexShaderBytecode(&shaderByteCode, &byteCodeLength);
+
+	HRESULT hr = this->m_device->CreateInputLayout(
+		DirectX::VertexPositionColor::InputElements, 
+		DirectX::VertexPositionColor::InputElementCount,
+		shaderByteCode,
+		byteCodeLength,
+		m_batchInputLayout.ReleaseAndGetAddressOf());
+
+	assert(SUCCEEDED(hr) && "Error, failed to create input layout for primitives!");
+
+	// Ambient Light buffer
 	PS_LIGHT_BUFFER lightBuffer;
 	lightBuffer.lightColor = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
 	lightBuffer.strength = 0.2f;
 	this->m_lightBuffer.m_data = lightBuffer;
 	this->m_lightBuffer.upd();
 
-	//Directional Light buffer
+	// Directional Light buffer
 	PS_DIR_BUFFER dirBuffer;
 	dirBuffer.lightColor = DirectX::XMFLOAT4(.8f, 0.8f, 0.8f, 1.f);
 	dirBuffer.lightDirection = DirectX::XMFLOAT4(0.0f, 1.0f, -1.0f, 0.0f);
 	this->m_dirLightBuffer.m_data = dirBuffer;
 	this->m_dirLightBuffer.upd();
-
-	defSet = DirectX::XMFLOAT4(0.f, 0.f, 1.f, 1.0f);
-	mat.diffuse = defSet;
 }
 
 void ViewLayer::update(float dt)
@@ -389,12 +405,15 @@ void ViewLayer::render()
 
 	// Set Render Target
 	this->m_deviceContext->OMSetRenderTargets(1, this->m_outputRTV.GetAddressOf(), this->m_depthStencilView.Get());
+	//this->m_deviceContext->OMSetBlendState(m_states->Opaque(), nullptr, 0xFFFFFFFF);
+	this->m_deviceContext->OMSetDepthStencilState(m_states->DepthDefault(), 0);
+	this->m_deviceContext->RSSetState(this->m_states->CullCounterClockwise());
 
 	// Set Shaders
 	this->m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	this->m_deviceContext->IASetInputLayout(this->m_vertexLayout.Get());
 
-	this->m_deviceContext->PSSetSamplers(0, 1, m_samplerState.GetAddressOf());
+	this->m_deviceContext->PSSetSamplers(0, 1, this->m_samplerState.GetAddressOf());
 
 	this->m_deviceContext->VSSetShader(this->m_vertexShader.Get(), nullptr, 0);
 	this->m_deviceContext->PSSetShader(this->m_pixelShader.Get(), nullptr, 0);
@@ -407,11 +426,13 @@ void ViewLayer::render()
 	DirectX::XMMATRIX viewPMtrx = (*m_viewMatrix) * (*m_projectionMatrix);
 	for (size_t i = 0; i < this->m_gameObjectsFromState->size(); i++)
 	{
+		// Get indexes
 		GameObject* gObject = &this->m_gameObjectsFromState->at(i);
 		int wvpIndex = gObject->getWvpCBufferIndex();
 		int mIndex = gObject->getModelIndex();
-		// Set 
+		// Set Constant buffer
 		this->m_deviceContext->VSSetConstantBuffers(0, 1, this->m_wvpCBufferFromState->at(wvpIndex).GetAdressOf());
+		// Draw Model
 		this->m_modelsFromState->at(mIndex).draw(viewPMtrx);
 	}
 
@@ -424,6 +445,40 @@ void ViewLayer::render()
 		this->m_fps = 0;
 	}
 
+	// Draw Primitives
+	if (this->m_drawPrimitives)
+	{
+		this->m_deviceContext->OMSetBlendState(m_states->Opaque(), nullptr, 0xFFFFFFFF);
+		this->m_deviceContext->OMSetDepthStencilState(m_states->DepthNone(), 0);
+		this->m_deviceContext->RSSetState(m_states->CullNone());
+
+
+		this->m_deviceContext->IASetInputLayout(this->m_batchInputLayout.Get());
+
+		this->m_batch->Begin();
+
+		this->m_effect->SetView(*(this->m_viewMatrix));
+		this->m_effect->SetProjection(*(this->m_projectionMatrix));
+		for (size_t i = 0; i < this->m_gameObjectsFromState->size(); i++)
+		{
+			if (this->m_gameObjectsFromState->at(i).collidable())
+			{
+				// Apply Effect
+				this->m_effect->Apply(this->m_deviceContext.Get());
+				// Draw Primitive
+				DX::Draw(m_batch.get(), *(this->m_gameObjectsFromState->at(i).getAABBPtr()), DirectX::Colors::Blue);
+			}
+		}
+
+		m_batch->End();
+	}
+
 	// Swap Frames
 	this->m_swapChain->Present(0, 0);
+}
+
+void ViewLayer::toggleDrawPrimitives(bool toggle)
+{
+	//this->m_drawPrimitives = !this->m_drawPrimitives;
+	this->m_drawPrimitives = toggle;
 }
