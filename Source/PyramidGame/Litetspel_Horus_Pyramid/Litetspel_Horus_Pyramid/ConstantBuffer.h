@@ -1,6 +1,6 @@
 #pragma once
-#include <DirectXMath.h>
 
+#include "pch.h"
 
 struct VS_CONSTANT_BUFFER
 {
@@ -55,8 +55,11 @@ public:
 		
 
 	}
-	void upd()
+	void upd(T* data = nullptr)
 	{
+		if (data)
+			this->m_data = *data;
+
 		D3D11_MAPPED_SUBRESOURCE mapSubresource;
 		HRESULT hr = this->dContextPtr->Map(this->buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mapSubresource);
 		assert(SUCCEEDED(hr) && "Error, failed to map CBuffer!");

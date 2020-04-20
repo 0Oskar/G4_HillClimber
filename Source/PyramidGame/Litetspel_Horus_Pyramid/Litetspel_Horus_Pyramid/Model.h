@@ -29,36 +29,22 @@ struct Vertex
 
 class Model
 {
-
 private:
 	ID3D11Device* m_devicePtr;
 	ID3D11DeviceContext* m_deviceContextPtr;
-	ConstBuffer<VS_CONSTANT_BUFFER>* m_constBufferPtr;
 	VertexBuffer<Vertex> m_vertexBuffer;
 	std::vector<Vertex> m_vertices;
-
-	IndexBuffer indexBuffer;
+	IndexBuffer m_indexBuffer;
 	Material m_material;
 
-	DirectX::XMMATRIX m_worldMatrix;
-	void updateWorldMatrix();
-	MovementComponent* m_movementComponent;
-
-	bool drawWithIndex;
+	bool m_drawWithIndex;
 
 public:
 	Model();
-	Model(DirectX::XMVECTOR pos);
 
-	void initModel(ID3D11Device* device, ID3D11DeviceContext* dContext, ConstBuffer<VS_CONSTANT_BUFFER>& constBufferVS, MaterialData material);
-
-	void initModel(ID3D11Device* device, ID3D11DeviceContext* dContext, ConstBuffer<VS_CONSTANT_BUFFER>& constBufferVS, ID3D11ShaderResourceView* texture);
-
+	void initModel(ID3D11Device* device, ID3D11DeviceContext* dContext, MaterialData material);
 	void draw(DirectX::XMMATRIX &mtrx);
-	void setPosition(DirectX::XMVECTOR pos);
-	void setScale(DirectX::XMVECTOR scale);
-	void loadVertexVector(ID3D11Device* device, ID3D11DeviceContext* dContext, ConstBuffer<VS_CONSTANT_BUFFER>& constBufferVS, std::vector<Vertex> vertexVector);
-
-	void loadVertexFromOBJ(ID3D11Device* device, ID3D11DeviceContext* dContext, ConstBuffer<VS_CONSTANT_BUFFER>& constBufferVS, std::wstring objFilePath, DirectX::XMFLOAT3 color, MaterialData material);
+	void loadVertexVector(ID3D11Device* device, ID3D11DeviceContext* dContext, std::vector<Vertex> vertexVector, MaterialData material);
+	void loadVertexFromOBJ(ID3D11Device* device, ID3D11DeviceContext* dContext, std::wstring objFilePath, DirectX::XMFLOAT3 color, MaterialData material);
 };
 

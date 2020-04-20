@@ -19,7 +19,6 @@ cbuffer constantBuffer : register(b0)
     matrix wMatrix;
 };
 
-
 VS_OUT main(VS_IN input)
 {
     VS_OUT output;

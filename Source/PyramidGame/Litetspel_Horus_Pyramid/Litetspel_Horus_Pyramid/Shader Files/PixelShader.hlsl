@@ -29,7 +29,6 @@ Texture2D objTexture : TEXTURE : register(t0);
 SamplerState samplerState : SAMPLER : register(s0);
 
 
-
 float4 main(PS_IN input) : SV_TARGET
 {
     float3 pixelColorFromTexture = objTexture.Sample(samplerState, input.inTextureCord);
