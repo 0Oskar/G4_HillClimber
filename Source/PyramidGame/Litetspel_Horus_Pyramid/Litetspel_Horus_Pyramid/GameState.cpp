@@ -39,7 +39,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	// Camera
 	this->m_camera.followMoveComp(this->m_player.getMoveCompPtr());
 	this->m_camera.initialize(
-		0.1f,
+		0.03f,
 		options.fov,
 		(float)options.width / (float)options.height,
 		0.1f,

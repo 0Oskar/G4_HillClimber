@@ -46,9 +46,9 @@ void Player::update(Keyboard* keyboard, MouseEvent mouseEvent, float dt)
 		this->m_physicsComp->addForceDir(Direction::RIGHT, dt);
 
 	if (keyboard->isKeyPressed(' '))
-		this->m_physicsComp->jump(1.5f, dt);
+		this->m_physicsComp->jump(3.f, dt);
 
-	if (keyboard->isKeyPressed((unsigned char)16))
+	if (keyboard->isKeyPressed((unsigned char)16)) // Shift
 		this->m_physicsComp->addForceDir(Direction::DOWN, dt);
 
 	// For Debugging purposes
