@@ -130,6 +130,11 @@ DirectX::XMMATRIX GameObject::getWorldMatrix() const
 		DirectX::XMMatrixTranslationFromVector(this->m_movementComp->position));
 }
 
+DirectX::XMMATRIX GameObject::getTranslationMatrix() const
+{
+	return DirectX::XMMatrixTranslationFromVector(this->m_movementComp->position);
+}
+
 int GameObject::getModelIndex() const
 {
 	return this->m_modelIndex;
@@ -143,6 +148,11 @@ int GameObject::getWvpCBufferIndex() const
 MovementComponent* GameObject::getMoveCompPtr()
 {
 	return this->m_movementComp;
+}
+
+DirectX::BoundingBox GameObject::getAABB()
+{
+	return *(this->m_physicsComp->getAABBPtr());
 }
 
 DirectX::BoundingBox* GameObject::getAABBPtr()
