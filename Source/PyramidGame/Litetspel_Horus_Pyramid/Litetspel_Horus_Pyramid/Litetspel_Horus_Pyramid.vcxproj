@@ -149,6 +149,7 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameState.cpp" />
+    <ClCompile Include="HookHand.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="Input_Keyboard.cpp" />
     <ClCompile Include="main.cpp" />
@@ -186,6 +187,7 @@
     <ClInclude Include="ConstantBuffer.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameState.h" />
+    <ClInclude Include="HookHand.h" />
     <ClInclude Include="IndexBuffer.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="Input_Keyboard.h" />

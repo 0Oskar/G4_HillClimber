@@ -9,7 +9,7 @@ Player::~Player()
 {
 }
 
-void Player::initialize(int modelIndex, int wvpCBufferIndex, float mass, DirectX::XMFLOAT3 acceleration, DirectX::XMFLOAT3 deceleration)
+void Player::initialize(int modelIndex, int wvpCBufferIndex, float mass, DirectX::XMFLOAT3 acceleration, DirectX::XMFLOAT3 deceleration, GameObject* gObj)
 {
 	this->m_isStatic = true;
 	this->m_collidable = true;
@@ -20,6 +20,8 @@ void Player::initialize(int modelIndex, int wvpCBufferIndex, float mass, DirectX
 	this->m_physicsComp = new PhysicsComponent();
 	this->m_physicsComp->initialize(this->m_movementComp, mass, acceleration, deceleration);
 	this->m_physicsComp->setBoundingBox(this->m_movementComp->getPositionF3(), DirectX::XMFLOAT3(0.5f, 3.f, 0.5f));
+	this->m_hookHand.init(gObj, m_movementComp);
+
 }
 
 void Player::addAABB(DirectX::BoundingBox* aabb)
@@ -29,6 +31,7 @@ void Player::addAABB(DirectX::BoundingBox* aabb)
 
 void Player::update(Keyboard* keyboard, MouseEvent mouseEvent, float dt)
 {
+	this->m_hookHand.update(dt);
 	// Gravity
 	this->m_physicsComp->addGravity(dt);
 
@@ -50,6 +53,15 @@ void Player::update(Keyboard* keyboard, MouseEvent mouseEvent, float dt)
 
 	if (keyboard->isKeyPressed((unsigned char)16))
 		this->m_physicsComp->addForceDir(Direction::DOWN, dt);
+	if (keyboard->isKeyPressed('Q'))
+	{
+		this->m_hookHand.retract();
+	}
+	if (keyboard->isKeyPressed('E'))
+	{
+		this->m_hookHand.fire();
+	}
+
 
 	// For Debugging purposes
 	if (keyboard->isKeyPressed('R'))
@@ -57,6 +69,7 @@ void Player::update(Keyboard* keyboard, MouseEvent mouseEvent, float dt)
 		this->m_movementComp->position = DirectX::XMVectorSet(0.f, 6.f, -1.f, 1.f);
 		this->m_physicsComp->setVelocity(DirectX::XMFLOAT3()); // Reset Velocity
 	}
+
 
 	// Handle Collisions
 	this->m_physicsComp->handleCollision(this->m_collidableAABBoxes, dt);

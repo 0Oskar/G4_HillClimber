@@ -45,6 +45,6 @@ public:
 	void initModel(ID3D11Device* device, ID3D11DeviceContext* dContext, MaterialData material);
 	void draw(DirectX::XMMATRIX &mtrx);
 	void loadVertexVector(ID3D11Device* device, ID3D11DeviceContext* dContext, std::vector<Vertex> vertexVector, MaterialData material);
-	void loadVertexFromOBJ(ID3D11Device* device, ID3D11DeviceContext* dContext, std::wstring objFilePath, DirectX::XMFLOAT3 color, MaterialData material);
+	void loadVertexFromOBJ(ID3D11Device* device, ID3D11DeviceContext* dContext, std::wstring objFilePath, MaterialData material);
 };
 

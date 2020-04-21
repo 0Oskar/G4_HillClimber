@@ -32,25 +32,13 @@ std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* GameState::getWvpCBuffersPtr()
 
 void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext, GameOptions options)
 {
-	// Player
-	this->m_player.initialize(-1, -1, 1.f, DirectX::XMFLOAT3(20.f, 20.f, 20.f), DirectX::XMFLOAT3(.01f, .01f, .01f));
-	this->m_player.setPosition(DirectX::XMVectorSet(0.f, 5.f, -1.f, 1.f));
-
-	// Camera
-	this->m_camera.followMoveComp(this->m_player.getMoveCompPtr());
-	this->m_camera.initialize(
-		0.1f,
-		options.fov,
-		(float)options.width / (float)options.height,
-		0.1f,
-		1000.f
-	);
+	
 
 	// Material
 	MaterialData mat;
 
 	// Models
-	this->m_gameObjects.resize(10);
+	this->m_gameObjects.resize(11);
 	// Ground Object
 	std::vector<Vertex> groundvertices =
 	{
@@ -134,7 +122,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	// Pyramid
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(0.75164f, 0.60648f, 0.22648f, 1.0f);
-	this->m_models[2].loadVertexFromOBJ(device, dContext, L"Models/BasePyr.obj", DirectX::XMFLOAT3(0.f, 1.f, 0.f), mat);
+	this->m_models[2].loadVertexFromOBJ(device, dContext, L"Models/BasePyr.obj", mat);
 
 	this->m_wvpCBuffers.emplace_back();
 	this->m_wvpCBuffers[3].init(device, dContext);
@@ -147,7 +135,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	// Cube 1
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(0.396f, 0.74151f, 0.69102f, 1.0f);
-	this->m_models[3].loadVertexFromOBJ(device, dContext, L"Models/cube.obj", DirectX::XMFLOAT3(1.f, 0.f, 0.f), mat);
+	this->m_models[3].loadVertexFromOBJ(device, dContext, L"Models/cube.obj", mat);
 
 	this->m_wvpCBuffers.emplace_back();
 	this->m_wvpCBuffers[4].init(device, dContext);
@@ -179,7 +167,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	// TreeV2
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(0.1f, 0.74151f, 0.1f, 1.0f);
-	this->m_models[4].loadVertexFromOBJ(device, dContext, L"Models/TreeV2.obj", DirectX::XMFLOAT3(1.f, 0.f, 0.f), mat);
+	this->m_models[4].loadVertexFromOBJ(device, dContext, L"Models/TreeV2.obj", mat);
 
 	this->m_wvpCBuffers.emplace_back();
 	this->m_wvpCBuffers[6].init(device, dContext);
@@ -192,7 +180,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	// LillyPad
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(0.07568f, 0.61424f, 0.07568f, 1.0f);
-	this->m_models[5].loadVertexFromOBJ(device, dContext, L"Models/LillyPad.obj", DirectX::XMFLOAT3(1.f, 0.f, 0.f), mat);
+	this->m_models[5].loadVertexFromOBJ(device, dContext, L"Models/LillyPad.obj", mat);
 
 	this->m_wvpCBuffers.emplace_back();
 	this->m_wvpCBuffers[7].init(device, dContext);
@@ -205,7 +193,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	// Cactus
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(0.4f, 0.5f, 0.4f, 1.0f);
-	this->m_models[6].loadVertexFromOBJ(device, dContext, L"Models/Cactus.obj", DirectX::XMFLOAT3(1.f, 0.f, 0.f), mat);
+	this->m_models[6].loadVertexFromOBJ(device, dContext, L"Models/Cactus.obj", mat);
 
 	this->m_wvpCBuffers.emplace_back();
 	this->m_wvpCBuffers[8].init(device, dContext);
@@ -220,7 +208,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	// Teapot
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(0.4f, 0.4f, 0.4f, 1.0f);
-	this->m_models[7].loadVertexFromOBJ(device, dContext, L"Models/teapot.obj", DirectX::XMFLOAT3(1.f, 0.f, 0.f), mat);
+	this->m_models[7].loadVertexFromOBJ(device, dContext, L"Models/teapot.obj", mat);
 
 	this->m_wvpCBuffers.emplace_back();
 	this->m_wvpCBuffers[9].init(device, dContext);
@@ -231,6 +219,35 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_gameObjects[9].setPosition(vec);
 	vec = DirectX::XMVectorSet(.5f, .5f, .5f, 1.f);
 	this->m_gameObjects[9].setScale(vec);
+
+	//Sphere "HookHead"
+	this->m_models.emplace_back();
+	mat.diffuse = DirectX::XMFLOAT4(0.4f, 0.4f, 0.4f, 1.0f);
+	this->m_models[8].loadVertexFromOBJ(device, dContext, L"Models/sphere.obj", mat);
+
+	this->m_wvpCBuffers.emplace_back();
+	this->m_wvpCBuffers[10].init(device, dContext);
+
+	this->m_gameObjects[10].initializeDynamic(true, 8, 10, 1, DirectX::XMFLOAT3(10, 10, 10), DirectX::XMFLOAT3(10, 10, 10));
+
+	vec = DirectX::XMVectorSet(10.f, 1.f, -20.f, 1.f);
+	this->m_gameObjects[10].setPosition(vec);
+	vec = DirectX::XMVectorSet(.2f, .2f, .2f, 1.f);
+	this->m_gameObjects[10].setScale(vec);
+
+	// Player
+	this->m_player.initialize(-1, -1, 1.f, DirectX::XMFLOAT3(20.f, 20.f, 20.f), DirectX::XMFLOAT3(.01f, .01f, .01f), &this->m_gameObjects[10]);
+	this->m_player.setPosition(DirectX::XMVectorSet(0.f, 5.f, -1.f, 1.f));
+
+	// Camera
+	this->m_camera.followMoveComp(this->m_player.getMoveCompPtr());
+	this->m_camera.initialize(
+		0.1f,
+		options.fov,
+		(float)options.width / (float)options.height,
+		0.1f,
+		1000.f
+	);
 }
 
 void GameState::update(Keyboard* keyboard, MouseEvent mouseEvent, float dt)
