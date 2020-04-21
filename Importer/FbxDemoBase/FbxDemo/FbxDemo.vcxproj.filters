@@ -96,6 +96,9 @@
     <ClInclude Include="BiReader.h">
       <Filter>Header Files\FileWrite</Filter>
     </ClInclude>
+    <ClInclude Include="ImporterStructure.h">
+      <Filter>Header Files\FileWrite</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DisplayAnimation.cxx">
@@ -179,8 +182,8 @@
     <ClCompile Include="BiReader.cpp">
       <Filter>Header Files\FileWrite</Filter>
     </ClCompile>
-    <ClCompile Include="ReaderMain.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="DebugMain.cpp">
+      <Filter>Header Files\FileWrite</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
