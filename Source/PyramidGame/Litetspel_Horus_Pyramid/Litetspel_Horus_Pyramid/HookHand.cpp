@@ -1,5 +1,5 @@
-#include"HookHand.h"
 #include"pch.h"
+#include"HookHand.h"
 
 HookHand::HookHand()
 {
@@ -29,7 +29,10 @@ void HookHand::fire()
 {
 	if (this->canFire())
 	{
-		this->m_shootDirection = this->m_hookGameObject->getMoveCompPtr()->forward;
+		DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationRollPitchYawFromVector(this->m_playerMovement->rotation);
+
+		DirectX::XMVECTOR forwardX = XMVector3TransformCoord(DirectX::XMVectorSet(0.f, 0.f, 1.f, 0.f), rotationMatrix);
+		this->m_shootDirection = forwardX;
 		this->m_hookState = hookState::shooting;
 	}
 
@@ -75,5 +78,6 @@ void HookHand::update(float dt)
 		}
 		this->m_hookGameObject->getMoveCompPtr()->position = this->m_playerMovement->position;
 		this->m_hookGameObject->getMoveCompPtr()->rotation = this->m_playerMovement->rotation;
+		this->m_hookGameObject->getMoveCompPtr()->updateDirVectors();
 	}
 }
