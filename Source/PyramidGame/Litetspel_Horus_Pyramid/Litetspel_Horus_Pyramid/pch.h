@@ -32,8 +32,9 @@
 #include <DirectXMath.h>
 #include <DirectXCollision.h>
 #include <CommonStates.h>
-#include <Effects.h>
+#include <SpriteBatch.h>
 #include <PrimitiveBatch.h>
+#include <Effects.h>
 #include <VertexTypes.h>
 #include <DirectXColors.h>
 #include "DebugDraw.h"

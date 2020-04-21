@@ -272,6 +272,10 @@ ViewLayer::ViewLayer()
 	this->m_modelsFromState = nullptr;
 	this->m_wvpCBufferFromState = nullptr;
 
+	this->textureHandler = &TextureHandler::get();
+	this->m_crossHairSRV = nullptr;
+	this->m_crosshairPosition = DirectX::XMFLOAT2();
+
 	this->m_drawPrimitives = false;
 
 	this->m_viewMatrix = nullptr;
@@ -332,6 +336,19 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 	this->initDepthStencilBuffer();
 	this->initShaders();
 	this->initConstantBuffer();
+
+	// Crosshair
+	this->m_spriteBatch = std::make_unique<DirectX::SpriteBatch>(this->m_deviceContext.Get());
+	this->m_crossHairSRV = this->textureHandler->getTexture(L"Textures/crosshair.png", this->m_device.Get());
+	ID3D11Resource* crosshairTexture = 0;
+	this->m_crossHairSRV->GetResource(&crosshairTexture);
+	ID3D11Texture2D* crosshairTexture2D = 0;
+	crosshairTexture->QueryInterface<ID3D11Texture2D>(&crosshairTexture2D);
+	D3D11_TEXTURE2D_DESC desc;
+	crosshairTexture2D->GetDesc(&desc);
+	int crosshairX = (this->m_options->width / 2) - (desc.Width / 2);
+	int crosshairY = (this->m_options->height / 2) - (desc.Height / 2);
+	this->m_crosshairPosition = DirectX::XMFLOAT2((float)crosshairX, (float)crosshairY);
 
 	// Primitive Batch
 	this->m_states = std::make_unique<DirectX::CommonStates >(this->m_device.Get());
@@ -452,7 +469,6 @@ void ViewLayer::render()
 		this->m_deviceContext->OMSetDepthStencilState(m_states->DepthNone(), 0);
 		this->m_deviceContext->RSSetState(m_states->CullNone());
 
-
 		this->m_deviceContext->IASetInputLayout(this->m_batchInputLayout.Get());
 
 		this->m_batch->Begin();
@@ -472,6 +488,11 @@ void ViewLayer::render()
 
 		m_batch->End();
 	}
+
+	// Draw Sprites
+	this->m_spriteBatch->Begin();
+	this->m_spriteBatch->Draw(this->m_crossHairSRV, this->m_crosshairPosition);
+	this->m_spriteBatch->End();
 
 	// Swap Frames
 	this->m_swapChain->Present(0, 0);

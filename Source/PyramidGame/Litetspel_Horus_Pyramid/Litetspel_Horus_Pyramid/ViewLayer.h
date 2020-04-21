@@ -36,6 +36,14 @@ private:
 	// Constant Buffer
 	Microsoft::WRL::ComPtr< ID3D11Buffer > m_constantBuffer;
 
+	// Texture Handler
+	TextureHandler* textureHandler;
+
+	// Crosshair SpriteBatch
+	std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
+	ID3D11ShaderResourceView* m_crossHairSRV;
+	DirectX::XMFLOAT2 m_crosshairPosition;
+
 	// Primitive Batch
 	std::unique_ptr< DirectX::CommonStates > m_states;
 	std::unique_ptr< DirectX::BasicEffect > m_effect;

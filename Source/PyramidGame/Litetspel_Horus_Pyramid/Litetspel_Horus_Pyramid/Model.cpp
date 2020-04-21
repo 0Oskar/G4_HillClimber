@@ -60,7 +60,7 @@ void Model::loadVertexVector(ID3D11Device* device, ID3D11DeviceContext* dContext
 	HRESULT hr = this->m_vertexBuffer.initialize(this->m_devicePtr, vertexVector.data(), (int)vertexVector.size());
 	assert(SUCCEEDED(hr) && "Error, vertex buffer could not be created!");
 
-	this->m_material.init(device, dContext, material);
+	this->m_material.init(device, dContext, material, L"Textures/pyramidTextur.png");
 }
 
 void Model::loadVertexFromOBJ(ID3D11Device* device, ID3D11DeviceContext* dContext, std::wstring objFilePath, MaterialData materialData)

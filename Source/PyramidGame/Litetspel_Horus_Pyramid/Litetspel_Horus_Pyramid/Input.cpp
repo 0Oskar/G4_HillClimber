@@ -3,8 +3,7 @@
 
 Input::Input()
 {
-
-
+	this->m_cursorEnabled = false;
 }
 
 LRESULT Input::handleMessages(HWND hwnd, UINT& uMsg, WPARAM& wParam, LPARAM& lParam)
@@ -32,6 +31,15 @@ LRESULT Input::handleMessages(HWND hwnd, UINT& uMsg, WPARAM& wParam, LPARAM& lPa
 	}
 	case WM_LBUTTONDOWN:
 	{
+		if (!this->m_cursorEnabled)
+		{
+			while (ShowCursor(FALSE) >= 0);
+			RECT windowRect;
+			GetClientRect(hwnd, &windowRect);
+			MapWindowPoints(hwnd, nullptr, reinterpret_cast<POINT*>(&windowRect), 2);
+			ClipCursor(&windowRect);
+		}
+
 		MousePos mPos;
 		mPos.x = LOWORD(lParam);
 		mPos.y = HIWORD(lParam);
@@ -131,6 +139,25 @@ LRESULT Input::handleMessages(HWND hwnd, UINT& uMsg, WPARAM& wParam, LPARAM& lPa
 		}
 
 		return DefWindowProc(hwnd, uMsg, wParam, lParam);
+	}
+	case WM_ACTIVATE:
+	{
+		if (!this->m_cursorEnabled)
+		{
+			if (wParam & WM_ACTIVATE || wParam & WA_CLICKACTIVE)
+			{
+				while(ShowCursor(FALSE) >= 0);
+				RECT windowRect;
+				GetClientRect(hwnd, &windowRect);
+				MapWindowPoints(hwnd, nullptr, reinterpret_cast<POINT*>(&windowRect), 2);
+				ClipCursor(&windowRect);
+			}
+			else
+			{
+				while (ShowCursor(TRUE) < 0);
+				ClipCursor(nullptr);
+			}
+		}
 	}
 
 	}

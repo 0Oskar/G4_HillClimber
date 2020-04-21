@@ -19,7 +19,6 @@ bool Application::initApplication(HINSTANCE hInstance, LPWSTR lpCmdLine, HWND hW
 	const wchar_t WINDOWTILE[] = L"Litetspel Horus Pyramid";
 
 	SetCursor(NULL);
-	//ShowCursor(FALSE);
 	//TODO: Check if we have sufficient resources
 
 	this->loadGameOptions("GameOptions.xml");
