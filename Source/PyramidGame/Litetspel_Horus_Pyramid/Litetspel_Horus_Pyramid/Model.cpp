@@ -63,7 +63,7 @@ void Model::loadVertexVector(ID3D11Device* device, ID3D11DeviceContext* dContext
 	this->m_material.init(device, dContext, material);
 }
 
-void Model::loadVertexFromOBJ(ID3D11Device* device, ID3D11DeviceContext* dContext, std::wstring objFilePath, DirectX::XMFLOAT3 color, MaterialData materialData)
+void Model::loadVertexFromOBJ(ID3D11Device* device, ID3D11DeviceContext* dContext, std::wstring objFilePath, MaterialData materialData)
 {
 	this->m_devicePtr = device;
 	this->m_deviceContextPtr = dContext;

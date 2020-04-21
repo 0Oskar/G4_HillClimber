@@ -51,6 +51,9 @@
     <ClCompile Include="GameObject.cpp">
       <Filter>Source\Game Logic</Filter>
     </ClCompile>
+    <ClCompile Include="HookHand.cpp">
+      <Filter>Source\Game Logic</Filter>
+    </ClCompile>
     <ClCompile Include="DebugDraw.cpp">
       <Filter>Source\Utilites</Filter>
     </ClCompile>
@@ -112,6 +115,9 @@
     </ClInclude>
     <ClInclude Include="Texture.h">
       <Filter>Header\View</Filter>
+    </ClInclude>
+    <ClInclude Include="HookHand.h">
+      <Filter>Header\Game Logic</Filter>
     </ClInclude>
     <ClInclude Include="DebugDraw.h">
       <Filter>Header\Utilites</Filter>
