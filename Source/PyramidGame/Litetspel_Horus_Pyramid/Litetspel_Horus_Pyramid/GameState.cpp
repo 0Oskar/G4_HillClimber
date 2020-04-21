@@ -248,10 +248,10 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	);
 }
 
-void GameState::update(Keyboard* keyboard, MouseEvent mouseEvent, float dt)
+void GameState::update(Keyboard* keyboard, MouseEvent mouseEvent, Mouse* mousePtr, float dt)
 {
 	// Player
-	this->m_player.update(keyboard, mouseEvent, dt);
+	this->m_player.update(keyboard, mousePtr, dt);
 
 	// Camera
 	this->m_camera.update(mouseEvent, dt);

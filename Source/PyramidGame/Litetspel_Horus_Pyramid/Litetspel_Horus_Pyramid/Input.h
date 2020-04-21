@@ -15,4 +15,6 @@ public:
 
 	MouseEvent getMouseEvent();
 	Keyboard* getKeyboard();
+	Mouse* getMouse();
+
 };

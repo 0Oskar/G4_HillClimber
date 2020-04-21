@@ -23,5 +23,5 @@ public:
 	void addAABB(DirectX::BoundingBox* aabb);
 
 	// Update
-	void update(Keyboard* keyboard, MouseEvent mouseEvent, float dt);
+	void update(Keyboard* keyboard, Mouse* mouse, float dt);
 };

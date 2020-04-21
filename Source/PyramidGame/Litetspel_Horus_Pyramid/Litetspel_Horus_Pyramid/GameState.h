@@ -29,5 +29,5 @@ public:
 	void initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext, GameOptions options);
 
 	// Update
-	void update(Keyboard* keyboard, MouseEvent mouseEvent, float dt);
+	void update(Keyboard* keyboard, MouseEvent mouseEvent, Mouse* mousePointer, float dt);
 };

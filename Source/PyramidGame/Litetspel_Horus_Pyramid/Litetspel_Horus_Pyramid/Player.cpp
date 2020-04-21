@@ -28,7 +28,7 @@ void Player::addAABB(DirectX::BoundingBox* aabb)
 	this->m_collidableAABBoxes.push_back(aabb);
 }
 
-void Player::update(Keyboard* keyboard, MouseEvent mouseEvent, float dt)
+void Player::update(Keyboard* keyboard, Mouse* mouse, float dt)
 {
 	this->m_hookHand.update(dt);
 	// Gravity
@@ -52,11 +52,11 @@ void Player::update(Keyboard* keyboard, MouseEvent mouseEvent, float dt)
 
 	if (keyboard->isKeyPressed((unsigned char)16)) // Shift
 		this->m_physicsComp->addForceDir(Direction::DOWN, dt);
-	if (keyboard->isKeyPressed('Q'))
+	if (keyboard->isKeyPressed('Q') || mouse->isRDown())
 	{
 		this->m_hookHand.retract();
 	}
-	if (keyboard->isKeyPressed('E'))
+	if (keyboard->isKeyPressed('E') || mouse->isLDown())
 	{
 		this->m_hookHand.fire();
 	}

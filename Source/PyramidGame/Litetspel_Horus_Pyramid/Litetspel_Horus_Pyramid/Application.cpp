@@ -154,7 +154,7 @@ void Application::applicationLoop()
 				this->m_viewLayerPtr->toggleDrawPrimitives(false);
 
 			// Update Layers
-			this->m_gameState.update(this->m_input.getKeyboard(), this->m_input.getMouseEvent(), this->m_deltaTime);
+			this->m_gameState.update(this->m_input.getKeyboard(), this->m_input.getMouseEvent(), this->m_input.getMouse(), this->m_deltaTime);
 			this->m_input.readBuffers();
 			this->m_viewLayerPtr->update(this->m_deltaTime);
 			this->m_viewLayerPtr->render();

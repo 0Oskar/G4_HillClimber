@@ -160,3 +160,8 @@ Keyboard* Input::getKeyboard()
 {
 	return &this->m_Keyboard;
 }
+
+Mouse* Input::getMouse()
+{
+	return &this->m_Mouse;
+}
