@@ -11,6 +11,8 @@ class HookHand
 		shooting,
 		recalling,
 		waiting,
+		hit,
+		flyYouFool,
 	};
 private:
 	const static int hookDelayTime = 1;
@@ -20,16 +22,25 @@ private:
 	hookState m_hookState;
 	GameObject* m_hookGameObject;
 	MovementComponent* m_playerMovement;
+	std::vector<DirectX::BoundingBox*>* m_boundingBoxes;
 
 	Timer m_hookTimer;
 	DirectX::XMVECTOR m_origin;
 	DirectX::XMVECTOR m_shootDirection;
-public:
-	HookHand();
-	void init(GameObject* gObject, MovementComponent* plyMoveComp);
+	DirectX::XMVECTOR m_platformCenter;
+	bool colide();
 	bool canFire();
 	bool canRecall();
+
+public:
+	HookHand();
+	void init(GameObject* gObject, MovementComponent* plyMoveComp, std::vector<DirectX::BoundingBox*>* bb);
+	void update(float dt);
+	bool shouldFly();
 	void fire();
 	void retract();
-	void update(float dt);
+
+	DirectX::XMVECTOR m_toHeadDir;
+
+
 };

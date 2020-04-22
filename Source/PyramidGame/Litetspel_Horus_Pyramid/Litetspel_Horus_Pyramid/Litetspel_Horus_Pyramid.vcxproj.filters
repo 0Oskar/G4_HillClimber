@@ -122,6 +122,9 @@
     <ClInclude Include="DebugDraw.h">
       <Filter>Header\Utilites</Filter>
     </ClInclude>
+    <ClInclude Include="BoundingPrim.h">
+      <Filter>Header\Game Logic</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

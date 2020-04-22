@@ -167,6 +167,19 @@ public:
 		this->m_velocity = DirectX::XMFLOAT3(this->m_velocity.x + finalForceF3.x, this->m_velocity.y + finalForceF3.y, this->m_velocity.z + finalForceF3.z);
 	}
 
+	void addForceDir(DirectX::XMVECTOR dir, float dt, float multiplier = 1.f)
+	{
+		DirectX::XMVECTOR finalForce = DirectX::XMVectorZero();
+
+		
+		finalForce = DirectX::XMVectorScale(dir, this->m_acceleration.x * multiplier);
+
+		DirectX::XMFLOAT3 finalForceF3 = DirectX::XMFLOAT3(0.f, 0.f, 0.f);
+		DirectX::XMStoreFloat3(&finalForceF3, finalForce);
+
+		this->m_velocity = DirectX::XMFLOAT3(this->m_velocity.x + finalForceF3.x, this->m_velocity.y + finalForceF3.y, this->m_velocity.z + finalForceF3.z);
+	}
+
 	void addGravity(float dt)
 	{
 		if (this->m_velocity.y > -MAX_GRAVITY * dt)

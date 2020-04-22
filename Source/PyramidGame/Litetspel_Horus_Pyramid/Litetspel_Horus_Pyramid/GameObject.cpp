@@ -184,3 +184,8 @@ void GameObject::move(Direction dir, float dt)
 {
 	this->m_physicsComp->addForceDir(dir, dt);
 }
+
+void GameObject::move(DirectX::XMVECTOR dir, float dt)
+{
+	this->m_physicsComp->addForceDir(dir, dt);
+}

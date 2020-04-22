@@ -11,6 +11,7 @@ class Player : public GameObject
 private:
 	std::vector<DirectX::BoundingBox*> m_collidableAABBoxes;
 	HookHand m_hookHand;
+	bool lastFly;
 
 public:
 	Player();
