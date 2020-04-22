@@ -14,3 +14,10 @@ struct Vertex
 	float biNorm[3];
 	float tan[3];
 };
+
+struct Material
+{
+	float Diffuse[3];
+	float Ambient[3];
+	float Opacity;
+};

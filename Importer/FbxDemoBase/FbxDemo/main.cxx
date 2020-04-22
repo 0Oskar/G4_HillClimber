@@ -142,6 +142,7 @@ int main(int argc, char** argv)
     return 0;
 }
 
+
 void DisplayContent(FbxScene* pScene)
 {
     int i;

@@ -22,7 +22,6 @@ public:
 	~BiReader();
 
 	// Test
-	void printToConsole();
 	void printFromMainToConsole(Vertex* theVertex);
 	unsigned int getNrOfVertex();
 	

@@ -12,9 +12,19 @@
 #include <fbxsdk.h>
 
 #include "DisplayCommon.h"
+Material material;
+
+Material getMaterialInfo()
+{
+	return material;
+}
 
 void DisplayMaterial(FbxGeometry* pGeometry)
-{
+{	
+	//FileWrite myFile("../biFile.bff");
+	//FileWrite myStringFile("../stringFile.bff");
+	//myStringFile.writeToStringFile("HejHej");
+	
     int lMaterialCount = 0;
     FbxNode* lNode = NULL;
     if(pGeometry){
@@ -224,11 +234,18 @@ void DisplayMaterial(FbxGeometry* pGeometry)
                 lKFbxDouble3=((FbxSurfaceLambert *)lMaterial)->Ambient;
                 theColor.Set(lKFbxDouble3.Get()[0], lKFbxDouble3.Get()[1], lKFbxDouble3.Get()[2]);
                 DisplayColor("            Ambient: ", theColor);
+				material.Ambient[0] = lKFbxDouble3.Get()[0];
+				material.Ambient[1] = lKFbxDouble3.Get()[1];
+				material.Ambient[2] = lKFbxDouble3.Get()[2];
 
                 // Display the Diffuse Color
                 lKFbxDouble3 =((FbxSurfaceLambert *)lMaterial)->Diffuse;
                 theColor.Set(lKFbxDouble3.Get()[0], lKFbxDouble3.Get()[1], lKFbxDouble3.Get()[2]);
                 DisplayColor("            Diffuse: ", theColor);
+				material.Diffuse[0] = lKFbxDouble3.Get()[0];
+				material.Diffuse[1] = lKFbxDouble3.Get()[1];
+				material.Diffuse[2] = lKFbxDouble3.Get()[2];
+
 
                 // Display the Emissive
                 lKFbxDouble3 =((FbxSurfaceLambert *)lMaterial)->Emissive;
@@ -238,6 +255,7 @@ void DisplayMaterial(FbxGeometry* pGeometry)
                 // Display the Opacity
                 lKFbxDouble1 =((FbxSurfaceLambert *)lMaterial)->TransparencyFactor;
                 DisplayDouble("            Opacity: ", 1.0-lKFbxDouble1.Get());
+				material.Opacity = 1.0 - lKFbxDouble1.Get();
             }
             else
                 DisplayString("Unknown type of Material");
