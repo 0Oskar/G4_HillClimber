@@ -34,15 +34,11 @@ void Player::update(Keyboard* keyboard, Mouse* mouse, float dt)
 	this->m_hookHand.update(dt);
 	if (this->m_hookHand.shouldFly())
 	{
+		this->m_physicsComp->setVelocity(DirectX::XMFLOAT3(0, 0, 0));
 		this->lastFly = true;
-		this->m_physicsComp->addForceDir(DirectX::XMVector3Normalize(this->m_hookHand.m_toHeadDir), dt, 4);
-		this->m_physicsComp->addGravity(dt);
-		this->m_physicsComp->addGravity(dt);
-		this->m_physicsComp->addGravity(dt);
-		this->m_physicsComp->addGravity(dt);
-
-		//this->move(DirectX::XMVector3Normalize(this->m_hookHand.m_toHeadDir), dt);
-		
+		DirectX::XMVECTOR normalziedAndDT = DirectX::XMVectorScale(DirectX::XMVector3Normalize(this->m_hookHand.m_toHeadDir), dt);
+		normalziedAndDT = DirectX::XMVectorScale(normalziedAndDT, 100);
+		this->m_movementComp->position = (DirectX::XMVectorAdd(this->m_movementComp->position, normalziedAndDT));
 	}
 	else if (lastFly)
 	{
@@ -51,7 +47,7 @@ void Player::update(Keyboard* keyboard, Mouse* mouse, float dt)
 	}
 	else
 	{
-	// Gravity
+		// Gravity
 		this->m_physicsComp->addGravity(dt);
 
 		// Controls
@@ -72,14 +68,7 @@ void Player::update(Keyboard* keyboard, Mouse* mouse, float dt)
 
 		if (keyboard->isKeyPressed((unsigned char)16)) // Shift
 			this->m_physicsComp->addForceDir(Direction::DOWN, dt);
-		if (keyboard->isKeyPressed('Q') || mouse->isRDown())
-		{
-			this->m_hookHand.retract();
-		}
-		if (keyboard->isKeyPressed('E') || mouse->isLDown())
-		{
-			this->m_hookHand.fire();
-		}
+
 
 		// For Debugging purposes
 		if (keyboard->isKeyPressed('R'))
@@ -88,11 +77,18 @@ void Player::update(Keyboard* keyboard, Mouse* mouse, float dt)
 			this->m_physicsComp->setVelocity(DirectX::XMFLOAT3()); // Reset Velocity
 		}
 
+		// Handle Collisions
+		this->m_physicsComp->handleCollision(this->m_collidableAABBoxes, dt);
 	}
 
-	// Handle Collisions
-	this->m_physicsComp->handleCollision(this->m_collidableAABBoxes, dt);
-
-	// Update Position with Velocity
+	if (keyboard->isKeyPressed('Q') || mouse->isRDown())
+	{
+		this->m_hookHand.retract();
+	}
+	if (keyboard->isKeyPressed('E') || mouse->isLDown())
+	{
+		this->m_hookHand.fire();
+	}
 	this->m_physicsComp->updatePosition(dt);
+
 }

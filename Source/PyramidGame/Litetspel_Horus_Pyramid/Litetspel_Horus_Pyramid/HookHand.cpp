@@ -45,6 +45,10 @@ void HookHand::retract()
 		this->m_origin = DirectX::XMVectorSubtract(this->m_playerMovement->position, this->m_hookGameObject->getPosition());
 		this->m_hookState = hookState::recalling;
 	}
+	else if (this->m_hookState == hookState::flyYouFool)
+	{
+		this->m_hookState = hookState::idle;
+	}
 }
 
 bool HookHand::colide()
