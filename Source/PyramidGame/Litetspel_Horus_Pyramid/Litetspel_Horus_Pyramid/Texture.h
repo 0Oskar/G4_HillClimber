@@ -17,6 +17,7 @@ private:
 		{
 			couldLoad = false;
 		}
+		assert(SUCCEEDED(hr) && "Error, failed to load texture file!");
 
 		return  couldLoad;
 	}

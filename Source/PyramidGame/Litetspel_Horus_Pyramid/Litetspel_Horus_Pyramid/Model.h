@@ -26,7 +26,6 @@ struct Vertex
 };
 
 
-
 class Model
 {
 private:
@@ -42,9 +41,8 @@ private:
 public:
 	Model();
 
-	void initModel(ID3D11Device* device, ID3D11DeviceContext* dContext, MaterialData material);
+	void initModel(ID3D11Device* device, ID3D11DeviceContext* dContext, MaterialData material, std::wstring texturePath = L"");
 	void draw(DirectX::XMMATRIX &mtrx);
-	void loadVertexVector(ID3D11Device* device, ID3D11DeviceContext* dContext, std::vector<Vertex> vertexVector, MaterialData material);
-	void loadVertexFromOBJ(ID3D11Device* device, ID3D11DeviceContext* dContext, std::wstring objFilePath, MaterialData material);
+	void loadVertexVector(ID3D11Device* device, ID3D11DeviceContext* dContext, std::vector<Vertex> vertexVector, MaterialData material, std::wstring texturePath = L"");
+	void loadVertexFromOBJ(ID3D11Device* device, ID3D11DeviceContext* dContext, std::wstring objFilePath, MaterialData material, std::wstring texturePath = L"");
 };
-
