@@ -23,7 +23,10 @@ public:
 
 	// Test
 	void printToConsole();
-
+	void printFromMainToConsole(Vertex* theVertex);
+	unsigned int getNrOfVertex();
+	
 	// Getters
-	std::vector<Vertex> *getVertexPositions();
+	//std::vector<Vertex> *getVertexPositions(std::vector<Vertex> *someVerticies);
+	void getVertexPositions(Vertex* someVerticies);
 };
