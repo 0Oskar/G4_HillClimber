@@ -47,7 +47,7 @@ std::vector<Vertex> vertexData;
 Mesh meshData;
 int currentVertex = 0;
 
-Material aMaterial;
+Material materialData;
 
 
 void DisplayMesh(FbxNode* pNode)
@@ -77,14 +77,9 @@ void DisplayMesh(FbxNode* pNode)
 	DisplayControlsPoints(lMesh);
 	DisplayPolygons(lMesh);
 
-	
-	/*myFile.~FileWrite();
-	myStringFile.~FileWrite();*/
-
-
 	DisplayMaterialMapping(lMesh);
 	DisplayMaterial(lMesh);
-	aMaterial = getMaterialInfo();
+	materialData = getMaterialInfo();
 	DisplayTexture(lMesh);
 	DisplayMaterialConnections(lMesh);
 	DisplayLink(lMesh);
@@ -119,17 +114,19 @@ void DisplayMesh(FbxNode* pNode)
 			"TanZ: " + std::to_string(vertexData[i].tan[2]) + "\n" + "\n" + "\n");
 
 	}
-	myStringFile.writeToStringFile
-	(
-		"\n------------- Material) \n\n"
-		"DiffuseR: " + std::to_string(aMaterial.Diffuse[0]) + "\n" +
-		"DiffuseG: " + std::to_string(aMaterial.Diffuse[1]) + "\n" +
-		"DiffuseB: " + std::to_string(aMaterial.Diffuse[2]) + "\n" + "\n" +
-		"AmbientR: " + std::to_string(aMaterial.Ambient[0]) + "\n" +
-		"AmbientG: " + std::to_string(aMaterial.Ambient[1]) + "\n" + 
-		"AmbientB: " + std::to_string(aMaterial.Ambient[2]) + "\n" + "\n" + 
-		"Opacity: " + std::to_string(aMaterial.Opacity) + "\n "
-	);
+	myFile.writeToFile((const char*)&materialData, sizeof(Material)); //Add material data to output <------------------------------------------
+
+	myStringFile.writeToStringFile(
+		"\n------------- Material: \n\n"
+		"DiffuseR: " + std::to_string(materialData.Diffuse[0]) + "\n" +
+		"DiffuseG: " + std::to_string(materialData.Diffuse[1]) + "\n" +
+		"DiffuseB: " + std::to_string(materialData.Diffuse[2]) + "\n" +
+		"\n" +
+		"AmbientR: " + std::to_string(materialData.Ambient[0]) + "\n" +
+		"AmbientG: " + std::to_string(materialData.Ambient[1]) + "\n" +
+		"AmbientB: " + std::to_string(materialData.Ambient[2]) + "\n" +
+		"\n" + 
+		"Opacity: " + std::to_string(materialData.Opacity) + "\n " );
 	DisplayCache(lMesh);
 }
 

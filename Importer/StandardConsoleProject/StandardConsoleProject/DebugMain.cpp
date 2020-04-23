@@ -7,16 +7,18 @@ int main()
 	//Mesh mesh;
 
 	BiReader myMesh("../../FbxDemoBase/biFile.bff");
-
-	Vertex* tempVertex;
+	//myMesh.printFromMainToConsole();
 
 	int nrVerticies = myMesh.getNrOfVertex();
-	tempVertex = new Vertex[nrVerticies];
 
-
+	Vertex* tempVertex = new Vertex[nrVerticies];
 	myMesh.getVertexPositions(tempVertex);
-	myMesh.printFromMainToConsole(tempVertex);
 
+	Material tempMaterial = myMesh.getMaterial();
+
+	
+
+	std::cout << std::to_string(tempMaterial.Diffuse[0]);
 	
 	return 0;
 }

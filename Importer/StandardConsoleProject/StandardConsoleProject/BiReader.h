@@ -16,16 +16,18 @@ private:
 
 	Mesh mesh;
 	Vertex *vertexArr;
+	Material material;
 
 public:
 	BiReader(std::string path);
 	~BiReader();
 
 	// Test
-	void printFromMainToConsole(Vertex* theVertex);
-	unsigned int getNrOfVertex();
+	void printFromMainToConsole();
 	
 	// Getters
 	//std::vector<Vertex> *getVertexPositions(std::vector<Vertex> *someVerticies);
+	unsigned int getNrOfVertex();
 	void getVertexPositions(Vertex* someVerticies);
+	Material getMaterial();
 };
