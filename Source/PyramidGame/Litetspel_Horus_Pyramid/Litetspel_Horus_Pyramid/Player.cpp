@@ -10,7 +10,7 @@ Player::~Player()
 {
 }
 
-void Player::initialize(int modelIndex, int wvpCBufferIndex, float mass, DirectX::XMFLOAT3 acceleration, DirectX::XMFLOAT3 deceleration, GameObject* gObj)
+void Player::initialize(int modelIndex, int wvpCBufferIndex, float mass, DirectX::XMFLOAT3 acceleration, DirectX::XMFLOAT3 deceleration, GameObject* gObj, std::shared_ptr<DirectX::AudioEngine> audioEngine)
 {
 	this->m_isStatic = true;
 	this->m_collidable = true;
@@ -21,7 +21,7 @@ void Player::initialize(int modelIndex, int wvpCBufferIndex, float mass, DirectX
 	this->m_physicsComp = new PhysicsComponent();
 	this->m_physicsComp->initialize(this->m_movementComp, mass, acceleration, deceleration);
 	this->m_physicsComp->setBoundingBox(this->m_movementComp->getPositionF3(), DirectX::XMFLOAT3(1.f, 3.f, 1.f));
-	this->m_hookHand.init(gObj, m_movementComp, &m_collidableAABBoxes);
+	this->m_hookHand.init(gObj, m_movementComp, &m_collidableAABBoxes, audioEngine);
 }
 
 void Player::addAABB(DirectX::BoundingBox* aabb)

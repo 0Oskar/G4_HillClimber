@@ -30,7 +30,7 @@ std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* GameState::getWvpCBuffersPtr()
 	return &this->m_wvpCBuffers;
 }
 
-void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext, GameOptions options)
+void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext, GameOptions options, std::shared_ptr<DirectX::AudioEngine> audioEngine)
 {
 	// Material
 	MaterialData mat;
@@ -305,7 +305,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_player.addAABB(this->m_gameObjects[14].getAABBPtr());
 
 	// Player
-	this->m_player.initialize(-1, -1, 1.f, DirectX::XMFLOAT3(20.f, 20.f, 20.f), DirectX::XMFLOAT3(.01f, .01f, .01f), &this->m_gameObjects[2]);
+	this->m_player.initialize(-1, -1, 1.f, DirectX::XMFLOAT3(20.f, 20.f, 20.f), DirectX::XMFLOAT3(.01f, .01f, .01f), &this->m_gameObjects[2], audioEngine);
 	this->m_player.setPosition(DirectX::XMVectorSet(0.f, 5.f, -1.f, 1.f));
 
 	// Camera

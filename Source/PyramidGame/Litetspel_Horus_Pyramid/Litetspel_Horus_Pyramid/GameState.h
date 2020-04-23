@@ -26,7 +26,7 @@ public:
 	std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* getWvpCBuffersPtr();
 
 	// Initialization
-	void initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext, GameOptions options);
+	void initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext, GameOptions options, std::shared_ptr<DirectX::AudioEngine> audioEngine);
 
 	// Update
 	void update(Keyboard* keyboard, MouseEvent mouseEvent, Mouse* mousePointer, float dt);

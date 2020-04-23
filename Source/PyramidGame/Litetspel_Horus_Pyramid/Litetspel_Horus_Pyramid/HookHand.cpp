@@ -4,9 +4,11 @@
 HookHand::HookHand()
 {
 	this->m_hookState = hookState::idle;
+	this->m_audioEngine = nullptr;
 }
 
-void HookHand::init(GameObject* gObject, MovementComponent* movementComponent, std::vector<DirectX::BoundingBox*>* boundingBoxes)
+
+void HookHand::init(GameObject* gObject, MovementComponent* movementComponent, std::vector<DirectX::BoundingBox*>* boundingBoxes, std::shared_ptr<DirectX::AudioEngine> audioEngine)
 {
 	MaterialData mat;
 	mat.diffuse = DirectX::XMFLOAT4(0.5, 0.5, 0.5, 1);
@@ -15,6 +17,15 @@ void HookHand::init(GameObject* gObject, MovementComponent* movementComponent, s
 	this->m_hookGameObject->setPosition(this->m_playerMovement->position);
 	this->m_hookTimer.start();
 	this->m_boundingBoxes = boundingBoxes;
+
+	//Audio
+	this->m_audioEngine = audioEngine;
+	this->m_fireSound = std::make_shared<DirectX::SoundEffect>(audioEngine.get(), L"Sounds/Explo1.wav");
+	this->m_ejectSound = std::make_shared<DirectX::SoundEffect>(audioEngine.get(), L"Sounds/Explo1.wav");
+
+
+
+
 }
 
 bool HookHand::canFire()
@@ -34,6 +45,7 @@ void HookHand::fire()
 		DirectX::XMVECTOR forwardX = XMVector3TransformCoord(DirectX::XMVectorSet(0.f, 0.f, 1.f, 0.f), rotationMatrix);
 		this->m_shootDirection = forwardX;
 		this->m_hookState = hookState::shooting;
+		this->m_ejectSound->Play();
 	}
 
 }
@@ -58,7 +70,7 @@ bool HookHand::colide()
 	{
 		if (this->m_hookGameObject->getAABB().Intersects(*m_boundingBoxes->at(i)))
 		{
-			DirectX::XMVECTOR posToTopAndCenterOfBox = DirectX::XMVectorSet(m_boundingBoxes->at(i)->Center.x, m_boundingBoxes->at(i)->Center.y, m_boundingBoxes->at(i)->Center.z, 0); //Get center position of "Plattform"
+			DirectX::XMVECTOR posToTopAndCenterOfBox = DirectX::XMVectorSet(DirectX::XMVectorGetX(this->m_hookGameObject->getPosition()), m_boundingBoxes->at(i)->Center.y, DirectX::XMVectorGetZ(this->m_hookGameObject->getPosition()), 0);
 			posToTopAndCenterOfBox = DirectX::XMVectorAdd(posToTopAndCenterOfBox, DirectX::XMVectorSet(0, m_boundingBoxes->at(i)->Extents.y + (this->m_hookGameObject->getAABB().Extents.y * 2), 0, 0));  // Move in Y the platform extends then + the size of the boundingbox of the hookHead.
 			m_platformCenter = posToTopAndCenterOfBox;
 			colided = true;
@@ -78,12 +90,18 @@ void HookHand::update(float dt)
 		else
 			this->m_hookGameObject->getMoveCompPtr()->move(DirectX::XMVectorScale(this->m_shootDirection, dt * this->hookSpeedForward));
 
+		DirectX::XMVECTOR fromPlayerToHook = DirectX::XMVectorSubtract(this->m_hookGameObject->getPosition(), this->m_playerMovement->position);
+		if (DirectX::XMVectorGetByIndex(DirectX::XMVector3LengthEst(fromPlayerToHook), 1) >= maxDistance)
+		{
+			this->m_hookState = hookState::recalling;
+		}
+
 	}
 	else if (m_hookState == hookState::recalling)
 	{
 		this->m_origin = DirectX::XMVectorSubtract(this->m_playerMovement->position, this->m_hookGameObject->getPosition());
 
-		if (DirectX::XMVectorGetByIndex(DirectX::XMVector3LengthEst(this->m_origin), 1) <= 2) 
+		if (DirectX::XMVectorGetByIndex(DirectX::XMVector3LengthEst(this->m_origin), 1) <= 2)
 		{
 			this->m_hookState = hookState::waiting;
 			this->m_hookTimer.restart();
@@ -97,8 +115,10 @@ void HookHand::update(float dt)
 	{
 		this->m_toHeadDir = DirectX::XMVectorSubtract(this->m_hookGameObject->getPosition(), this->m_playerMovement->position);
 		this->m_hookState = hookState::flyYouFool;
+		//this->m_fireSound->Play();
+
 	}
-	else if(m_hookState == hookState::flyYouFool)
+	else if (m_hookState == hookState::flyYouFool)
 	{
 		//DirectX::XMVECTOR addPosVector = DirectX::XMVectorAdd(DirectX::XMVectorSet(0, 5, 0, 0), DirectX::XMVectorDivide(this->m_playerMovement->forward, DirectX::XMVectorSet(2, 2, 2, 0)));
 		DirectX::XMVECTOR addPosVector = DirectX::XMVectorSet(0, 3, 0, 0);

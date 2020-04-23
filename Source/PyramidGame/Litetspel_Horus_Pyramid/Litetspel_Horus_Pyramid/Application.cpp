@@ -1,5 +1,6 @@
 #include"pch.h"
 #include"Application.h"
+#include <Dbt.h>
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
@@ -11,6 +12,12 @@ Application::Application()
 	this->m_gameOptions.width = 600;
 	this->m_gameOptions.fov = 40;
 	this->m_deltaTime = 0.f;
+	this->m_resetAudio = false;
+}
+
+Application::~Application()
+{
+	if (m_audioEngine) this->m_audioEngine->Suspend();
 }
 
 bool Application::initApplication(HINSTANCE hInstance, LPWSTR lpCmdLine, HWND hWnd, int nShowCmd)
@@ -19,6 +26,7 @@ bool Application::initApplication(HINSTANCE hInstance, LPWSTR lpCmdLine, HWND hW
 	const wchar_t WINDOWTILE[] = L"Litetspel Horus Pyramid";
 
 	SetCursor(NULL);
+	//ShowCursor(FALSE);
 	//TODO: Check if we have sufficient resources
 
 	this->loadGameOptions("GameOptions.xml");
@@ -28,10 +36,21 @@ bool Application::initApplication(HINSTANCE hInstance, LPWSTR lpCmdLine, HWND hW
 
 	this->m_window = hWnd;
 
+	DirectX::AUDIO_ENGINE_FLAGS audioFlag = DirectX::AudioEngine_Default;
+#ifdef _DEBUG
+	audioFlag = audioFlag | DirectX::AudioEngine_Debug;
+#endif
+	m_audioEngine = std::make_shared<DirectX::AudioEngine>(audioFlag);
+
+	if (!m_audioEngine->IsAudioDevicePresent())
+	{
+		OutputDebugString(L"AudioError: No audio device found");
+	}
+
 	this->m_viewLayerPtr = std::make_unique<ViewLayer>();
 	this->m_viewLayerPtr->initialize(this->m_window, &this->m_gameOptions);
 
-	this->m_gameState.initlialize(this->m_viewLayerPtr->getDevice(), this->m_viewLayerPtr->getContextDevice(), this->m_gameOptions);
+	this->m_gameState.initlialize(this->m_viewLayerPtr->getDevice(), this->m_viewLayerPtr->getContextDevice(), this->m_gameOptions, this->m_audioEngine);
 
 	this->m_viewLayerPtr->setViewMatrix(this->m_gameState.getViewMatrix());
 	this->m_viewLayerPtr->setProjectionMatrix(this->m_gameState.getProjectionMatrix());
@@ -45,7 +64,6 @@ bool Application::initApplication(HINSTANCE hInstance, LPWSTR lpCmdLine, HWND hW
 	rawIDevice.usUsage = 0x02;
 	rawIDevice.dwFlags = 0;
 	rawIDevice.hwndTarget = NULL;
-
 	if (RegisterRawInputDevices(&rawIDevice, 1, sizeof(rawIDevice)) == FALSE)
 		return false;
 
@@ -59,6 +77,24 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	g_App->m_input.handleMessages(hwnd, uMsg, wParam, lParam);
 	switch (uMsg)
 	{
+	case WM_DEVICECHANGE:
+		if (wParam == DBT_DEVICEARRIVAL)
+		{
+			auto pDev = reinterpret_cast<PDEV_BROADCAST_HDR>(lParam);
+			if (pDev)
+			{
+				if (pDev->dbch_devicetype == DBT_DEVTYP_DEVICEINTERFACE)
+				{
+					auto pInter = reinterpret_cast<
+						const PDEV_BROADCAST_DEVICEINTERFACE>(pDev);
+					if (pInter->dbcc_classguid == KSCATEGORY_AUDIO)
+					{
+						g_App->newAudioDevice();
+					}
+				}
+			}
+		}
+		return 0;
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		return 0;
@@ -79,7 +115,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 void Application::createWin32Window(HINSTANCE hInstance, const wchar_t* windowTitle, HWND& _d3d11Window)
 {
 	const wchar_t CLASS_NAME[] = L"Litetspel_Horus_Pyramid";
-
 	WNDCLASS wc = { };
 
 	wc.lpfnWndProc = WindowProc;
@@ -104,6 +139,15 @@ void Application::createWin32Window(HINSTANCE hInstance, const wchar_t* windowTi
 		NULL						// Additional application data
 	);
 	assert(_d3d11Window);
+
+	// Listen for new audio devices
+	DEV_BROADCAST_DEVICEINTERFACE filter = {};
+	filter.dbcc_size = sizeof(filter);
+	filter.dbcc_devicetype = DBT_DEVTYP_DEVICEINTERFACE;
+	filter.dbcc_classguid = KSCATEGORY_AUDIO;
+
+	this->m_hNewAudio = RegisterDeviceNotification(_d3d11Window, &filter,
+		DEVICE_NOTIFY_WINDOW_HANDLE);
 }
 
 bool Application::loadGameOptions(std::string fileName)
@@ -155,8 +199,33 @@ void Application::applicationLoop()
 			// Update Layers
 			this->m_gameState.update(this->m_input.getKeyboard(), this->m_input.getMouseEvent(), this->m_input.getMouse(), this->m_deltaTime);
 			this->m_input.readBuffers();
+			this->audioUpdate();
+
+
 			this->m_viewLayerPtr->update(this->m_deltaTime);
 			this->m_viewLayerPtr->render();
+		}
+	}
+}
+
+void Application::audioUpdate()
+{
+	if (m_hNewAudio)
+		UnregisterDeviceNotification(m_hNewAudio);
+
+	if (m_resetAudio)
+	{
+		if (m_audioEngine->Reset())
+		{
+
+		}
+		this->m_resetAudio = false;
+	}
+	else if (!m_audioEngine->Update())
+	{
+		if (m_audioEngine->IsCriticalError())
+		{
+			OutputDebugString(L"AudioError: Audio device was lost.");
 		}
 	}
 }
