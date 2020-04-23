@@ -323,6 +323,29 @@ void ViewLayer::setWvpCBufferFromState(std::vector< ConstBuffer<VS_CONSTANT_BUFF
 	this->m_wvpCBufferFromState = buffers;
 }
 
+void ViewLayer::initConstantBuffer()
+{
+	this->m_lightBuffer.init(this->m_device.Get(), this->m_deviceContext.Get());
+	this->m_dirLightBuffer.init(this->m_device.Get(), this->m_deviceContext.Get());
+}
+
+void ViewLayer::initSamplerState()
+{
+	D3D11_SAMPLER_DESC samplerDesc;
+	ZeroMemory(&samplerDesc, sizeof(samplerDesc));
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+	samplerDesc.MinLOD = 0;
+
+	HRESULT hr = this->m_device->CreateSamplerState(&samplerDesc, this->m_samplerState.GetAddressOf());
+	assert(SUCCEEDED(hr) && "Error when creating sampler state!");
+
+}
+
 void ViewLayer::initialize(HWND window, GameOptions* options)
 {
 	this->m_window = window;
@@ -384,33 +407,23 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 	dirBuffer.lightDirection = DirectX::XMFLOAT4(-1.0f, 1.0f, -0.7f, 0.0f);
 	this->m_dirLightBuffer.m_data = dirBuffer;
 	this->m_dirLightBuffer.upd();
+
+	// Pyramid Frustum
+	DirectX::XMFLOAT3 center(0.f, 52.f, 80.f);
+	DirectX::XMFLOAT3 extents(80.f, 105.f, 1.f);
+	DirectX::XMVECTOR quaternion = DirectX::XMQuaternionRotationRollPitchYaw(0.9f, 0.f, 0.f);
+	DirectX::XMFLOAT4 orientation;
+	DirectX::XMStoreFloat4(&orientation, quaternion);
+
+	this->m_pyramidOBB = DirectX::BoundingOrientedBox(
+		center,
+		extents,
+		orientation
+	);
 }
 
 void ViewLayer::update(float dt)
 {
-
-}
-
-void ViewLayer::initConstantBuffer()
-{
-	this->m_lightBuffer.init(this->m_device.Get(), this->m_deviceContext.Get());
-	this->m_dirLightBuffer.init(this->m_device.Get(), this->m_deviceContext.Get());
-}
-
-void ViewLayer::initSamplerState()
-{
-	D3D11_SAMPLER_DESC samplerDesc;
-	ZeroMemory(&samplerDesc, sizeof(samplerDesc));
-	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-	samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-	samplerDesc.MinLOD = 0;
-
-	HRESULT hr = this->m_device->CreateSamplerState(&samplerDesc, this->m_samplerState.GetAddressOf());
-	assert(SUCCEEDED(hr) && "Error when creating sampler state!");
 
 }
 
@@ -475,16 +488,17 @@ void ViewLayer::render()
 
 		this->m_effect->SetView(*(this->m_viewMatrix));
 		this->m_effect->SetProjection(*(this->m_projectionMatrix));
+		// Apply Effect
+		this->m_effect->Apply(this->m_deviceContext.Get());
 		for (size_t i = 0; i < this->m_gameObjectsFromState->size(); i++)
 		{
 			if (this->m_gameObjectsFromState->at(i).collidable())
 			{
-				// Apply Effect
-				this->m_effect->Apply(this->m_deviceContext.Get());
 				// Draw Primitive
 				DX::Draw(m_batch.get(), *(this->m_gameObjectsFromState->at(i).getAABBPtr()), DirectX::Colors::Blue);
 			}
 		}
+		DX::Draw(m_batch.get(), this->m_pyramidOBB, DirectX::Colors::Blue);
 
 		m_batch->End();
 	}

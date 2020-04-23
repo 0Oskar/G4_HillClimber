@@ -55,6 +55,7 @@ private:
 	std::vector<GameObject>* m_gameObjectsFromState;
 	std::vector<Model>* m_modelsFromState;
 	std::vector< ConstBuffer<VS_CONSTANT_BUFFER> >* m_wvpCBufferFromState;
+	DirectX::BoundingOrientedBox m_pyramidOBB;
 
 	ConstBuffer<PS_LIGHT_BUFFER> m_lightBuffer;
 	ConstBuffer<PS_DIR_BUFFER> m_dirLightBuffer;

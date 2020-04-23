@@ -20,13 +20,19 @@ void Player::initialize(int modelIndex, int wvpCBufferIndex, float mass, DirectX
 	this->m_movementComp = new MovementComponent();
 	this->m_physicsComp = new PhysicsComponent();
 	this->m_physicsComp->initialize(this->m_movementComp, mass, acceleration, deceleration);
-	this->m_physicsComp->setBoundingBox(this->m_movementComp->getPositionF3(), DirectX::XMFLOAT3(1.f, 3.f, 1.f));
-	this->m_hookHand.init(gObj, m_movementComp, &m_collidableAABBoxes, audioEngine);
+
+	this->m_physicsComp->setBoundingBox(this->m_movementComp->getPositionF3(), DirectX::XMFLOAT3(1.f, 4.f, 1.f));
+	this->m_hookHand.init(gObj, this->m_movementComp, &this->m_collidableAABBoxes, audioEngine);
 }
 
 void Player::addAABB(DirectX::BoundingBox* aabb)
 {
 	this->m_collidableAABBoxes.push_back(aabb);
+}
+
+void Player::addPyramidOBB(DirectX::BoundingOrientedBox* obb)
+{
+	this->m_pyramidOBB = *obb;
 }
 
 void Player::update(Keyboard* keyboard, Mouse* mouse, float dt)
@@ -78,7 +84,7 @@ void Player::update(Keyboard* keyboard, Mouse* mouse, float dt)
 		}
 
 		// Handle Collisions
-		this->m_physicsComp->handleCollision(this->m_collidableAABBoxes, dt);
+		this->m_physicsComp->handleCollision(this->m_collidableAABBoxes, this->m_pyramidOBB, dt);
 	}
 
 	if (keyboard->isKeyPressed('Q') || mouse->isRDown())
