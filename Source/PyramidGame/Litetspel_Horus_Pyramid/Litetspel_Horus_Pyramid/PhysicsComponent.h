@@ -196,10 +196,52 @@ public:
 	}
 
 	// Update
-	void handleCollision(std::vector<DirectX::BoundingBox*> boundingBoxes, float dt)
+	void handleCollision(std::vector<DirectX::BoundingBox*> boundingBoxes, DirectX::BoundingOrientedBox pyramidOBB,float dt)
 	{
 		DirectX::BoundingBox AABBNextFrame = *(this->m_aabb);
 		AABBNextFrame.Center = DirectX::XMFLOAT3(this->m_aabb->Center.x + this->m_velocity.x * dt, this->m_aabb->Center.y + this->m_velocity.y * dt, this->m_aabb->Center.z + this->m_velocity.z * dt);
+
+		// Pyramid Intersection
+		if (AABBNextFrame.Intersects(pyramidOBB))
+		{
+			this->m_velocity.z = -25.f;
+			this->m_velocity.y = -20.f;
+			//if (xAABB.Intersects(pyramidOBB))
+			//{
+			//	//OutputDebugString(L"X Collision!\n");
+			//	if (this->m_velocity.x > 0)
+			//		this->m_moveComp->position = DirectX::XMVectorSetX(this->m_moveComp->position, pyramidOBB.Center.x - pyramidOBB.Extents.x - AABBNextFrame.Extents.x - 0.0001f);
+			//	else
+			//		this->m_moveComp->position = DirectX::XMVectorSetX(this->m_moveComp->position, pyramidOBB.Center.x + pyramidOBB.Extents.x + AABBNextFrame.Extents.x + 0.0001f);
+
+			//	this->m_velocity.x = 0;
+			//}
+
+			//if (yAABB.Intersects(pyramidOBB))
+			//{
+			//	//OutputDebugString(L"Y Collision!\n");
+			//	if (this->m_velocity.y > 0)
+			//		this->m_moveComp->position = DirectX::XMVectorSetY(this->m_moveComp->position, pyramidOBB.Center.y - pyramidOBB.Extents.y - AABBNextFrame.Extents.y - 0.0001f);
+			//	else
+			//	{
+			//		this->m_moveComp->position = DirectX::XMVectorSetY(this->m_moveComp->position, pyramidOBB.Center.y + pyramidOBB.Extents.y + AABBNextFrame.Extents.y + 0.0001f);
+			//		this->m_isJumping = false;
+			//	}
+
+			//	this->m_velocity.y = 0;
+			//}
+
+			//if (zAABB.Intersects(pyramidOBB))
+			//{
+			//	//OutputDebugString(L"Z Collision!\n");
+			//	if (this->m_velocity.z > 0)
+			//		this->m_moveComp->position = DirectX::XMVectorSetZ(this->m_moveComp->position, pyramidOBB.Center.z - pyramidOBB.Extents.z - AABBNextFrame.Extents.z - 0.0001f);
+			//	else
+			//		this->m_moveComp->position = DirectX::XMVectorSetZ(this->m_moveComp->position, pyramidOBB.Center.z + pyramidOBB.Extents.z + AABBNextFrame.Extents.z + 0.0001f);
+
+			//	this->m_velocity.z = 0;
+			//}
+		}
 
 		DirectX::BoundingBox xAABB = *(this->m_aabb);
 		xAABB.Center = DirectX::XMFLOAT3(this->m_aabb->Center.x + this->m_velocity.x * dt, this->m_aabb->Center.y, this->m_aabb->Center.z);
