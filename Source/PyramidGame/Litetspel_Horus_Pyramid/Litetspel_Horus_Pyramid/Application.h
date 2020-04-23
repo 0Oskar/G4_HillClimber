@@ -13,12 +13,19 @@ private:
 	Timer m_timer;
 	float m_deltaTime;
 
+	//DirectX Audio
+	HDEVNOTIFY m_hNewAudio;
+	bool m_resetAudio;
+	void audioUpdate();
+	std::shared_ptr<DirectX::AudioEngine> m_audioEngine;
+
 public:
 	static Application& getInstance()
 	{
 		static Application instance;
 		return instance;
 	}
+	~Application();
 
 	Input m_input;
 	HWND m_window;
@@ -34,6 +41,7 @@ public:
 	bool loadGameOptions(std::string fileName);
 
 	void applicationLoop();
+	void newAudioDevice() { this->m_resetAudio = true; OutputDebugString(L"New Audio Device!"); }
 };
 
 #endif // !_APPLICATION_H_

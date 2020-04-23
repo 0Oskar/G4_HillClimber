@@ -38,6 +38,7 @@
 #include <VertexTypes.h>
 #include <DirectXColors.h>
 #include "DebugDraw.h"
+#include"Audio.h"
 
 // DirectX 11 Linking
 #pragma comment (lib, "user32")
