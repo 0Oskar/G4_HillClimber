@@ -139,8 +139,8 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 
 	// Sphere "HookHead"
 	this->m_models.emplace_back();
-	mat.diffuse = DirectX::XMFLOAT4(0.1f, 0.2f, 1.f, 1.0f);
-	this->m_models[2].loadVertexFromOBJ(device, dContext, L"Models/sphere.obj", mat, L"Textures/pyramidTexture.png");
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
+	this->m_models[2].loadVertexFromOBJ(device, dContext, L"Models/BirdHookModel.obj", mat, L"Textures/BirdTexture.png");
 
 	this->m_wvpCBuffers.emplace_back();
 	this->m_wvpCBuffers[2].init(device, dContext);
@@ -149,7 +149,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 
 	vec = DirectX::XMVectorSet(10.f, 1.f, -20.f, 1.f);
 	this->m_gameObjects[2].setPosition(vec);
-	vec = DirectX::XMVectorSet(.2f, .2f, .2f, 1.f);
+	vec = DirectX::XMVectorSet(1.f, 1.f, 1.f, 1.f);
 	this->m_gameObjects[2].setScale(vec);
 
 	this->m_gameObjects[2].setBoundingBox(DirectX::XMFLOAT3(.5f, .5f, .5f)); // Dont add to player
@@ -304,8 +304,23 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_gameObjects[14].setBoundingBox(DirectX::XMFLOAT3(13.f, 0.5f, 13.f));
 	this->m_player.addAABB(this->m_gameObjects[14].getAABBPtr());
 
+	// HookHand
+	this->m_models.emplace_back();
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
+	this->m_models[4].loadVertexFromOBJ(device, dContext, L"Models/HookModel.obj", mat, L"Textures/HookTexture.png");
+
+	this->m_wvpCBuffers.emplace_back();
+	this->m_wvpCBuffers[14].init(device, dContext);
+
+	this->m_gameObjects[14].initializeDynamic(false, 4, 14, 1, DirectX::XMFLOAT3(10, 10, 10), DirectX::XMFLOAT3(10, 10, 10));
+
+	vec = DirectX::XMVectorSet(10.f, 1.f, -20.f, 1.f);
+	this->m_gameObjects[14].setPosition(vec);
+	vec = DirectX::XMVectorSet(.7f, .7f, .7f, 1.f);
+	this->m_gameObjects[14].setScale(vec);
+
 	// Player
-	this->m_player.initialize(-1, -1, 1.f, DirectX::XMFLOAT3(20.f, 20.f, 20.f), DirectX::XMFLOAT3(.01f, .01f, .01f), &this->m_gameObjects[2], audioEngine);
+	this->m_player.initialize(-1, -1, 1.f, DirectX::XMFLOAT3(20.f, 20.f, 20.f), DirectX::XMFLOAT3(.01f, .01f, .01f), &this->m_gameObjects[2], &this->m_gameObjects[14], audioEngine);
 	this->m_player.setPosition(DirectX::XMVectorSet(0.f, 5.f, -1.f, 1.f));
 
 	// Camera

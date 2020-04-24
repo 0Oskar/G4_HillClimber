@@ -10,7 +10,7 @@ Player::~Player()
 {
 }
 
-void Player::initialize(int modelIndex, int wvpCBufferIndex, float mass, DirectX::XMFLOAT3 acceleration, DirectX::XMFLOAT3 deceleration, GameObject* gObj, std::shared_ptr<DirectX::AudioEngine> audioEngine)
+void Player::initialize(int modelIndex, int wvpCBufferIndex, float mass, DirectX::XMFLOAT3 acceleration, DirectX::XMFLOAT3 deceleration, GameObject* gObj, GameObject* hookGun, std::shared_ptr<DirectX::AudioEngine> audioEngine)
 {
 	this->m_isStatic = true;
 	this->m_collidable = true;
@@ -21,7 +21,7 @@ void Player::initialize(int modelIndex, int wvpCBufferIndex, float mass, DirectX
 	this->m_physicsComp = new PhysicsComponent();
 	this->m_physicsComp->initialize(this->m_movementComp, mass, acceleration, deceleration);
 	this->m_physicsComp->setBoundingBox(this->m_movementComp->getPositionF3(), DirectX::XMFLOAT3(1.f, 3.f, 1.f));
-	this->m_hookHand.init(gObj, m_movementComp, &m_collidableAABBoxes, audioEngine);
+	this->m_hookHand.init(gObj, m_movementComp, &m_collidableAABBoxes, hookGun, audioEngine);
 }
 
 void Player::addAABB(DirectX::BoundingBox* aabb)
@@ -31,7 +31,6 @@ void Player::addAABB(DirectX::BoundingBox* aabb)
 
 void Player::update(Keyboard* keyboard, Mouse* mouse, float dt)
 {
-	this->m_hookHand.update(dt);
 	if (this->m_hookHand.shouldFly())
 	{
 		this->m_physicsComp->setVelocity(DirectX::XMFLOAT3(0, 0, 0));
@@ -90,5 +89,7 @@ void Player::update(Keyboard* keyboard, Mouse* mouse, float dt)
 		this->m_hookHand.fire();
 	}
 	this->m_physicsComp->updatePosition(dt);
+	this->m_hookHand.update(dt);
+
 
 }

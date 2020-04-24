@@ -8,11 +8,12 @@ HookHand::HookHand()
 }
 
 
-void HookHand::init(GameObject* gObject, MovementComponent* movementComponent, std::vector<DirectX::BoundingBox*>* boundingBoxes, std::shared_ptr<DirectX::AudioEngine> audioEngine)
+void HookHand::init(GameObject* gObject, MovementComponent* movementComponent, std::vector<DirectX::BoundingBox*>* boundingBoxes, GameObject* hookGun, std::shared_ptr<DirectX::AudioEngine> audioEngine)
 {
 	MaterialData mat;
 	mat.diffuse = DirectX::XMFLOAT4(0.5, 0.5, 0.5, 1);
 	this->m_hookGameObject = gObject;
+	this->m_gunGameObject = hookGun;
 	this->m_playerMovement = movementComponent;
 	this->m_hookGameObject->setPosition(this->m_playerMovement->position);
 	this->m_hookTimer.start();
@@ -22,10 +23,6 @@ void HookHand::init(GameObject* gObject, MovementComponent* movementComponent, s
 	this->m_audioEngine = audioEngine;
 	this->m_fireSound = std::make_shared<DirectX::SoundEffect>(audioEngine.get(), L"Sounds/Explo1.wav");
 	this->m_ejectSound = std::make_shared<DirectX::SoundEffect>(audioEngine.get(), L"Sounds/Explo1.wav");
-
-
-
-
 }
 
 bool HookHand::canFire()
@@ -47,8 +44,8 @@ void HookHand::fire()
 		this->m_hookState = hookState::shooting;
 		this->m_ejectSound->Play();
 	}
-
 }
+
 void HookHand::retract()
 {
 	if (this->canRecall())
@@ -78,9 +75,38 @@ bool HookHand::colide()
 	}
 	return  colided;
 }
+void HookHand::updateHandModel()
+{
+	DirectX::XMFLOAT4 rot;
+	DirectX::XMStoreFloat4(&rot, this->m_playerMovement->rotation);
+	rot.x = -rot.x;
+
+	DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationRollPitchYawFromVector(this->m_playerMovement->rotation);
+	DirectX::XMVECTOR rotOff;
+	rotOff = this->invertX(this->m_playerMovement->rotation);
+
+	DirectX::XMVECTOR gunPosOffsetRotated = XMVector3TransformCoord(this->gunPosOffset, rotationMatrix);
+	this->m_gunGameObject->getMoveCompPtr()->rotation = DirectX::XMVectorAdd(rotOff, gunRotOffset);
+	this->m_gunGameObject->getMoveCompPtr()->position = DirectX::XMVectorAdd(this->m_playerMovement->position, gunPosOffsetRotated);
+	this->hookPosOffset = XMVector3TransformCoord(this->hookPosOffsetConst, rotationMatrix);
+}
+
+DirectX::XMVECTOR HookHand::invertX(DirectX::XMVECTOR VectorToInvertX)
+{
+	DirectX::XMVECTOR returnVector;
+	DirectX::XMFLOAT4 rot;
+	DirectX::XMStoreFloat4(&rot, VectorToInvertX);
+	rot.x = -rot.x;
+	
+	returnVector = DirectX::XMLoadFloat4(&rot);
+	return returnVector;
+
+}
 
 void HookHand::update(float dt)
 {
+	
+	this->updateHandModel();
 	if (m_hookState == hookState::shooting)
 	{
 		if (this->colide())
@@ -99,7 +125,7 @@ void HookHand::update(float dt)
 	}
 	else if (m_hookState == hookState::recalling)
 	{
-		this->m_origin = DirectX::XMVectorSubtract(this->m_playerMovement->position, this->m_hookGameObject->getPosition());
+		this->m_origin = DirectX::XMVectorSubtract(DirectX::XMVectorAdd(this->m_gunGameObject->getMoveCompPtr()->position, hookPosOffset), this->m_hookGameObject->getPosition());
 
 		if (DirectX::XMVectorGetByIndex(DirectX::XMVector3LengthEst(this->m_origin), 1) <= 2)
 		{
@@ -138,10 +164,10 @@ void HookHand::update(float dt)
 				this->m_hookState = hookState::idle;
 			}
 		}
-		this->m_hookGameObject->getMoveCompPtr()->position = this->m_playerMovement->position;
-		this->m_hookGameObject->getMoveCompPtr()->rotation = this->m_playerMovement->rotation;
-		this->m_hookGameObject->getMoveCompPtr()->updateDirVectors();
+		this->m_hookGameObject->getMoveCompPtr()->rotation = DirectX::XMVectorAdd(this->invertX(this->m_playerMovement->rotation), this->hookRotOffsetConst);;
+		this->m_hookGameObject->getMoveCompPtr()->position = DirectX::XMVectorAdd(this->m_gunGameObject->getMoveCompPtr()->position, hookPosOffset);
 	}
+	
 }
 
 bool HookHand::shouldFly()
