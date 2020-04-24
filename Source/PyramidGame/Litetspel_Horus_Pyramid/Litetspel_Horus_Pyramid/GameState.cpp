@@ -39,7 +39,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_gameObjects.resize(15);
 
 	// Ground Object
-	std::vector<Vertex> groundvertices =
+	/*std::vector<Vertex> groundvertices =
 	{
 		Vertex(
 			-1.f, 0.f, -1.f,
@@ -71,9 +71,9 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 			0.f, 1.f, 0.f,
 			0, 0
 		)
-	};
+	};*/
 	this->m_models.emplace_back();
-	mat.diffuse = DirectX::XMFLOAT4(.8f, .8f, .8f, 1.f);
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
 	//this->m_models[0].loadVertexVector(device, dContext, groundvertices, mat);
 	this->m_models[0].loadVertexFromOBJ(device, dContext, L"Models/desertGround.obj", mat, L"Textures/sandTexture.png");
 
@@ -84,14 +84,13 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 
 	DirectX::XMVECTOR vec = DirectX::XMVectorSet(0.f, -10.f, 0.f, 1.f);
 	this->m_gameObjects[0].setPosition(vec);
-	/*this->m_gameObjects[0].setScale(vec);*/
 	this->m_gameObjects[0].setBoundingBox(DirectX::XMFLOAT3(1000.f, 10.f, 1000.f));
 	this->m_player.addAABB(this->m_gameObjects[0].getAABBPtr()); // add Bounding Box to player collidables
 
 	// Pyramid
 	//,	Model
 	this->m_models.emplace_back();
-	mat.diffuse = DirectX::XMFLOAT4(0.75164f, 0.60648f, 0.22648f, 1.0f);
+	mat.diffuse = DirectX::XMFLOAT4(0.65164f, 0.60648f, 0.22648f, 1.0f);
 	this->m_models[1].loadVertexFromOBJ(device, dContext, L"Models/BasePyr.obj", mat, L"Textures/pyramidTexture.png");
 
 	//,	WVP Buffer
@@ -104,6 +103,20 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	//,	Movement changes
 	vec = DirectX::XMVectorSet(0.f, 0.f, 100.f, 1.f);
 	this->m_gameObjects[1].setPosition(vec);
+
+	// 
+	DirectX::XMFLOAT3 center(0.f, 52.f, 80.f);
+	DirectX::XMFLOAT3 extents(80.f, 105.f, 1.f);
+	DirectX::XMVECTOR quaternion = DirectX::XMQuaternionRotationRollPitchYaw(0.9f, 0.f, 0.f);
+	DirectX::XMFLOAT4 orientation;
+	DirectX::XMStoreFloat4(&orientation, quaternion);
+
+	this->m_pyramidOBB = DirectX::BoundingOrientedBox(
+		center,
+		extents,
+		orientation
+	);
+	this->m_player.addPyramidOBB(&this->m_pyramidOBB);
 
 	//// Cube 1
 	//this->m_models.emplace_back();

@@ -10,6 +10,7 @@ class Player : public GameObject
 {
 private:
 	std::vector<DirectX::BoundingBox*> m_collidableAABBoxes;
+	DirectX::BoundingOrientedBox m_pyramidOBB;
 	HookHand m_hookHand;
 	bool lastFly;
 
@@ -22,6 +23,7 @@ public:
 
 	// Collidable Bounding Boxes
 	void addAABB(DirectX::BoundingBox* aabb);
+	void addPyramidOBB(DirectX::BoundingOrientedBox* obb);
 
 	// Update
 	void update(Keyboard* keyboard, Mouse* mouse, float dt);

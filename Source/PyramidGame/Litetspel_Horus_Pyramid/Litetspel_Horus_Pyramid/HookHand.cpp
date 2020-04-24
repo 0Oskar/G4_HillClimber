@@ -147,7 +147,7 @@ void HookHand::update(float dt)
 	else if (m_hookState == hookState::flyYouFool)
 	{
 		//DirectX::XMVECTOR addPosVector = DirectX::XMVectorAdd(DirectX::XMVectorSet(0, 5, 0, 0), DirectX::XMVectorDivide(this->m_playerMovement->forward, DirectX::XMVectorSet(2, 2, 2, 0)));
-		DirectX::XMVECTOR addPosVector = DirectX::XMVectorSet(0, 3, 0, 0);
+		DirectX::XMVECTOR addPosVector = DirectX::XMVectorSet(0, 4, 0, 0);
 
 		this->m_toHeadDir = DirectX::XMVectorSubtract(DirectX::XMVectorAdd(this->m_platformCenter, addPosVector), this->m_playerMovement->position);
 		if (DirectX::XMVectorGetByIndex(DirectX::XMVector3LengthEst(this->m_toHeadDir), 1) <= 1)
