@@ -360,6 +360,33 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 	this->initShaders();
 	this->initConstantBuffer();
 
+	// Ambient Light buffer
+	PS_LIGHT_BUFFER lightBuffer;
+	lightBuffer.lightColor = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
+	lightBuffer.strength = 0.2f;
+	this->m_lightBuffer.m_data = lightBuffer;
+	this->m_lightBuffer.upd();
+
+	// Directional Light buffer
+	PS_DIR_BUFFER dirBuffer;
+	dirBuffer.lightColor = DirectX::XMFLOAT4(.8f, 0.8f, 0.8f, 1.f);
+	dirBuffer.lightDirection = DirectX::XMFLOAT4(-1.0f, 1.0f, -0.7f, 0.0f);
+	this->m_dirLightBuffer.m_data = dirBuffer;
+	this->m_dirLightBuffer.upd();
+
+	// Pyramid Frustum for drawing only(Seperate from)
+	DirectX::XMFLOAT3 center(0.f, 52.f, 80.f);
+	DirectX::XMFLOAT3 extents(80.f, 105.f, 1.f);
+	DirectX::XMVECTOR quaternion = DirectX::XMQuaternionRotationRollPitchYaw(0.9f, 0.f, 0.f);
+	DirectX::XMFLOAT4 orientation;
+	DirectX::XMStoreFloat4(&orientation, quaternion);
+
+	this->m_pyramidOBB = DirectX::BoundingOrientedBox(
+		center,
+		extents,
+		orientation
+	);
+
 	// Crosshair
 	this->m_spriteBatch = std::make_unique<DirectX::SpriteBatch>(this->m_deviceContext.Get());
 	this->m_crossHairSRV = this->textureHandler->getTexture(L"Textures/crosshair.png", this->m_device.Get());
@@ -394,32 +421,10 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 
 	assert(SUCCEEDED(hr) && "Error, failed to create input layout for primitives!");
 
-	// Ambient Light buffer
-	PS_LIGHT_BUFFER lightBuffer;
-	lightBuffer.lightColor = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
-	lightBuffer.strength = 0.2f;
-	this->m_lightBuffer.m_data = lightBuffer;
-	this->m_lightBuffer.upd();
+	// FPS counter
+	this->m_spriteFont = std::make_unique<DirectX::SpriteFont>(this->m_device.Get(), L"Fonts\\product_sans_16.spritefont");
+	this->m_fpsString = "FPS: NULL";
 
-	// Directional Light buffer
-	PS_DIR_BUFFER dirBuffer;
-	dirBuffer.lightColor = DirectX::XMFLOAT4(.8f, 0.8f, 0.8f, 1.f);
-	dirBuffer.lightDirection = DirectX::XMFLOAT4(-1.0f, 1.0f, -0.7f, 0.0f);
-	this->m_dirLightBuffer.m_data = dirBuffer;
-	this->m_dirLightBuffer.upd();
-
-	// Pyramid Frustum
-	DirectX::XMFLOAT3 center(0.f, 52.f, 80.f);
-	DirectX::XMFLOAT3 extents(80.f, 105.f, 1.f);
-	DirectX::XMVECTOR quaternion = DirectX::XMQuaternionRotationRollPitchYaw(0.9f, 0.f, 0.f);
-	DirectX::XMFLOAT4 orientation;
-	DirectX::XMStoreFloat4(&orientation, quaternion);
-
-	this->m_pyramidOBB = DirectX::BoundingOrientedBox(
-		center,
-		extents,
-		orientation
-	);
 }
 
 void ViewLayer::update(float dt)
@@ -466,14 +471,6 @@ void ViewLayer::render()
 		this->m_modelsFromState->at(mIndex).draw(viewPMtrx);
 	}
 
-	this->m_fps++;
-	if (1.0 < m_timer.timeElapsed())
-	{
-		std::string fps = "FPS: " + std::to_string(this->m_fps) + "\n";
-		OutputDebugStringA(fps.c_str());
-		m_timer.restart();
-		this->m_fps = 0;
-	}
 
 	// Draw Primitives
 	if (this->m_drawPrimitives)
@@ -503,9 +500,19 @@ void ViewLayer::render()
 		m_batch->End();
 	}
 
+	//FPS Counter
+	this->m_fps++;
+	if (1.0 < m_timer.timeElapsed())
+	{
+		this->m_fpsString = "FPS: " + std::to_string(this->m_fps);
+		m_timer.restart();
+		this->m_fps = 0;
+	}
+
 	// Draw Sprites
 	this->m_spriteBatch->Begin();
 	this->m_spriteBatch->Draw(this->m_crossHairSRV, this->m_crosshairPosition);
+	this->m_spriteFont->DrawString(this->m_spriteBatch.get(), this->m_fpsString.c_str(), DirectX::XMFLOAT2(0, 0), DirectX::Colors::White, 0.f, DirectX::XMFLOAT2(0.f, 0.f));
 	this->m_spriteBatch->End();
 
 	// Swap Frames

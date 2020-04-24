@@ -62,7 +62,11 @@ private:
 
 	DirectX::XMMATRIX* m_viewMatrix;
 	DirectX::XMMATRIX* m_projectionMatrix;
+
+	// FPS Counter
 	Timer m_timer;
+	std::unique_ptr<DirectX::SpriteFont> m_spriteFont;
+	std::string m_fpsString;
 	int m_fps;
 
 	// Initialization Functions
