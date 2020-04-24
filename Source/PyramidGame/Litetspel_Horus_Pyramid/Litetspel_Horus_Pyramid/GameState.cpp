@@ -36,7 +36,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	MaterialData mat;
 
 	// Models
-	this->m_gameObjects.resize(15);
+	this->m_gameObjects.resize(16);
 
 	// Ground Object
 	/*std::vector<Vertex> groundvertices =
@@ -323,17 +323,17 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_models[4].loadVertexFromOBJ(device, dContext, L"Models/HookModel.obj", mat, L"Textures/HookTexture.png");
 
 	this->m_wvpCBuffers.emplace_back();
-	this->m_wvpCBuffers[14].init(device, dContext);
+	this->m_wvpCBuffers[15].init(device, dContext);
 
-	this->m_gameObjects[14].initializeDynamic(false, 4, 14, 1, DirectX::XMFLOAT3(10, 10, 10), DirectX::XMFLOAT3(10, 10, 10));
+	this->m_gameObjects[15].initializeDynamic(false, 4, 15, 1, DirectX::XMFLOAT3(10, 10, 10), DirectX::XMFLOAT3(10, 10, 10));
 
 	vec = DirectX::XMVectorSet(10.f, 1.f, -20.f, 1.f);
-	this->m_gameObjects[14].setPosition(vec);
+	this->m_gameObjects[15].setPosition(vec);
 	vec = DirectX::XMVectorSet(.7f, .7f, .7f, 1.f);
-	this->m_gameObjects[14].setScale(vec);
+	this->m_gameObjects[15].setScale(vec);
 
 	// Player
-	this->m_player.initialize(-1, -1, 1.f, DirectX::XMFLOAT3(20.f, 20.f, 20.f), DirectX::XMFLOAT3(.01f, .01f, .01f), &this->m_gameObjects[2], &this->m_gameObjects[14], audioEngine);
+	this->m_player.initialize(-1, -1, 1.f, DirectX::XMFLOAT3(20.f, 20.f, 20.f), DirectX::XMFLOAT3(.01f, .01f, .01f), &this->m_gameObjects[2], &this->m_gameObjects[15], audioEngine);
 	this->m_player.setPosition(DirectX::XMVectorSet(0.f, 5.f, -1.f, 1.f));
 
 	// Camera

@@ -69,7 +69,7 @@ bool HookHand::colide()
 		{
 			DirectX::XMVECTOR posToTopAndCenterOfBox = DirectX::XMVectorSet(DirectX::XMVectorGetX(this->m_hookGameObject->getPosition()), m_boundingBoxes->at(i)->Center.y, DirectX::XMVectorGetZ(this->m_hookGameObject->getPosition()), 0);
 			posToTopAndCenterOfBox = DirectX::XMVectorAdd(posToTopAndCenterOfBox, DirectX::XMVectorSet(0, m_boundingBoxes->at(i)->Extents.y + (this->m_hookGameObject->getAABB().Extents.y * 2), 0, 0));  // Move in Y the platform extends then + the size of the boundingbox of the hookHead.
-			m_platformCenter = posToTopAndCenterOfBox;
+			m_platformCenter = DirectX::XMVectorAdd(posToTopAndCenterOfBox, DirectX::XMVectorScale(this->m_playerMovement->forward, 2));
 			colided = true;
 		}
 	}
