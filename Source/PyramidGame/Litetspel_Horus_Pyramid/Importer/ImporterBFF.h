@@ -1,32 +1,18 @@
 #pragma once
+#include "Model.h"
 
 namespace ImporterBFF
 {
-	class Importer
+	class Manager
 	{
 	private:
-		std::string TestName = "MyMesh";
-
-		struct Model 
-		{
-			Mesh mesh;
-			Vertex *vertexArr;
-			Material material;
-		};
-
-		Model model;
-
+		Manager();
 
 	public:
-
-		static Model* LoadMesh(std::string MeshFileName, std::string TextureFileName);
-
-
-		static std::string MeshName();
-
-
-
-
-
+		static Manager& GetInstance();
+		Model LoadModel(const char* filePath);
+		~Manager();
+		//Model(const char* MeshFileName); // load
+		//std::string MeshName(Model model);
 	};
 }

@@ -12,9 +12,9 @@
 #include <fbxsdk.h>
 
 #include "DisplayCommon.h"
-Material material;
+MaterialBFF material;
 
-Material getMaterialInfo()
+MaterialBFF getMaterialInfo()
 {
 	return material;
 }

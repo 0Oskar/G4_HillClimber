@@ -1,12 +1,12 @@
 #pragma once
 
-struct Mesh
+struct MeshBFF
 {
 	char name[64];
 	unsigned int nrOfVertex;
 };
 
-struct Vertex
+struct VertexBFF
 {
 	float pos[3];
 	float uv[2];
@@ -15,7 +15,7 @@ struct Vertex
 	float tan[3];
 };
 
-struct Material
+struct MaterialBFF
 {
 	float Diffuse[3];
 	float Ambient[3];

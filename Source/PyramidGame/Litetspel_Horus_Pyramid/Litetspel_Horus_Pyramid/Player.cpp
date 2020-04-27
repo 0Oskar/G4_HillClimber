@@ -3,7 +3,10 @@
 
 Player::Player() : GameObject()
 {
-	this->myString = ImporterBFF::Importer::MeshName();
+	Model myModel = ImporterBFF::Manager::GetInstance().LoadModel();
+	//myModel = ImporterBFF::Model("../../../../Importer/FbxDemoBase/biFile.bff");
+	//ImporterBFF::Model::MeshName(myModel);
+	//this->myString = ImporterBFF::Model::MeshName();
 }
 
 Player::~Player()
@@ -49,7 +52,7 @@ void Player::update(Keyboard* keyboard, MouseEvent mouseEvent, float dt)
 	if (keyboard->isKeyPressed(' ')) {
 		this->m_physicsComp->jump(3.f, dt);
 		//ImporterBFF::Importer::MeshName()
-		OutputDebugStringA(this->myString.c_str()); // <----------------------------------------------------------------------------
+		//OutputDebugStringA(this->myString.c_str()); // <----------------------------------------------------------------------------
 	}
 
 	if (keyboard->isKeyPressed((unsigned char)16)) // Shift
