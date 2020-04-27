@@ -12,6 +12,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <map>
 #include "../../../../Importer/FbxDemoBase/FbxDemo/ImporterStructure.h"
 
 

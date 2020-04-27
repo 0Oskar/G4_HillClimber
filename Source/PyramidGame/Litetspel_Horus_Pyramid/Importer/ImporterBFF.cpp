@@ -45,9 +45,18 @@ namespace ImporterBFF
 		return instance;
 	}
 
-	Model Manager::LoadModel(const char* filePath)
+	bool Manager::LoadModel(const char* filePath)
 	{
-		return Model();
+		bool modelLoaded = false;
+		if () 
+		{
+
+		}
+
+
+
+
+		return modelLoaded;
 	}
 
 	Manager::~Manager()

@@ -7,10 +7,22 @@ namespace ImporterBFF
 	{
 	private:
 		Manager();
+			
+		std::map<std::string, Model> map; // name on mesh, type of object
+			
+			
+			
 
 	public:
 		static Manager& GetInstance();
-		Model LoadModel(const char* filePath);
+		Manager(Manager const&) = delete;
+		void operator =(Manager const&) = delete;
+
+		bool LoadModel(const char* filePath);
+
+		
+
+
 		~Manager();
 		//Model(const char* MeshFileName); // load
 		//std::string MeshName(Model model);
