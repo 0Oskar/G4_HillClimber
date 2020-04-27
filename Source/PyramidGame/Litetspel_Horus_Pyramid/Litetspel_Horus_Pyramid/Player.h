@@ -5,10 +5,13 @@
 #include "PhysicsComponent.h"
 #include "Input.h"
 
+
 class Player : public GameObject
 {
 private:
 	std::vector<DirectX::BoundingBox*> m_collidableAABBoxes;
+
+	std::string myString;
 
 public:
 	Player();

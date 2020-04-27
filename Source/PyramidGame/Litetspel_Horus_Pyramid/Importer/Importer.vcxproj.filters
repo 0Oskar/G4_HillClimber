@@ -21,7 +21,7 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="BiReader.h">
+    <ClInclude Include="ImporterBFF.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -32,10 +32,10 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="BiReader.cpp">
+    <ClCompile Include="ImporterMain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ImporterMain.cpp">
+    <ClCompile Include="ImporterBFF.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

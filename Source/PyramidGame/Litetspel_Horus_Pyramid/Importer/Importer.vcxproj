@@ -147,13 +147,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="BiReader.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="ImporterBFF.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="BiReader.cpp" />
     <ClCompile Include="Importer.cpp" />
+    <ClCompile Include="ImporterBFF.cpp" />
     <ClCompile Include="ImporterMain.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>

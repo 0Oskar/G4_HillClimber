@@ -3,6 +3,7 @@
 
 Player::Player() : GameObject()
 {
+	this->myString = ImporterBFF::Importer::MeshName();
 }
 
 Player::~Player()
@@ -45,8 +46,11 @@ void Player::update(Keyboard* keyboard, MouseEvent mouseEvent, float dt)
 	if (keyboard->isKeyPressed('D'))
 		this->m_physicsComp->addForceDir(Direction::RIGHT, dt);
 
-	if (keyboard->isKeyPressed(' '))
+	if (keyboard->isKeyPressed(' ')) {
 		this->m_physicsComp->jump(3.f, dt);
+		//ImporterBFF::Importer::MeshName()
+		OutputDebugStringA(this->myString.c_str()); // <----------------------------------------------------------------------------
+	}
 
 	if (keyboard->isKeyPressed((unsigned char)16)) // Shift
 		this->m_physicsComp->addForceDir(Direction::DOWN, dt);
