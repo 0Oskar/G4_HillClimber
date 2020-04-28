@@ -308,7 +308,7 @@ void ViewLayer::setProjectionMatrix(DirectX::XMMATRIX* newProjectionMatrix)
 	this->m_projectionMatrix = newProjectionMatrix;
 }
 
-void ViewLayer::setgameObjectsFromState(std::vector<GameObject>* gameObjectsFromState, std::vector<Platform>* platformsFromState)
+void ViewLayer::setgameObjectsFromState(std::vector<GameObject>* gameObjectsFromState, std::vector<Platform*>* platformsFromState)
 {
 	this->m_gameObjectsFromState = gameObjectsFromState;
 	this->m_platformsFromState = platformsFromState;
@@ -479,7 +479,7 @@ void ViewLayer::render()
 	for (size_t i = 0; i < m_platformsFromState->size(); i++)
 	{
 		// Get indexes
-		GameObject* gObject = &this->m_platformsFromState->at(i);
+		GameObject* gObject = this->m_platformsFromState->at(i);
 		int wvpIndex = gObject->getWvpCBufferIndex();
 		int mIndex = gObject->getModelIndex();
 		// Set Constant buffer
