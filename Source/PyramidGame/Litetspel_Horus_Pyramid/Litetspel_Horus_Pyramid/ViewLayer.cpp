@@ -308,9 +308,10 @@ void ViewLayer::setProjectionMatrix(DirectX::XMMATRIX* newProjectionMatrix)
 	this->m_projectionMatrix = newProjectionMatrix;
 }
 
-void ViewLayer::setgameObjectsFromState(std::vector<GameObject>* gameObjectsFromState)
+void ViewLayer::setgameObjectsFromState(std::vector<GameObject>* gameObjectsFromState, std::vector<Platform>* platformsFromState)
 {
 	this->m_gameObjectsFromState = gameObjectsFromState;
+	this->m_platformsFromState = platformsFromState;
 }
 
 void ViewLayer::setModelsFromState(std::vector<Model>* models)
@@ -387,9 +388,12 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 		orientation
 	);
 
+	this->textureHandler->m_dContext = this->getContextDevice();
+	this->textureHandler->m_device = this->getDevice();
+
 	// Crosshair
 	this->m_spriteBatch = std::make_unique<DirectX::SpriteBatch>(this->m_deviceContext.Get());
-	this->m_crossHairSRV = this->textureHandler->getTexture(L"Textures/crosshair.png", this->m_device.Get());
+	this->m_crossHairSRV = this->textureHandler->getTexture(L"Textures/crosshair.png");
 	ID3D11Resource* crosshairTexture = 0;
 	this->m_crossHairSRV->GetResource(&crosshairTexture);
 	ID3D11Texture2D* crosshairTexture2D = 0;
@@ -468,6 +472,20 @@ void ViewLayer::render()
 		// Set Constant buffer
 		this->m_deviceContext->VSSetConstantBuffers(0, 1, this->m_wvpCBufferFromState->at(wvpIndex).GetAdressOf());
 		// Draw Model
+		this->m_modelsFromState->at(mIndex).m_material.setTexture(gObject->getTexturePath().c_str());
+		this->m_modelsFromState->at(mIndex).draw(viewPMtrx);
+	}
+
+	for (size_t i = 0; i < m_platformsFromState->size(); i++)
+	{
+		// Get indexes
+		GameObject* gObject = &this->m_platformsFromState->at(i);
+		int wvpIndex = gObject->getWvpCBufferIndex();
+		int mIndex = gObject->getModelIndex();
+		// Set Constant buffer
+		this->m_deviceContext->VSSetConstantBuffers(0, 1, this->m_wvpCBufferFromState->at(wvpIndex).GetAdressOf());
+		// Draw Model
+		this->m_modelsFromState->at(mIndex).m_material.setTexture(gObject->getTexturePath().c_str());
 		this->m_modelsFromState->at(mIndex).draw(viewPMtrx);
 	}
 

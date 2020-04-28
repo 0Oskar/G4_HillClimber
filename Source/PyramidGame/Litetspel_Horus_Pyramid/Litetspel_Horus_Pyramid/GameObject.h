@@ -3,6 +3,7 @@
 #include "MovementComponent.h"
 #include "PhysicsComponent.h"
 #include "Input.h"
+#include "Model.h"
 
 class GameObject
 {
@@ -15,6 +16,8 @@ protected:
 	// Componenets
 	MovementComponent* m_movementComp;
 	PhysicsComponent* m_physicsComp;
+	Model* m_modelptr;
+	std::wstring m_texturePath;
 
 public:
 	GameObject();
@@ -23,8 +26,8 @@ public:
 	GameObject& operator=(const GameObject& otherGameObject);
 
 	// Initialization
-	void initializeStatic(bool collidable, int modelIndex, int wvpCBufferIndex);
-	void initializeDynamic(bool collidable, int modelIndex, int wvpCBufferIndex, float mass, DirectX::XMFLOAT3 acceleration, DirectX::XMFLOAT3 deceleration);
+	void initializeStatic(bool collidable, int modelIndex, int wvpCBufferIndex, Model* mdl);
+	void initializeDynamic(bool collidable, int modelIndex, int wvpCBufferIndex, float mass, DirectX::XMFLOAT3 acceleration, DirectX::XMFLOAT3 deceleration, Model* mdl);
 
 	// Update
 	virtual void update(float dt);
@@ -39,6 +42,7 @@ public:
 	MovementComponent* getMoveCompPtr();
 	DirectX::BoundingBox getAABB();
 	DirectX::BoundingBox* getAABBPtr();
+	std::wstring getTexturePath();
 
 	// Setters
 	void setScale(DirectX::XMVECTOR newScale);
@@ -46,4 +50,5 @@ public:
 	void setBoundingBox(DirectX::XMFLOAT3 extends);
 	void move(Direction dir, float dt);
 	void move(DirectX::XMVECTOR dir, float dt);
+	
 };

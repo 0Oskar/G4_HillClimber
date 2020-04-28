@@ -6,7 +6,8 @@ class TextureHandler
 {
 private:
 	TextureHandler() {};
-	std::map<const WCHAR*, ID3D11ShaderResourceView*> map;
+	std::map<const std::wstring, ID3D11ShaderResourceView*> map;
+
 
 	bool createTextureFromFile(ID3D11Device* device, const WCHAR* txturePath)
 	{
@@ -31,22 +32,22 @@ public:
 	void operator=(TextureHandler const&) = delete;
 	~TextureHandler()
 	{
-		std::map<const WCHAR*, ID3D11ShaderResourceView*>::iterator i = map.begin();
+		/*std::map<const WCHAR*, ID3D11ShaderResourceView*>::iterator i = map.begin();
 		while(i != map.end())
 		{
 			i->second->Release();
 			i++;
-		}
+		}*/
 	}
 
-	ID3D11ShaderResourceView* getTexture(const WCHAR* texturePath, ID3D11Device* device = nullptr)
+	ID3D11ShaderResourceView* getTexture(const WCHAR* texturePath)
 	{
 
 		if (map[texturePath] == nullptr)
 		{
-			if (device != nullptr)
+			if (m_device != nullptr)
 			{
-				createTextureFromFile(device, texturePath);
+				createTextureFromFile(m_device, texturePath);
 			}
 			return map[texturePath];
 		}
@@ -55,5 +56,8 @@ public:
 			return map[texturePath];
 		}
 	}
+
+	ID3D11Device* m_device = nullptr;
+	ID3D11DeviceContext* m_dContext = nullptr;
 
 };
