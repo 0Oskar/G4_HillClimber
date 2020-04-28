@@ -3,36 +3,29 @@
 
 namespace ImporterBFF
 {
-	//Model::Model(const char* MeshFileName)
-	//{
-	//	addToListOfModels();
-	//	myHiddenFunc();
-	//	std::ifstream MeshFile(MeshFileName, std::ifstream::binary);
+	//Hidden
+	ModelBFF LoadModelFromFile(const char* filePath)
+	{
+		ModelBFF model;
 
-	//	MeshFile.read((char*)&this->mesh, sizeof(MeshBFF));
+		std::ifstream MeshFile(filePath, std::ifstream::binary);
 
-	//	this->vertexArr = new VertexBFF[this->mesh.nrOfVertex];
+		MeshFile.read((char*)&model.mesh, sizeof(MeshBFF));
 
-	//	MeshFile.read((char*)this->vertexArr, this->mesh.nrOfVertex * sizeof(VertexBFF));
-	//	MeshFile.read((char*)&this->material, sizeof(MaterialBFF));
-	//	MeshFile.close();
-	//}
+		model.vertexArr = new VertexBFF[model.mesh.nrOfVertex];
+
+		MeshFile.read((char*)model.vertexArr, model.mesh.nrOfVertex * sizeof(VertexBFF));
+		MeshFile.read((char*)&model.material, sizeof(MaterialBFF));
+		MeshFile.close();
+
+		return model;
+	}
+
 
 	//std::string Model::MeshName(Model model)
 	//{
 	//	return std::to_string(this->material.Diffuse[0]);
 	//}
-
-	//Hidden
-	void addToListOfModels()
-	{
-
-	}
-
-	void myHiddenFunc()
-	{
-		
-	}
 
 	Manager::Manager()
 	{
@@ -41,26 +34,32 @@ namespace ImporterBFF
 
 	Manager& Manager::GetInstance()
 	{
-		static Manager instance = Manager();
+		static Manager instance;
 		return instance;
 	}
 
-	bool Manager::LoadModel(const char* filePath)
+	const ModelBFF& Manager::LoadModel(const char* fileName)
 	{
-		bool modelLoaded = false;
-		if () 
+		// Check if insertion is successful or not
+		if (map.find(fileName) == map.end())
 		{
+			std::string fullFilePath = "../../../../Models/" + (std::string)fileName;
 
+			ModelBFF someModel;
+			someModel = LoadModelFromFile(fullFilePath.c_str());
+
+			//Ladda in
+			map[fileName] = someModel; //add to list
 		}
 
-
-
-
-		return modelLoaded;
+		return map[fileName];
 	}
 
 	Manager::~Manager()
 	{
 	}
+
+
+
 }
 

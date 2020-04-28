@@ -2,9 +2,10 @@
 #include "pch.h"
 #include "framework.h"
 
-class Model
+class ModelBFF
 {
-	MeshBFF mesh;
-	VertexBFF* vertexArr;
-	MaterialBFF material;
+	public:
+		MeshBFF mesh;
+		VertexBFF* vertexArr;
+		MaterialBFF material;
 };

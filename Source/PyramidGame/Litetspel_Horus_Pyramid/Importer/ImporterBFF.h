@@ -8,8 +8,7 @@ namespace ImporterBFF
 	private:
 		Manager();
 			
-		std::map<std::string, Model> map; // name on mesh, type of object
-			
+		std::map<std::string, ModelBFF> map; // name on mesh, type of object
 			
 			
 
@@ -18,7 +17,7 @@ namespace ImporterBFF
 		Manager(Manager const&) = delete;
 		void operator =(Manager const&) = delete;
 
-		bool LoadModel(const char* filePath);
+		const ModelBFF& LoadModel(const char* fileName);
 
 		
 
