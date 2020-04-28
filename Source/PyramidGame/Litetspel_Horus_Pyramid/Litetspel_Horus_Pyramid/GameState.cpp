@@ -388,7 +388,7 @@ void GameState::update(Keyboard* keyboard, MouseEvent mouseEvent, Mouse* mousePt
 	}
 
 	//Platforms
-	for (size_t i = 0; i < this->m_platforms.size(); i++)
+	for (int i = 0; i < this->m_platforms.size(); i++)
 	{
 		this->m_platforms[i].update(dt);
 
@@ -398,5 +398,9 @@ void GameState::update(Keyboard* keyboard, MouseEvent mouseEvent, Mouse* mousePt
 		wvpData.worldMatrix = this->m_platforms[i].getWorldMatrix();
 
 		this->m_wvpCBuffers[this->m_platforms[i].getWvpCBufferIndex()].upd(&wvpData);
+		if (m_platforms[i].m_removeMe)
+		{
+			//Remove
+		}
 	}
 }

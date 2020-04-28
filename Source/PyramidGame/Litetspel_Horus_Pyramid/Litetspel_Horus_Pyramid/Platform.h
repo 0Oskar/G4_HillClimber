@@ -18,7 +18,6 @@ private:
 
 	Timer m_destructionTimer;
 	bool m_shouldDestroy;
-	bool m_removeMe;
 	int currentTime;
 
 
@@ -39,4 +38,5 @@ public:
 	void destroy();
 	void setPlayerBoundingBox(DirectX::BoundingBox* boundingBox);
 
+	bool m_removeMe;
 };
