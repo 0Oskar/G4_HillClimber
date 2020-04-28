@@ -3,6 +3,7 @@
 #include "Player.h"
 #include "Camera.h"
 #include "Model.h"
+#include "Platform.h"
 
 class GameState
 {
@@ -12,6 +13,7 @@ private:
 
 	std::vector<Model> m_models;
 	std::vector<GameObject> m_gameObjects;
+	std::vector<Platform> m_platforms;
 	std::vector<ConstBuffer<VS_CONSTANT_BUFFER>> m_wvpCBuffers;
 	DirectX::BoundingOrientedBox m_pyramidOBB;
 
@@ -24,6 +26,7 @@ public:
 	DirectX::XMMATRIX* getProjectionMatrix() const;
 	std::vector<Model>* getModelsPtr();
 	std::vector<GameObject>* getGameObjectsPtr();
+	std::vector<Platform>* getPlatformPtr();
 	std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* getWvpCBuffersPtr();
 
 	// Initialization

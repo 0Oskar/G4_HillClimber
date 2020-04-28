@@ -34,7 +34,6 @@ private:
 	VertexBuffer<Vertex> m_vertexBuffer;
 	std::vector<Vertex> m_vertices;
 	IndexBuffer m_indexBuffer;
-	Material m_material;
 
 	bool m_drawWithIndex;
 
@@ -45,4 +44,8 @@ public:
 	void draw(DirectX::XMMATRIX &mtrx);
 	void loadVertexVector(ID3D11Device* device, ID3D11DeviceContext* dContext, std::vector<Vertex> vertexVector, MaterialData material, std::wstring texturePath = L"");
 	void loadVertexFromOBJ(ID3D11Device* device, ID3D11DeviceContext* dContext, std::wstring objFilePath, MaterialData material, std::wstring texturePath = L"");
+	Material m_material;
+
+	std::wstring m_originalTexture;
+
 };

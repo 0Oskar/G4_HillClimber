@@ -193,7 +193,10 @@ void Model::loadVertexFromOBJ(ID3D11Device* device, ID3D11DeviceContext* dContex
 	assert(SUCCEEDED(hr) && "Error, vertex buffer could not be created!");
 
 	if (texturePath != L"")
+	{
 		this->m_material.init(device, dContext, material, texturePath.c_str());
+		this->m_originalTexture = texturePath;
+	}
 	else
 		this->m_material.init(device, dContext, material);
 }

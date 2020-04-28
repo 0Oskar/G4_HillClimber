@@ -55,7 +55,7 @@ bool Application::initApplication(HINSTANCE hInstance, LPWSTR lpCmdLine, HWND hW
 	this->m_viewLayerPtr->setViewMatrix(this->m_gameState.getViewMatrix());
 	this->m_viewLayerPtr->setProjectionMatrix(this->m_gameState.getProjectionMatrix());
 	this->m_viewLayerPtr->setModelsFromState(this->m_gameState.getModelsPtr());
-	this->m_viewLayerPtr->setgameObjectsFromState(this->m_gameState.getGameObjectsPtr());
+	this->m_viewLayerPtr->setgameObjectsFromState(this->m_gameState.getGameObjectsPtr(), this->m_gameState.getPlatformPtr());
 	this->m_viewLayerPtr->setWvpCBufferFromState(this->m_gameState.getWvpCBuffersPtr());
 	this->m_timer.start();
 

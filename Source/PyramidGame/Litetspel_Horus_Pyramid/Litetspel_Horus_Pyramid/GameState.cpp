@@ -25,6 +25,10 @@ std::vector<GameObject>* GameState::getGameObjectsPtr()
 	return &this->m_gameObjects;
 }
 
+std::vector<Platform>* GameState::getPlatformPtr()
+{
+	return &this->m_platforms;
+}
 std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* GameState::getWvpCBuffersPtr()
 {
 	return &this->m_wvpCBuffers;
@@ -37,6 +41,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 
 	// Models
 	this->m_gameObjects.resize(16);
+	this->m_platforms.resize(1);
 
 	// Ground Object
 	/*std::vector<Vertex> groundvertices =
@@ -80,7 +85,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_wvpCBuffers.emplace_back();
 	this->m_wvpCBuffers[0].init(device, dContext);
 
-	this->m_gameObjects[0].initializeStatic(true, 0, 0);
+	this->m_gameObjects[0].initializeStatic(true, 0, 0, &m_models[0]);
 
 	DirectX::XMVECTOR vec = DirectX::XMVectorSet(0.f, -10.f, 0.f, 1.f);
 	this->m_gameObjects[0].setPosition(vec);
@@ -98,7 +103,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_wvpCBuffers[1].init(device, dContext);
 
 	//,	Game Object
-	this->m_gameObjects[1].initializeStatic(false, 1, 1);
+	this->m_gameObjects[1].initializeStatic(false, 1, 1, &m_models[1]);
 
 	//,	Movement changes
 	vec = DirectX::XMVectorSet(0.f, 0.f, 100.f, 1.f);
@@ -158,7 +163,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_wvpCBuffers.emplace_back();
 	this->m_wvpCBuffers[2].init(device, dContext);
 
-	this->m_gameObjects[2].initializeDynamic(true, 2, 2, 1, DirectX::XMFLOAT3(10, 10, 10), DirectX::XMFLOAT3(10, 10, 10));
+	this->m_gameObjects[2].initializeDynamic(true, 2, 2, 1, DirectX::XMFLOAT3(10, 10, 10), DirectX::XMFLOAT3(10, 10, 10), &m_models[2]);
 
 	vec = DirectX::XMVectorSet(10.f, 1.f, -20.f, 1.f);
 	this->m_gameObjects[2].setPosition(vec);
@@ -175,7 +180,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_wvpCBuffers.emplace_back();
 	this->m_wvpCBuffers[3].init(device, dContext);
 
-	this->m_gameObjects[3].initializeStatic(true, 3, 3);
+	this->m_gameObjects[3].initializeStatic(true, 3, 3, &m_models[3]);
 
 	vec = DirectX::XMVectorSet(0.f, 10.f, 24.f, 1.f);
 	this->m_gameObjects[3].setPosition(vec);
@@ -187,7 +192,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_wvpCBuffers.emplace_back();
 	this->m_wvpCBuffers[4].init(device, dContext);
 
-	this->m_gameObjects[4].initializeStatic(true, 3, 4);
+	this->m_gameObjects[4].initializeStatic(true, 3, 4, &m_models[3]);
 
 	vec = DirectX::XMVectorSet(-10.f, 20.f, 36.f, 1.f);
 	this->m_gameObjects[4].setPosition(vec);
@@ -199,7 +204,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_wvpCBuffers.emplace_back();
 	this->m_wvpCBuffers[5].init(device, dContext);
 
-	this->m_gameObjects[5].initializeStatic(true, 3, 5);
+	this->m_gameObjects[5].initializeStatic(true, 3, 5, &m_models[3]);
 
 	vec = DirectX::XMVectorSet(10.f, 30.f, 48.f, 1.f);
 	this->m_gameObjects[5].setPosition(vec);
@@ -211,7 +216,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_wvpCBuffers.emplace_back();
 	this->m_wvpCBuffers[6].init(device, dContext);
 
-	this->m_gameObjects[6].initializeStatic(true, 3, 6);
+	this->m_gameObjects[6].initializeStatic(true, 3, 6, &m_models[3]);
 
 	vec = DirectX::XMVectorSet(-40.f, 40.f, 60.f, 1.f);
 	this->m_gameObjects[6].setPosition(vec);
@@ -223,7 +228,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_wvpCBuffers.emplace_back();
 	this->m_wvpCBuffers[7].init(device, dContext);
 
-	this->m_gameObjects[7].initializeStatic(true, 3, 7);
+	this->m_gameObjects[7].initializeStatic(true, 3, 7, &m_models[3]);
 
 	vec = DirectX::XMVectorSet(30.f, 50.f, 72.f, 1.f);
 	this->m_gameObjects[7].setPosition(vec);
@@ -235,7 +240,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_wvpCBuffers.emplace_back();
 	this->m_wvpCBuffers[8].init(device, dContext);
 
-	this->m_gameObjects[8].initializeStatic(true, 3, 8);
+	this->m_gameObjects[8].initializeStatic(true, 3, 8, &m_models[3]);
 
 	vec = DirectX::XMVectorSet(-10.f, 60.f, 84.f, 1.f);
 	this->m_gameObjects[8].setPosition(vec);
@@ -247,7 +252,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_wvpCBuffers.emplace_back();
 	this->m_wvpCBuffers[9].init(device, dContext);
 
-	this->m_gameObjects[9].initializeStatic(true, 3, 9);
+	this->m_gameObjects[9].initializeStatic(true, 3, 9, &m_models[3]);
 
 	vec = DirectX::XMVectorSet(20.f, 70.f, 96.f, 1.f);
 	this->m_gameObjects[9].setPosition(vec);
@@ -259,7 +264,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_wvpCBuffers.emplace_back();
 	this->m_wvpCBuffers[10].init(device, dContext);
 
-	this->m_gameObjects[10].initializeStatic(true, 3, 10);
+	this->m_gameObjects[10].initializeStatic(true, 3, 10, &m_models[3]);
 
 	vec = DirectX::XMVectorSet(0.f, 80.f, 108.f, 1.f);
 	this->m_gameObjects[10].setPosition(vec);
@@ -271,7 +276,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_wvpCBuffers.emplace_back();
 	this->m_wvpCBuffers[11].init(device, dContext);
 
-	this->m_gameObjects[11].initializeStatic(true, 3, 11);
+	this->m_gameObjects[11].initializeStatic(true, 3, 11, &m_models[3]);
 
 	vec = DirectX::XMVectorSet(-10.f, 90.f, 120.f, 1.f);
 	this->m_gameObjects[11].setPosition(vec);
@@ -283,7 +288,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_wvpCBuffers.emplace_back();
 	this->m_wvpCBuffers[12].init(device, dContext);
 
-	this->m_gameObjects[12].initializeStatic(true, 3, 12);
+	this->m_gameObjects[12].initializeStatic(true, 3, 12, &m_models[3]);
 
 	vec = DirectX::XMVectorSet(10.f, 100.f, 132.f, 1.f);
 	this->m_gameObjects[12].setPosition(vec);
@@ -295,7 +300,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_wvpCBuffers.emplace_back();
 	this->m_wvpCBuffers[13].init(device, dContext);
 
-	this->m_gameObjects[13].initializeStatic(true, 3, 13);
+	this->m_gameObjects[13].initializeStatic(true, 3, 13, &m_models[3]);
 
 	vec = DirectX::XMVectorSet(-10.f, 110.f, 144.f, 1.f);
 	this->m_gameObjects[13].setPosition(vec);
@@ -307,7 +312,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_wvpCBuffers.emplace_back();
 	this->m_wvpCBuffers[14].init(device, dContext);
 
-	this->m_gameObjects[14].initializeStatic(true, 3, 14);
+	this->m_gameObjects[14].initializeStatic(true, 3, 14, &m_models[3]);
 
 	vec = DirectX::XMVectorSet(0.f, 120.f, 170.f, 1.f);
 	this->m_gameObjects[14].setPosition(vec);
@@ -325,16 +330,29 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_wvpCBuffers.emplace_back();
 	this->m_wvpCBuffers[15].init(device, dContext);
 
-	this->m_gameObjects[15].initializeDynamic(false, 4, 15, 1, DirectX::XMFLOAT3(10, 10, 10), DirectX::XMFLOAT3(10, 10, 10));
+	this->m_gameObjects[15].initializeDynamic(false, 4, 15, 1, DirectX::XMFLOAT3(10, 10, 10), DirectX::XMFLOAT3(10, 10, 10), &m_models[4]);
 
 	vec = DirectX::XMVectorSet(10.f, 1.f, -20.f, 1.f);
 	this->m_gameObjects[15].setPosition(vec);
 	vec = DirectX::XMVectorSet(.7f, .7f, .7f, 1.f);
 	this->m_gameObjects[15].setScale(vec);
 
+	this->m_wvpCBuffers.emplace_back();
+	this->m_wvpCBuffers[16].init(device, dContext);
+
+	this->m_platforms[0].init(true, 3, 16, &this->m_pyramidOBB, &m_models[3]);
+	vec = DirectX::XMVectorSet(10.f, 20, 36, 1.f);
+	this->m_platforms[0].setPosition(vec);
+	this->m_platforms[0].setBoundingBox(DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f));
+	this->m_player.addAABB(this->m_platforms[0].getAABBPtr());
+
+
+
 	// Player
 	this->m_player.initialize(-1, -1, 1.f, DirectX::XMFLOAT3(20.f, 20.f, 20.f), DirectX::XMFLOAT3(.01f, .01f, .01f), &this->m_gameObjects[2], &this->m_gameObjects[15], audioEngine);
 	this->m_player.setPosition(DirectX::XMVectorSet(0.f, 5.f, -1.f, 1.f));
+	
+	this->m_platforms[0].setPlayerBoundingBox(this->m_player.getAABBPtr());
 
 	// Camera
 	this->m_camera.followMoveComp(this->m_player.getMoveCompPtr());
@@ -367,5 +385,22 @@ void GameState::update(Keyboard* keyboard, MouseEvent mouseEvent, Mouse* mousePt
 		wvpData.worldMatrix = this->m_gameObjects[i].getWorldMatrix();
 
 		this->m_wvpCBuffers[this->m_gameObjects[i].getWvpCBufferIndex()].upd(&wvpData);
+	}
+
+	//Platforms
+	for (int i = 0; i < this->m_platforms.size(); i++)
+	{
+		this->m_platforms[i].update(dt);
+
+		VS_CONSTANT_BUFFER wvpData;
+		DirectX::XMMATRIX viewPMtrx = this->m_camera.getViewMatrix() * this->m_camera.getProjectionMatrix();
+		wvpData.wvp = this->m_platforms[i].getWorldMatrix() * viewPMtrx;
+		wvpData.worldMatrix = this->m_platforms[i].getWorldMatrix();
+
+		this->m_wvpCBuffers[this->m_platforms[i].getWvpCBufferIndex()].upd(&wvpData);
+		if (m_platforms[i].m_removeMe)
+		{
+			//Remove
+		}
 	}
 }

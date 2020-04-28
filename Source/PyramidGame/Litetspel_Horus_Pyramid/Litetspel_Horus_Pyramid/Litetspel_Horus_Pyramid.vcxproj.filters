@@ -57,6 +57,9 @@
     <ClCompile Include="DebugDraw.cpp">
       <Filter>Source\Utilites</Filter>
     </ClCompile>
+    <ClCompile Include="Platform.cpp">
+      <Filter>Source\Game Logic\GameObjects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -125,6 +128,9 @@
     <ClInclude Include="BoundingPrim.h">
       <Filter>Header\Game Logic</Filter>
     </ClInclude>
+    <ClInclude Include="Platform.h">
+      <Filter>Header\Game Logic\GameObjects</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -165,6 +171,12 @@
     </Filter>
     <Filter Include="Source\Utilites">
       <UniqueIdentifier>{bbc6c7d8-d633-4195-af44-b7eb7af64222}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header\Game Logic\GameObjects">
+      <UniqueIdentifier>{37e24367-417c-4768-a23c-e21bc4b7e941}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Game Logic\GameObjects">
+      <UniqueIdentifier>{2a608483-c701-4962-8eac-d4af998bd525}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
