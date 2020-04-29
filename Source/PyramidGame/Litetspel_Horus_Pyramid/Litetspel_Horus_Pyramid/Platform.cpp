@@ -9,6 +9,8 @@ Platform::Platform()
 	this->m_pyramidBoundingBox = nullptr;
 	this->canCheckColision = false;
 	this->currentTime = -1;
+	this->m_audioComponent = new AudioComponent();
+
 }
 
 void Platform::init(bool colidable, int modelIndex, int wvpCBufferIndex, DirectX::BoundingOrientedBox* pyramidBoundingBox, Model* mdl)
@@ -46,6 +48,7 @@ void Platform::update(float dt)
 			{
 				this->currentTime = time;
 				this->m_texturePath = m_textures[time].c_str();
+				m_audioComponent->playSound(time % nrOfCracKSounds);
 			}
 		}
 	}
@@ -75,6 +78,15 @@ void Platform::setPlayerBoundingBox(DirectX::BoundingBox* boundingBox)
 	this->platformTriggerBox = this->getAABB();
 	this->platformTriggerBox.Center.y = this->platformTriggerBox.Center.y + 3;
 	this->canCheckColision = true;
+}
+
+void Platform::initAudioComponent(std::shared_ptr<DirectX::AudioEngine> audioEngine)
+{
+	this->m_audioComponent->init(audioEngine);
+	for (int i = 0; i < nrOfCracKSounds; i++)
+	{
+		this->m_audioComponent->loadSound(m_crackSounds[i]);
+	}
 }
 
 void Platform::colidesWithPlayer()

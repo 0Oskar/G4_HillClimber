@@ -217,6 +217,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 		if (castToPlatform != nullptr)
 		{
 			castToPlatform->setPlayerBoundingBox(this->m_player.getAABBPtr());
+			castToPlatform->initAudioComponent(audioEngine);
 		}
 
 	}

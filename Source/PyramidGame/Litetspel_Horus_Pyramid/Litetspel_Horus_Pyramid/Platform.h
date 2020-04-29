@@ -1,6 +1,7 @@
 #pragma once
 #include"GameObject.h"
 #include"Timer.h"
+#include"AudioComponent.h"
 
 class Platform : public GameObject
 {
@@ -15,6 +16,12 @@ private:
 		L"Textures/platformTextureCracks4.png",
 		L"Textures/platformTextureCracks5.png"
 	};
+	int nrOfCracKSounds = 3;
+	std::wstring m_crackSounds[3] = {
+		L"Sounds/Cracks1.wav",
+		L"Sounds/Cracks1.wav",
+		L"Sounds/Cracks1.wav"
+	};
 
 	Timer m_destructionTimer;
 	bool m_shouldDestroy;
@@ -28,6 +35,8 @@ private:
 	bool m_hasColided;
 	bool canCheckColision;
 
+	AudioComponent* m_audioComponent;
+
 	void colidesWithPlayer();
 public:
 	Platform();
@@ -37,4 +46,5 @@ public:
 	void onDestroy();
 	void destroy();
 	void setPlayerBoundingBox(DirectX::BoundingBox* boundingBox);
+	void initAudioComponent(std::shared_ptr<DirectX::AudioEngine> audioEngine);
 };

@@ -185,6 +185,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
+    <ClInclude Include="AudioComponent.h" />
     <ClInclude Include="BoundingPrim.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ConstantBuffer.h" />

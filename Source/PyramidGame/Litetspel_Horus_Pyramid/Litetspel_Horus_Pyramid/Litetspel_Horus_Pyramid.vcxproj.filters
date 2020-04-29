@@ -131,6 +131,9 @@
     <ClInclude Include="Platform.h">
       <Filter>Header\Game Logic\GameObjects</Filter>
     </ClInclude>
+    <ClInclude Include="AudioComponent.h">
+      <Filter>Header\Component</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

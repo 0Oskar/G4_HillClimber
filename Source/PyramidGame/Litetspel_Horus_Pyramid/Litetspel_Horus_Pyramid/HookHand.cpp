@@ -23,6 +23,8 @@ void HookHand::init(GameObject* gObject, MovementComponent* movementComponent, s
 	this->m_audioEngine = audioEngine;
 	this->m_fireSound = std::make_shared<DirectX::SoundEffect>(audioEngine.get(), L"Sounds/Explo1.wav");
 	this->m_ejectSound = std::make_shared<DirectX::SoundEffect>(audioEngine.get(), L"Sounds/Explo1.wav");
+	m_effect = m_ejectSound->CreateInstance();
+	m_effect->SetVolume(0.5f);
 }
 
 bool HookHand::canFire()
@@ -42,7 +44,6 @@ void HookHand::fire()
 		DirectX::XMVECTOR forwardX = XMVector3TransformCoord(DirectX::XMVectorSet(0.f, 0.f, 1.f, 0.f), rotationMatrix);
 		this->m_shootDirection = forwardX;
 		this->m_hookState = hookState::shooting;
-		this->m_ejectSound->Play();
 	}
 }
 
@@ -141,7 +142,8 @@ void HookHand::update(float dt)
 	{
 		this->m_toHeadDir = DirectX::XMVectorSubtract(this->m_hookGameObject->getPosition(), this->m_playerMovement->position);
 		this->m_hookState = hookState::flyYouFool;
-		//this->m_fireSound->Play();
+		this->m_effect->Stop();
+		this->m_effect->Play(false);
 
 	}
 	else if (m_hookState == hookState::flyYouFool)
