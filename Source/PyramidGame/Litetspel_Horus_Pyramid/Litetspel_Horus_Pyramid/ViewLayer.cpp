@@ -308,10 +308,9 @@ void ViewLayer::setProjectionMatrix(DirectX::XMMATRIX* newProjectionMatrix)
 	this->m_projectionMatrix = newProjectionMatrix;
 }
 
-void ViewLayer::setgameObjectsFromState(std::vector<GameObject*>* gameObjectsFromState, std::vector<Platform*>* platformsFromState)
+void ViewLayer::setgameObjectsFromState(std::vector<GameObject*>* gameObjectsFromState)
 {
 	this->m_gameObjectsFromState = gameObjectsFromState;
-	this->m_platformsFromState = platformsFromState;
 }
 
 void ViewLayer::setModelsFromState(std::vector<Model>* models)
@@ -475,20 +474,6 @@ void ViewLayer::render()
 		this->m_modelsFromState->at(mIndex).m_material.setTexture(gObject->getTexturePath().c_str());
 		this->m_modelsFromState->at(mIndex).draw(viewPMtrx);
 	}
-
-	for (size_t i = 0; i < m_platformsFromState->size(); i++)
-	{
-		// Get indexes
-		GameObject* gObject = this->m_platformsFromState->at(i);
-		int wvpIndex = gObject->getWvpCBufferIndex();
-		int mIndex = gObject->getModelIndex();
-		// Set Constant buffer
-		this->m_deviceContext->VSSetConstantBuffers(0, 1, this->m_wvpCBufferFromState->at(wvpIndex).GetAdressOf());
-		// Draw Model
-		this->m_modelsFromState->at(mIndex).m_material.setTexture(gObject->getTexturePath().c_str());
-		this->m_modelsFromState->at(mIndex).draw(viewPMtrx);
-	}
-
 
 	// Draw Primitives
 	if (this->m_drawPrimitives)

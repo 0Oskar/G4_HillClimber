@@ -50,5 +50,7 @@ public:
 	void setBoundingBox(DirectX::XMFLOAT3 extends);
 	void move(Direction dir, float dt);
 	void move(DirectX::XMVECTOR dir, float dt);
+
+	bool m_removeMe;
 	
 };

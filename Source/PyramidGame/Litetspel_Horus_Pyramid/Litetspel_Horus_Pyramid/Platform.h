@@ -37,6 +37,4 @@ public:
 	void onDestroy();
 	void destroy();
 	void setPlayerBoundingBox(DirectX::BoundingBox* boundingBox);
-
-	bool m_removeMe;
 };

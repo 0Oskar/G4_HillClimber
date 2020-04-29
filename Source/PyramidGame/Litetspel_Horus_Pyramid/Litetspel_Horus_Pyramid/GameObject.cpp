@@ -11,6 +11,7 @@ GameObject::GameObject()
 	this->m_movementComp = nullptr;
 	this->m_physicsComp = nullptr;
 	this->m_modelptr = nullptr;
+	this->m_removeMe = false;
 }
 
 GameObject::GameObject(const GameObject& otherGameObject)

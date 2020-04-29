@@ -5,7 +5,6 @@ Platform::Platform()
 	this->m_shouldDestroy = false;
 	this->m_playerBoundingBox = nullptr;
 	this->m_hasColided = false;
-	this->m_removeMe = false;
 	this->m_pyramidBoundingBox = nullptr;
 	this->canCheckColision = false;
 	this->currentTime = -1;
@@ -20,6 +19,7 @@ void Platform::update(float dt)
 {
 	if (m_hasColided)
 	{
+		OutputDebugString(L"PLATFORM");
 		if (m_shouldDestroy)
 		{
 			this->m_physicsComp->updatePosition(dt);
