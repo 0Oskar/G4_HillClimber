@@ -308,7 +308,7 @@ void ViewLayer::setProjectionMatrix(DirectX::XMMATRIX* newProjectionMatrix)
 	this->m_projectionMatrix = newProjectionMatrix;
 }
 
-void ViewLayer::setgameObjectsFromState(std::vector<GameObject>* gameObjectsFromState, std::vector<Platform*>* platformsFromState)
+void ViewLayer::setgameObjectsFromState(std::vector<GameObject*>* gameObjectsFromState, std::vector<Platform*>* platformsFromState)
 {
 	this->m_gameObjectsFromState = gameObjectsFromState;
 	this->m_platformsFromState = platformsFromState;
@@ -466,7 +466,7 @@ void ViewLayer::render()
 	for (size_t i = 0; i < this->m_gameObjectsFromState->size(); i++)
 	{
 		// Get indexes
-		GameObject* gObject = &this->m_gameObjectsFromState->at(i);
+		GameObject* gObject = this->m_gameObjectsFromState->at(i);
 		int wvpIndex = gObject->getWvpCBufferIndex();
 		int mIndex = gObject->getModelIndex();
 		// Set Constant buffer
@@ -507,10 +507,10 @@ void ViewLayer::render()
 		this->m_effect->Apply(this->m_deviceContext.Get());
 		for (size_t i = 0; i < this->m_gameObjectsFromState->size(); i++)
 		{
-			if (this->m_gameObjectsFromState->at(i).collidable())
+			if (this->m_gameObjectsFromState->at(i)->collidable())
 			{
 				// Draw Primitive
-				DX::Draw(m_batch.get(), *(this->m_gameObjectsFromState->at(i).getAABBPtr()), DirectX::Colors::Blue);
+				DX::Draw(m_batch.get(), *(this->m_gameObjectsFromState->at(i)->getAABBPtr()), DirectX::Colors::Blue);
 			}
 		}
 		DX::Draw(m_batch.get(), this->m_pyramidOBB, DirectX::Colors::Blue);
