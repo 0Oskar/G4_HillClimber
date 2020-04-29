@@ -310,4 +310,18 @@ public:
 		this->m_velocity.x *= this->m_deceleration.x * dt;
 		this->m_velocity.z *= this->m_deceleration.z * dt;
 	}
+
+	void updatePositionNoDecel(float dt)
+	{
+		this->m_moveComp->position = DirectX::XMVectorAdd(
+			this->m_moveComp->position,
+			DirectX::XMVectorSet(
+				this->m_velocity.x * dt,
+				this->m_velocity.y * dt,
+				this->m_velocity.z * dt, 1.f)
+		);
+		this->m_aabb->Center = this->m_moveComp->getPositionF3();
+
+		this->m_moveComp->updateViewMatrix();
+	}
 };

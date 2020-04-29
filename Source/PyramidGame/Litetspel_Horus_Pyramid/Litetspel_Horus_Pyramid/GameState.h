@@ -14,6 +14,7 @@ private:
 	std::vector<GameObject> m_gameObjects;
 	std::vector<ConstBuffer<VS_CONSTANT_BUFFER>> m_wvpCBuffers;
 	DirectX::BoundingOrientedBox m_pyramidOBB;
+	std::vector<GameObject*>* m_chainGObjects;
 
 public:
 	GameState();

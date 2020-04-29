@@ -5,6 +5,7 @@ GameObject::GameObject()
 {
 	this->m_collidable = false;
 	this->m_isStatic = false;
+	this->m_useDeceleration = true;
 	this->m_modelIndex = -1;
 	this->m_wvpCBufferIndex = -1;
 
@@ -16,6 +17,7 @@ GameObject::GameObject(const GameObject& otherGameObject)
 {
 	this->m_collidable = otherGameObject.m_collidable;
 	this->m_isStatic = otherGameObject.m_isStatic;
+	this->m_useDeceleration = otherGameObject.m_useDeceleration;
 	this->m_modelIndex = otherGameObject.m_modelIndex;
 	this->m_wvpCBufferIndex = otherGameObject.m_wvpCBufferIndex;
 
@@ -59,6 +61,7 @@ GameObject& GameObject::operator=(const GameObject& otherGameObject)
 
 	this->m_collidable = otherGameObject.m_collidable;
 	this->m_isStatic = otherGameObject.m_isStatic;
+	this->m_useDeceleration = otherGameObject.m_useDeceleration;
 	this->m_modelIndex = otherGameObject.m_modelIndex;
 	this->m_wvpCBufferIndex = otherGameObject.m_wvpCBufferIndex;
 
@@ -87,6 +90,7 @@ void GameObject::initializeStatic(bool collidable, int modelIndex, int wvpCBuffe
 {
 	this->m_isStatic = true;
 	this->m_collidable = collidable;
+	this->m_useDeceleration = false;
 	this->m_modelIndex = modelIndex;
 	this->m_wvpCBufferIndex = wvpCBufferIndex;
 
@@ -95,10 +99,11 @@ void GameObject::initializeStatic(bool collidable, int modelIndex, int wvpCBuffe
 	this->m_physicsComp->initialize(this->m_movementComp);
 }
 
-void GameObject::initializeDynamic(bool collidable, int modelIndex, int wvpCBufferIndex, float mass, DirectX::XMFLOAT3 acceleration, DirectX::XMFLOAT3 deceleration)
+void GameObject::initializeDynamic(bool collidable, bool useDeceration, int modelIndex, int wvpCBufferIndex, float mass, DirectX::XMFLOAT3 acceleration, DirectX::XMFLOAT3 deceleration)
 {
 	this->m_isStatic = false;
 	this->m_collidable = collidable;
+	this->m_useDeceleration = useDeceration;
 	this->m_modelIndex = modelIndex;
 	this->m_wvpCBufferIndex = wvpCBufferIndex;
 
@@ -109,7 +114,11 @@ void GameObject::initializeDynamic(bool collidable, int modelIndex, int wvpCBuff
 
 void GameObject::update(float dt)
 {
-	this->m_physicsComp->updatePosition(dt);
+	if (this->m_useDeceleration)
+		this->m_physicsComp->updatePosition(dt);
+	else
+		this->m_physicsComp->updatePositionNoDecel(dt);
+
 }
 
 bool GameObject::collidable() const
@@ -148,6 +157,11 @@ int GameObject::getWvpCBufferIndex() const
 MovementComponent* GameObject::getMoveCompPtr()
 {
 	return this->m_movementComp;
+}
+
+PhysicsComponent* GameObject::getphysicsCompPtr()
+{
+	return this->m_physicsComp;
 }
 
 DirectX::BoundingBox GameObject::getAABB()

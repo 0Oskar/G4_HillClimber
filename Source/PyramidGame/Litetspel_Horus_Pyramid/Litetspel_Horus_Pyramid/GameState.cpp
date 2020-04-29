@@ -1,7 +1,10 @@
 #include "pch.h"
 #include "GameState.h"
 
-GameState::GameState() {}
+GameState::GameState()
+{
+	this->m_chainGObjects = new std::vector<GameObject*>();
+}
 
 GameState::~GameState() {}
 
@@ -36,7 +39,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	MaterialData mat;
 
 	// Models
-	this->m_gameObjects.resize(16);
+	this->m_gameObjects.resize(17 + NR_OF_CHAIN_LINKS);
 
 	// Ground Object
 	/*std::vector<Vertex> groundvertices =
@@ -91,7 +94,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	//,	Model
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(0.65164f, 0.60648f, 0.22648f, 1.0f);
-	this->m_models[1].loadVertexFromOBJ(device, dContext, L"Models/BasePyr.obj", mat, L"Textures/pyramidTexture.png");
+	this->m_models[1].loadVertexFromOBJ(device, dContext, L"Models/PyramidNewModel.obj", mat, L"Textures/pyramidTexture.png");
 
 	//,	WVP Buffer
 	this->m_wvpCBuffers.emplace_back();
@@ -103,8 +106,8 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	//,	Movement changes
 	vec = DirectX::XMVectorSet(0.f, 0.f, 100.f, 1.f);
 	this->m_gameObjects[1].setPosition(vec);
-
-	// 
+	
+	// Pyramid bounding box 
 	DirectX::XMFLOAT3 center(0.f, 52.f, 80.f);
 	DirectX::XMFLOAT3 extents(80.f, 105.f, 1.f);
 	DirectX::XMVECTOR quaternion = DirectX::XMQuaternionRotationRollPitchYaw(0.9f, 0.f, 0.f);
@@ -118,38 +121,6 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	);
 	this->m_player.addPyramidOBB(&this->m_pyramidOBB);
 
-	//// Cube 1
-	//this->m_models.emplace_back();
-	//mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
-	//this->m_models[3].loadVertexFromOBJ(device, dContext, L"Models/cube.obj", mat, L"Textures/pyramidTexture.png");
-
-	//this->m_wvpCBuffers.emplace_back();
-	//this->m_wvpCBuffers[4].init(device, dContext);
-
-	//this->m_gameObjects[4].initializeStatic(true, 3, 4);
-
-	//vec = DirectX::XMVectorSet(-5.f, 1.5f, 0.f, 1.f);
-	//this->m_gameObjects[4].setPosition(vec);
-	//vec = DirectX::XMVectorSet(1.5f, 1.5f, 1.5f, 1.f);
-	//this->m_gameObjects[4].setScale(vec);
-
-	//this->m_gameObjects[4].setBoundingBox(DirectX::XMFLOAT3(1.5f, 1.5f, 1.5f));
-	//this->m_player.addAABB(this->m_gameObjects[4].getAABBPtr()); // add Bounding Box to player collidables
-
-	//// Cube 2
-	//this->m_wvpCBuffers.emplace_back();
-	//this->m_wvpCBuffers[5].init(device, dContext);
-
-	//this->m_gameObjects[5].initializeStatic(true, 3, 5);
-	//
-	//vec = DirectX::XMVectorSet(-5.f, 6.f, 6.f, 1.f);
-	//this->m_gameObjects[5].setPosition(vec);
-	//vec = DirectX::XMVectorSet(1.5f, 1.5f, 1.5f, 1.f);
-	//this->m_gameObjects[5].setScale(vec);
-
-	//this->m_gameObjects[5].setBoundingBox(DirectX::XMFLOAT3(1.5f, 1.5f, 1.5f));
-	//this->m_player.addAABB(this->m_gameObjects[5].getAABBPtr()); // add Bounding Box to player collidables
-
 	// Sphere "HookHead"
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
@@ -158,7 +129,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_wvpCBuffers.emplace_back();
 	this->m_wvpCBuffers[2].init(device, dContext);
 
-	this->m_gameObjects[2].initializeDynamic(true, 2, 2, 1, DirectX::XMFLOAT3(10, 10, 10), DirectX::XMFLOAT3(10, 10, 10));
+	this->m_gameObjects[2].initializeDynamic(true, false, 2, 2, 1, DirectX::XMFLOAT3(2, 2, 2), DirectX::XMFLOAT3(1, 1, 1));
 
 	vec = DirectX::XMVectorSet(10.f, 1.f, -20.f, 1.f);
 	this->m_gameObjects[2].setPosition(vec);
@@ -166,157 +137,159 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_gameObjects[2].setScale(vec);
 
 	this->m_gameObjects[2].setBoundingBox(DirectX::XMFLOAT3(.5f, .5f, .5f)); // Dont add to player
+	
+	// Platforms
+	{
+		// platform 1
+		this->m_models.emplace_back();
+		mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
+		this->m_models[3].loadVertexFromOBJ(device, dContext, L"Models/platform.obj", mat, L"Textures/platformTextureCracks1.png");
 
-	// platform 1
-	this->m_models.emplace_back();
-	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
-	this->m_models[3].loadVertexFromOBJ(device, dContext, L"Models/platform.obj", mat, L"Textures/platformTextureCracks1.png");
+		this->m_wvpCBuffers.emplace_back();
+		this->m_wvpCBuffers[3].init(device, dContext);
 
-	this->m_wvpCBuffers.emplace_back();
-	this->m_wvpCBuffers[3].init(device, dContext);
+		this->m_gameObjects[3].initializeStatic(true, 3, 3);
 
-	this->m_gameObjects[3].initializeStatic(true, 3, 3);
+		vec = DirectX::XMVectorSet(0.f, 10.f, 24.f, 1.f);
+		this->m_gameObjects[3].setPosition(vec);
 
-	vec = DirectX::XMVectorSet(0.f, 10.f, 24.f, 1.f);
-	this->m_gameObjects[3].setPosition(vec);
+		this->m_gameObjects[3].setBoundingBox(DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f));
+		this->m_player.addAABB(this->m_gameObjects[3].getAABBPtr());
 
-	this->m_gameObjects[3].setBoundingBox(DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f));
-	this->m_player.addAABB(this->m_gameObjects[3].getAABBPtr());
+		// platform 2
+		this->m_wvpCBuffers.emplace_back();
+		this->m_wvpCBuffers[4].init(device, dContext);
 
-	// platform 2
-	this->m_wvpCBuffers.emplace_back();
-	this->m_wvpCBuffers[4].init(device, dContext);
+		this->m_gameObjects[4].initializeStatic(true, 3, 4);
 
-	this->m_gameObjects[4].initializeStatic(true, 3, 4);
+		vec = DirectX::XMVectorSet(-10.f, 20.f, 36.f, 1.f);
+		this->m_gameObjects[4].setPosition(vec);
 
-	vec = DirectX::XMVectorSet(-10.f, 20.f, 36.f, 1.f);
-	this->m_gameObjects[4].setPosition(vec);
+		this->m_gameObjects[4].setBoundingBox(DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f));
+		this->m_player.addAABB(this->m_gameObjects[4].getAABBPtr());
 
-	this->m_gameObjects[4].setBoundingBox(DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f));
-	this->m_player.addAABB(this->m_gameObjects[4].getAABBPtr());
+		// platform 3
+		this->m_wvpCBuffers.emplace_back();
+		this->m_wvpCBuffers[5].init(device, dContext);
 
-	// platform 3
-	this->m_wvpCBuffers.emplace_back();
-	this->m_wvpCBuffers[5].init(device, dContext);
+		this->m_gameObjects[5].initializeStatic(true, 3, 5);
 
-	this->m_gameObjects[5].initializeStatic(true, 3, 5);
+		vec = DirectX::XMVectorSet(10.f, 30.f, 48.f, 1.f);
+		this->m_gameObjects[5].setPosition(vec);
 
-	vec = DirectX::XMVectorSet(10.f, 30.f, 48.f, 1.f);
-	this->m_gameObjects[5].setPosition(vec);
+		this->m_gameObjects[5].setBoundingBox(DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f));
+		this->m_player.addAABB(this->m_gameObjects[5].getAABBPtr());
 
-	this->m_gameObjects[5].setBoundingBox(DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f));
-	this->m_player.addAABB(this->m_gameObjects[5].getAABBPtr());
+		// platform 4
+		this->m_wvpCBuffers.emplace_back();
+		this->m_wvpCBuffers[6].init(device, dContext);
 
-	// platform 4
-	this->m_wvpCBuffers.emplace_back();
-	this->m_wvpCBuffers[6].init(device, dContext);
+		this->m_gameObjects[6].initializeStatic(true, 3, 6);
 
-	this->m_gameObjects[6].initializeStatic(true, 3, 6);
+		vec = DirectX::XMVectorSet(-40.f, 40.f, 60.f, 1.f);
+		this->m_gameObjects[6].setPosition(vec);
 
-	vec = DirectX::XMVectorSet(-40.f, 40.f, 60.f, 1.f);
-	this->m_gameObjects[6].setPosition(vec);
+		this->m_gameObjects[6].setBoundingBox(DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f));
+		this->m_player.addAABB(this->m_gameObjects[6].getAABBPtr());
 
-	this->m_gameObjects[6].setBoundingBox(DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f));
-	this->m_player.addAABB(this->m_gameObjects[6].getAABBPtr());
+		// platform 5
+		this->m_wvpCBuffers.emplace_back();
+		this->m_wvpCBuffers[7].init(device, dContext);
 
-	// platform 5
-	this->m_wvpCBuffers.emplace_back();
-	this->m_wvpCBuffers[7].init(device, dContext);
+		this->m_gameObjects[7].initializeStatic(true, 3, 7);
 
-	this->m_gameObjects[7].initializeStatic(true, 3, 7);
+		vec = DirectX::XMVectorSet(30.f, 50.f, 72.f, 1.f);
+		this->m_gameObjects[7].setPosition(vec);
 
-	vec = DirectX::XMVectorSet(30.f, 50.f, 72.f, 1.f);
-	this->m_gameObjects[7].setPosition(vec);
+		this->m_gameObjects[7].setBoundingBox(DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f));
+		this->m_player.addAABB(this->m_gameObjects[7].getAABBPtr());
 
-	this->m_gameObjects[7].setBoundingBox(DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f));
-	this->m_player.addAABB(this->m_gameObjects[7].getAABBPtr());
+		// platform 6
+		this->m_wvpCBuffers.emplace_back();
+		this->m_wvpCBuffers[8].init(device, dContext);
 
-	// platform 6
-	this->m_wvpCBuffers.emplace_back();
-	this->m_wvpCBuffers[8].init(device, dContext);
+		this->m_gameObjects[8].initializeStatic(true, 3, 8);
 
-	this->m_gameObjects[8].initializeStatic(true, 3, 8);
+		vec = DirectX::XMVectorSet(-10.f, 60.f, 84.f, 1.f);
+		this->m_gameObjects[8].setPosition(vec);
 
-	vec = DirectX::XMVectorSet(-10.f, 60.f, 84.f, 1.f);
-	this->m_gameObjects[8].setPosition(vec);
+		this->m_gameObjects[8].setBoundingBox(DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f));
+		this->m_player.addAABB(this->m_gameObjects[8].getAABBPtr());
 
-	this->m_gameObjects[8].setBoundingBox(DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f));
-	this->m_player.addAABB(this->m_gameObjects[8].getAABBPtr());
+		// platform 7
+		this->m_wvpCBuffers.emplace_back();
+		this->m_wvpCBuffers[9].init(device, dContext);
 
-	// platform 7
-	this->m_wvpCBuffers.emplace_back();
-	this->m_wvpCBuffers[9].init(device, dContext);
+		this->m_gameObjects[9].initializeStatic(true, 3, 9);
 
-	this->m_gameObjects[9].initializeStatic(true, 3, 9);
+		vec = DirectX::XMVectorSet(20.f, 70.f, 96.f, 1.f);
+		this->m_gameObjects[9].setPosition(vec);
 
-	vec = DirectX::XMVectorSet(20.f, 70.f, 96.f, 1.f);
-	this->m_gameObjects[9].setPosition(vec);
+		this->m_gameObjects[9].setBoundingBox(DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f));
+		this->m_player.addAABB(this->m_gameObjects[9].getAABBPtr());
 
-	this->m_gameObjects[9].setBoundingBox(DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f));
-	this->m_player.addAABB(this->m_gameObjects[9].getAABBPtr());
+		// platform 8
+		this->m_wvpCBuffers.emplace_back();
+		this->m_wvpCBuffers[10].init(device, dContext);
 
-	// platform 8
-	this->m_wvpCBuffers.emplace_back();
-	this->m_wvpCBuffers[10].init(device, dContext);
+		this->m_gameObjects[10].initializeStatic(true, 3, 10);
 
-	this->m_gameObjects[10].initializeStatic(true, 3, 10);
+		vec = DirectX::XMVectorSet(0.f, 80.f, 108.f, 1.f);
+		this->m_gameObjects[10].setPosition(vec);
 
-	vec = DirectX::XMVectorSet(0.f, 80.f, 108.f, 1.f);
-	this->m_gameObjects[10].setPosition(vec);
+		this->m_gameObjects[10].setBoundingBox(DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f));
+		this->m_player.addAABB(this->m_gameObjects[10].getAABBPtr());
 
-	this->m_gameObjects[10].setBoundingBox(DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f));
-	this->m_player.addAABB(this->m_gameObjects[10].getAABBPtr());
+		// platform 9
+		this->m_wvpCBuffers.emplace_back();
+		this->m_wvpCBuffers[11].init(device, dContext);
 
-	// platform 9
-	this->m_wvpCBuffers.emplace_back();
-	this->m_wvpCBuffers[11].init(device, dContext);
+		this->m_gameObjects[11].initializeStatic(true, 3, 11);
 
-	this->m_gameObjects[11].initializeStatic(true, 3, 11);
+		vec = DirectX::XMVectorSet(-10.f, 90.f, 120.f, 1.f);
+		this->m_gameObjects[11].setPosition(vec);
 
-	vec = DirectX::XMVectorSet(-10.f, 90.f, 120.f, 1.f);
-	this->m_gameObjects[11].setPosition(vec);
+		this->m_gameObjects[11].setBoundingBox(DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f));
+		this->m_player.addAABB(this->m_gameObjects[11].getAABBPtr());
 
-	this->m_gameObjects[11].setBoundingBox(DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f));
-	this->m_player.addAABB(this->m_gameObjects[11].getAABBPtr());
+		// platform 10
+		this->m_wvpCBuffers.emplace_back();
+		this->m_wvpCBuffers[12].init(device, dContext);
 
-	// platform 10
-	this->m_wvpCBuffers.emplace_back();
-	this->m_wvpCBuffers[12].init(device, dContext);
+		this->m_gameObjects[12].initializeStatic(true, 3, 12);
 
-	this->m_gameObjects[12].initializeStatic(true, 3, 12);
+		vec = DirectX::XMVectorSet(10.f, 100.f, 132.f, 1.f);
+		this->m_gameObjects[12].setPosition(vec);
 
-	vec = DirectX::XMVectorSet(10.f, 100.f, 132.f, 1.f);
-	this->m_gameObjects[12].setPosition(vec);
+		this->m_gameObjects[12].setBoundingBox(DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f));
+		this->m_player.addAABB(this->m_gameObjects[12].getAABBPtr());
 
-	this->m_gameObjects[12].setBoundingBox(DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f));
-	this->m_player.addAABB(this->m_gameObjects[12].getAABBPtr());
+		// platform 11
+		this->m_wvpCBuffers.emplace_back();
+		this->m_wvpCBuffers[13].init(device, dContext);
 
-	// platform 11
-	this->m_wvpCBuffers.emplace_back();
-	this->m_wvpCBuffers[13].init(device, dContext);
+		this->m_gameObjects[13].initializeStatic(true, 3, 13);
 
-	this->m_gameObjects[13].initializeStatic(true, 3, 13);
+		vec = DirectX::XMVectorSet(-10.f, 110.f, 144.f, 1.f);
+		this->m_gameObjects[13].setPosition(vec);
 
-	vec = DirectX::XMVectorSet(-10.f, 110.f, 144.f, 1.f);
-	this->m_gameObjects[13].setPosition(vec);
+		this->m_gameObjects[13].setBoundingBox(DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f));
+		this->m_player.addAABB(this->m_gameObjects[13].getAABBPtr());
 
-	this->m_gameObjects[13].setBoundingBox(DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f));
-	this->m_player.addAABB(this->m_gameObjects[13].getAABBPtr());
+		// platform 12 final
+		this->m_wvpCBuffers.emplace_back();
+		this->m_wvpCBuffers[14].init(device, dContext);
 
-	// platform 12 final
-	this->m_wvpCBuffers.emplace_back();
-	this->m_wvpCBuffers[14].init(device, dContext);
+		this->m_gameObjects[14].initializeStatic(true, 3, 14);
 
-	this->m_gameObjects[14].initializeStatic(true, 3, 14);
+		vec = DirectX::XMVectorSet(0.f, 120.f, 170.f, 1.f);
+		this->m_gameObjects[14].setPosition(vec);
+		vec = DirectX::XMVectorSet(5.f, 1.f, 5.f, 1.f);
+		this->m_gameObjects[14].setScale(vec);
 
-	vec = DirectX::XMVectorSet(0.f, 120.f, 170.f, 1.f);
-	this->m_gameObjects[14].setPosition(vec);
-	vec = DirectX::XMVectorSet(5.f, 1.f, 5.f, 1.f);
-	this->m_gameObjects[14].setScale(vec);
-
-	this->m_gameObjects[14].setBoundingBox(DirectX::XMFLOAT3(13.f, 0.5f, 13.f));
-	this->m_player.addAABB(this->m_gameObjects[14].getAABBPtr());
-
+		this->m_gameObjects[14].setBoundingBox(DirectX::XMFLOAT3(13.f, 0.5f, 13.f));
+		this->m_player.addAABB(this->m_gameObjects[14].getAABBPtr());
+	}
 	// HookHand
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
@@ -325,15 +298,54 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_wvpCBuffers.emplace_back();
 	this->m_wvpCBuffers[15].init(device, dContext);
 
-	this->m_gameObjects[15].initializeDynamic(false, 4, 15, 1, DirectX::XMFLOAT3(10, 10, 10), DirectX::XMFLOAT3(10, 10, 10));
+	this->m_gameObjects[15].initializeDynamic(false, false, 4, 15, 1, DirectX::XMFLOAT3(1, 1, 1), DirectX::XMFLOAT3(1, 1, 1));
 
 	vec = DirectX::XMVectorSet(10.f, 1.f, -20.f, 1.f);
 	this->m_gameObjects[15].setPosition(vec);
 	vec = DirectX::XMVectorSet(.7f, .7f, .7f, 1.f);
 	this->m_gameObjects[15].setScale(vec);
+	
+	// Puzzle Room Door
+	this->m_models.emplace_back();
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
+	this->m_models[5].loadVertexFromOBJ(device, dContext, L"Models/PuzzleDoor_Frame.obj", mat, L"Textures/sandTexture.png");
+
+	this->m_wvpCBuffers.emplace_back();
+	this->m_wvpCBuffers[16].init(device, dContext);
+
+	this->m_gameObjects[16].initializeStatic(false, 5, 16);
+
+	vec = DirectX::XMVectorSet(0.f, 1.f, 0.f, 1.f);
+	this->m_gameObjects[16].setPosition(vec);
+
+	// Chain Link
+	this->m_models.emplace_back();
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
+	this->m_models[6].loadVertexFromOBJ(device, dContext, L"Models/ChainLink.obj", mat, L"Textures/BirdTexture.png");
+
+	this->m_wvpCBuffers.emplace_back();
+	this->m_wvpCBuffers[17].init(device, dContext);
+
+	this->m_gameObjects[17].initializeDynamic(false, false, 6, 17, 1, DirectX::XMFLOAT3(2, 2, 2), DirectX::XMFLOAT3(1, 1, 1));
+	DirectX::XMFLOAT3 vecF3 = this->m_gameObjects[2].getMoveCompPtr()->getPositionF3();
+	vec = DirectX::XMVectorSet(vecF3.x, vecF3.y, vecF3.z - 5.f, 1.f);
+	this->m_gameObjects[17].setPosition(vec);
+	this->m_chainGObjects->push_back(&this->m_gameObjects[17]);
+
+	for (size_t i = 1; i < NR_OF_CHAIN_LINKS; i++)
+	{
+		this->m_wvpCBuffers.emplace_back();
+		this->m_wvpCBuffers[17 + i].init(device, dContext);
+
+		this->m_gameObjects[17 + i].initializeDynamic(false, false, 6, 17 + i, 1, DirectX::XMFLOAT3(2, 2, 2), DirectX::XMFLOAT3(1, 1, 1));
+
+		vec = DirectX::XMVectorSet(vecF3.x, vecF3.y, vecF3.z - 5.f -((float)i * 0.6f), 1.f);
+		this->m_gameObjects[17 + i].setPosition(vec);
+		this->m_chainGObjects->push_back(&this->m_gameObjects[17 + i]);
+	}
 
 	// Player
-	this->m_player.initialize(-1, -1, 1.f, DirectX::XMFLOAT3(20.f, 20.f, 20.f), DirectX::XMFLOAT3(.01f, .01f, .01f), &this->m_gameObjects[2], &this->m_gameObjects[15], audioEngine);
+	this->m_player.initialize(-1, -1, 1.f, DirectX::XMFLOAT3(20.f, 20.f, 20.f), DirectX::XMFLOAT3(.01f, .01f, .01f), &this->m_gameObjects[2], &this->m_gameObjects[15], this->m_chainGObjects, audioEngine);
 	this->m_player.setPosition(DirectX::XMVectorSet(0.f, 5.f, -1.f, 1.f));
 
 	// Camera

@@ -1,7 +1,7 @@
 #pragma once
 #include"Model.h"
-#include"GameObject.h"
 #include"Timer.h"
+#include"Chain.h"
 
 class HookHand
 {
@@ -31,6 +31,8 @@ private:
 	hookState m_hookState;
 	GameObject* m_hookGameObject;
 	GameObject* m_gunGameObject;
+	Chain m_chain;
+	PhysicsComponent* m_hookPhysicsComp;
 	MovementComponent* m_playerMovement;
 	std::vector<DirectX::BoundingBox*>* m_boundingBoxes;
 
@@ -50,7 +52,7 @@ private:
 
 public:
 	HookHand();
-	void init(GameObject* gObject, MovementComponent* plyMoveComp, std::vector<DirectX::BoundingBox*>* bb, GameObject* hookGun, std::shared_ptr<DirectX::AudioEngine> audioEngine);
+	void init(GameObject* gObject, MovementComponent* plyMoveComp, std::vector<DirectX::BoundingBox*>* bb, GameObject* hookGun, std::vector<GameObject*>* chainGObjects, std::shared_ptr<DirectX::AudioEngine> audioEngine);
 	void update(float dt);
 	bool shouldFly();
 	void fire();

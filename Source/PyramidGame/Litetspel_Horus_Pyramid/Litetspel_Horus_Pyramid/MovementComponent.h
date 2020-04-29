@@ -116,7 +116,7 @@ public:
 		// Add position to lookAt
 		lookAt = DirectX::XMVectorAdd(this->position, lookAt);
 		// Up
-		DirectX::XMVECTOR up = XMVector3TransformCoord(DirectX::XMVectorSet(0.f, 1.f, 0.f, 0.f), rotationMatrix);
+		DirectX::XMVECTOR up = XMVectorSet(0.f, 1.f, 0.f, 0.f);
 
 		// Update View Matrix with new Rotation
 

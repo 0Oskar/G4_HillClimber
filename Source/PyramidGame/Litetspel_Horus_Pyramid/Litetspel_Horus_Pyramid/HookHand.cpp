@@ -8,12 +8,14 @@ HookHand::HookHand()
 }
 
 
-void HookHand::init(GameObject* gObject, MovementComponent* movementComponent, std::vector<DirectX::BoundingBox*>* boundingBoxes, GameObject* hookGun, std::shared_ptr<DirectX::AudioEngine> audioEngine)
+void HookHand::init(GameObject* gObject, MovementComponent* movementComponent, std::vector<DirectX::BoundingBox*>* boundingBoxes, GameObject* hookGun, std::vector<GameObject*>* chainGObjects, std::shared_ptr<DirectX::AudioEngine> audioEngine)
 {
 	MaterialData mat;
 	mat.diffuse = DirectX::XMFLOAT4(0.5, 0.5, 0.5, 1);
 	this->m_hookGameObject = gObject;
 	this->m_gunGameObject = hookGun;
+	this->m_chain.initialize(gObject, hookGun, chainGObjects);
+	this->m_hookPhysicsComp = this->m_hookGameObject->getphysicsCompPtr();
 	this->m_playerMovement = movementComponent;
 	this->m_hookGameObject->setPosition(this->m_playerMovement->position);
 	this->m_hookTimer.start();
@@ -31,7 +33,7 @@ bool HookHand::canFire()
 }
 bool HookHand::canRecall()
 {
-	return m_hookState == hookState::shooting;
+	return m_hookState == hookState::shooting || m_hookState == hookState::flyYouFool;
 }
 void HookHand::fire()
 {
@@ -42,22 +44,14 @@ void HookHand::fire()
 		DirectX::XMVECTOR forwardX = XMVector3TransformCoord(DirectX::XMVectorSet(0.f, 0.f, 1.f, 0.f), rotationMatrix);
 		this->m_shootDirection = forwardX;
 		this->m_hookState = hookState::shooting;
-		this->m_ejectSound->Play();
+		//this->m_ejectSound->Play();
 	}
 }
 
 void HookHand::retract()
 {
 	if (this->canRecall())
-	{
 		this->m_hookState = hookState::recalling;
-		this->m_origin = DirectX::XMVectorSubtract(this->m_playerMovement->position, this->m_hookGameObject->getPosition());
-		this->m_hookState = hookState::recalling;
-	}
-	else if (this->m_hookState == hookState::flyYouFool)
-	{
-		this->m_hookState = hookState::idle;
-	}
 }
 
 bool HookHand::colide()
@@ -105,7 +99,6 @@ DirectX::XMVECTOR HookHand::invertX(DirectX::XMVECTOR VectorToInvertX)
 
 void HookHand::update(float dt)
 {
-	
 	this->updateHandModel();
 	if (m_hookState == hookState::shooting)
 	{
@@ -114,18 +107,21 @@ void HookHand::update(float dt)
 			this->m_hookState = hookState::hit;
 		}
 		else
-			this->m_hookGameObject->getMoveCompPtr()->move(DirectX::XMVectorScale(this->m_shootDirection, dt * this->hookSpeedForward));
+			//this->m_hookGameObject->getMoveCompPtr()->move(DirectX::XMVectorScale(this->m_shootDirection, dt * this->hookSpeedForward));
+			this->m_hookGameObject->move(DirectX::XMVectorScale(this->m_shootDirection, 1.f/*this->hookSpeedForward*/), dt);
 
 		DirectX::XMVECTOR fromPlayerToHook = DirectX::XMVectorSubtract(this->m_hookGameObject->getPosition(), this->m_playerMovement->position);
 		if (DirectX::XMVectorGetByIndex(DirectX::XMVector3LengthEst(fromPlayerToHook), 1) >= maxDistance)
 		{
 			this->m_hookState = hookState::recalling;
+			this->m_hookPhysicsComp->setVelocity(DirectX::XMFLOAT3(0.f, 0.f, 0.f));
 		}
 
 	}
 	else if (m_hookState == hookState::recalling)
 	{
 		this->m_origin = DirectX::XMVectorSubtract(DirectX::XMVectorAdd(this->m_gunGameObject->getMoveCompPtr()->position, hookPosOffset), this->m_hookGameObject->getPosition());
+		this->m_hookPhysicsComp->setVelocity(DirectX::XMFLOAT3(0.f, 0.f, 0.f));
 
 		if (DirectX::XMVectorGetByIndex(DirectX::XMVector3LengthEst(this->m_origin), 1) <= 2)
 		{
@@ -141,6 +137,7 @@ void HookHand::update(float dt)
 	{
 		this->m_toHeadDir = DirectX::XMVectorSubtract(this->m_hookGameObject->getPosition(), this->m_playerMovement->position);
 		this->m_hookState = hookState::flyYouFool;
+		this->m_hookPhysicsComp->setVelocity(DirectX::XMFLOAT3(0.f, 0.f, 0.f));
 		//this->m_fireSound->Play();
 
 	}
@@ -167,7 +164,8 @@ void HookHand::update(float dt)
 		this->m_hookGameObject->getMoveCompPtr()->rotation = DirectX::XMVectorAdd(this->invertX(this->m_playerMovement->rotation), this->hookRotOffsetConst);;
 		this->m_hookGameObject->getMoveCompPtr()->position = DirectX::XMVectorAdd(this->m_gunGameObject->getMoveCompPtr()->position, hookPosOffset);
 	}
-	
+
+	this->m_chain.update(dt);
 }
 
 bool HookHand::shouldFly()
