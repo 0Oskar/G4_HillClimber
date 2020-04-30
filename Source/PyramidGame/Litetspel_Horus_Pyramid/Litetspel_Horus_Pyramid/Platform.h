@@ -46,5 +46,5 @@ public:
 	void onDestroy();
 	void destroy();
 	void setPlayerBoundingBox(DirectX::BoundingBox* boundingBox);
-	void initAudioComponent(std::shared_ptr<DirectX::AudioEngine> audioEngine);
+	void initAudioComponent(std::shared_ptr<DirectX::AudioEngine> audioEngine, MovementComponent* playerMovementComponent);
 };

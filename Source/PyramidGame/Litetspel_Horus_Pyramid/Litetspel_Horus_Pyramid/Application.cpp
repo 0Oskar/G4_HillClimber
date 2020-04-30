@@ -36,11 +36,13 @@ bool Application::initApplication(HINSTANCE hInstance, LPWSTR lpCmdLine, HWND hW
 
 	this->m_window = hWnd;
 
-	DirectX::AUDIO_ENGINE_FLAGS audioFlag = DirectX::AudioEngine_Default;
+	DirectX::AUDIO_ENGINE_FLAGS audioFlag = DirectX::AudioEngine_EnvironmentalReverb
+		| DirectX::AudioEngine_ReverbUseFilters;
 #ifdef _DEBUG
 	audioFlag = audioFlag | DirectX::AudioEngine_Debug;
 #endif
 	m_audioEngine = std::make_shared<DirectX::AudioEngine>(audioFlag);
+	m_audioEngine->SetReverb(DirectX::Reverb_Plain);
 
 	if (!m_audioEngine->IsAudioDevicePresent())
 	{

@@ -48,7 +48,7 @@ void Platform::update(float dt)
 			{
 				this->currentTime = time;
 				this->m_texturePath = m_textures[time].c_str();
-				m_audioComponent->playSound(time % nrOfCracKSounds);
+				m_audioComponent->emitSound(time % nrOfCracKSounds, this->m_movementComp->position);
 			}
 		}
 	}
@@ -80,9 +80,9 @@ void Platform::setPlayerBoundingBox(DirectX::BoundingBox* boundingBox)
 	this->canCheckColision = true;
 }
 
-void Platform::initAudioComponent(std::shared_ptr<DirectX::AudioEngine> audioEngine)
+void Platform::initAudioComponent(std::shared_ptr<DirectX::AudioEngine> audioEngine, MovementComponent* playerMovementComponent)
 {
-	this->m_audioComponent->init(audioEngine);
+	this->m_audioComponent->init(audioEngine, playerMovementComponent);
 	for (int i = 0; i < nrOfCracKSounds; i++)
 	{
 		this->m_audioComponent->loadSound(m_crackSounds[i]);
