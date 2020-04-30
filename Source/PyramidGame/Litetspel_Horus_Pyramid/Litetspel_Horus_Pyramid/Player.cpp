@@ -56,6 +56,32 @@ void Player::update(Keyboard* keyboard, MouseEvent mouseEvent, float dt)
 		ImporterBFF::Manager* myManager = &ImporterBFF::Manager::GetInstance();
 		ModelBFF myModel = myManager->LoadModel("biFile.bff");
 
+		//std::string myString = "\n vtx:" + std::to_string(myModel.mesh.nrOfVertex) + "\n";
+		for (int i = 0; i < myModel.mesh.nrOfVertex; i++)
+		{
+			std::string vtxNr = "\nvtx:		" + std::to_string(i) + "\n";
+
+			std:: string vtxPos = "Pos:		" + (std::to_string(myModel.vertexArr[i].pos[0]) + " " +
+				(std::to_string(myModel.vertexArr[i].pos[1])) + " " +
+					(std::to_string(myModel.vertexArr[i].pos[2]))) + "\n";
+
+			std::string uv = "uv:			" + (std::to_string(myModel.vertexArr[i].uv[0]) + " " +
+				(std::to_string(myModel.vertexArr[i].uv[1]))) + "\n";
+
+			std::string normal = "Normal:		" + (std::to_string(myModel.vertexArr[i].norm[0]) + " " +
+				(std::to_string(myModel.vertexArr[i].norm[1])) + " " +
+				(std::to_string(myModel.vertexArr[i].norm[2]))) + "\n";
+
+			std::string biNormal = "Binormal:	" + (std::to_string(myModel.vertexArr[i].biNorm[0]) + " " +
+				(std::to_string(myModel.vertexArr[i].biNorm[1])) + " " +
+				(std::to_string(myModel.vertexArr[i].biNorm[2]))) + "\n";
+
+			std::string tangent = "Tan:		" + (std::to_string(myModel.vertexArr[i].tan[0]) + " " +
+				(std::to_string(myModel.vertexArr[i].tan[1])) + " " +
+				(std::to_string(myModel.vertexArr[i].tan[2]))) + "\n";
+
+			OutputDebugStringA((vtxNr + vtxPos + uv + normal + biNormal + tangent).c_str());
+		}
 		OutputDebugStringA(std::to_string(myModel.material.Diffuse[1]).c_str()); // <----------------------------------------------------------------------------
 	}
 
