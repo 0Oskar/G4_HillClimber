@@ -49,6 +49,7 @@ private:
 	std::shared_ptr<DirectX::SoundEffect> m_fireSound;
 	std::shared_ptr<DirectX::SoundEffect> m_impactSound;
 	std::shared_ptr<DirectX::SoundEffect> m_ejectSound;
+	std::unique_ptr<DirectX::SoundEffectInstance> m_effect;
 
 public:
 	HookHand();

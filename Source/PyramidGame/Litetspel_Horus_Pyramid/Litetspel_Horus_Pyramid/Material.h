@@ -17,6 +17,7 @@ private:
 	ConstBuffer<MaterialData> m_materialBuffer;
 	ID3D11ShaderResourceView* m_texture;
 	TextureHandler* textureHandler;
+	
 public:
 	Material()
 	{
@@ -25,16 +26,27 @@ public:
 	}
 	void init(ID3D11Device* device, ID3D11DeviceContext* dContext, MaterialData mat, const WCHAR* texturePath = nullptr)
 	{
+		if (this->textureHandler->m_device == nullptr)
+		{
+			this->textureHandler->m_device = device;
+			this->textureHandler->m_dContext = dContext;
+		}
 		this->m_materialBuffer.m_data = mat;
 		this->m_materialBuffer.init(device, dContext);
 		this->m_materialBuffer.upd();
 
-		if(texturePath != nullptr)
-			this->m_texture = this->textureHandler->getTexture(texturePath, device);
-
+		if (texturePath != nullptr)
+		{
+			this->m_texture = this->textureHandler->getTexture(texturePath);
+		}
 
 		dContext->PSSetConstantBuffers(0, 1, this->m_materialBuffer.GetAdressOf());
 		
+	}
+
+	void setTexture(const WCHAR* texturePath)
+	{
+		this->m_texture = this->textureHandler->getTexture(texturePath);
 	}
 
 	void upd(ID3D11DeviceContext* dContext)
@@ -44,6 +56,5 @@ public:
 			dContext->PSSetShaderResources(0, 1, &m_texture);
 
 	}
-
 	
 };

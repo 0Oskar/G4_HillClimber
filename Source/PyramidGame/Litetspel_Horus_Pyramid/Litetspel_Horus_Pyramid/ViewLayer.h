@@ -3,6 +3,7 @@
 #include "GameObject.h"
 #include "Model.h"
 #include "Timer.h"
+#include "Platform.h"
 
 class ViewLayer
 {
@@ -52,7 +53,7 @@ private:
 	bool m_drawPrimitives;
 
 	// Objects from state
-	std::vector<GameObject>* m_gameObjectsFromState;
+	std::vector<GameObject*>* m_gameObjectsFromState;
 	std::vector<Model>* m_modelsFromState;
 	std::vector< ConstBuffer<VS_CONSTANT_BUFFER> >* m_wvpCBufferFromState;
 	DirectX::BoundingOrientedBox m_pyramidOBB;
@@ -90,7 +91,7 @@ public:
 	void setProjectionMatrix(DirectX::XMMATRIX* newProjectionMatrix);
 
 	// Setters for State Pointers
-	void setgameObjectsFromState(std::vector<GameObject>* gameObjectsFromState);
+	void setgameObjectsFromState(std::vector<GameObject*>* gameObjectsFromState);
 	void setModelsFromState(std::vector<Model>* models);
 	void setWvpCBufferFromState(std::vector< ConstBuffer<VS_CONSTANT_BUFFER> >* models);
 

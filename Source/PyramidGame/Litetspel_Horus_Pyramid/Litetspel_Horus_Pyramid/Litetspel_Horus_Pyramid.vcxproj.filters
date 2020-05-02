@@ -60,6 +60,9 @@
     <ClCompile Include="Chain.cpp">
       <Filter>Source\Game Logic</Filter>
     </ClCompile>
+    <ClCompile Include="Platform.cpp">
+      <Filter>Source\Game Logic\GameObjects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -130,6 +133,12 @@
     </ClInclude>
     <ClInclude Include="Chain.h">
       <Filter>Header\Game Logic</Filter>
+    </ClCompile>
+    <ClInclude Include="Platform.h">
+      <Filter>Header\Game Logic\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioComponent.h">
+      <Filter>Header\Component</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -171,6 +180,12 @@
     </Filter>
     <Filter Include="Source\Utilites">
       <UniqueIdentifier>{bbc6c7d8-d633-4195-af44-b7eb7af64222}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header\Game Logic\GameObjects">
+      <UniqueIdentifier>{37e24367-417c-4768-a23c-e21bc4b7e941}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Game Logic\GameObjects">
+      <UniqueIdentifier>{2a608483-c701-4962-8eac-d4af998bd525}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

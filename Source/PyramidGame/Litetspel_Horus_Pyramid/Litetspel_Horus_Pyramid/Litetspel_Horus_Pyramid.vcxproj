@@ -165,6 +165,7 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="Platform.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="pugixml.cpp" />
     <ClCompile Include="Timer.cpp" />
@@ -185,6 +186,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
+    <ClInclude Include="AudioComponent.h" />
     <ClInclude Include="BoundingPrim.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Chain.h" />
@@ -202,6 +204,7 @@
     <ClInclude Include="MovementComponent.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="PhysicsComponent.h" />
+    <ClInclude Include="Platform.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Timer.h" />

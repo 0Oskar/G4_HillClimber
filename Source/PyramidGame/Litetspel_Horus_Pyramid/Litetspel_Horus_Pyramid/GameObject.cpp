@@ -12,6 +12,8 @@ GameObject::GameObject()
 
 	this->m_movementComp = nullptr;
 	this->m_physicsComp = nullptr;
+	this->m_modelptr = nullptr;
+	this->m_removeMe = false;
 }
 
 GameObject::GameObject(const GameObject& otherGameObject)
@@ -22,6 +24,7 @@ GameObject::GameObject(const GameObject& otherGameObject)
 	this->m_useDeceleration = otherGameObject.m_useDeceleration;
 	this->m_modelIndex = otherGameObject.m_modelIndex;
 	this->m_wvpCBufferIndex = otherGameObject.m_wvpCBufferIndex;
+	this->m_modelptr = otherGameObject.m_modelptr;
 
 	// Movement Component
 	if (this->m_movementComp)
@@ -67,6 +70,7 @@ GameObject& GameObject::operator=(const GameObject& otherGameObject)
 	this->m_useDeceleration = otherGameObject.m_useDeceleration;
 	this->m_modelIndex = otherGameObject.m_modelIndex;
 	this->m_wvpCBufferIndex = otherGameObject.m_wvpCBufferIndex;
+	this->m_modelptr = otherGameObject.m_modelptr;
 
 	// Movement Component
 	if (this->m_movementComp)
@@ -89,7 +93,7 @@ GameObject& GameObject::operator=(const GameObject& otherGameObject)
 	return *this;
 }
 
-void GameObject::initializeStatic(bool collidable, int modelIndex, int wvpCBufferIndex)
+void GameObject::initializeStatic(bool collidable, int modelIndex, int wvpCBufferIndex, Model* mdl)
 {
 	this->m_isStatic = true;
 	this->m_collidable = collidable;
@@ -100,19 +104,26 @@ void GameObject::initializeStatic(bool collidable, int modelIndex, int wvpCBuffe
 	this->m_movementComp = new MovementComponent();
 	this->m_physicsComp = new PhysicsComponent();
 	this->m_physicsComp->initialize(this->m_movementComp);
+	this->m_modelptr = mdl;
+
+	this->m_texturePath = this->m_modelptr->m_originalTexture;
 }
 
-void GameObject::initializeDynamic(bool collidable, bool useDeceration, int modelIndex, int wvpCBufferIndex, float mass, DirectX::XMFLOAT3 acceleration, DirectX::XMFLOAT3 deceleration)
+
+void GameObject::initializeDynamic(bool collidable, bool useDeceleration, int modelIndex, int wvpCBufferIndex, float mass, DirectX::XMFLOAT3 acceleration, DirectX::XMFLOAT3 deceleration, Model* mdl)
 {
 	this->m_isStatic = false;
 	this->m_collidable = collidable;
-	this->m_useDeceleration = useDeceration;
+	this->m_useDeceleration = useDeceleration;
 	this->m_modelIndex = modelIndex;
 	this->m_wvpCBufferIndex = wvpCBufferIndex;
 
 	this->m_movementComp = new MovementComponent();
 	this->m_physicsComp = new PhysicsComponent();
 	this->m_physicsComp->initialize(this->m_movementComp, mass, acceleration, deceleration);
+	this->m_modelptr = mdl;
+
+	this->m_texturePath = this->m_modelptr->m_originalTexture;
 }
 
 void GameObject::update(float dt)
@@ -194,6 +205,11 @@ void GameObject::setRotation(DirectX::XMVECTOR newRotation)
 		this->m_movementComp->rotation = newRotation;
 		this->m_movementComp->updateDirVectors();
 	}
+}
+
+std::wstring GameObject::getTexturePath()
+{
+	return this->m_texturePath;
 }
 
 void GameObject::setScale(DirectX::XMVECTOR newScale)
