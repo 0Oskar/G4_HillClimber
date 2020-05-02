@@ -133,7 +133,7 @@
     </ClInclude>
     <ClInclude Include="Chain.h">
       <Filter>Header\Game Logic</Filter>
-    </ClCompile>
+    </ClInclude>
     <ClInclude Include="Platform.h">
       <Filter>Header\Game Logic\GameObjects</Filter>
     </ClInclude>

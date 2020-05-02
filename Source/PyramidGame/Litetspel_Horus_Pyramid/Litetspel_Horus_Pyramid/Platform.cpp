@@ -15,7 +15,7 @@ Platform::Platform()
 
 void Platform::init(bool colidable, int modelIndex, int wvpCBufferIndex, DirectX::BoundingOrientedBox* pyramidBoundingBox, Model* mdl)
 {
-	this->initializeDynamic(colidable, modelIndex, wvpCBufferIndex, 3, DirectX::XMFLOAT3(1, 1, 1), DirectX::XMFLOAT3(0, 0, 0), mdl);
+	this->initializeDynamic(colidable, true, modelIndex, wvpCBufferIndex, 3, DirectX::XMFLOAT3(1, 1, 1), DirectX::XMFLOAT3(0, 0, 0), mdl);
 	this->m_pyramidBoundingBox = pyramidBoundingBox;
 }
 void Platform::update(float dt)

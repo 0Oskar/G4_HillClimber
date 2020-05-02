@@ -143,6 +143,7 @@ void HookHand::update(float dt)
 	{
 		this->m_toHeadDir = DirectX::XMVectorSubtract(this->m_hookGameObject->getPosition(), this->m_playerMovement->position);
 		this->m_hookState = hookState::flyYouFool;
+		this->m_hookGameObject->getphysicsCompPtr()->setVelocity({0.f, 0.f , 0.f });
 	}
 	else if (m_hookState == hookState::flyYouFool)
 	{

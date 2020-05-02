@@ -44,7 +44,7 @@ void GameState::addGameObjectToWorld(bool dynamic, bool colide, int weight, int 
 	int bufferIndex = m_wvpCBuffers.size() - 1;
 	if (dynamic)
 	{
-		gObject->initializeDynamic(colide, mdlIndx, bufferIndex, weight, acceleration, deceleration, mdl);
+		gObject->initializeDynamic(colide, false, mdlIndx, bufferIndex, weight, acceleration, deceleration, mdl);
 	}
 	else
 	{
@@ -211,7 +211,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
 	this->m_models[5].loadVertexFromOBJ(device, dContext, L"Models/ChainLink.obj", mat, L"Textures/BirdTexture.png");
 
-  DirectX::XMFLOAT3 vecF3 = this->m_gameObjects[2].getMoveCompPtr()->getPositionF3();
+  DirectX::XMFLOAT3 vecF3 = hook->getMoveCompPtr()->getPositionF3();
 	vec = DirectX::XMVectorSet(vecF3.x, vecF3.y, vecF3.z - 5.f, 1.f);
 	this->addGameObjectToWorld(true, false, 1, 5, &m_models[5], vec, NormalScale, XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
   
