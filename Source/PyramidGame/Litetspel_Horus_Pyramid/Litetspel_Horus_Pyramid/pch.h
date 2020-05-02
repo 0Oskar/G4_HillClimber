@@ -41,6 +41,8 @@
 #include "DebugDraw.h"
 #include "Audio.h"
 
+using namespace DirectX;
+
 // DirectX 11 Linking
 #pragma comment (lib, "user32")
 #pragma comment (lib, "d3d11.lib")

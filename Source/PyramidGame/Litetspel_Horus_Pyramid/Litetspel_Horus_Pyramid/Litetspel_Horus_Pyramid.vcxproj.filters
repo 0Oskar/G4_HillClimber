@@ -57,6 +57,9 @@
     <ClCompile Include="DebugDraw.cpp">
       <Filter>Source\Utilites</Filter>
     </ClCompile>
+    <ClCompile Include="Chain.cpp">
+      <Filter>Source\Game Logic</Filter>
+    </ClCompile>
     <ClCompile Include="Platform.cpp">
       <Filter>Source\Game Logic\GameObjects</Filter>
     </ClCompile>
@@ -128,6 +131,9 @@
     <ClInclude Include="BoundingPrim.h">
       <Filter>Header\Game Logic</Filter>
     </ClInclude>
+    <ClInclude Include="Chain.h">
+      <Filter>Header\Game Logic</Filter>
+    </ClCompile>
     <ClInclude Include="Platform.h">
       <Filter>Header\Game Logic\GameObjects</Filter>
     </ClInclude>
