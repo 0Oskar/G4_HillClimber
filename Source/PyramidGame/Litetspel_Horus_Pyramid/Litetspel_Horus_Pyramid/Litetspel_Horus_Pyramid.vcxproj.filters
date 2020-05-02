@@ -57,7 +57,9 @@
     <ClCompile Include="DebugDraw.cpp">
       <Filter>Source\Utilites</Filter>
     </ClCompile>
-    <ClCompile Include="Chain.cpp" />
+    <ClCompile Include="Chain.cpp">
+      <Filter>Source\Game Logic</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -126,7 +128,9 @@
     <ClInclude Include="BoundingPrim.h">
       <Filter>Header\Game Logic</Filter>
     </ClInclude>
-    <ClInclude Include="Chain.h" />
+    <ClInclude Include="Chain.h">
+      <Filter>Header\Game Logic</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

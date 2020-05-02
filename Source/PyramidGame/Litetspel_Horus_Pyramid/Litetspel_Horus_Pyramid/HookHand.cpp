@@ -102,6 +102,8 @@ void HookHand::update(float dt)
 	this->updateHandModel();
 	if (m_hookState == hookState::shooting)
 	{
+		this->m_chain.setShooting(true);
+		this->m_chain.setVisibility(true);
 		if (this->colide())
 		{
 			this->m_hookState = hookState::hit;
@@ -117,6 +119,7 @@ void HookHand::update(float dt)
 			this->m_hookPhysicsComp->setVelocity(DirectX::XMFLOAT3(0.f, 0.f, 0.f));
 		}
 
+		this->m_chain;
 	}
 	else if (m_hookState == hookState::recalling)
 	{
@@ -154,6 +157,8 @@ void HookHand::update(float dt)
 	}
 	else
 	{
+		this->m_chain.setShooting(false);
+		this->m_chain.setVisibility(false);
 		if (this->m_hookState == hookState::waiting)
 		{
 			if (this->m_hookTimer.timeElapsed() >= this->hookDelayTime)

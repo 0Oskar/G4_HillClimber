@@ -1,12 +1,14 @@
 #pragma once
 
-#include"GameObject.h"
+#include "GameObject.h"
 
 const int NR_OF_CHAIN_LINKS = 30;
 
 class Chain
 {
 private:
+	bool m_visible;
+	bool m_shooting;
 	std::vector<GameObject*>* m_chainGObjects;
 	GameObject* m_hookGObject;
 	GameObject* m_gaunletGObject;
@@ -20,6 +22,11 @@ public:
 	~Chain();
 
 	void initialize(GameObject* hookGObject, GameObject* gaunletGObject, std::vector<GameObject*>* chainGObjects);
+
+	bool isVisible() const;
+
+	void setVisibility(bool visible);
+	void setShooting(bool shooting);
 
 	void update(float dt);
 };

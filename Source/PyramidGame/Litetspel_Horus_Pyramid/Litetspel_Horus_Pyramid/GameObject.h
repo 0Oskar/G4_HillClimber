@@ -7,6 +7,7 @@
 class GameObject
 {
 protected:
+	bool m_visible;
 	bool m_collidable;
 	bool m_isStatic;
 	bool m_useDeceleration;
@@ -31,6 +32,7 @@ public:
 	virtual void update(float dt);
 
 	// Getters
+	bool visible() const;
 	bool collidable() const;
 	DirectX::XMVECTOR getPosition() const;
 	DirectX::XMMATRIX getWorldMatrix() const;
@@ -43,6 +45,8 @@ public:
 	DirectX::BoundingBox* getAABBPtr();
 
 	// Setters
+	void setVisibility(bool visible);
+	void setRotation(DirectX::XMVECTOR newRotation);
 	void setScale(DirectX::XMVECTOR newScale);
 	void setPosition(DirectX::XMVECTOR newPosition);
 	void setBoundingBox(DirectX::XMFLOAT3 extends);

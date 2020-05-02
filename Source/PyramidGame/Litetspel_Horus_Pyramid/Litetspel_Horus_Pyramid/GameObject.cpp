@@ -3,6 +3,7 @@
 
 GameObject::GameObject()
 {
+	this->m_visible = true;
 	this->m_collidable = false;
 	this->m_isStatic = false;
 	this->m_useDeceleration = true;
@@ -15,6 +16,7 @@ GameObject::GameObject()
 
 GameObject::GameObject(const GameObject& otherGameObject)
 {
+	this->m_visible = otherGameObject.m_visible;
 	this->m_collidable = otherGameObject.m_collidable;
 	this->m_isStatic = otherGameObject.m_isStatic;
 	this->m_useDeceleration = otherGameObject.m_useDeceleration;
@@ -59,6 +61,7 @@ GameObject& GameObject::operator=(const GameObject& otherGameObject)
 	if (this == &otherGameObject)
 		return *this;
 
+	this->m_visible = otherGameObject.m_visible;
 	this->m_collidable = otherGameObject.m_collidable;
 	this->m_isStatic = otherGameObject.m_isStatic;
 	this->m_useDeceleration = otherGameObject.m_useDeceleration;
@@ -121,6 +124,11 @@ void GameObject::update(float dt)
 
 }
 
+bool GameObject::visible() const
+{
+	return this->m_visible;
+}
+
 bool GameObject::collidable() const
 {
 	return this->m_collidable;
@@ -174,9 +182,24 @@ DirectX::BoundingBox* GameObject::getAABBPtr()
 	return this->m_physicsComp->getAABBPtr();
 }
 
+void GameObject::setVisibility(bool visible)
+{
+	this->m_visible = visible;
+}
+
+void GameObject::setRotation(DirectX::XMVECTOR newRotation)
+{
+	if (this->m_movementComp)
+	{
+		this->m_movementComp->rotation = newRotation;
+		this->m_movementComp->updateDirVectors();
+	}
+}
+
 void GameObject::setScale(DirectX::XMVECTOR newScale)
 {
-	this->m_movementComp->scale = newScale;
+	if (this->m_movementComp)
+		this->m_movementComp->scale = newScale;
 }
 
 void GameObject::setPosition(DirectX::XMVECTOR newPosition)

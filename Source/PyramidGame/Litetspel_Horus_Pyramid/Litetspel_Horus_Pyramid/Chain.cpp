@@ -3,13 +3,15 @@
 
 Chain::Chain()
 {
+	this->m_visible = true;
+	this->m_shooting = false;
 	this->m_chainGObjects = nullptr;
 	this->m_hookGObject = nullptr;
 	this->m_gaunletGObject = nullptr;
 
-	this->m_constant = 0.5f;
+	this->m_constant = 10.f;
 	this->m_length = 0.6f;
-	this->m_friction = 0.1f;
+	this->m_friction = 0.4f;
 }
 
 Chain::~Chain() {}
@@ -26,6 +28,25 @@ void Chain::initialize(GameObject* hookGObject, GameObject* gaunletGObject, std:
 		pos = XMVectorSet(hookPos.x, hookPos.y, hookPos.z - this->m_length - (float)i * this->m_length, 1.f);
 		this->m_chainGObjects->at(i)->setPosition(pos);
 	}
+}
+
+bool Chain::isVisible() const
+{
+	return this->m_visible;
+}
+
+void Chain::setVisibility(bool visible)
+{
+	this->m_visible = visible;
+	for (size_t i = 0; i < this->m_chainGObjects->size(); i++)
+	{
+		this->m_chainGObjects->at(i)->setVisibility(visible);
+	}
+}
+
+void Chain::setShooting(bool shooting)
+{
+	this->m_shooting = shooting;
 }
 
 void Chain::update(float dt)
@@ -72,15 +93,15 @@ void Chain::update(float dt)
 
 			// Apply force
 			if (i != 0)
+			{
+				link1->setRotation(linkVector);
 				link1->getphysicsCompPtr()->addForceDir(finalForce, dt);
+			}
+			link2->setRotation(linkVector);
 			link2->getphysicsCompPtr()->addForceDir(-finalForce, dt);
 
-			/*if (linkLength >= this->m_length)
-			{
-				link1->getphysicsCompPtr()->setVelocity(XMFLOAT3(0.f, 0.f, 0.f));
-				link2->getphysicsCompPtr()->setVelocity(XMFLOAT3(0.f, 0.f, 0.f));
-			}*/
-
+				/*link1->getphysicsCompPtr()->addForceDir(finalForce, dt);
+			link2->getphysicsCompPtr()->addForceDir(-finalForce, dt);*/
 		}
 	}
 
@@ -93,7 +114,10 @@ void Chain::update(float dt)
 		{
 			link1 = this->m_gaunletGObject;
 			link2 = this->m_chainGObjects->at(i);
-			link1Position = link1->getPosition() - link1->getMoveCompPtr()->backward - link1->getMoveCompPtr()->backward;
+			if (this->m_shooting)
+				link1Position = link1->getPosition();
+			else
+				link1Position = link1->getPosition() - (link1->getMoveCompPtr()->backward * 40);
 		}
 		else
 		{
@@ -130,12 +154,21 @@ void Chain::update(float dt)
 			if (i != NR_OF_CHAIN_LINKS - 1)
 				link1->getphysicsCompPtr()->addForceDir(finalForce, dt);
 			link2->getphysicsCompPtr()->addForceDir(-finalForce, dt);
+			/*{
+				link1->setRotation(linkVector);
+				link1->getphysicsCompPtr()->addForceDir(finalForce, dt);
+			}
+			link2->setRotation(linkVector);
+			link2->getphysicsCompPtr()->addForceDir(-finalForce, dt);*/
+
+
 		}
-		
-		//XMFLOAT3 gaunletPos = this->m_gaunletGObject->getMoveCompPtr()->getPositionF3();
-		//XMVECTOR pos = XMVectorSet(gaunletPos.x, gaunletPos.y, gaunletPos.z + 3.f, 1.f);
-		//this->m_chainGObjects->at(NR_OF_CHAIN_LINKS - 1)->setPosition(pos);
 	}
 	for (size_t i = 0; i < NR_OF_CHAIN_LINKS - 1; i++)
+	{
+		XMFLOAT3 velocity = this->m_chainGObjects->at(i)->getphysicsCompPtr()->getVelocity();
+		//this->m_chainGObjects->at(i)->setRotation(this->m_hookGObject->getMoveCompPtr()->forward);
+		//this->m_chainGObjects->at(i)->setRotation(XMVectorSet(velocity.x, velocity.y, velocity.z, 1.f));
 		this->m_chainGObjects->at(i)->getphysicsCompPtr()->updatePositionNoDecel(dt);
+	}
 }
