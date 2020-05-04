@@ -93,6 +93,12 @@
     <ClInclude Include="FileWrite.h">
       <Filter>Header Files\FileWrite</Filter>
     </ClInclude>
+    <ClInclude Include="BiReader.h">
+      <Filter>Header Files\FileWrite</Filter>
+    </ClInclude>
+    <ClInclude Include="ImporterStructure.h">
+      <Filter>Header Files\FileWrite</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DisplayAnimation.cxx">
@@ -171,6 +177,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="FileWrite.cpp">
+      <Filter>Header Files\FileWrite</Filter>
+    </ClCompile>
+    <ClCompile Include="BiReader.cpp">
+      <Filter>Header Files\FileWrite</Filter>
+    </ClCompile>
+    <ClCompile Include="DebugMain.cpp">
       <Filter>Header Files\FileWrite</Filter>
     </ClCompile>
   </ItemGroup>

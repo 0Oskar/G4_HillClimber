@@ -41,14 +41,22 @@ void DisplayMaterialTextureConnections(FbxSurfaceMaterial* pMaterial,
 FileWrite myFile("../biFile.bff");
 FileWrite myStringFile("../stringFile.bff");
 int vertexCount;
-std::vector<Vertex> vertexData;
+std::vector<VertexBFF> vertexData;
+
 //Vertex vertexData[];
-Mesh meshData;
+MeshBFF meshData;
 int currentVertex = 0;
+
+MaterialBFF materialData;
+
 
 void DisplayMesh(FbxNode* pNode)
 {
-	myFile.EmptyFile();
+	//myFile.EmptyFile();
+
+	
+
+
 	//Vertex vertexData;
 
 	FbxMesh* lMesh = (FbxMesh*)pNode->GetNodeAttribute();
@@ -60,21 +68,30 @@ void DisplayMesh(FbxNode* pNode)
 	for (int i = 0; i < sizeof(temp); i++)
 		meshData.name[i] = temp[i];
 
-	
 
-	 
+
+
 	//myFile.writeToFile(pNode->GetName(), strlen(pNode->GetName()) + 1); //strcpy_s()
 	//c string func
 	DisplayMetaDataConnections(lMesh);
 	DisplayControlsPoints(lMesh);
-	DisplayPolygons(lMesh);	
+	DisplayPolygons(lMesh);
 
-	myFile.writeToFile((const char*)&meshData, sizeof(Mesh)); //Add mesh data to output <------------------------------------------
+	DisplayMaterialMapping(lMesh);
+	DisplayMaterial(lMesh);
+	materialData = getMaterialInfo();
+	DisplayTexture(lMesh);
+	DisplayMaterialConnections(lMesh);
+	DisplayLink(lMesh);
+	DisplayShape(lMesh);
+
+
+	myFile.writeToFile((const char*)&meshData, sizeof(MeshBFF)); //Add mesh data to output <------------------------------------------
 	myStringFile.writeToStringFile(meshData.name + std::to_string(meshData.nrOfVertex));
 	for (int i = 0; i < vertexCount; i++)
 	{
-		myFile.writeToFile((const char*)&vertexData[i], sizeof(Vertex)); //Add vertex data to output <------------------------------------------ 
-		
+		myFile.writeToFile((const char*)&vertexData[i], sizeof(VertexBFF)); //Add vertex data to output <------------------------------------------ 
+
 		myStringFile.writeToStringFile(
 			"\n------------- Index " + std::to_string(i) + ")\n\n" +
 			"PosX: " + std::to_string(vertexData[i].pos[0]) + "\n" +
@@ -94,17 +111,22 @@ void DisplayMesh(FbxNode* pNode)
 			"\n" +
 			"TanX: " + std::to_string(vertexData[i].tan[0]) + "\n" +
 			"TanY: " + std::to_string(vertexData[i].tan[1]) + "\n" +
-			"TanZ: " + std::to_string(vertexData[i].tan[2]) + "\n");
+			"TanZ: " + std::to_string(vertexData[i].tan[2]) + "\n" + "\n" + "\n");
 
 	}
+	myFile.writeToFile((const char*)&materialData, sizeof(MaterialBFF)); //Add material data to output <------------------------------------------
 
-	DisplayMaterialMapping(lMesh);
-	DisplayMaterial(lMesh);
-	DisplayTexture(lMesh);
-	DisplayMaterialConnections(lMesh);
-	DisplayLink(lMesh);
-	DisplayShape(lMesh);
-
+	myStringFile.writeToStringFile(
+		"\n------------- Material: \n\n"
+		"DiffuseR: " + std::to_string(materialData.Diffuse[0]) + "\n" +
+		"DiffuseG: " + std::to_string(materialData.Diffuse[1]) + "\n" +
+		"DiffuseB: " + std::to_string(materialData.Diffuse[2]) + "\n" +
+		"\n" +
+		"AmbientR: " + std::to_string(materialData.Ambient[0]) + "\n" +
+		"AmbientG: " + std::to_string(materialData.Ambient[1]) + "\n" +
+		"AmbientB: " + std::to_string(materialData.Ambient[2]) + "\n" +
+		"\n" + 
+		"Opacity: " + std::to_string(materialData.Opacity) + "\n " );
 	DisplayCache(lMesh);
 }
 

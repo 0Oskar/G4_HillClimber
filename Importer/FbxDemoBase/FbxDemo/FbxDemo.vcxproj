@@ -22,6 +22,7 @@
     <ClInclude Include="..\Common\AnimationUtility.h" />
     <ClInclude Include="..\Common\Common.h" />
     <ClInclude Include="..\Common\GeometryUtility.h" />
+    <ClInclude Include="BiReader.h" />
     <ClInclude Include="DisplayAnimation.h" />
     <ClInclude Include="DisplayCache.h" />
     <ClInclude Include="DisplayCamera.h" />
@@ -44,11 +45,16 @@
     <ClInclude Include="DisplayTexture.h" />
     <ClInclude Include="DisplayUserProperties.h" />
     <ClInclude Include="FileWrite.h" />
+    <ClInclude Include="ImporterStructure.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Common\AnimationUtility.cxx" />
     <ClCompile Include="..\Common\Common.cxx" />
     <ClCompile Include="..\Common\GeometryUtility.cxx" />
+    <ClCompile Include="BiReader.cpp" />
+    <ClCompile Include="DebugMain.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="DisplayAnimation.cxx" />
     <ClCompile Include="DisplayCache.cxx" />
     <ClCompile Include="DisplayCamera.cxx" />
@@ -71,7 +77,9 @@
     <ClCompile Include="DisplayTexture.cxx" />
     <ClCompile Include="DisplayUserProperties.cxx" />
     <ClCompile Include="FileWrite.cpp" />
-    <ClCompile Include="main.cxx" />
+    <ClCompile Include="main.cxx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </ClCompile>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

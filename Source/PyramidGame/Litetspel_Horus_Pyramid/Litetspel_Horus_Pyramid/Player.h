@@ -6,6 +6,7 @@
 #include "Input.h"
 #include"HookHand.h"
 
+
 class Player : public GameObject
 {
 private:
@@ -13,6 +14,8 @@ private:
 	DirectX::BoundingOrientedBox m_pyramidOBB;
 	HookHand m_hookHand;
 	bool lastFly;
+
+	std::string myString;
 
 public:
 	Player();

@@ -9,5 +9,11 @@
 
 // add headers that you want to pre-compile here
 #include "framework.h"
+#include <string>
+#include <iostream>
+#include <fstream>
+#include <map>
+#include "../../../../Importer/FbxDemoBase/FbxDemo/ImporterStructure.h"
+
 
 #endif //PCH_H
