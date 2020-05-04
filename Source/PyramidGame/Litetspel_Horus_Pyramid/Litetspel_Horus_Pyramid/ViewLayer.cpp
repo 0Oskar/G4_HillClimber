@@ -236,7 +236,7 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 	// Ambient Light buffer
 	PS_LIGHT_BUFFER lightBuffer;
 	lightBuffer.lightColor = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
-	lightBuffer.strength = 0.2f;
+	lightBuffer.strength = 0.4f; // 0.2 before
 	this->m_lightBuffer.m_data = lightBuffer;
 	this->m_lightBuffer.upd();
 

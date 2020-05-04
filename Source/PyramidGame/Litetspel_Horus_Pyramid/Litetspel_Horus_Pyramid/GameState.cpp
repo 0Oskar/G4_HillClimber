@@ -124,7 +124,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	// HookHead model
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
-	this->m_models[2].loadVertexFromOBJ(device, dContext, L"Models/BirdHookModel.obj", mat, L"Textures/BirdTexture.png");
+	this->m_models[2].loadVertexFromOBJ(device, dContext, L"Models/FinalBird.obj", mat, L"Textures/ColorTexture.png");
 
 	// platform model
 	this->m_models.emplace_back();
@@ -139,7 +139,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	// HookHand
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
-	this->m_models[4].loadVertexFromOBJ(device, dContext, L"Models/HookModel.obj", mat, L"Textures/HookTexture.png");
+	this->m_models[4].loadVertexFromOBJ(device, dContext, L"Models/FinalHook.obj", mat, L"Textures/ColorTexture.png");
 
 	vec = DirectX::XMVectorSet(10.f, 1.f, -20.f, 1.f);
 	this->addGameObjectToWorld(true, false, 1, 4, &m_models[4], vec, DirectX::XMVectorSet(.7f, .7f, .7f, 1.f), DirectX::XMFLOAT3(0, 0, 0), DirectX::XMFLOAT3(10, 10, 10), DirectX::XMFLOAT3(10, 10, 10));
@@ -209,7 +209,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
   // Chain Link
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
-	this->m_models[5].loadVertexFromOBJ(device, dContext, L"Models/ChainLink.obj", mat, L"Textures/BirdTexture.png");
+	this->m_models[5].loadVertexFromOBJ(device, dContext, L"Models/FinalChainLink.obj", mat, L"Textures/ColorTexture.png");
 
   DirectX::XMFLOAT3 vecF3 = hook->getMoveCompPtr()->getPositionF3();
 	vec = DirectX::XMVectorSet(vecF3.x, vecF3.y, vecF3.z - 5.f, 1.f);
