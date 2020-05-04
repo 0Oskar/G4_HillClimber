@@ -15,6 +15,8 @@ private:
 	std::vector<GameObject*> m_gameObjects;
 	std::vector<ConstBuffer<VS_CONSTANT_BUFFER>> m_wvpCBuffers;
 	DirectX::BoundingOrientedBox m_pyramidOBB;
+	std::vector<GameObject*>* m_chainGObjects;
+  
 	ID3D11Device* m_device;
 	ID3D11DeviceContext* m_dContext;
 

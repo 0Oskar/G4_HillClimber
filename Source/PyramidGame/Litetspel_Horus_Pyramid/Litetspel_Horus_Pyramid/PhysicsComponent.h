@@ -3,8 +3,7 @@
 #include "pch.h"
 #include "MovementComponent.h"
 
-const float GRAVITY = 300.f; // 9.82f
-const float MAX_GRAVITY = 9820.f;
+const float GRAVITY = 0.00982f;
 
 class PhysicsComponent
 {
@@ -182,8 +181,7 @@ public:
 
 	void addGravity(float dt)
 	{
-		if (this->m_velocity.y > -MAX_GRAVITY * dt)
-			this->m_velocity.y += this->m_mass * -GRAVITY * dt;
+		this->m_velocity.y += this->m_mass * -GRAVITY;
 	}
 
 	void jump(float accelerationMultipler, float dt)
@@ -294,6 +292,7 @@ public:
 			}
 		}
 	}
+	
 	void updatePosition(float dt)
 	{
 		this->m_moveComp->position = DirectX::XMVectorAdd(
@@ -309,5 +308,18 @@ public:
 
 		this->m_velocity.x *= this->m_deceleration.x * dt;
 		this->m_velocity.z *= this->m_deceleration.z * dt;
+	}
+	void updatePositionNoDecel(float dt)
+	{
+		this->m_moveComp->position = DirectX::XMVectorAdd(
+			this->m_moveComp->position,
+			DirectX::XMVectorSet(
+				this->m_velocity.x * dt,
+				this->m_velocity.y * dt,
+				this->m_velocity.z * dt, 1.f)
+		);
+		this->m_aabb->Center = this->m_moveComp->getPositionF3();
+
+		this->m_moveComp->updateViewMatrix();
 	}
 };

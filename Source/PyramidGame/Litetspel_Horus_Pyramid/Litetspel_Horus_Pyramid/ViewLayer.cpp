@@ -466,13 +466,16 @@ void ViewLayer::render()
 	{
 		// Get indexes
 		GameObject* gObject = this->m_gameObjectsFromState->at(i);
-		int wvpIndex = gObject->getWvpCBufferIndex();
-		int mIndex = gObject->getModelIndex();
-		// Set Constant buffer
-		this->m_deviceContext->VSSetConstantBuffers(0, 1, this->m_wvpCBufferFromState->at(wvpIndex).GetAdressOf());
-		// Draw Model
-		this->m_modelsFromState->at(mIndex).m_material.setTexture(gObject->getTexturePath().c_str());
-		this->m_modelsFromState->at(mIndex).draw(viewPMtrx);
+    if (gObject->visible())
+		{
+      int wvpIndex = gObject->getWvpCBufferIndex();
+      int mIndex = gObject->getModelIndex();
+      // Set Constant buffer
+      this->m_deviceContext->VSSetConstantBuffers(0, 1, this->m_wvpCBufferFromState->at(wvpIndex).GetAdressOf());
+      // Draw Model
+      this->m_modelsFromState->at(mIndex).m_material.setTexture(gObject->getTexturePath().c_str());
+      this->m_modelsFromState->at(mIndex).draw(viewPMtrx);
+		}
 	}
 
 	// Draw Primitives
