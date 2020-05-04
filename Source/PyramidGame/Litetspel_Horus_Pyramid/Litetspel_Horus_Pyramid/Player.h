@@ -19,11 +19,14 @@ public:
 	~Player();
 
 	// Initialization
-	void initialize(int modelIndex, int wvpCBufferIndex, float mass, DirectX::XMFLOAT3 acceleration, DirectX::XMFLOAT3 deceleration, GameObject* gObj, GameObject* hookGun, std::shared_ptr<DirectX::AudioEngine> audioEngine);
+	void initialize(int modelIndex, int wvpCBufferIndex, float mass, DirectX::XMFLOAT3 acceleration, DirectX::XMFLOAT3 deceleration, GameObject* gObj, GameObject* hookGun, std::shared_ptr<DirectX::AudioEngine> audioEngine, std::vector<DirectX::BoundingBox*> platformBB);
 
 	// Collidable Bounding Boxes
 	void addAABB(DirectX::BoundingBox* aabb);
 	void addPyramidOBB(DirectX::BoundingOrientedBox* obb);
+
+	void resetVelocity();
+	void flyDown(float speed);
 
 	// Update
 	void update(Keyboard* keyboard, Mouse* mouse, float dt);

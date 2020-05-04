@@ -10,7 +10,7 @@ Player::~Player()
 {
 }
 
-void Player::initialize(int modelIndex, int wvpCBufferIndex, float mass, DirectX::XMFLOAT3 acceleration, DirectX::XMFLOAT3 deceleration, GameObject* gObj, GameObject* hookGun, std::shared_ptr<DirectX::AudioEngine> audioEngine)
+void Player::initialize(int modelIndex, int wvpCBufferIndex, float mass, DirectX::XMFLOAT3 acceleration, DirectX::XMFLOAT3 deceleration, GameObject* gObj, GameObject* hookGun, std::shared_ptr<DirectX::AudioEngine> audioEngine, std::vector<DirectX::BoundingBox*> platformBB)
 {
 	this->m_isStatic = true;
 	this->m_collidable = true;
@@ -21,7 +21,7 @@ void Player::initialize(int modelIndex, int wvpCBufferIndex, float mass, DirectX
 	this->m_physicsComp = new PhysicsComponent();
 	this->m_physicsComp->initialize(this->m_movementComp, mass, acceleration, deceleration);
 	this->m_physicsComp->setBoundingBox(this->m_movementComp->getPositionF3(), DirectX::XMFLOAT3(1.f, 4.f, 1.f));
-	this->m_hookHand.init(gObj, m_movementComp, &m_collidableAABBoxes, hookGun, audioEngine);
+	this->m_hookHand.init(gObj, m_movementComp, &m_collidableAABBoxes, hookGun, audioEngine, platformBB);
 }
 
 void Player::addAABB(DirectX::BoundingBox* aabb)
@@ -32,6 +32,16 @@ void Player::addAABB(DirectX::BoundingBox* aabb)
 void Player::addPyramidOBB(DirectX::BoundingOrientedBox* obb)
 {
 	this->m_pyramidOBB = *obb;
+}
+
+void Player::resetVelocity()
+{
+	this->m_physicsComp->setVelocity(DirectX::XMFLOAT3());
+}
+
+void Player::flyDown(float speed)
+{
+	this->m_physicsComp->addForceDir(Direction::DOWN, speed);
 }
 
 void Player::update(Keyboard* keyboard, Mouse* mouse, float dt)
@@ -68,17 +78,17 @@ void Player::update(Keyboard* keyboard, Mouse* mouse, float dt)
 			this->m_physicsComp->addForceDir(Direction::RIGHT, dt);
 
 		if (keyboard->isKeyPressed(' '))
-			this->m_physicsComp->jump(3.f, dt);
+			this->m_physicsComp->jump(10.f, dt);
 
 		if (keyboard->isKeyPressed((unsigned char)16)) // Shift
-			this->m_physicsComp->addForceDir(Direction::DOWN, dt);
+			flyDown(dt);
 
 
 		// For Debugging purposes
 		if (keyboard->isKeyPressed('R'))
 		{
 			this->m_movementComp->position = DirectX::XMVectorSet(0.f, 6.f, -1.f, 1.f);
-			this->m_physicsComp->setVelocity(DirectX::XMFLOAT3()); // Reset Velocity
+			resetVelocity(); // Reset Velocity
 		}
 
 		// Handle Collisions

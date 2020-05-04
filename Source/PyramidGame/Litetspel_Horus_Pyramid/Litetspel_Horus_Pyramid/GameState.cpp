@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "GameState.h"
 
+using namespace DirectX;
+
 GameState::GameState() 
 {
 	this->m_device = nullptr;
@@ -79,6 +81,14 @@ void GameState::addPlatformToWorld(int mdlIndex, DirectX::BoundingOrientedBox* p
 	this->m_gameObjects.back()->setBoundingBox(platformBoundingBox);
 	this->m_player.addAABB(this->m_gameObjects.back()->getAABBPtr());
 }
+
+
+
+
+
+
+
+
 
 void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext, GameOptions options, std::shared_ptr<DirectX::AudioEngine> audioEngine)
 {
@@ -206,9 +216,81 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	vec = DirectX::XMVectorSet(0.f, 10.f, 24.f, 1.f);
 	this->addPlatformToWorld(3, &m_pyramidOBB, &m_models[3], vec, DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f));
 
+
+	//Puzzle Room (Kevins Lever room)
+	vec = DirectX::XMVectorSet(5.f, 25.f, -85.f, 1.f);
+	this->addPlatformToWorld(3, &m_pyramidOBB, &m_models[3], vec, DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f));
+
+	this->m_models.emplace_back();
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
+	this->m_models[5].loadVertexFromOBJ(device, dContext, L"Models/LeverRoom.obj", mat, L"Textures/sandTexture.png");
+
+	vec = DirectX::XMVectorSet(-10.f, 2, -100, 1.f);
+	this->addGameObjectToWorld(false, true, 2, 5, &m_models[5], vec, DirectX::XMVectorSet(1, 1, 1, 1), DirectX::XMFLOAT3(1.f, 1.f, 1.f));
+
+	//Ändra pos
+	vec = DirectX::XMVectorSet(10.f, 27, -80, 1.f);
+	this->addGameObjectToWorld(true, false, 2, 3, &m_models[3], vec, DirectX::XMVectorSet(0.1f, 0.1f, 0.1f, 1), DirectX::XMFLOAT3(1.f, 1.f, 1.f));
+	this->m_gameObjects.back()->setDrawBB(true);
+	this->trapBB.emplace_back(this->m_gameObjects.back()->getAABBPtr());
+
+	this->dartTrap.emplace_back(this->m_gameObjects.back());
+
+	vec = DirectX::XMVectorSet(10.f, 27, -60, 1.f);
+	this->addGameObjectToWorld(true, false, 2, 3, &m_models[3], vec, DirectX::XMVectorSet(0.1f, 0.1f, 0.1f, 1), DirectX::XMFLOAT3(1.f, 1.f, 1.f));
+	this->m_gameObjects.back()->setDrawBB(true);
+	this->trapBB.emplace_back(this->m_gameObjects.back()->getAABBPtr());
+
+	this->dartTrap.emplace_back(this->m_gameObjects.back());
+
+	triggerBB.emplace_back();
+	triggerBB.back().Center = DirectX::XMFLOAT3(-10.f, 27.f, -80.f);
+	triggerBB.back().Extents = DirectX::XMFLOAT3(20.f, 10.f, 1.5f);
+
+	triggerBB.emplace_back();
+	triggerBB.back().Center = DirectX::XMFLOAT3(-10.f, 27.f, -60.f);
+	triggerBB.back().Extents = DirectX::XMFLOAT3(20.f, 10.f, 1.5f);
+
+	pussels.emplace_back();
+	pussels.back().Center = DirectX::XMFLOAT3(-10.f, 1.0f, -104.0f);
+	pussels.back().Extents = DirectX::XMFLOAT3(20.f, 1.5f, 20.f);
+
+	pussels.emplace_back();
+	pussels.back().Center = DirectX::XMFLOAT3(-10.f, 1.0f, -154.0f);
+	pussels.back().Extents = DirectX::XMFLOAT3(20.f, 1.5f, 20.8f);
+
+	pussels.emplace_back();
+	pussels.back().Center = DirectX::XMFLOAT3(-10.f, 11.6f, -86.f);
+	pussels.back().Extents = DirectX::XMFLOAT3(20.f, 13.f, 1.5f);
+
+	pussels.emplace_back();
+	pussels.back().Center = DirectX::XMFLOAT3(-10.f, 23.f, -77.f);
+	pussels.back().Extents = DirectX::XMFLOAT3(20.f, 1.5f, 10.8f);
+
+	pussels.emplace_back();
+	pussels.back().Center = DirectX::XMFLOAT3(-10.f, 23.f, -45.4f);
+	pussels.back().Extents = DirectX::XMFLOAT3(20.f, 1.5f, 11.8f);
+
+	for (int i = 0; i < pussels.size(); i++)
+	{
+		this->m_player.addAABB(&pussels.at(i));
+	}
+
 	
+	
+	
+	//vec = DirectX::XMVectorSet()
+	for (size_t i = 0; i < this->m_gameObjects.size(); i++)
+	{
+		Platform* castToPlatform = dynamic_cast<Platform*>(this->m_gameObjects.at(i));
+		if (castToPlatform != nullptr)
+		{
+			platformBB.emplace_back(castToPlatform->getAABBPtr());
+		}
+	}
+
 	// Player
-	this->m_player.initialize(-1, -1, 1.f, DirectX::XMFLOAT3(20.f, 20.f, 20.f), DirectX::XMFLOAT3(.01f, .01f, .01f), hook, hookHand, audioEngine);
+	this->m_player.initialize(-1, -1, 1.f, DirectX::XMFLOAT3(20.f, 20.f, 20.f), DirectX::XMFLOAT3(.01f, .01f, .01f), hook, hookHand, audioEngine, platformBB);
 	this->m_player.setPosition(DirectX::XMVectorSet(0.f, 5.f, -1.f, 1.f));
 	
 	for (size_t i = 0; i < this->m_gameObjects.size(); i++)
@@ -224,7 +306,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	// Camera
 	this->m_camera.followMoveComp(this->m_player.getMoveCompPtr());
 	this->m_camera.initialize(
-		0.1f,
+		0.01f,
 		options.fov,
 		(float)options.width / (float)options.height,
 		0.1f,
@@ -259,4 +341,61 @@ void GameState::update(Keyboard* keyboard, MouseEvent mouseEvent, Mouse* mousePt
 			m_gameObjects.erase(m_gameObjects.begin() + i);
 		}
 	}
+
+	
+
+		if (triggerBB[0].Intersects(this->m_player.getAABB()))
+		{
+			OutputDebugString(L"Tjeenaaa /n");
+			dartFly1 = true;
+		}
+
+		if (triggerBB[1].Intersects(this->m_player.getAABB()))
+		{
+			OutputDebugString(L"Tjeenaaa /n");
+			dartFly2 = true;
+		}
+
+	for (int i = 0; i < dartTrap.size(); i++)
+	{
+		if (dartTrap[i]->getAABB().Intersects(this->m_player.getAABB()))
+		{
+			this->m_player.getMoveCompPtr()->position = DirectX::XMVectorSet(-20.f, -50.f, -165.f, 1.f);
+		}
+	}
+	
+	if (dartFly1 == true)
+	{
+		if (dartPosition1 <= 0)
+		{
+			dartPosition1 = 40.f;
+			dartTrap[0]->getMoveCompPtr()->position = DirectX::XMVectorSet(10.f, 27, -80, 1.f);
+			dartFly1 = false;
+		}
+		else
+		{
+			dartTrap[0]->getMoveCompPtr()->position += DirectX::XMVectorSet(-40.f * dt, 0, 0, 1.f);
+			dartPosition1 -= 40.f * dt;
+		}	
+	}
+
+	if (dartFly2 == true)
+	{
+		if (dartPosition2 <= 0)
+		{
+			dartPosition2 = 40.f;
+			dartTrap[1]->getMoveCompPtr()->position = DirectX::XMVectorSet(10.f, 27.f, -60.f, 1.f);
+			dartFly2 = false;
+		}
+		else
+		{
+			dartTrap[1]->getMoveCompPtr()->position += DirectX::XMVectorSet(-40.f * dt, 0, 0, 1.f);
+			dartPosition2 -= 40.f * dt;
+		}
+	}
+
+
+	
+
+	
 }

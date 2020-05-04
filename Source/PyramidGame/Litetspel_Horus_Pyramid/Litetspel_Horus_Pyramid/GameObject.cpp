@@ -5,6 +5,7 @@ GameObject::GameObject()
 {
 	this->m_collidable = false;
 	this->m_isStatic = false;
+	this->m_drawBB = false;
 	this->m_modelIndex = -1;
 	this->m_wvpCBufferIndex = -1;
 
@@ -18,6 +19,7 @@ GameObject::GameObject(const GameObject& otherGameObject)
 {
 	this->m_collidable = otherGameObject.m_collidable;
 	this->m_isStatic = otherGameObject.m_isStatic;
+	this->m_drawBB = otherGameObject.m_drawBB;
 	this->m_modelIndex = otherGameObject.m_modelIndex;
 	this->m_wvpCBufferIndex = otherGameObject.m_wvpCBufferIndex;
 	this->m_modelptr = otherGameObject.m_modelptr;
@@ -62,6 +64,7 @@ GameObject& GameObject::operator=(const GameObject& otherGameObject)
 
 	this->m_collidable = otherGameObject.m_collidable;
 	this->m_isStatic = otherGameObject.m_isStatic;
+	this->m_drawBB = otherGameObject.m_drawBB;
 	this->m_modelIndex = otherGameObject.m_modelIndex;
 	this->m_wvpCBufferIndex = otherGameObject.m_wvpCBufferIndex;
 	this->m_modelptr = otherGameObject.m_modelptr;
@@ -89,8 +92,9 @@ GameObject& GameObject::operator=(const GameObject& otherGameObject)
 
 void GameObject::initializeStatic(bool collidable, int modelIndex, int wvpCBufferIndex, Model* mdl)
 {
-	this->m_isStatic = true;
 	this->m_collidable = collidable;
+	this->m_isStatic = true;
+	this->m_drawBB = collidable;
 	this->m_modelIndex = modelIndex;
 	this->m_wvpCBufferIndex = wvpCBufferIndex;
 
@@ -104,8 +108,9 @@ void GameObject::initializeStatic(bool collidable, int modelIndex, int wvpCBuffe
 
 void GameObject::initializeDynamic(bool collidable, int modelIndex, int wvpCBufferIndex, float mass, DirectX::XMFLOAT3 acceleration, DirectX::XMFLOAT3 deceleration, Model* mdl)
 {
-	this->m_isStatic = false;
 	this->m_collidable = collidable;
+	this->m_isStatic = false;
+	this->m_drawBB = collidable;
 	this->m_modelIndex = modelIndex;
 	this->m_wvpCBufferIndex = wvpCBufferIndex;
 
@@ -125,6 +130,11 @@ void GameObject::update(float dt)
 bool GameObject::collidable() const
 {
 	return this->m_collidable;
+}
+
+bool GameObject::getDrawBB() const
+{
+	return this->m_drawBB;
 }
 
 DirectX::XMVECTOR GameObject::getPosition() const
@@ -173,6 +183,11 @@ DirectX::BoundingBox* GameObject::getAABBPtr()
 std::wstring GameObject::getTexturePath()
 {
 	return this->m_texturePath;
+}
+
+void GameObject::setDrawBB(bool drawable)
+{
+	this->m_drawBB = drawable;
 }
 
 void GameObject::setScale(DirectX::XMVECTOR newScale)

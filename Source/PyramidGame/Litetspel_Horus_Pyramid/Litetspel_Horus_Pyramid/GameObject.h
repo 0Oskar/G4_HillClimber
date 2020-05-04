@@ -10,6 +10,7 @@ class GameObject
 protected:
 	bool m_collidable;
 	bool m_isStatic;
+	bool m_drawBB;
 	int m_modelIndex;
 	int m_wvpCBufferIndex;
 	
@@ -34,6 +35,7 @@ public:
 
 	// Getters
 	bool collidable() const;
+	bool getDrawBB() const;
 	DirectX::XMVECTOR getPosition() const;
 	DirectX::XMMATRIX getWorldMatrix() const;
 	DirectX::XMMATRIX getTranslationMatrix() const;
@@ -44,7 +46,9 @@ public:
 	DirectX::BoundingBox* getAABBPtr();
 	std::wstring getTexturePath();
 
+
 	// Setters
+	void setDrawBB(bool drawable);
 	void setScale(DirectX::XMVECTOR newScale);
 	void setPosition(DirectX::XMVECTOR newPosition);
 	void setBoundingBox(DirectX::XMFLOAT3 extends);
