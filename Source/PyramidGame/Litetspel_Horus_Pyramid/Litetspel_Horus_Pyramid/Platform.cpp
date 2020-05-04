@@ -41,14 +41,14 @@ void Platform::update(float dt)
 				this->m_physicsComp->addGravity(dt);
 			}
 		}
-		int time = this->m_destructionTimer.timeElapsed();
+		int time = (int)this->m_destructionTimer.timeElapsed();
 		if (currentTime != time)
 		{
 			if (time < m_nrOfTextures)
 			{
 				this->currentTime = time;
 				this->m_texturePath = m_textures[time].c_str();
-				m_audioComponent->emitSound(time % nrOfCracKSounds, this->m_movementComp->position);
+				m_audioComponent->emitSound(m_crackSounds[time % nrOfCracKSounds], this->m_movementComp->position);
 			}
 		}
 	}

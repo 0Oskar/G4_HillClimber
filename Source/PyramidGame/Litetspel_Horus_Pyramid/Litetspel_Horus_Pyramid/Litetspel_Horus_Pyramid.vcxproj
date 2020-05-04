@@ -204,7 +204,7 @@
     <ClInclude Include="PhysicsComponent.h" />
     <ClInclude Include="Platform.h" />
     <ClInclude Include="Player.h" />
-    <ClInclude Include="Texture.h" />
+    <ClInclude Include="ResourceHandler.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="VertexBuffer.h" />
     <ClInclude Include="ViewLayer.h" />

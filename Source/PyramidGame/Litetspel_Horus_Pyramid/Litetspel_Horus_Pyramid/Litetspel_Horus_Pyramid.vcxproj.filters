@@ -116,9 +116,6 @@
     <ClInclude Include="Material.h">
       <Filter>Header\View</Filter>
     </ClInclude>
-    <ClInclude Include="Texture.h">
-      <Filter>Header\View</Filter>
-    </ClInclude>
     <ClInclude Include="HookHand.h">
       <Filter>Header\Game Logic</Filter>
     </ClInclude>
@@ -133,6 +130,9 @@
     </ClInclude>
     <ClInclude Include="AudioComponent.h">
       <Filter>Header\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceHandler.h">
+      <Filter>Header\Application</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

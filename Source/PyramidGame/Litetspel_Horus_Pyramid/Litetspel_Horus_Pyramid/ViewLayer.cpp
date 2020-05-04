@@ -272,7 +272,7 @@ ViewLayer::ViewLayer()
 	this->m_modelsFromState = nullptr;
 	this->m_wvpCBufferFromState = nullptr;
 
-	this->textureHandler = &TextureHandler::get();
+	this->resourceHandler = &ResourceHandler::get();
 	this->m_crossHairSRV = nullptr;
 	this->m_crosshairPosition = DirectX::XMFLOAT2();
 
@@ -387,12 +387,12 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 		orientation
 	);
 
-	this->textureHandler->m_dContext = this->getContextDevice();
-	this->textureHandler->m_device = this->getDevice();
+	this->resourceHandler->m_dContext = this->getContextDevice();
+	this->resourceHandler->m_device = this->getDevice();
 
 	// Crosshair
 	this->m_spriteBatch = std::make_unique<DirectX::SpriteBatch>(this->m_deviceContext.Get());
-	this->m_crossHairSRV = this->textureHandler->getTexture(L"Textures/crosshair.png");
+	this->m_crossHairSRV = this->resourceHandler->getTexture(L"Textures/crosshair.png");
 	ID3D11Resource* crosshairTexture = 0;
 	this->m_crossHairSRV->GetResource(&crosshairTexture);
 	ID3D11Texture2D* crosshairTexture2D = 0;
@@ -517,7 +517,7 @@ void ViewLayer::render()
 	this->m_spriteBatch->Draw(this->m_crossHairSRV, this->m_crosshairPosition);
 	this->m_spriteFont->DrawString(this->m_spriteBatch.get(), this->m_fpsString.c_str(), DirectX::XMFLOAT2(0, 0), DirectX::Colors::White, 0.f, DirectX::XMFLOAT2(0.f, 0.f));
 	this->m_spriteBatch->End();
-
+	
 	// Swap Frames
 	this->m_swapChain->Present(0, 0);
 }

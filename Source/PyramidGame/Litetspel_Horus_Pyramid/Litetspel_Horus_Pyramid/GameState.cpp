@@ -34,13 +34,13 @@ std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* GameState::getWvpCBuffersPtr()
 	return &this->m_wvpCBuffers;
 }
 
-void GameState::addGameObjectToWorld(bool dynamic, bool colide, int weight, int mdlIndx, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR scale3D, DirectX::XMFLOAT3 boundingBoxSize = DirectX::XMFLOAT3(0, 0, 0), DirectX::XMFLOAT3 acceleration = DirectX::XMFLOAT3(1, 1, 1), DirectX::XMFLOAT3 deceleration = DirectX::XMFLOAT3(1, 1, 1))
+void GameState::addGameObjectToWorld(bool dynamic, bool colide, float weight, int mdlIndx, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR scale3D, DirectX::XMFLOAT3 boundingBoxSize = DirectX::XMFLOAT3(0, 0, 0), DirectX::XMFLOAT3 acceleration = DirectX::XMFLOAT3(1, 1, 1), DirectX::XMFLOAT3 deceleration = DirectX::XMFLOAT3(1, 1, 1))
 {
 	this->m_gameObjects.emplace_back(new GameObject());
 	GameObject* gObject = this->m_gameObjects.back();
 	this->m_wvpCBuffers.emplace_back();
 	this->m_wvpCBuffers.back().init(m_device, m_dContext);
-	int bufferIndex = m_wvpCBuffers.size() - 1;
+	int bufferIndex = (int)m_wvpCBuffers.size() - 1;
 	if (dynamic)
 	{
 		gObject->initializeDynamic(colide, mdlIndx, bufferIndex, weight, acceleration, deceleration, mdl);
@@ -73,7 +73,7 @@ void GameState::addPlatformToWorld(int mdlIndex, DirectX::BoundingOrientedBox* p
 	this->m_wvpCBuffers.emplace_back();
 	this->m_wvpCBuffers.back().init(m_device, m_dContext);
 	this->m_gameObjects.emplace_back(new Platform());
-	dynamic_cast<Platform*>(this->m_gameObjects.back())->init(true, mdlIndex, m_wvpCBuffers.size() - 1, pyramid, mdl);
+	dynamic_cast<Platform*>(this->m_gameObjects.back())->init(true, mdlIndex, (int)m_wvpCBuffers.size() - 1, pyramid, mdl);
 
 	this->m_gameObjects.back()->setPosition(position);
 	this->m_gameObjects.back()->setBoundingBox(platformBoundingBox);

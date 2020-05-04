@@ -38,7 +38,7 @@ private:
 	Microsoft::WRL::ComPtr< ID3D11Buffer > m_constantBuffer;
 
 	// Texture Handler
-	TextureHandler* textureHandler;
+	ResourceHandler* resourceHandler;
 
 	// Crosshair SpriteBatch
 	std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
