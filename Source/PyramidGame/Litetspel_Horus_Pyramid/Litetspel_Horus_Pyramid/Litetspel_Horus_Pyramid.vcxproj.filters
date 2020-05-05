@@ -66,6 +66,7 @@
     <ClCompile Include="Shaders.cpp">
       <Filter>Source\View</Filter>
     </ClCompile>
+    <ClCompile Include="Portal.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -145,6 +146,9 @@
     </ClInclude>
     <ClInclude Include="Shaders.h">
       <Filter>Header\View</Filter>
+    </ClInclude>
+    <ClInclude Include="Portal.h">
+      <Filter>Header\Game Logic\GameObjects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
