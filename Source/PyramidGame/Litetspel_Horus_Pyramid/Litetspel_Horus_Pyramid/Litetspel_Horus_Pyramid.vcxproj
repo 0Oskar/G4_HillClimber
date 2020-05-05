@@ -209,6 +209,7 @@
     <ClInclude Include="Material.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="MovementComponent.h" />
+    <ClInclude Include="Particle.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="PhysicsComponent.h" />
     <ClInclude Include="Platform.h" />

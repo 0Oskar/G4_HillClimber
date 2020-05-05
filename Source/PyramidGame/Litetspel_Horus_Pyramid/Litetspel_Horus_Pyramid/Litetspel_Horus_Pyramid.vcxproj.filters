@@ -146,6 +146,9 @@
     <ClInclude Include="Shaders.h">
       <Filter>Header\View</Filter>
     </ClInclude>
+    <ClInclude Include="Particle.h">
+      <Filter>Header\View</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
