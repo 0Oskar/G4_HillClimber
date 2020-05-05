@@ -7,6 +7,7 @@
 #include "ViewLayer.h"
 #include <iostream>
 #include <string>
+#include "Lever.h"
 
 using namespace std;
 
@@ -19,6 +20,7 @@ private:
 	std::vector<DirectX::BoundingBox> pussels;
 	std::vector<DirectX::BoundingBox*> platformBB;
 	std::vector<DirectX::BoundingBox*> trapBB;
+	std::vector<DirectX::BoundingBox*> leverBB;
 
 	std::vector<GameObject*> dartTrap;
 	
@@ -50,8 +52,8 @@ public:
 	std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* getWvpCBuffersPtr();
 	void addGameObjectToWorld(bool dynamic, bool colide, int weight, int mdlIndx, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR scale3D, DirectX::XMFLOAT3 boundingBoxSize, DirectX::XMFLOAT3 acceleration, DirectX::XMFLOAT3 deceleration);
 	void addPlatformToWorld(int mdlIndex, DirectX::BoundingOrientedBox* pyramid, Model* mdl, DirectX::XMVECTOR position, DirectX::XMFLOAT3 platformBoundingBox);
-
-
+	void addLeverToWorld(int mdlIndex, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation, DirectX::XMFLOAT3 leverBB);
+	float convertDegreesToRadians(float degree);
 	// Initialization
 	void initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext, GameOptions options, std::shared_ptr<DirectX::AudioEngine> audioEngine);
 

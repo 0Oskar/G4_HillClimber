@@ -82,11 +82,26 @@ void GameState::addPlatformToWorld(int mdlIndex, DirectX::BoundingOrientedBox* p
 	this->m_player.addAABB(this->m_gameObjects.back()->getAABBPtr());
 }
 
+void GameState::addLeverToWorld(int mdlIndex, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation, DirectX::XMFLOAT3 leverBB)
+{
+	this->m_wvpCBuffers.emplace_back();
+	this->m_wvpCBuffers.back().init(m_device, m_dContext);
+	this->m_gameObjects.emplace_back(new Lever());
+	dynamic_cast<Lever*>(this->m_gameObjects.back())->init(true, mdlIndex, m_wvpCBuffers.size() - 1, mdl);
+	this->m_gameObjects.back()->setPosition(position);
+	this->m_gameObjects.back()->setBoundingBox(leverBB);
+	this->m_gameObjects.back()->getMoveCompPtr()->rotation = rotation;
+	this->m_player.addAABB(this->m_gameObjects.back()->getAABBPtr());
+}
 
+float GameState::convertDegreesToRadians(float degree)
+{
+	float radians;
+	
+	radians = degree / (180 / 3.1415926535);
 
-
-
-
+	return radians;
+}
 
 
 
@@ -106,6 +121,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_models[0].loadVertexFromOBJ(device, dContext, L"Models/desertGround.obj", mat, L"Textures/sandTexture.png");
 
 	DirectX::XMVECTOR vec = DirectX::XMVectorSet(0.f, -10.f, 0.f, 1.f);
+	DirectX::XMVECTOR rotation = DirectX::XMVectorSet(0.f, 0.f, 0.f, 1.f);
 	this->addGameObjectToWorld(false, true, 0, 0, &m_models[0], vec, NormalScale, DirectX::XMFLOAT3(1000.f, 10.f, 1000.f));
 
 	// Pyramid
@@ -217,6 +233,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->addPlatformToWorld(3, &m_pyramidOBB, &m_models[3], vec, DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f));
 
 
+
 	//Puzzle Room (Kevins Lever room)
 	vec = DirectX::XMVectorSet(5.f, 25.f, -85.f, 1.f);
 	this->addPlatformToWorld(3, &m_pyramidOBB, &m_models[3], vec, DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f));
@@ -227,6 +244,16 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 
 	vec = DirectX::XMVectorSet(-10.f, 2, -100, 1.f);
 	this->addGameObjectToWorld(false, true, 2, 5, &m_models[5], vec, DirectX::XMVectorSet(1, 1, 1, 1), DirectX::XMFLOAT3(1.f, 1.f, 1.f));
+
+	//Lever
+	this->m_models.emplace_back();
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
+	this->m_models[6].loadVertexFromOBJ(device, dContext, L"Models/Lever.obj", mat, L"Textures/platformTextureCracks1.png");
+
+	vec = DirectX::XMVectorSet(-15.f, 5.f, -88.f, 1.f);
+	rotation = DirectX::XMVectorSet(0.f, convertDegreesToRadians(-90), convertDegreesToRadians(-270), 1.f);
+	this->addLeverToWorld(6, &m_models[6], vec, rotation, DirectX::XMFLOAT3(2.f, 2.f, 2.f));
+
 
 	//Ändra pos
 	vec = DirectX::XMVectorSet(10.f, 27, -80, 1.f);
