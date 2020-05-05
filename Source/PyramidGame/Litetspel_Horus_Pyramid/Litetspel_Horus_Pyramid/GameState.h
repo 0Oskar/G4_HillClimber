@@ -23,6 +23,7 @@ private:
 	std::vector<DirectX::BoundingBox*> leverBB;
 
 	std::vector<GameObject*> dartTrap;
+	std::vector<Lever*> lever;
 	
 	//Trigger things
 	std::vector<DirectX::BoundingBox> triggerBB;
@@ -31,7 +32,8 @@ private:
 	float dartPosition1 = 40.f;
 	float dartPosition2 = 40.f;
 
-
+	bool trapActive1 = true;
+	bool trapActive2 = true;
 
 	std::vector<Model> m_models;
 	std::vector<GameObject*> m_gameObjects;

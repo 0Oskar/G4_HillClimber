@@ -34,6 +34,11 @@ void Player::addPyramidOBB(DirectX::BoundingOrientedBox* obb)
 	this->m_pyramidOBB = *obb;
 }
 
+bool Player::getinUse()
+{
+	return this->inUse;
+}
+
 void Player::resetVelocity()
 {
 	this->m_physicsComp->setVelocity(DirectX::XMFLOAT3());
@@ -83,6 +88,16 @@ void Player::update(Keyboard* keyboard, Mouse* mouse, float dt)
 		if (keyboard->isKeyPressed((unsigned char)16)) // Shift
 			flyDown(dt);
 
+		if (keyboard->isKeyPressed('E'))
+		{
+			this->inUse = true;
+		}
+
+		else
+		{
+			this->inUse = false;
+		}
+			
 
 		// For Debugging purposes
 		if (keyboard->isKeyPressed('R'))
@@ -99,7 +114,7 @@ void Player::update(Keyboard* keyboard, Mouse* mouse, float dt)
 	{
 		this->m_hookHand.retract();
 	}
-	if (keyboard->isKeyPressed('E') || mouse->isLDown())
+	if ( mouse->isLDown())
 	{
 		this->m_hookHand.fire();
 	}

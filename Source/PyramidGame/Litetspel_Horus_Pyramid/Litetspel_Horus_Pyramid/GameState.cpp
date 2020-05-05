@@ -87,11 +87,10 @@ void GameState::addLeverToWorld(int mdlIndex, Model* mdl, DirectX::XMVECTOR posi
 	this->m_wvpCBuffers.emplace_back();
 	this->m_wvpCBuffers.back().init(m_device, m_dContext);
 	this->m_gameObjects.emplace_back(new Lever());
-	dynamic_cast<Lever*>(this->m_gameObjects.back())->init(true, mdlIndex, m_wvpCBuffers.size() - 1, mdl);
+	dynamic_cast<Lever*>(this->m_gameObjects.back())->init(false, mdlIndex, m_wvpCBuffers.size() - 1, mdl);
 	this->m_gameObjects.back()->setPosition(position);
 	this->m_gameObjects.back()->setBoundingBox(leverBB);
 	this->m_gameObjects.back()->getMoveCompPtr()->rotation = rotation;
-	this->m_player.addAABB(this->m_gameObjects.back()->getAABBPtr());
 }
 
 float GameState::convertDegreesToRadians(float degree)
@@ -254,6 +253,15 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	rotation = DirectX::XMVectorSet(0.f, convertDegreesToRadians(-90), convertDegreesToRadians(-270), 1.f);
 	this->addLeverToWorld(6, &m_models[6], vec, rotation, DirectX::XMFLOAT3(2.f, 2.f, 2.f));
 
+	lever.emplace_back(dynamic_cast<Lever*>(this->m_gameObjects.back()));
+
+	vec = DirectX::XMVectorSet(7.5f, 5.f, -138.f, 1.f);
+	rotation = DirectX::XMVectorSet(0.f, 0.f, convertDegreesToRadians(-270), 1.f);
+	this->addLeverToWorld(6, &m_models[6], vec, rotation, DirectX::XMFLOAT3(2.f, 2.f, 2.f));
+
+	lever.emplace_back(dynamic_cast<Lever*>(this->m_gameObjects.back()));
+
+	//Lever* leverPtr = dynamic_cast<Lever*>(this->lever[0]);
 
 	//Ändra pos
 	vec = DirectX::XMVectorSet(10.f, 27, -80, 1.f);
@@ -272,11 +280,11 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 
 	triggerBB.emplace_back();
 	triggerBB.back().Center = DirectX::XMFLOAT3(-10.f, 27.f, -80.f);
-	triggerBB.back().Extents = DirectX::XMFLOAT3(20.f, 10.f, 1.5f);
+	triggerBB.back().Extents = DirectX::XMFLOAT3(20.f, 10.f, 2.5f);
 
 	triggerBB.emplace_back();
 	triggerBB.back().Center = DirectX::XMFLOAT3(-10.f, 27.f, -60.f);
-	triggerBB.back().Extents = DirectX::XMFLOAT3(20.f, 10.f, 1.5f);
+	triggerBB.back().Extents = DirectX::XMFLOAT3(20.f, 10.f, 2.5f);
 
 	pussels.emplace_back();
 	pussels.back().Center = DirectX::XMFLOAT3(-10.f, 1.0f, -104.0f);
@@ -302,7 +310,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	{
 		this->m_player.addAABB(&pussels.at(i));
 	}
-
+	
 	
 	
 	
@@ -329,6 +337,10 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 			castToPlatform->initAudioComponent(audioEngine, m_player.getMoveCompPtr());
 		}
 	}
+
+	//Lever function
+	this->lever[0]->setPlayerBoundingBox(this->m_player.getAABBPtr());
+	this->lever[1]->setPlayerBoundingBox(this->m_player.getAABBPtr());
 
 	// Camera
 	this->m_camera.followMoveComp(this->m_player.getMoveCompPtr());
@@ -369,18 +381,22 @@ void GameState::update(Keyboard* keyboard, MouseEvent mouseEvent, Mouse* mousePt
 		}
 	}
 
-	
+	// DART
 
 		if (triggerBB[0].Intersects(this->m_player.getAABB()))
 		{
-			OutputDebugString(L"Tjeenaaa /n");
-			dartFly1 = true;
+			if (trapActive1 == true)
+			{
+				dartFly1 = true;
+			}			
 		}
 
 		if (triggerBB[1].Intersects(this->m_player.getAABB()))
 		{
-			OutputDebugString(L"Tjeenaaa /n");
-			dartFly2 = true;
+			if (trapActive2 == true)
+			{
+				dartFly2 = true;
+			}
 		}
 
 	for (int i = 0; i < dartTrap.size(); i++)
@@ -420,6 +436,33 @@ void GameState::update(Keyboard* keyboard, MouseEvent mouseEvent, Mouse* mousePt
 			dartPosition2 -= 40.f * dt;
 		}
 	}
+
+	//Lever
+
+	
+	this->lever[0]->collidesWithPlayer();
+
+	if (this->lever[0]->getCanUseLever() == true)
+	{
+		if (this->m_player.getinUse() == true)
+		{
+			trapActive1 = false;
+		}
+	}
+
+	this->lever[1]->collidesWithPlayer();
+
+	if (this->lever[1]->getCanUseLever() == true)
+	{
+		if (this->m_player.getinUse() == true)
+		{
+			trapActive2 = false;
+		}
+	}
+
+
+
+
 
 
 	

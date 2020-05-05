@@ -18,18 +18,19 @@ void Lever::init(bool colidable, int modelIndex, int wvpCBufferIndex, Model* mdl
 void Lever::onPlayerColide()
 {
 	canUseLever = true;
+	OutputDebugString(L"Lever Collide");
 }
 
 void Lever::activateLever()
 {
 	if (this->activated == false)
 	{
-		this->activated == true;
+		this->activated = true;
 		canUseLever = false;
 	}
 	else if (this->activated == true)
 	{
-		this->activated == false;
+		this->activated = false;
 		canUseLever = false;
 	}
 }
@@ -37,6 +38,11 @@ void Lever::activateLever()
 bool Lever::getLeverValue()
 {
 	return this-> activated;
+}
+
+bool Lever::getCanUseLever()
+{
+	return this->canUseLever;
 }
 
 void Lever::setPlayerBoundingBox(DirectX::BoundingBox* boundingBox)

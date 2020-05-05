@@ -17,8 +17,8 @@ private:
 	//int nrOfBB = 15;
 	DirectX::BoundingBox triggerBB;
 	DirectX::BoundingBox triggerBB2;
-	DirectX::BoundingBox pusselBox2;
-	DirectX::BoundingBox pusselBox3;
+	DirectX::BoundingBox leverBB;
+	DirectX::BoundingBox leverBB2;
 	DirectX::BoundingBox pusselBox4;
 	DirectX::BoundingBox pusselBox5;
 

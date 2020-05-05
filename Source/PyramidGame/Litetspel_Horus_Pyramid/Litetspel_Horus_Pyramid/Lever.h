@@ -26,6 +26,7 @@ public:
 	void onPlayerColide();
 	void activateLever();
 	bool getLeverValue();
+	bool getCanUseLever();
 	void setPlayerBoundingBox(DirectX::BoundingBox* boundingBox);
 	void collidesWithPlayer();
 	void initAudioComponent(std::shared_ptr<DirectX::AudioEngine> audioEngine, MovementComponent* playerMovementComponent);

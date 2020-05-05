@@ -505,13 +505,21 @@ void ViewLayer::render()
 
 		//Kevins pussel1 golv boundingBox
 		
+		leverBB.Center = DirectX::XMFLOAT3(-15.f, 5.f, -88.f);
+		leverBB.Extents = DirectX::XMFLOAT3(2.f, 2.f, 2.f);
+
+		leverBB2.Center = DirectX::XMFLOAT3(7.5f, 5.f, -138.f);
+		leverBB2.Extents = DirectX::XMFLOAT3(2.f, 2.f, 2.f);
+
 		triggerBB.Center = DirectX::XMFLOAT3(-10.f, 27.f, -80.f);
-		triggerBB.Extents = DirectX::XMFLOAT3(20.f, 10.f, 1.5f);
+		triggerBB.Extents = DirectX::XMFLOAT3(20.f, 10.f, 2.5f);
 		
 
 		triggerBB2.Center = DirectX::XMFLOAT3(-10.f, 27.f, -60.f); 
-		triggerBB2.Extents = DirectX::XMFLOAT3(20.f, 10.f, 1.5f);
+		triggerBB2.Extents = DirectX::XMFLOAT3(20.f, 10.f, 2.5f);
 
+		DX::Draw(m_batch.get(), leverBB, DirectX::Colors::Red);
+		DX::Draw(m_batch.get(), leverBB2, DirectX::Colors::Red);
 		DX::Draw(m_batch.get(), triggerBB, DirectX::Colors::Red);
 		DX::Draw(m_batch.get(), triggerBB2, DirectX::Colors::Red);
 

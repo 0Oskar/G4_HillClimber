@@ -13,6 +13,7 @@ private:
 	DirectX::BoundingOrientedBox m_pyramidOBB;
 	HookHand m_hookHand;
 	bool lastFly;
+	bool inUse;
 
 public:
 	Player();
@@ -24,6 +25,7 @@ public:
 	// Collidable Bounding Boxes
 	void addAABB(DirectX::BoundingBox* aabb);
 	void addPyramidOBB(DirectX::BoundingOrientedBox* obb);
+	bool getinUse();
 
 	void resetVelocity();
 	void flyDown(float speed);
