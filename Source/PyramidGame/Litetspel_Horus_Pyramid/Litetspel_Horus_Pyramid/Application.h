@@ -41,6 +41,7 @@ public:
 	bool loadGameOptions(std::string fileName);
 
 	void applicationLoop();
+	void GameStateChecks();
 	void newAudioDevice() { this->m_resetAudio = true; OutputDebugString(L"New Audio Device!"); }
 };
 

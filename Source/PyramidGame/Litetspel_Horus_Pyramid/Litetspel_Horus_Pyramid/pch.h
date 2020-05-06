@@ -22,6 +22,7 @@
 
 // Utilities
 #include "pugixml.hpp"
+#include "../Importer/ImporterBFF.h"
 
 // DirectX 11
 #include <d3d11.h>
@@ -40,6 +41,8 @@
 #include <DirectXColors.h>
 #include "DebugDraw.h"
 #include "Audio.h"
+
+using namespace DirectX;
 
 // DirectX 11 Linking
 #pragma comment (lib, "user32")

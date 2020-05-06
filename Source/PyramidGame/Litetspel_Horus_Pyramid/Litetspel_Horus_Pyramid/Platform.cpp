@@ -15,14 +15,13 @@ Platform::Platform()
 
 void Platform::init(bool colidable, int modelIndex, int wvpCBufferIndex, DirectX::BoundingOrientedBox* pyramidBoundingBox, Model* mdl)
 {
-	this->initializeDynamic(colidable, modelIndex, wvpCBufferIndex, 3, DirectX::XMFLOAT3(1, 1, 1), DirectX::XMFLOAT3(0, 0, 0), mdl);
+	this->initializeDynamic(colidable, false, modelIndex, wvpCBufferIndex, 3, DirectX::XMFLOAT3(1, 1, 1), DirectX::XMFLOAT3(0, 0, 0), mdl);
 	this->m_pyramidBoundingBox = pyramidBoundingBox;
 }
 void Platform::update(float dt)
 {
 	if (m_hasColided)
 	{
-		OutputDebugString(L"PLATFORM");
 		if (m_shouldDestroy)
 		{
 			this->m_physicsComp->updatePosition(dt);
@@ -41,14 +40,14 @@ void Platform::update(float dt)
 				this->m_physicsComp->addGravity(dt);
 			}
 		}
-		int time = this->m_destructionTimer.timeElapsed();
+		int time = (int)this->m_destructionTimer.timeElapsed();
 		if (currentTime != time)
 		{
 			if (time < m_nrOfTextures)
 			{
 				this->currentTime = time;
 				this->m_texturePath = m_textures[time].c_str();
-				m_audioComponent->emitSound(time % nrOfCracKSounds, this->m_movementComp->position);
+				m_audioComponent->emitSound(m_crackSounds[time % nrOfCracKSounds], this->m_movementComp->position);
 			}
 		}
 	}

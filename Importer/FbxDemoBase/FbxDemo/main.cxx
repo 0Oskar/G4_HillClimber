@@ -38,6 +38,7 @@
 #include "DisplayGenericInfo.h"
 
 //#include "FileWrite.h"
+#include "BiReader.h"
 
 #pragma comment(lib,"libfbxsdk-mt.lib")
 #pragma comment(lib,"libxml2-mt.lib")
@@ -59,6 +60,9 @@ int main(int argc, char** argv)
 {
     //myFile.writeToFile("test line from main");
 
+    BiReader myFile("../biFile.bff");
+    myFile.printToConsole();
+
     FbxManager* lSdkManager = NULL;
     FbxScene* lScene = NULL;
     bool lResult;
@@ -78,7 +82,7 @@ int main(int argc, char** argv)
 	if( lFilePath.IsEmpty() )
 	{
 		//lFilePath = "box.fbx";
-        lFilePath = "../NewTestMesh.fbx";
+        lFilePath = "../CameraAndTri.fbx";
 		lResult = LoadScene(lSdkManager, lScene, lFilePath.Buffer());
         //lResult = false;
         //FBXSDK_printf("\n\nUsage: ImportScene <FBX file name>\n\n");
@@ -137,6 +141,7 @@ int main(int argc, char** argv)
 
     return 0;
 }
+
 
 void DisplayContent(FbxScene* pScene)
 {

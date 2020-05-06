@@ -1,7 +1,7 @@
 #pragma once
 #include"pch.h"
 #include"ConstantBuffer.h"
-#include"Texture.h"
+#include"ResourceHandler.h"
 
 struct MaterialData
 {
@@ -16,20 +16,20 @@ class Material
 private:
 	ConstBuffer<MaterialData> m_materialBuffer;
 	ID3D11ShaderResourceView* m_texture;
-	TextureHandler* textureHandler;
+	ResourceHandler* resourceHandler;
 	
 public:
 	Material()
 	{
-		this->textureHandler = &TextureHandler::get();
+		this->resourceHandler = &ResourceHandler::get();
 		this->m_texture = nullptr;
 	}
 	void init(ID3D11Device* device, ID3D11DeviceContext* dContext, MaterialData mat, const WCHAR* texturePath = nullptr)
 	{
-		if (this->textureHandler->m_device == nullptr)
+		if (this->resourceHandler->m_device == nullptr)
 		{
-			this->textureHandler->m_device = device;
-			this->textureHandler->m_dContext = dContext;
+			this->resourceHandler->m_device = device;
+			this->resourceHandler->m_dContext = dContext;
 		}
 		this->m_materialBuffer.m_data = mat;
 		this->m_materialBuffer.init(device, dContext);
@@ -37,7 +37,7 @@ public:
 
 		if (texturePath != nullptr)
 		{
-			this->m_texture = this->textureHandler->getTexture(texturePath);
+			this->m_texture = this->resourceHandler->getTexture(texturePath);
 		}
 
 		dContext->PSSetConstantBuffers(0, 1, this->m_materialBuffer.GetAdressOf());
@@ -46,7 +46,7 @@ public:
 
 	void setTexture(const WCHAR* texturePath)
 	{
-		this->m_texture = this->textureHandler->getTexture(texturePath);
+		this->m_texture = this->resourceHandler->getTexture(texturePath);
 	}
 
 	void upd(ID3D11DeviceContext* dContext)

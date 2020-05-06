@@ -4,6 +4,7 @@
 #include "Model.h"
 #include "Timer.h"
 #include "Platform.h"
+#include "Shaders.h"
 
 
 class ViewLayer
@@ -41,15 +42,13 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> m_samplerState;
 
 	// Shaders
-	Microsoft::WRL::ComPtr< ID3D11VertexShader > m_vertexShader;
-	Microsoft::WRL::ComPtr< ID3D11PixelShader > m_pixelShader;
-	Microsoft::WRL::ComPtr< ID3D11InputLayout > m_vertexLayout;
+	Shaders m_shaders;
 
 	// Constant Buffer
 	Microsoft::WRL::ComPtr< ID3D11Buffer > m_constantBuffer;
 
 	// Texture Handler
-	TextureHandler* textureHandler;
+	ResourceHandler* resourceHandler;
 
 	// Crosshair SpriteBatch
 	std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
@@ -65,6 +64,8 @@ private:
 
 	// Objects from state
 	std::vector<GameObject*>* m_gameObjectsFromState;
+	std::vector<GameObject*>* m_gameObjectsFromActiveRoom;
+	std::vector<BoundingBox>* m_boundingBoxesFromActiveRoom;
 	std::vector<Model>* m_modelsFromState;
 	std::vector< ConstBuffer<VS_CONSTANT_BUFFER> >* m_wvpCBufferFromState;
 	DirectX::BoundingOrientedBox m_pyramidOBB;
@@ -107,6 +108,8 @@ public:
 
 	// Setters for State Pointers
 	void setgameObjectsFromState(std::vector<GameObject*>* gameObjectsFromState);
+	void setgameObjectsFromActiveRoom(std::vector<GameObject*>* gameObjectsFromState);
+	void setBoundingBoxesFromActiveRoom(std::vector<BoundingBox>* bbFromRoom);
 	void setModelsFromState(std::vector<Model>* models);
 	void setWvpCBufferFromState(std::vector< ConstBuffer<VS_CONSTANT_BUFFER> >* models);
 

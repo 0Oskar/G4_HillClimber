@@ -1,12 +1,16 @@
 #include "pch.h"
 #include "GameState.h"
 
+
 using namespace DirectX;
 
 GameState::GameState() 
 {
 	this->m_device = nullptr;
 	this->m_dContext = nullptr;
+	this->m_chainGObjects = new std::vector<GameObject*>();
+	this->m_activeRoom = nullptr;
+	this->m_activeRoomChanged = false;
 }
 
 GameState::~GameState() {}
@@ -31,21 +35,38 @@ std::vector<GameObject*>* GameState::getGameObjectsPtr()
 	return &this->m_gameObjects;
 }
 
+std::vector<GameObject*>* GameState::getActiveRoomGameObjectsPtr()
+{
+	if (this->m_activeRoom != nullptr)
+		return this->m_activeRoom->getGameObjectsPtr();
+	else
+		return nullptr;
+}
+
+std::vector<BoundingBox>* GameState::getActiveRoomBoundingBoxsPtr()
+{
+	if (this->m_activeRoom != nullptr)
+		return this->m_activeRoom->getBoundingBoxPtr();
+	else
+		return nullptr;
+}
+
+
 std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* GameState::getWvpCBuffersPtr()
 {
 	return &this->m_wvpCBuffers;
 }
 
-void GameState::addGameObjectToWorld(bool dynamic, bool colide, int weight, int mdlIndx, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR scale3D, DirectX::XMFLOAT3 boundingBoxSize = DirectX::XMFLOAT3(0, 0, 0), DirectX::XMFLOAT3 acceleration = DirectX::XMFLOAT3(1, 1, 1), DirectX::XMFLOAT3 deceleration = DirectX::XMFLOAT3(1, 1, 1))
+void GameState::addGameObjectToWorld(bool dynamic, bool colide, float weight, int mdlIndx, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR scale3D, DirectX::XMFLOAT3 boundingBoxSize = DirectX::XMFLOAT3(0, 0, 0), DirectX::XMFLOAT3 acceleration = DirectX::XMFLOAT3(1, 1, 1), DirectX::XMFLOAT3 deceleration = DirectX::XMFLOAT3(1, 1, 1))
 {
 	this->m_gameObjects.emplace_back(new GameObject());
 	GameObject* gObject = this->m_gameObjects.back();
 	this->m_wvpCBuffers.emplace_back();
 	this->m_wvpCBuffers.back().init(m_device, m_dContext);
-	int bufferIndex = m_wvpCBuffers.size() - 1;
+	int bufferIndex = (int)m_wvpCBuffers.size() - 1;
 	if (dynamic)
 	{
-		gObject->initializeDynamic(colide, mdlIndx, bufferIndex, weight, acceleration, deceleration, mdl);
+		gObject->initializeDynamic(colide, false, mdlIndx, bufferIndex, weight, acceleration, deceleration, mdl);
 	}
 	else
 	{
@@ -75,7 +96,7 @@ void GameState::addPlatformToWorld(int mdlIndex, DirectX::BoundingOrientedBox* p
 	this->m_wvpCBuffers.emplace_back();
 	this->m_wvpCBuffers.back().init(m_device, m_dContext);
 	this->m_gameObjects.emplace_back(new Platform());
-	dynamic_cast<Platform*>(this->m_gameObjects.back())->init(true, mdlIndex, m_wvpCBuffers.size() - 1, pyramid, mdl);
+	dynamic_cast<Platform*>(this->m_gameObjects.back())->init(true, mdlIndex, (int)m_wvpCBuffers.size() - 1, pyramid, mdl);
 
 	this->m_gameObjects.back()->setPosition(position);
 	this->m_gameObjects.back()->setBoundingBox(platformBoundingBox);
@@ -103,6 +124,21 @@ float GameState::convertDegreesToRadians(float degree)
 }
 
 
+void GameState::addPortalToWorld(XMVECTOR teleportLocation, int mdlIndx, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR scale3D, DirectX::XMFLOAT3 boundingBoxSize, Room* room)
+{
+	this->m_wvpCBuffers.emplace_back();
+	this->m_wvpCBuffers.back().init(m_device, m_dContext);
+	int bufferIndex = (int)m_wvpCBuffers.size() - 1;
+
+	this->m_gameObjects.emplace_back(new Portal());
+	dynamic_cast<Portal*>(this->m_gameObjects.back())->initialize(mdlIndx, (int)m_wvpCBuffers.size() - 1, mdl, teleportLocation, &this->m_player, room);
+
+
+	this->m_gameObjects.back()->setScale(scale3D);
+	this->m_gameObjects.back()->setPosition(position);
+	this->m_gameObjects.back()->setBoundingBox(boundingBoxSize);
+	//this->m_player.addAABB(this->m_gameObjects.back()->getAABBPtr());
+}
 
 void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext, GameOptions options, std::shared_ptr<DirectX::AudioEngine> audioEngine)
 {
@@ -127,7 +163,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	//,	Model
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(0.65164f, 0.60648f, 0.22648f, 1.0f);
-	this->m_models[1].loadVertexFromOBJ(device, dContext, L"Models/BasePyr.obj", mat, L"Textures/pyramidTexture.png");
+	this->m_models[1].loadVertexFromOBJ(device, dContext, L"Models/PyramidNewModel.obj", mat, L"Textures/pyramidTexture.png");
 
 	vec = DirectX::XMVectorSet(0.f, 0.f, 100.f, 1.f);
 	this->addGameObjectToWorld(false, true, 0, 1, &m_models[1], vec, NormalScale);
@@ -145,7 +181,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	);
 	this->m_player.addPyramidOBB(&this->m_pyramidOBB);
 
-	// Sphere "HookHead"
+	// HookHead model
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
 	this->m_models[2].loadVertexFromOBJ(device, dContext, L"Models/BirdHookModel.obj", mat, L"Textures/BirdTexture.png");
@@ -155,16 +191,16 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
 	this->m_models[3].loadVertexFromOBJ(device, dContext, L"Models/platform.obj", mat, L"Textures/platformTextureCracks1.png");
 
-	//HookHead 
+	// HookHead 
 	vec = DirectX::XMVectorSet(10.f, 1.f, -20.f, 1.f);
 	this->addGameObjectToWorld(true, false, 1, 2, &m_models[2], vec, NormalScale, DirectX::XMFLOAT3(.5f, .5f, .5f), DirectX::XMFLOAT3(10, 10, 10), DirectX::XMFLOAT3(10, 10, 10));
 	hook = this->m_gameObjects.back();
+  
 	// HookHand
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
 	this->m_models[4].loadVertexFromOBJ(device, dContext, L"Models/HookModel.obj", mat, L"Textures/HookTexture.png");
 
-	//HookHand
 	vec = DirectX::XMVectorSet(10.f, 1.f, -20.f, 1.f);
 	this->addGameObjectToWorld(true, false, 1, 4, &m_models[4], vec, DirectX::XMVectorSet(.7f, .7f, .7f, 1.f), DirectX::XMFLOAT3(0, 0, 0), DirectX::XMFLOAT3(10, 10, 10), DirectX::XMFLOAT3(10, 10, 10));
 	hookHand = this->m_gameObjects.back();
@@ -214,11 +250,12 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->addPlatformToWorld(3, &m_pyramidOBB, &m_models[3], vec, DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f));
 
 	// platform 12 final
-
 	vec = DirectX::XMVectorSet(0.f, 120.f, 170.f, 1.f);
 	this->addPlatformToWorld(3, &m_pyramidOBB, &m_models[3], vec, DirectX::XMFLOAT3(13.f, 0.5f, 13.f));
 	vec = DirectX::XMVectorSet(5.f, 1.f, 5.f, 1.f);
 	this->m_gameObjects.back()->setScale(vec);
+
+
 
 	vec = DirectX::XMVectorSet(10.f, 10, 0, 1.f);
 	this->addGameObjectToWorld(true, true, 2, 3, &m_models[3], vec, DirectX::XMVectorSet(1, 1, 1, 1), DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f));
@@ -230,7 +267,17 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 
 	vec = DirectX::XMVectorSet(0.f, 10.f, 24.f, 1.f);
 	this->addPlatformToWorld(3, &m_pyramidOBB, &m_models[3], vec, DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f));
+  
+  // Chain Link
+	this->m_models.emplace_back();
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
+	this->m_models[5].loadVertexFromOBJ(device, dContext, L"Models/ChainLink.obj", mat, L"Textures/BirdTexture.png");
 
+  DirectX::XMFLOAT3 vecF3 = hook->getMoveCompPtr()->getPositionF3();
+	vec = DirectX::XMVectorSet(vecF3.x, vecF3.y, vecF3.z - 5.f, 1.f);
+	this->addGameObjectToWorld(true, false, 1, 5, &m_models[5], vec, NormalScale, XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
+  
+	this->m_chainGObjects->push_back(this->m_gameObjects.back());
 
 
 	//Puzzle Room (Kevins Lever room)
@@ -334,8 +381,44 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 
 	// Player
 	this->m_player.initialize(-1, -1, 1.f, DirectX::XMFLOAT3(20.f, 20.f, 20.f), DirectX::XMFLOAT3(.01f, .01f, .01f), hook, hookHand, audioEngine, platformBB);
+
+	for (size_t i = 1; i < NR_OF_CHAIN_LINKS; i++)
+	{
+		vec = DirectX::XMVectorSet(vecF3.x, vecF3.y, vecF3.z - 5.f -((float)i * 0.6f), 1.f);
+	  this->addGameObjectToWorld(true, false, 1, 5, &m_models[5], vec, NormalScale, XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
+		this->m_chainGObjects->push_back(this->m_gameObjects.back());
+	}
+	
+
+	// PuzzleRoom -------------------------------------------------------------
+
+	this->m_models.emplace_back(); //add empty model
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); //reset material
+	this->m_models[6].initializeModelBff(device, dContext, "EdvinPuzzleRoom.bff", mat, L"Textures/ColorTexture.png"); //load model
+	vec = DirectX::XMVectorSet(-80, 7, 0, 1); //world pos
+	this->addGameObjectToWorld(true, false, 1, 6, &m_models[6], vec, NormalScale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
+
+	// Button -------------------------------------------------------------
+
+	this->m_models.emplace_back(); //add empty model
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); //reset material
+	this->m_models[7].initializeModelBff(device, dContext, "Button.bff", mat, L"Textures/BirdHyroglajf.png"); //load model
+	vec = DirectX::XMVectorSet(-120, 0, 0, 1); //world pos
+
+	// Player
+	this->m_player.initialize(-1, -1, 60.f, DirectX::XMFLOAT3(20.f, 20.f, 20.f), DirectX::XMFLOAT3(.01f, .01f, .01f), hook, hookHand, this->m_chainGObjects, audioEngine);
 	this->m_player.setPosition(DirectX::XMVectorSet(0.f, 5.f, -1.f, 1.f));
 	
+	//Room creation
+	this->m_rooms.emplace_back(new TemplateRoom());
+	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, 0, 1));
+	dynamic_cast<TemplateRoom*>(this->m_rooms.back())->init();
+	//m_activeRoom = m_rooms.back();
+
+
+
+
+	//Initialize audio component for platforms and add theire boundingboxes to playerBoundingBoxes
 	for (size_t i = 0; i < this->m_gameObjects.size(); i++)
 	{
 		Platform* castToPlatform = dynamic_cast<Platform*>(this->m_gameObjects.at(i));
@@ -346,10 +429,21 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 		}
 	}
 
+
 	//Lever function
 	this->lever[0]->setPlayerBoundingBox(this->m_player.getAABBPtr());
 	this->lever[1]->setPlayerBoundingBox(this->m_player.getAABBPtr());
 	this->wonPuzzleObject[0]->setPlayerBoundingBox(this->m_player.getAABBPtr());
+
+	// Portal
+	this->m_models.emplace_back();
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
+	this->m_models[6].loadVertexFromOBJ(device, dContext, L"Models/PuzzleRoomGate.obj", mat, L"Textures/PuzzleDoor_Texture2.png");
+
+	vec = DirectX::XMVectorSet(0.f, 120.f, 170.f, 1.f);
+	//XMVECTOR vecScale = DirectX::XMVectorSet(1.f, 1.f, -1.f, 1.f);
+	this->addPortalToWorld(XMVectorSet(0.f, 0.f, 0.f, 1.f), 6, &m_models[6], vec, NormalScale, DirectX::XMFLOAT3(3.f, 8.f, 0.6f), this->m_rooms.back());
+
 
 	// Camera
 	this->m_camera.followMoveComp(this->m_player.getMoveCompPtr());
@@ -370,10 +464,27 @@ void GameState::update(Keyboard* keyboard, MouseEvent mouseEvent, Mouse* mousePt
 	// Camera
 	this->m_camera.update(mouseEvent, dt);
 
+	
+
 	// Game Objects
 	for (size_t i = 0; i < this->m_gameObjects.size(); i++)
 	{
-		this->m_gameObjects[i]->update(dt);
+		Portal* portalPtr = dynamic_cast<Portal*>(this->m_gameObjects[i]);
+
+		if (portalPtr != nullptr)
+		{
+			portalPtr->update();
+			if (portalPtr->shouldChangeActiveRoom())
+			{
+				m_activeRoom = portalPtr->getRoomPtr();
+				portalPtr->resetActiveRoomVariable();
+				this->m_activeRoomChanged = true;
+			}
+		}
+		else
+		{
+			this->m_gameObjects[i]->update(dt);
+		}
 
 		// World View Projection Matrix Contruction
 		VS_CONSTANT_BUFFER wvpData;
@@ -389,6 +500,7 @@ void GameState::update(Keyboard* keyboard, MouseEvent mouseEvent, Mouse* mousePt
 			m_gameObjects.erase(m_gameObjects.begin() + i);
 		}
 	}
+
 
 	// DART
 
@@ -495,4 +607,8 @@ void GameState::update(Keyboard* keyboard, MouseEvent mouseEvent, Mouse* mousePt
 	
 
 	
+
+	if(m_activeRoom != nullptr)
+		this->m_activeRoom->update(dt, &m_camera);
+
 }

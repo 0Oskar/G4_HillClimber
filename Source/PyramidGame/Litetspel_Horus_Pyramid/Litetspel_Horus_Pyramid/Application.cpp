@@ -58,6 +58,8 @@ bool Application::initApplication(HINSTANCE hInstance, LPWSTR lpCmdLine, HWND hW
 	this->m_viewLayerPtr->setProjectionMatrix(this->m_gameState.getProjectionMatrix());
 	this->m_viewLayerPtr->setModelsFromState(this->m_gameState.getModelsPtr());
 	this->m_viewLayerPtr->setgameObjectsFromState(this->m_gameState.getGameObjectsPtr());
+	this->m_viewLayerPtr->setgameObjectsFromActiveRoom(this->m_gameState.getActiveRoomGameObjectsPtr());
+	this->m_viewLayerPtr->setBoundingBoxesFromActiveRoom(this->m_gameState.getActiveRoomBoundingBoxsPtr());
 	this->m_viewLayerPtr->setWvpCBufferFromState(this->m_gameState.getWvpCBuffersPtr());
 	this->m_timer.start();
 
@@ -198,8 +200,10 @@ void Application::applicationLoop()
 			if (this->m_input.getKeyboard()->isKeyPressed('G'))
 				this->m_viewLayerPtr->toggleDrawPrimitives(false);
 
+			this->GameStateChecks();
 			// Update Layers
 			this->m_gameState.update(this->m_input.getKeyboard(), this->m_input.getMouseEvent(), this->m_input.getMouse(), this->m_deltaTime);
+			
 			this->m_input.readBuffers();
 			this->audioUpdate();
 
@@ -207,6 +211,16 @@ void Application::applicationLoop()
 			this->m_viewLayerPtr->update(this->m_deltaTime);
 			this->m_viewLayerPtr->render();
 		}
+	}
+}
+
+void Application::GameStateChecks()
+{
+	if (this->m_gameState.m_activeRoomChanged)
+	{
+		this->m_viewLayerPtr->setgameObjectsFromActiveRoom(this->m_gameState.getActiveRoomGameObjectsPtr());
+		this->m_viewLayerPtr->setBoundingBoxesFromActiveRoom(this->m_gameState.getActiveRoomBoundingBoxsPtr());
+		this->m_gameState.m_activeRoomChanged = false;
 	}
 }
 

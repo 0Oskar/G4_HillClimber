@@ -28,9 +28,9 @@ void ViewLayer::initDeviceAndSwapChain()
 	};
 
 	UINT flags = D3D11_CREATE_DEVICE_SINGLETHREADED;
-#if defined( DEBUG ) || defined( _DEBUG )
-	flags |= D3D11_CREATE_DEVICE_DEBUG;
-#endif
+//#if defined( DEBUG ) || defined( _DEBUG )
+//	flags |= D3D11_CREATE_DEVICE_DEBUG;
+//#endif
 
 	HRESULT hr = D3D11CreateDeviceAndSwapChain(
 		NULL,
@@ -134,137 +134,10 @@ void ViewLayer::initDepthStencilBuffer()
 
 void ViewLayer::initShaders()
 {
-	// Binary Large OBject (BLOB), for compiled shader, and errors.
-	ID3DBlob* errorBlob = nullptr;
-	HRESULT hr;
-
-	UINT flags = D3DCOMPILE_ENABLE_STRICTNESS;
-	#if defined( DEBUG ) || defined( _DEBUG )
-		flags |= D3DCOMPILE_DEBUG;
-	#endif
-
-	// Create Vertex Shader
-
-	ID3DBlob* vsBlob = nullptr;
-	hr = D3DCompileFromFile(
-		L"Shader Files\\VertexShader.hlsl",	// filename
-		nullptr,							// optional macros
-		D3D_COMPILE_STANDARD_FILE_INCLUDE,	// optional include files
-		"main",								// entry point
-		"vs_5_0",							// shader model (target)
-		flags,								// shader compile options (DEBUGGING)
-		0,									// IGNORE...DEPRECATED.
-		&vsBlob,							// double pointer to ID3DBlob		
-		&errorBlob							// pointer for Error Blob messages.
-	);
-
-	if (FAILED(hr))
-	{
-		if (errorBlob)
-		{
-			OutputDebugStringA((char*)errorBlob->GetBufferPointer());
-			errorBlob->Release();
-		}
-		if (vsBlob)
-			vsBlob->Release();
-		assert(false);
-	}
-
-	hr = this->m_device->CreateVertexShader(
-		vsBlob->GetBufferPointer(),
-		vsBlob->GetBufferSize(),
-		nullptr,
-		&this->m_vertexShader
-	);
-	assert(SUCCEEDED(hr) && "Error, failed to create vertex shader!");
-
-	// Vertex Layout
-	D3D11_INPUT_ELEMENT_DESC layoutDesc[] = {
-		{
-			"POSITION",
-			0,
-			DXGI_FORMAT_R32G32B32_FLOAT,
-			0,
-			0,
-			D3D11_INPUT_PER_VERTEX_DATA,
-			0
-		},
-		/*{
-			"COLOR",
-			0,
-			DXGI_FORMAT_R32G32B32_FLOAT,
-			0,
-			12,
-			D3D11_INPUT_PER_VERTEX_DATA,
-			0
-		}*/
-		{
-			"NORMAL",
-			0,
-			DXGI_FORMAT_R32G32B32_FLOAT,
-			0,
-			12,
-			D3D11_INPUT_PER_VERTEX_DATA,
-			0
-		},
-		{
-			"TEXCOORD",
-			0,
-			DXGI_FORMAT_R32G32_FLOAT,
-			0,
-			24,
-			D3D11_INPUT_PER_VERTEX_DATA,
-			0
-		},
-	};
-
-	hr = this->m_device->CreateInputLayout(
-		layoutDesc,
-		3,
-		vsBlob->GetBufferPointer(),
-		vsBlob->GetBufferSize(),
-		&this->m_vertexLayout
-	);
-	assert(SUCCEEDED(hr) && "Error, failed to create vertex layout!");
-	vsBlob->Release();
-
-	// Create Pixel Shader
-	ID3DBlob* psBlob = nullptr;
-	if (errorBlob) errorBlob->Release();
-	errorBlob = nullptr;
-
-	hr = D3DCompileFromFile(
-		L"Shader Files\\PixelShader.hlsl",
-		nullptr,
-		D3D_COMPILE_STANDARD_FILE_INCLUDE,
-		"main",
-		"ps_5_0",
-		flags,
-		0,
-		&psBlob,
-		&errorBlob
-	);
-
-	if (FAILED(hr))
-	{
-		if (errorBlob)
-		{
-			OutputDebugStringA((char*)errorBlob->GetBufferPointer());
-			errorBlob->Release();
-		}
-		if (psBlob)
-			psBlob->Release();
-		assert(false);
-	}
-
-	hr = this->m_device->CreatePixelShader(
-		psBlob->GetBufferPointer(),
-		psBlob->GetBufferSize(),
-		nullptr,
-		&this->m_pixelShader
-	);
-	assert(SUCCEEDED(hr) && "Error, failed to create pixel shader!");
-	psBlob->Release();
+	ShaderFiles shaders;
+	shaders.vs = L"Shader Files\\VertexShader.hlsl";
+	shaders.ps = L"Shader Files\\PixelShader.hlsl";
+	this->m_shaders.initialize(this->m_device.Get(), this->m_deviceContext.Get(), shaders);
 }
 
 ViewLayer::ViewLayer()
@@ -273,7 +146,7 @@ ViewLayer::ViewLayer()
 	this->m_modelsFromState = nullptr;
 	this->m_wvpCBufferFromState = nullptr;
 
-	this->textureHandler = &TextureHandler::get();
+	this->resourceHandler = &ResourceHandler::get();
 	this->m_crossHairSRV = nullptr;
 	this->m_crosshairPosition = DirectX::XMFLOAT2();
 
@@ -314,6 +187,16 @@ void ViewLayer::setProjectionMatrix(DirectX::XMMATRIX* newProjectionMatrix)
 void ViewLayer::setgameObjectsFromState(std::vector<GameObject*>* gameObjectsFromState)
 {
 	this->m_gameObjectsFromState = gameObjectsFromState;
+}
+
+void ViewLayer::setgameObjectsFromActiveRoom(std::vector<GameObject*>* gameObjectsFromState)
+{
+	this->m_gameObjectsFromActiveRoom = gameObjectsFromState;
+}
+
+void ViewLayer::setBoundingBoxesFromActiveRoom(std::vector<BoundingBox>* bbFromRoom)
+{
+	this->m_boundingBoxesFromActiveRoom = bbFromRoom;
 }
 
 void ViewLayer::setModelsFromState(std::vector<Model>* models)
@@ -390,12 +273,12 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 		orientation
 	);
 
-	this->textureHandler->m_dContext = this->getContextDevice();
-	this->textureHandler->m_device = this->getDevice();
+	this->resourceHandler->m_dContext = this->getContextDevice();
+	this->resourceHandler->m_device = this->getDevice();
 
 	// Crosshair
 	this->m_spriteBatch = std::make_unique<DirectX::SpriteBatch>(this->m_deviceContext.Get());
-	this->m_crossHairSRV = this->textureHandler->getTexture(L"Textures/crosshair.png");
+	this->m_crossHairSRV = this->resourceHandler->getTexture(L"Textures/crosshair.png");
 	ID3D11Resource* crosshairTexture = 0;
 	this->m_crossHairSRV->GetResource(&crosshairTexture);
 	ID3D11Texture2D* crosshairTexture2D = 0;
@@ -451,13 +334,9 @@ void ViewLayer::render()
 	this->m_deviceContext->RSSetState(this->m_states->CullCounterClockwise());
 
 	// Set Shaders
-	this->m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	this->m_deviceContext->IASetInputLayout(this->m_vertexLayout.Get());
+	this->m_shaders.setShaders();
 
 	this->m_deviceContext->PSSetSamplers(0, 1, this->m_samplerState.GetAddressOf());
-
-	this->m_deviceContext->VSSetShader(this->m_vertexShader.Get(), nullptr, 0);
-	this->m_deviceContext->PSSetShader(this->m_pixelShader.Get(), nullptr, 0);
 
 	// Set Constant Buffer
 	this->m_deviceContext->PSSetConstantBuffers(1, 1, this->m_lightBuffer.GetAdressOf());
@@ -469,22 +348,42 @@ void ViewLayer::render()
 	{
 		// Get indexes
 		GameObject* gObject = this->m_gameObjectsFromState->at(i);
-		int wvpIndex = gObject->getWvpCBufferIndex();
-		int mIndex = gObject->getModelIndex();
-		// Set Constant buffer
-		this->m_deviceContext->VSSetConstantBuffers(0, 1, this->m_wvpCBufferFromState->at(wvpIndex).GetAdressOf());
-		// Draw Model
-		this->m_modelsFromState->at(mIndex).m_material.setTexture(gObject->getTexturePath().c_str());
-		this->m_modelsFromState->at(mIndex).draw(viewPMtrx);
+    if (gObject->visible())
+		{
+      int wvpIndex = gObject->getWvpCBufferIndex();
+      int mIndex = gObject->getModelIndex();
+      // Set Constant buffer
+      this->m_deviceContext->VSSetConstantBuffers(0, 1, this->m_wvpCBufferFromState->at(wvpIndex).GetAdressOf());
+      // Draw Model
+      this->m_modelsFromState->at(mIndex).m_material.setTexture(gObject->getTexturePath().c_str());
+      this->m_modelsFromState->at(mIndex).draw(viewPMtrx);
+		}
 	}
-
+	//Active room draw
+	if (this->m_gameObjectsFromActiveRoom != nullptr)
+	{
+		for (size_t i = 0; i < this->m_gameObjectsFromActiveRoom->size(); i++)
+		{
+			// Get indexes
+			GameObject* gObject = this->m_gameObjectsFromActiveRoom->at(i);
+			if (gObject->visible())
+			{
+				int wvpIndex = gObject->getWvpCBufferIndex();
+				int mIndex = gObject->getModelIndex();
+				// Set Constant buffer
+				this->m_deviceContext->VSSetConstantBuffers(0, 1, this->m_wvpCBufferFromState->at(wvpIndex).GetAdressOf());
+				// Draw Model
+				this->m_modelsFromState->at(mIndex).m_material.setTexture(gObject->getTexturePath().c_str());
+				this->m_modelsFromState->at(mIndex).draw(viewPMtrx);
+			}
+		}
+	}
 	// Draw Primitives
 	if (this->m_drawPrimitives)
 	{
 		this->m_deviceContext->OMSetBlendState(m_states->Opaque(), nullptr, 0xFFFFFFFF);
 		this->m_deviceContext->OMSetDepthStencilState(m_states->DepthNone(), 0);
 		this->m_deviceContext->RSSetState(m_states->CullNone());
-
 		this->m_deviceContext->IASetInputLayout(this->m_batchInputLayout.Get());
 
 		this->m_batch->Begin();
@@ -499,6 +398,24 @@ void ViewLayer::render()
 			{
 				// Draw Primitive
 				DX::Draw(m_batch.get(), *(this->m_gameObjectsFromState->at(i)->getAABBPtr()), DirectX::Colors::Blue);
+			}
+		}
+		if (this->m_gameObjectsFromActiveRoom != nullptr)
+		{
+			for (size_t i = 0; i < this->m_gameObjectsFromActiveRoom->size(); i++)
+			{
+				if (this->m_gameObjectsFromActiveRoom->at(i)->collidable())
+				{
+					// Draw Primitive
+					DX::Draw(m_batch.get(), *(this->m_gameObjectsFromActiveRoom->at(i)->getAABBPtr()), DirectX::Colors::Blue);
+				}
+			}
+		}
+		if (this->m_boundingBoxesFromActiveRoom != nullptr)
+		{
+			for (size_t i = 0; i < this->m_boundingBoxesFromActiveRoom->size(); i++)
+			{
+				DX::Draw(m_batch.get(), this->m_boundingBoxesFromActiveRoom->at(i), DirectX::Colors::Red);
 			}
 		}
 		DX::Draw(m_batch.get(), this->m_pyramidOBB, DirectX::Colors::Blue);
@@ -570,7 +487,7 @@ void ViewLayer::render()
 	this->m_spriteBatch->Draw(this->m_crossHairSRV, this->m_crosshairPosition);
 	this->m_spriteFont->DrawString(this->m_spriteBatch.get(), this->m_fpsString.c_str(), DirectX::XMFLOAT2(0, 0), DirectX::Colors::White, 0.f, DirectX::XMFLOAT2(0.f, 0.f));
 	this->m_spriteBatch->End();
-
+	
 	// Swap Frames
 	this->m_swapChain->Present(0, 0);
 }
