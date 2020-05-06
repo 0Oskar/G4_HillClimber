@@ -11,6 +11,7 @@ protected:
 	bool m_visible;
 	bool m_collidable;
 	bool m_isStatic;
+	bool m_drawBB;
 	bool m_useDeceleration;
 	int m_modelIndex;
 	int m_wvpCBufferIndex;
@@ -37,6 +38,7 @@ public:
 	// Getters
 	bool visible() const;
 	bool collidable() const;
+	bool getDrawBB() const;
 	DirectX::XMVECTOR getPosition() const;
 	DirectX::XMMATRIX getWorldMatrix() const;
 	DirectX::XMMATRIX getTranslationMatrix() const;
@@ -48,7 +50,9 @@ public:
 	DirectX::BoundingBox* getAABBPtr();
 	std::wstring getTexturePath();
 
+
 	// Setters
+	void setDrawBB(bool drawable);
 	void setVisibility(bool visible);
 	void setRotation(DirectX::XMVECTOR newRotation);
 	void setScale(DirectX::XMVECTOR newScale);

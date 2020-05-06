@@ -66,7 +66,7 @@ bool Mouse::empty()
 void Mouse::onMove(MousePos pos)
 {
 	this->m_mousePos = pos;
-	this->m_events.push(MouseEvent(Event::MouseMove, pos.x, pos.y));
+	this->m_events.push(MouseEvent(Event::MouseMove, pos.x*0.25, pos.y* 0.25));
 }
 void Mouse::onRawMove(MousePos pos)
 {

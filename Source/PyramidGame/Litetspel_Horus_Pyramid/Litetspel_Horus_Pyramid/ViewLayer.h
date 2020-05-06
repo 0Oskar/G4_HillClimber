@@ -6,12 +6,23 @@
 #include "Platform.h"
 #include "Shaders.h"
 
+
 class ViewLayer
 {
 private:
 	// Window
 	HWND m_window;
 	GameOptions* m_options;
+
+	//BoundingBoxes
+	//int nrOfBB = 15;
+	DirectX::BoundingBox triggerBB;
+	DirectX::BoundingBox triggerBB2;
+	DirectX::BoundingBox leverBB;
+	DirectX::BoundingBox leverBB2;
+	DirectX::BoundingBox winPuzzleObject;
+	DirectX::BoundingBox deathTrap1;
+
 
 	// Device
 	Microsoft::WRL::ComPtr< ID3D11Device > m_device;
@@ -86,6 +97,10 @@ public:
 	// Getters
 	ID3D11Device* getDevice();
 	ID3D11DeviceContext* getContextDevice();
+
+	// Getters boundingBox
+
+
 
 	// Setters
 	void setViewMatrix(DirectX::XMMATRIX* newViewMatrix);

@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "ViewLayer.h"
+//Jag lade till så gamestate.h är includad här
 
 void ViewLayer::initDeviceAndSwapChain()
 {
@@ -171,6 +172,8 @@ ID3D11DeviceContext* ViewLayer::getContextDevice()
 	return this->m_deviceContext.Get();
 }
 
+
+
 void ViewLayer::setViewMatrix(DirectX::XMMATRIX* newViewMatrix)
 {
 	this->m_viewMatrix = newViewMatrix;
@@ -253,7 +256,7 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 	// Directional Light buffer
 	PS_DIR_BUFFER dirBuffer;
 	dirBuffer.lightColor = DirectX::XMFLOAT4(.8f, 0.8f, 0.8f, 1.f);
-	dirBuffer.lightDirection = DirectX::XMFLOAT4(-1.0f, 1.0f, -0.7f, 0.0f);
+	dirBuffer.lightDirection = DirectX::XMFLOAT4(0.0f, 1.0f, -0.7f, 0.0f);
 	this->m_dirLightBuffer.m_data = dirBuffer;
 	this->m_dirLightBuffer.upd();
 
@@ -391,7 +394,7 @@ void ViewLayer::render()
 		this->m_effect->Apply(this->m_deviceContext.Get());
 		for (size_t i = 0; i < this->m_gameObjectsFromState->size(); i++)
 		{
-			if (this->m_gameObjectsFromState->at(i)->collidable())
+			if (this->m_gameObjectsFromState->at(i)->getDrawBB())
 			{
 				// Draw Primitive
 				DX::Draw(m_batch.get(), *(this->m_gameObjectsFromState->at(i)->getAABBPtr()), DirectX::Colors::Blue);
@@ -416,6 +419,56 @@ void ViewLayer::render()
 			}
 		}
 		DX::Draw(m_batch.get(), this->m_pyramidOBB, DirectX::Colors::Blue);
+
+		//Kevins pussel1 golv boundingBox
+
+		
+		leverBB.Center = DirectX::XMFLOAT3(-15.f, 5.f, -88.f);
+		leverBB.Extents = DirectX::XMFLOAT3(2.f, 2.f, 2.f);
+
+		leverBB2.Center = DirectX::XMFLOAT3(7.5f, 5.f, -138.f);
+		leverBB2.Extents = DirectX::XMFLOAT3(2.f, 2.f, 2.f);
+
+		triggerBB.Center = DirectX::XMFLOAT3(-10.f, 27.f, -80.f);
+		triggerBB.Extents = DirectX::XMFLOAT3(20.f, 10.f, 2.5f);
+
+		triggerBB2.Center = DirectX::XMFLOAT3(-10.f, 27.f, -60.f); 
+		triggerBB2.Extents = DirectX::XMFLOAT3(20.f, 10.f, 2.5f);
+
+		winPuzzleObject.Center = DirectX::XMFLOAT3(-11.f, 30.f, -39.8f); 
+		winPuzzleObject.Extents = DirectX::XMFLOAT3(2.f, 2.f, 2.f);
+
+		deathTrap1.Center = DirectX::XMFLOAT3(-10.f, 2.f, -129.f);
+		deathTrap1.Extents = DirectX::XMFLOAT3(27.f, 1.f, 4.f);
+
+	
+		DX::Draw(m_batch.get(), leverBB, DirectX::Colors::Red);
+		DX::Draw(m_batch.get(), leverBB2, DirectX::Colors::Red);
+		DX::Draw(m_batch.get(), triggerBB, DirectX::Colors::Red);
+		DX::Draw(m_batch.get(), triggerBB2, DirectX::Colors::Red);
+		DX::Draw(m_batch.get(), winPuzzleObject, DirectX::Colors::Red);
+		DX::Draw(m_batch.get(), deathTrap1, DirectX::Colors::Red);
+
+		/*pusselBox1.Center = DirectX::XMFLOAT3(-10.f, 1.0f, -104.0f);
+		pusselBox1.Extents = DirectX::XMFLOAT3(20.f, 1.5f,  20.f);
+
+		pusselBox2.Center = DirectX::XMFLOAT3(-10.f, 1.0f, -154.0f);
+		pusselBox2.Extents = DirectX::XMFLOAT3(20.f, 1.5f, 20.8f);
+
+		pusselBox3.Center = DirectX::XMFLOAT3(-10.f, 11.6f, -86.f);
+		pusselBox3.Extents = DirectX::XMFLOAT3(20.f, 13.f, 1.5f);
+
+		pusselBox4.Center = DirectX::XMFLOAT3(-10.f, 23.f, -77.f);
+		pusselBox4.Extents = DirectX::XMFLOAT3(20.f, 1.5f, 10.8f);
+
+		pusselBox5.Center = DirectX::XMFLOAT3(-10.f, 23.f, -45.4f);
+		pusselBox5.Extents = DirectX::XMFLOAT3(20.f, 1.5f, 11.8f);*/
+
+		//DX::Draw(m_batch.get(), pusselBox1, DirectX::Colors::Red);
+		//DX::Draw(m_batch.get(), pusselBox2, DirectX::Colors::Red);
+		//DX::Draw(m_batch.get(), pusselBox3, DirectX::Colors::Red);
+		//DX::Draw(m_batch.get(), pusselBox4, DirectX::Colors::Red);
+		//DX::Draw(m_batch.get(), pusselBox5, DirectX::Colors::Red);
 
 		m_batch->End();
 	}

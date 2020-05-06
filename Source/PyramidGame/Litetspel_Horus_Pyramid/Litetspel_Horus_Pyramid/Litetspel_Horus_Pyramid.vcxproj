@@ -162,9 +162,12 @@
     <ClCompile Include="HookHand.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="Input_Keyboard.cpp" />
+
+    <ClCompile Include="Lever.cpp" />
     <ClCompile Include="main.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClCompile>
+
     <ClCompile Include="Input_Mouse.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="pch.cpp">
@@ -215,6 +218,7 @@
     <ClInclude Include="Input.h" />
     <ClInclude Include="Input_Keyboard.h" />
     <ClInclude Include="Input_Mouse.h" />
+    <ClInclude Include="Lever.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="MovementComponent.h" />
