@@ -175,6 +175,8 @@
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Portal.cpp" />
     <ClCompile Include="pugixml.cpp" />
+    <ClCompile Include="Room.cpp" />
+    <ClCompile Include="TemplateRoom.cpp" />
     <ClCompile Include="Shaders.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="ViewLayer.cpp" />
@@ -216,7 +218,9 @@
     <ClInclude Include="Player.h" />
     <ClInclude Include="Portal.h" />
     <ClInclude Include="ResourceHandler.h" />
+    <ClInclude Include="Room.h" />
     <ClInclude Include="Shaders.h" />
+    <ClInclude Include="TemplateRoom.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="VertexBuffer.h" />
     <ClInclude Include="ViewLayer.h" />

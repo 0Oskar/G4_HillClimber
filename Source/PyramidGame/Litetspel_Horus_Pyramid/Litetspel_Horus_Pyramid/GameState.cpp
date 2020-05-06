@@ -6,7 +6,9 @@ GameState::GameState()
 	this->m_device = nullptr;
 	this->m_dContext = nullptr;
 	this->m_chainGObjects = new std::vector<GameObject*>();
-	
+	this->m_activeRoom = nullptr;
+	this->m_activeRoomChanged = false;
+
 }
 
 GameState::~GameState() {}
@@ -30,6 +32,23 @@ std::vector<GameObject*>* GameState::getGameObjectsPtr()
 {
 	return &this->m_gameObjects;
 }
+
+std::vector<GameObject*>* GameState::getActiveRoomGameObjectsPtr()
+{
+	if (this->m_activeRoom != nullptr)
+		return this->m_activeRoom->getGameObjectsPtr();
+	else
+		return nullptr;
+}
+
+std::vector<BoundingBox>* GameState::getActiveRoomBoundingBoxsPtr()
+{
+	if (this->m_activeRoom != nullptr)
+		return this->m_activeRoom->getBoundingBoxPtr();
+	else
+		return nullptr;
+}
+
 
 std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* GameState::getWvpCBuffersPtr()
 {
@@ -243,6 +262,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 		this->m_chainGObjects->push_back(this->m_gameObjects.back());
 	}
 	
+
 	// PuzzleRoom -------------------------------------------------------------
 
 	this->m_models.emplace_back(); //add empty model
@@ -257,12 +277,21 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); //reset material
 	this->m_models[7].initializeModelBff(device, dContext, "Button.bff", mat, L"Textures/BirdHyroglajf.png"); //load model
 	vec = DirectX::XMVectorSet(-120, 0, 0, 1); //world pos
-	this->addGameObjectToWorld(true, false, 1, 7, &m_models[7], vec, NormalScale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
 
 	// Player
 	this->m_player.initialize(-1, -1, 60.f, DirectX::XMFLOAT3(20.f, 20.f, 20.f), DirectX::XMFLOAT3(.01f, .01f, .01f), hook, hookHand, this->m_chainGObjects, audioEngine);
 	this->m_player.setPosition(DirectX::XMVectorSet(0.f, 5.f, -1.f, 1.f));
 	
+	//Room creation
+	this->m_rooms.emplace_back(new TemplateRoom());
+	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, 0, 1));
+	dynamic_cast<TemplateRoom*>(this->m_rooms.back())->init();
+	m_activeRoom = m_rooms.back();
+
+
+
+
+	//Initialize audio component for platforms and add theire boundingboxes to playerBoundingBoxes
 	for (size_t i = 0; i < this->m_gameObjects.size(); i++)
 	{
 		Platform* castToPlatform = dynamic_cast<Platform*>(this->m_gameObjects.at(i));
@@ -331,4 +360,6 @@ void GameState::update(Keyboard* keyboard, MouseEvent mouseEvent, Mouse* mousePt
 			m_gameObjects.erase(m_gameObjects.begin() + i);
 		}
 	}
+	if(m_activeRoom != nullptr)
+		this->m_activeRoom->update(dt, &m_camera);
 }

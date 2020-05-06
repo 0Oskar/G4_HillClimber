@@ -186,6 +186,16 @@ void ViewLayer::setgameObjectsFromState(std::vector<GameObject*>* gameObjectsFro
 	this->m_gameObjectsFromState = gameObjectsFromState;
 }
 
+void ViewLayer::setgameObjectsFromActiveRoom(std::vector<GameObject*>* gameObjectsFromState)
+{
+	this->m_gameObjectsFromActiveRoom = gameObjectsFromState;
+}
+
+void ViewLayer::setBoundingBoxesFromActiveRoom(std::vector<BoundingBox>* bbFromRoom)
+{
+	this->m_boundingBoxesFromActiveRoom = bbFromRoom;
+}
+
 void ViewLayer::setModelsFromState(std::vector<Model>* models)
 {
 	this->m_modelsFromState = models;
@@ -346,14 +356,31 @@ void ViewLayer::render()
       this->m_modelsFromState->at(mIndex).draw(viewPMtrx);
 		}
 	}
-
+	//Active room draw
+	if (this->m_gameObjectsFromActiveRoom != nullptr)
+	{
+		for (size_t i = 0; i < this->m_gameObjectsFromActiveRoom->size(); i++)
+		{
+			// Get indexes
+			GameObject* gObject = this->m_gameObjectsFromActiveRoom->at(i);
+			if (gObject->visible())
+			{
+				int wvpIndex = gObject->getWvpCBufferIndex();
+				int mIndex = gObject->getModelIndex();
+				// Set Constant buffer
+				this->m_deviceContext->VSSetConstantBuffers(0, 1, this->m_wvpCBufferFromState->at(wvpIndex).GetAdressOf());
+				// Draw Model
+				this->m_modelsFromState->at(mIndex).m_material.setTexture(gObject->getTexturePath().c_str());
+				this->m_modelsFromState->at(mIndex).draw(viewPMtrx);
+			}
+		}
+	}
 	// Draw Primitives
 	if (this->m_drawPrimitives)
 	{
 		this->m_deviceContext->OMSetBlendState(m_states->Opaque(), nullptr, 0xFFFFFFFF);
 		this->m_deviceContext->OMSetDepthStencilState(m_states->DepthNone(), 0);
 		this->m_deviceContext->RSSetState(m_states->CullNone());
-
 		this->m_deviceContext->IASetInputLayout(this->m_batchInputLayout.Get());
 
 		this->m_batch->Begin();
@@ -368,6 +395,24 @@ void ViewLayer::render()
 			{
 				// Draw Primitive
 				DX::Draw(m_batch.get(), *(this->m_gameObjectsFromState->at(i)->getAABBPtr()), DirectX::Colors::Blue);
+			}
+		}
+		if (this->m_gameObjectsFromActiveRoom != nullptr)
+		{
+			for (size_t i = 0; i < this->m_gameObjectsFromActiveRoom->size(); i++)
+			{
+				if (this->m_gameObjectsFromActiveRoom->at(i)->collidable())
+				{
+					// Draw Primitive
+					DX::Draw(m_batch.get(), *(this->m_gameObjectsFromActiveRoom->at(i)->getAABBPtr()), DirectX::Colors::Blue);
+				}
+			}
+		}
+		if (this->m_boundingBoxesFromActiveRoom != nullptr)
+		{
+			for (size_t i = 0; i < this->m_boundingBoxesFromActiveRoom->size(); i++)
+			{
+				DX::Draw(m_batch.get(), this->m_boundingBoxesFromActiveRoom->at(i), DirectX::Colors::Red);
 			}
 		}
 		DX::Draw(m_batch.get(), this->m_pyramidOBB, DirectX::Colors::Blue);
