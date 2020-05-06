@@ -8,4 +8,5 @@ class ModelBFF
 		MeshBFF mesh;
 		VertexBFF* vertexArr;
 		MaterialBFF material;
+		CameraBFF camera;
 };

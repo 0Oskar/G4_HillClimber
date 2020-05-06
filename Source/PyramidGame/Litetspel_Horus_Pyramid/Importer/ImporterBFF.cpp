@@ -16,6 +16,8 @@ namespace ImporterBFF
 
 		MeshFile.read((char*)model.vertexArr, model.mesh.nrOfVertex * sizeof(VertexBFF));
 		MeshFile.read((char*)&model.material, sizeof(MaterialBFF));
+		MeshFile.read((char*)&model.camera, sizeof(CameraBFF));
+
 		MeshFile.close();
 
 		return model;

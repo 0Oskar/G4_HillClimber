@@ -82,6 +82,54 @@ Opacity: 0.000000
  
 
 
+------------- Light
+
+Name: directionalLight1
+
+Type: Directional
+
+ColorR: 1.000000
+ColorG: 1.000000
+ColorB: 1.000000
+
+Dir: 0.000000
+
+Intencity: 0.000000
+
+
+
+------------- Light
+
+Name: spotLight1
+
+Type: Spot
+
+ColorR: 1.000000
+ColorG: 1.000000
+ColorB: 1.000000
+
+Dir: 0.000000
+
+Intencity: 0.000000
+
+
+
+------------- Light
+
+Name: pointLight1
+
+Type: Point
+
+ColorR: 1.000000
+ColorG: 1.000000
+ColorB: 1.000000
+
+Dir: 0.000000
+
+Intencity: 0.000000
+
+
+
 ------------- Camera:
 
 PosX: 0.000000
