@@ -100,14 +100,14 @@ void GameState::addPlatformToWorld(int mdlIndex, DirectX::BoundingOrientedBox* p
 	this->m_player.addAABB(this->m_gameObjects.back()->getAABBPtr());
 }
 
-void GameState::addPortalToWorld(XMVECTOR teleportLocation, int mdlIndx, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR scale3D, DirectX::XMFLOAT3 boundingBoxSize)
+void GameState::addPortalToWorld(XMVECTOR teleportLocation, int mdlIndx, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR scale3D, DirectX::XMFLOAT3 boundingBoxSize, Room* room)
 {
 	this->m_wvpCBuffers.emplace_back();
 	this->m_wvpCBuffers.back().init(m_device, m_dContext);
 	int bufferIndex = (int)m_wvpCBuffers.size() - 1;
 
 	this->m_gameObjects.emplace_back(new Portal());
-	dynamic_cast<Portal*>(this->m_gameObjects.back())->initialize(mdlIndx, (int)m_wvpCBuffers.size() - 1, mdl, teleportLocation, &this->m_player);
+	dynamic_cast<Portal*>(this->m_gameObjects.back())->initialize(mdlIndx, (int)m_wvpCBuffers.size() - 1, mdl, teleportLocation, &this->m_player, room);
 
 
 	this->m_gameObjects.back()->setScale(scale3D);
@@ -285,7 +285,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_rooms.emplace_back(new TemplateRoom());
 	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, 0, 1));
 	dynamic_cast<TemplateRoom*>(this->m_rooms.back())->init();
-	m_activeRoom = m_rooms.back();
+	//m_activeRoom = m_rooms.back();
 
 
 
@@ -308,7 +308,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 
 	vec = DirectX::XMVectorSet(0.f, 120.f, 170.f, 1.f);
 	//XMVECTOR vecScale = DirectX::XMVectorSet(1.f, 1.f, -1.f, 1.f);
-	this->addPortalToWorld(XMVectorSet(0.f, 0.f, 0.f, 1.f), 6, &m_models[6], vec, NormalScale, DirectX::XMFLOAT3(3.f, 8.f, 0.6f));
+	this->addPortalToWorld(XMVectorSet(0.f, 0.f, 0.f, 1.f), 6, &m_models[6], vec, NormalScale, DirectX::XMFLOAT3(3.f, 8.f, 0.6f), this->m_rooms.back());
 
 	// Camera
 	this->m_camera.followMoveComp(this->m_player.getMoveCompPtr());
@@ -339,6 +339,12 @@ void GameState::update(Keyboard* keyboard, MouseEvent mouseEvent, Mouse* mousePt
 		if (portalPtr != nullptr)
 		{
 			portalPtr->update();
+			if (portalPtr->shouldChangeActiveRoom())
+			{
+				m_activeRoom = portalPtr->getRoomPtr();
+				portalPtr->resetActiveRoomVariable();
+				this->m_activeRoomChanged = true;
+			}
 		}
 		else
 		{
