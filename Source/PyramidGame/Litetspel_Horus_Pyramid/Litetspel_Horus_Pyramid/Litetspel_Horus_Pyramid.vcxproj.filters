@@ -66,6 +66,12 @@
     <ClCompile Include="Shaders.cpp">
       <Filter>Source\View</Filter>
     </ClCompile>
+    <ClCompile Include="Room.cpp">
+      <Filter>Source\Game Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="TemplateRoom.cpp">
+      <Filter>Source\Game Logic\Rooms</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -146,6 +152,12 @@
     <ClInclude Include="Shaders.h">
       <Filter>Header\View</Filter>
     </ClInclude>
+    <ClInclude Include="Room.h">
+      <Filter>Header\Game Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="TemplateRoom.h">
+      <Filter>Header\Game Logic\Rooms</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -192,6 +204,12 @@
     </Filter>
     <Filter Include="Source\Game Logic\GameObjects">
       <UniqueIdentifier>{2a608483-c701-4962-8eac-d4af998bd525}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Game Logic\Rooms">
+      <UniqueIdentifier>{86a151c3-0c31-4e96-9dd7-aae14e610154}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header\Game Logic\Rooms">
+      <UniqueIdentifier>{62ba70f7-e626-4e2a-95af-a1c201023870}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
