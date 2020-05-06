@@ -26,6 +26,7 @@ public:
 	void addAABB(DirectX::BoundingBox* aabb);
 	void addPyramidOBB(DirectX::BoundingOrientedBox* obb);
 	bool getinUse();
+	void wonPuzzle(bool won);
 
 	void resetVelocity();
 	void flyDown(float speed);

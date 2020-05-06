@@ -21,12 +21,16 @@ private:
 	std::vector<DirectX::BoundingBox*> platformBB;
 	std::vector<DirectX::BoundingBox*> trapBB;
 	std::vector<DirectX::BoundingBox*> leverBB;
+	
 
 	std::vector<GameObject*> dartTrap;
 	std::vector<Lever*> lever;
+	std::vector<Lever*> wonPuzzleObject;
 	
 	//Trigger things
 	std::vector<DirectX::BoundingBox> triggerBB;
+	std::vector<DirectX::BoundingBox> deathTrapBB;
+
 	bool dartFly1 = false;
 	bool dartFly2 = false;
 	float dartPosition1 = 40.f;
@@ -34,6 +38,10 @@ private:
 
 	bool trapActive1 = true;
 	bool trapActive2 = true;
+
+	bool wonThePuzzle = false;
+
+
 
 	std::vector<Model> m_models;
 	std::vector<GameObject*> m_gameObjects;

@@ -19,8 +19,8 @@ private:
 	DirectX::BoundingBox triggerBB2;
 	DirectX::BoundingBox leverBB;
 	DirectX::BoundingBox leverBB2;
-	DirectX::BoundingBox pusselBox4;
-	DirectX::BoundingBox pusselBox5;
+	DirectX::BoundingBox winPuzzleObject;
+	DirectX::BoundingBox deathTrap1;
 
 
 	// Device

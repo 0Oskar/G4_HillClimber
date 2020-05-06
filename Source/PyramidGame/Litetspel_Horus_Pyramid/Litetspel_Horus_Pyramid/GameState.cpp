@@ -242,7 +242,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_models[5].loadVertexFromOBJ(device, dContext, L"Models/LeverRoom.obj", mat, L"Textures/sandTexture.png");
 
 	vec = DirectX::XMVectorSet(-10.f, 2, -100, 1.f);
-	this->addGameObjectToWorld(false, true, 2, 5, &m_models[5], vec, DirectX::XMVectorSet(1, 1, 1, 1), DirectX::XMFLOAT3(1.f, 1.f, 1.f));
+	this->addGameObjectToWorld(false, false, 2, 5, &m_models[5], vec, DirectX::XMVectorSet(1, 1, 1, 1), DirectX::XMFLOAT3(1.f, 1.f, 1.f));
 
 	//Lever
 	this->m_models.emplace_back();
@@ -260,10 +260,16 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->addLeverToWorld(6, &m_models[6], vec, rotation, DirectX::XMFLOAT3(2.f, 2.f, 2.f));
 
 	lever.emplace_back(dynamic_cast<Lever*>(this->m_gameObjects.back()));
+	
 
-	//Lever* leverPtr = dynamic_cast<Lever*>(this->lever[0]);
+	vec = DirectX::XMVectorSet(-11.f, 30.f, -39.8f, 1.f);
+	rotation = DirectX::XMVectorSet(0.f, 0.f, convertDegreesToRadians(-270), 1.f);
+	this->addLeverToWorld(6, &m_models[6], vec, rotation, DirectX::XMFLOAT3(2.f, 2.f, 2.f));
 
-	//Ändra pos
+	wonPuzzleObject.emplace_back(dynamic_cast<Lever*>(this->m_gameObjects.back()));
+
+	wonPuzzleObject[0]->setScale(DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f));
+
 	vec = DirectX::XMVectorSet(10.f, 27, -80, 1.f);
 	this->addGameObjectToWorld(true, false, 2, 3, &m_models[3], vec, DirectX::XMVectorSet(0.1f, 0.1f, 0.1f, 1), DirectX::XMFLOAT3(1.f, 1.f, 1.f));
 	this->m_gameObjects.back()->setDrawBB(true);
@@ -286,6 +292,10 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	triggerBB.back().Center = DirectX::XMFLOAT3(-10.f, 27.f, -60.f);
 	triggerBB.back().Extents = DirectX::XMFLOAT3(20.f, 10.f, 2.5f);
 
+	deathTrapBB.emplace_back();
+	deathTrapBB.back().Center = DirectX::XMFLOAT3(-10.f, 2.f, -129.f);
+	deathTrapBB.back().Extents = DirectX::XMFLOAT3(27.f, 3.f, 4.f);
+
 	pussels.emplace_back();
 	pussels.back().Center = DirectX::XMFLOAT3(-10.f, 1.0f, -104.0f);
 	pussels.back().Extents = DirectX::XMFLOAT3(20.f, 1.5f, 20.f);
@@ -306,14 +316,12 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	pussels.back().Center = DirectX::XMFLOAT3(-10.f, 23.f, -45.4f);
 	pussels.back().Extents = DirectX::XMFLOAT3(20.f, 1.5f, 11.8f);
 
+
 	for (int i = 0; i < pussels.size(); i++)
 	{
 		this->m_player.addAABB(&pussels.at(i));
 	}
-	
-	
-	
-	
+		
 	//vec = DirectX::XMVectorSet()
 	for (size_t i = 0; i < this->m_gameObjects.size(); i++)
 	{
@@ -341,6 +349,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	//Lever function
 	this->lever[0]->setPlayerBoundingBox(this->m_player.getAABBPtr());
 	this->lever[1]->setPlayerBoundingBox(this->m_player.getAABBPtr());
+	this->wonPuzzleObject[0]->setPlayerBoundingBox(this->m_player.getAABBPtr());
 
 	// Camera
 	this->m_camera.followMoveComp(this->m_player.getMoveCompPtr());
@@ -397,6 +406,12 @@ void GameState::update(Keyboard* keyboard, MouseEvent mouseEvent, Mouse* mousePt
 			{
 				dartFly2 = true;
 			}
+		}
+
+		if (deathTrapBB[0].Intersects(this->m_player.getAABB()))
+		{
+			OutputDebugString(L"SPIKES");
+			//this->m_player.getMoveCompPtr()->position = DirectX::XMVectorSet(-20.f, -300.f, -165.f, 1.f);
 		}
 
 	for (int i = 0; i < dartTrap.size(); i++)
@@ -457,6 +472,18 @@ void GameState::update(Keyboard* keyboard, MouseEvent mouseEvent, Mouse* mousePt
 		if (this->m_player.getinUse() == true)
 		{
 			trapActive2 = false;
+		}
+	}
+
+	this->wonPuzzleObject[0]->collidesWithPlayer();
+
+	if (this->wonPuzzleObject[0]->getCanUseLever() == true)
+	{
+		OutputDebugString(L"WON");
+		if (this->m_player.getinUse() == true)
+		{
+			this->wonThePuzzle = true;
+			this->m_player.wonPuzzle(wonThePuzzle);
 		}
 	}
 

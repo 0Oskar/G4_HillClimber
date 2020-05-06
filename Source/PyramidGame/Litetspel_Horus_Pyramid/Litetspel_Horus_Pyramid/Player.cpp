@@ -39,6 +39,14 @@ bool Player::getinUse()
 	return this->inUse;
 }
 
+void Player::wonPuzzle(bool won)
+{
+	if (won == true)
+	{
+		this->getMoveCompPtr()->position = DirectX::XMVectorSet(-20.f, -300.f, -165.f, 1.f);
+	}
+}
+
 void Player::resetVelocity()
 {
 	this->m_physicsComp->setVelocity(DirectX::XMFLOAT3());
