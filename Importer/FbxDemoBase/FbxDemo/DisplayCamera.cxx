@@ -22,6 +22,9 @@ void DisplayApertureAndFilmControls(FbxCamera* pCamera);
 void DisplayViewingAreaControls(FbxCamera* pCamera);
 void DisplayCameraPositionAndOrientation(FbxCamera* pCamera, FbxNode* pTargetNode, FbxNode* pUpTargetNode);
 
+FileWrite myFile2("../biFile.bff");
+FileWrite myStringFile2("../stringFile.bff");
+CameraBFF cameraData;
 
 void DisplayCamera(FbxNode* pNode)
 {
@@ -57,6 +60,28 @@ void DisplayCamera(FbxCamera* pCamera, char* pName, FbxNode* pTargetNode, FbxNod
     DisplayCameraViewOptions(pCamera);
     DisplayRenderOptions(pCamera);
     DisplayDefaultAnimationValues(pCamera);
+
+    myStringFile2.writeToStringFile("\n\n\n------------- Camera:\n\n");
+    myStringFile2.writeToStringFile(
+        "PosX: " + std::to_string(cameraData.pos[0]) + "\n" +
+        "PosY: " + std::to_string(cameraData.pos[1]) + "\n" +
+        "PosZ: " + std::to_string(cameraData.pos[2]) + "\n" +
+        "\n" +
+        "upVecX: " + std::to_string(cameraData.upVec[0]) + "\n" +
+        "upVecY: " + std::to_string(cameraData.upVec[1]) + "\n" +
+        "upVecZ: " + std::to_string(cameraData.upVec[2]) + "\n" +
+        "\n" +
+        "forwardVecX: " + std::to_string(cameraData.forwardVec[0]) + "\n" +
+        "forwardVecY: " + std::to_string(cameraData.forwardVec[1]) + "\n" +
+        "forwardVecZ: " + std::to_string(cameraData.forwardVec[2]) + "\n" +
+        "\n" +
+        "nearPlane: " + std::to_string(cameraData.nearPlane) + "\n" +
+        "\n" +
+        "farPlane: " + std::to_string(cameraData.farPlane) + "\n" +
+        "\n" +
+        "FOV: " + std::to_string(cameraData.FOV) + " (degrees)");
+
+    myFile2.writeToFile((const char*)&cameraData, sizeof(CameraBFF));
 }
 
 
@@ -64,6 +89,9 @@ void DisplayCameraPositionAndOrientation(FbxCamera* pCamera, FbxNode* pTargetNod
 {
     DisplayString("    Camera Position and Orientation");
     Display3DVector("        Position: ", pCamera->Position.Get());
+    cameraData.pos[0] = float(pCamera->Position.Get()[0]);
+    cameraData.pos[1] = float(pCamera->Position.Get()[1]);
+    cameraData.pos[2] = float(pCamera->Position.Get()[2]);
 
     if (pTargetNode)
     {
@@ -72,7 +100,16 @@ void DisplayCameraPositionAndOrientation(FbxCamera* pCamera, FbxNode* pTargetNod
     else
     {
         Display3DVector("        Default Camera Interest Position: ", pCamera->InterestPosition.Get());
+        FbxVector4 tempPos = pCamera->Position.Get();
+        FbxVector4 tempLoc = pCamera->InterestPosition.Get();
+        FbxVector4 temp = tempPos - tempLoc;
+        temp[3] = 0;
+        temp.Normalize();
+        cameraData.forwardVec[0] = temp[0];
+        cameraData.forwardVec[1] = temp[1];
+        cameraData.forwardVec[2] = temp[2];
     }
+
 
     if (pTargetUpNode)
     {
@@ -81,6 +118,9 @@ void DisplayCameraPositionAndOrientation(FbxCamera* pCamera, FbxNode* pTargetNod
     else
     {
         Display3DVector("        Up Vector: ", pCamera->UpVector.Get());
+        cameraData.upVec[0] = float(pCamera->UpVector.Get()[0]);
+        cameraData.upVec[1] = float(pCamera->UpVector.Get()[1]);
+        cameraData.upVec[2] = float(pCamera->UpVector.Get()[2]);
     }
 
     DisplayDouble("        Roll: ", pCamera->Roll.Get());
@@ -111,7 +151,9 @@ void DisplayViewingAreaControls(FbxCamera* pCamera)
 
     DisplayDouble("        Pixel Ratio: ", pCamera->PixelAspectRatio.Get());
     DisplayDouble("        Near Plane: ", pCamera->NearPlane.Get());
+    cameraData.nearPlane = float(pCamera->NearPlane.Get());
     DisplayDouble("        Far Plane: ", pCamera->FarPlane.Get());
+    cameraData.farPlane = float(pCamera->LockMode.Get());
     DisplayBool("        Mouse Lock: ", pCamera->LockMode.Get());
 }
 
@@ -144,6 +186,7 @@ void DisplayApertureAndFilmControls(FbxCamera* pCamera)
     DisplayDouble("        Squeeze Ratio: ", pCamera->GetSqueezeRatio());
     DisplayDouble("        Focal Length: ", pCamera->FocalLength.Get(), "mm");
     DisplayDouble("        Field of View: ", pCamera->FieldOfView.Get(), " degrees");
+    cameraData.FOV = float(pCamera->FieldOfView.Get());
 }
 
 

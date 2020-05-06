@@ -6,10 +6,6 @@ Player::Player() : GameObject()
 
 	lastFly = false;
 
-	//Model myModel = ImporterBFF::Manager::GetInstance().LoadModel();
-	//myModel = ImporterBFF::Model("../../../../Importer/FbxDemoBase/biFile.bff");
-	//ImporterBFF::Model::MeshName(myModel);
-	//this->myString = ImporterBFF::Model::MeshName();
 }
 
 Player::~Player()

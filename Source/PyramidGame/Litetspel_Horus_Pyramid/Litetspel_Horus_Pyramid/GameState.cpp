@@ -5,7 +5,8 @@ GameState::GameState()
 {
 	this->m_device = nullptr;
 	this->m_dContext = nullptr;
-  this->m_chainGObjects = new std::vector<GameObject*>();
+	this->m_chainGObjects = new std::vector<GameObject*>();
+	
 }
 
 GameState::~GameState() {}
@@ -195,6 +196,8 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	vec = DirectX::XMVectorSet(5.f, 1.f, 5.f, 1.f);
 	this->m_gameObjects.back()->setScale(vec);
 
+
+
 	vec = DirectX::XMVectorSet(10.f, 10, 0, 1.f);
 	this->addGameObjectToWorld(true, true, 2, 3, &m_models[3], vec, DirectX::XMVectorSet(1, 1, 1, 1), DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f));
 	vec = DirectX::XMVectorSet(10.f, 15, 0, 1.f);
@@ -224,6 +227,22 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 		this->m_chainGObjects->push_back(this->m_gameObjects.back());
 	}
 	
+	// PuzzleRoom -------------------------------------------------------------
+
+	this->m_models.emplace_back(); //add empty model
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); //reset material
+	this->m_models[6].initializeModelBff(device, dContext, "EdvinPuzzleRoom.bff", mat, L"Textures/ColorTexture.png"); //load model
+	vec = DirectX::XMVectorSet(-80, 7, 0, 1); //world pos
+	this->addGameObjectToWorld(true, false, 1, 6, &m_models[6], vec, NormalScale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
+
+	// Button -------------------------------------------------------------
+
+	this->m_models.emplace_back(); //add empty model
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); //reset material
+	this->m_models[7].initializeModelBff(device, dContext, "Button.bff", mat, L"Textures/BirdHyroglajf.png"); //load model
+	vec = DirectX::XMVectorSet(-120, 0, 0, 1); //world pos
+	this->addGameObjectToWorld(true, false, 1, 7, &m_models[7], vec, NormalScale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
+
 	// Player
 	this->m_player.initialize(-1, -1, 60.f, DirectX::XMFLOAT3(20.f, 20.f, 20.f), DirectX::XMFLOAT3(.01f, .01f, .01f), hook, hookHand, this->m_chainGObjects, audioEngine);
 	this->m_player.setPosition(DirectX::XMVectorSet(0.f, 5.f, -1.f, 1.f));

@@ -10,6 +10,7 @@ class GameState
 private:
 	Player m_player;
 	Camera m_camera;
+	
 
 	std::vector<Model> m_models;
 	std::vector<GameObject*> m_gameObjects;
