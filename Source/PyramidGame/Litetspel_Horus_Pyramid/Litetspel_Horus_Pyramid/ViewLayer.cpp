@@ -133,137 +133,10 @@ void ViewLayer::initDepthStencilBuffer()
 
 void ViewLayer::initShaders()
 {
-	// Binary Large OBject (BLOB), for compiled shader, and errors.
-	ID3DBlob* errorBlob = nullptr;
-	HRESULT hr;
-
-	UINT flags = D3DCOMPILE_ENABLE_STRICTNESS;
-	#if defined( DEBUG ) || defined( _DEBUG )
-		flags |= D3DCOMPILE_DEBUG;
-	#endif
-
-	// Create Vertex Shader
-
-	ID3DBlob* vsBlob = nullptr;
-	hr = D3DCompileFromFile(
-		L"Shader Files\\VertexShader.hlsl",	// filename
-		nullptr,							// optional macros
-		D3D_COMPILE_STANDARD_FILE_INCLUDE,	// optional include files
-		"main",								// entry point
-		"vs_5_0",							// shader model (target)
-		flags,								// shader compile options (DEBUGGING)
-		0,									// IGNORE...DEPRECATED.
-		&vsBlob,							// double pointer to ID3DBlob		
-		&errorBlob							// pointer for Error Blob messages.
-	);
-
-	if (FAILED(hr))
-	{
-		if (errorBlob)
-		{
-			OutputDebugStringA((char*)errorBlob->GetBufferPointer());
-			errorBlob->Release();
-		}
-		if (vsBlob)
-			vsBlob->Release();
-		assert(false);
-	}
-
-	hr = this->m_device->CreateVertexShader(
-		vsBlob->GetBufferPointer(),
-		vsBlob->GetBufferSize(),
-		nullptr,
-		&this->m_vertexShader
-	);
-	assert(SUCCEEDED(hr) && "Error, failed to create vertex shader!");
-
-	// Vertex Layout
-	D3D11_INPUT_ELEMENT_DESC layoutDesc[] = {
-		{
-			"POSITION",
-			0,
-			DXGI_FORMAT_R32G32B32_FLOAT,
-			0,
-			0,
-			D3D11_INPUT_PER_VERTEX_DATA,
-			0
-		},
-		/*{
-			"COLOR",
-			0,
-			DXGI_FORMAT_R32G32B32_FLOAT,
-			0,
-			12,
-			D3D11_INPUT_PER_VERTEX_DATA,
-			0
-		}*/
-		{
-			"NORMAL",
-			0,
-			DXGI_FORMAT_R32G32B32_FLOAT,
-			0,
-			12,
-			D3D11_INPUT_PER_VERTEX_DATA,
-			0
-		},
-		{
-			"TEXCOORD",
-			0,
-			DXGI_FORMAT_R32G32_FLOAT,
-			0,
-			24,
-			D3D11_INPUT_PER_VERTEX_DATA,
-			0
-		},
-	};
-
-	hr = this->m_device->CreateInputLayout(
-		layoutDesc,
-		3,
-		vsBlob->GetBufferPointer(),
-		vsBlob->GetBufferSize(),
-		&this->m_vertexLayout
-	);
-	assert(SUCCEEDED(hr) && "Error, failed to create vertex layout!");
-	vsBlob->Release();
-
-	// Create Pixel Shader
-	ID3DBlob* psBlob = nullptr;
-	if (errorBlob) errorBlob->Release();
-	errorBlob = nullptr;
-
-	hr = D3DCompileFromFile(
-		L"Shader Files\\PixelShader.hlsl",
-		nullptr,
-		D3D_COMPILE_STANDARD_FILE_INCLUDE,
-		"main",
-		"ps_5_0",
-		flags,
-		0,
-		&psBlob,
-		&errorBlob
-	);
-
-	if (FAILED(hr))
-	{
-		if (errorBlob)
-		{
-			OutputDebugStringA((char*)errorBlob->GetBufferPointer());
-			errorBlob->Release();
-		}
-		if (psBlob)
-			psBlob->Release();
-		assert(false);
-	}
-
-	hr = this->m_device->CreatePixelShader(
-		psBlob->GetBufferPointer(),
-		psBlob->GetBufferSize(),
-		nullptr,
-		&this->m_pixelShader
-	);
-	assert(SUCCEEDED(hr) && "Error, failed to create pixel shader!");
-	psBlob->Release();
+	ShaderFiles shaders;
+	shaders.vs = L"Shader Files\\VertexShader.hlsl";
+	shaders.ps = L"Shader Files\\PixelShader.hlsl";
+	this->m_shaders.initialize(this->m_device.Get(), this->m_deviceContext.Get(), shaders);
 }
 
 ViewLayer::ViewLayer()
@@ -448,13 +321,9 @@ void ViewLayer::render()
 	this->m_deviceContext->RSSetState(this->m_states->CullCounterClockwise());
 
 	// Set Shaders
-	this->m_deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	this->m_deviceContext->IASetInputLayout(this->m_vertexLayout.Get());
+	this->m_shaders.setShaders();
 
 	this->m_deviceContext->PSSetSamplers(0, 1, this->m_samplerState.GetAddressOf());
-
-	this->m_deviceContext->VSSetShader(this->m_vertexShader.Get(), nullptr, 0);
-	this->m_deviceContext->PSSetShader(this->m_pixelShader.Get(), nullptr, 0);
 
 	// Set Constant Buffer
 	this->m_deviceContext->PSSetConstantBuffers(1, 1, this->m_lightBuffer.GetAdressOf());

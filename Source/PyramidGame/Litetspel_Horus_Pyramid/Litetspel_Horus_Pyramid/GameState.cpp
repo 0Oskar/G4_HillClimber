@@ -82,6 +82,22 @@ void GameState::addPlatformToWorld(int mdlIndex, DirectX::BoundingOrientedBox* p
 	this->m_player.addAABB(this->m_gameObjects.back()->getAABBPtr());
 }
 
+void GameState::addPortalToWorld(XMVECTOR teleportLocation, int mdlIndx, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR scale3D, DirectX::XMFLOAT3 boundingBoxSize)
+{
+	this->m_wvpCBuffers.emplace_back();
+	this->m_wvpCBuffers.back().init(m_device, m_dContext);
+	int bufferIndex = (int)m_wvpCBuffers.size() - 1;
+
+	this->m_gameObjects.emplace_back(new Portal());
+	dynamic_cast<Portal*>(this->m_gameObjects.back())->initialize(mdlIndx, (int)m_wvpCBuffers.size() - 1, mdl, teleportLocation, &this->m_player);
+
+
+	this->m_gameObjects.back()->setScale(scale3D);
+	this->m_gameObjects.back()->setPosition(position);
+	this->m_gameObjects.back()->setBoundingBox(boundingBoxSize);
+	//this->m_player.addAABB(this->m_gameObjects.back()->getAABBPtr());
+}
+
 void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext, GameOptions options, std::shared_ptr<DirectX::AudioEngine> audioEngine)
 {
 	// Material
@@ -257,6 +273,15 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 		}
 	}
 
+	// Portal
+	this->m_models.emplace_back();
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
+	this->m_models[6].loadVertexFromOBJ(device, dContext, L"Models/PuzzleRoomGate.obj", mat, L"Textures/PuzzleDoor_Texture2.png");
+
+	vec = DirectX::XMVectorSet(0.f, 120.f, 170.f, 1.f);
+	//XMVECTOR vecScale = DirectX::XMVectorSet(1.f, 1.f, -1.f, 1.f);
+	this->addPortalToWorld(XMVectorSet(0.f, 0.f, 0.f, 1.f), 6, &m_models[6], vec, NormalScale, DirectX::XMFLOAT3(3.f, 8.f, 0.6f));
+
 	// Camera
 	this->m_camera.followMoveComp(this->m_player.getMoveCompPtr());
 	this->m_camera.initialize(
@@ -276,10 +301,21 @@ void GameState::update(Keyboard* keyboard, MouseEvent mouseEvent, Mouse* mousePt
 	// Camera
 	this->m_camera.update(mouseEvent, dt);
 
+	
+
 	// Game Objects
 	for (size_t i = 0; i < this->m_gameObjects.size(); i++)
 	{
-		this->m_gameObjects[i]->update(dt);
+		Portal* portalPtr = dynamic_cast<Portal*>(this->m_gameObjects[i]);
+
+		if (portalPtr != nullptr)
+		{
+			portalPtr->update();
+		}
+		else
+		{
+			this->m_gameObjects[i]->update(dt);
+		}
 
 		// World View Projection Matrix Contruction
 		VS_CONSTANT_BUFFER wvpData;

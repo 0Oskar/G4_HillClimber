@@ -4,6 +4,7 @@
 #include "Model.h"
 #include "Timer.h"
 #include "Platform.h"
+#include "Shaders.h"
 
 class ViewLayer
 {
@@ -30,9 +31,7 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> m_samplerState;
 
 	// Shaders
-	Microsoft::WRL::ComPtr< ID3D11VertexShader > m_vertexShader;
-	Microsoft::WRL::ComPtr< ID3D11PixelShader > m_pixelShader;
-	Microsoft::WRL::ComPtr< ID3D11InputLayout > m_vertexLayout;
+	Shaders m_shaders;
 
 	// Constant Buffer
 	Microsoft::WRL::ComPtr< ID3D11Buffer > m_constantBuffer;
