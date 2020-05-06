@@ -45,6 +45,8 @@ private:
 
 	bool wonThePuzzle = false;
 
+	bool lifeTaken = false;
+
 
 
 	std::vector<Model> m_models;
@@ -77,7 +79,7 @@ public:
 	float convertDegreesToRadians(float degree);
 
 	void addPortalToWorld(XMVECTOR teleportLocation, int mdlIndx, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR scale3D, DirectX::XMFLOAT3 boundingBoxSize, Room* room = nullptr);
-
+	void looseALife(bool looseLife);
 
 	// Initialization
 	void initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext, GameOptions options, std::shared_ptr<DirectX::AudioEngine> audioEngine);

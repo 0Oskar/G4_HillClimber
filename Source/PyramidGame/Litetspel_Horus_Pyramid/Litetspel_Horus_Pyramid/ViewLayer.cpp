@@ -438,9 +438,19 @@ void ViewLayer::render()
 		winPuzzleObject.Center = DirectX::XMFLOAT3(-11.f, 30.f, -39.8f); 
 		winPuzzleObject.Extents = DirectX::XMFLOAT3(2.f, 2.f, 2.f);
 
-		deathTrap1.Center = DirectX::XMFLOAT3(-10.f, 2.f, -129.f);
-		deathTrap1.Extents = DirectX::XMFLOAT3(27.f, 1.f, 4.f);
+		deathTrap1.Center = DirectX::XMFLOAT3(-10.f, -1.5f, -129.f);
+		deathTrap1.Extents = DirectX::XMFLOAT3(27.f, 1.f, 4.f); 
 
+		deathTrap2.Center = DirectX::XMFLOAT3(-10.f, -1.f, -63.f);
+		deathTrap2.Extents = DirectX::XMFLOAT3(27.f, 1.f, 4.f);
+
+		
+
+		tempWall1.Center = DirectX::XMFLOAT3(10.f, 2.f, -120.f);
+		tempWall1.Extents = DirectX::XMFLOAT3(2.f, 40.f, 85.f);
+
+		tempWall2.Center = DirectX::XMFLOAT3(-31.f, 2.f, -120.f);
+		tempWall2.Extents = DirectX::XMFLOAT3(2.f, 40.f, 85.f);
 	
 		DX::Draw(m_batch.get(), leverBB, DirectX::Colors::Red);
 		DX::Draw(m_batch.get(), leverBB2, DirectX::Colors::Red);
@@ -448,28 +458,10 @@ void ViewLayer::render()
 		DX::Draw(m_batch.get(), triggerBB2, DirectX::Colors::Red);
 		DX::Draw(m_batch.get(), winPuzzleObject, DirectX::Colors::Red);
 		DX::Draw(m_batch.get(), deathTrap1, DirectX::Colors::Red);
-
-		/*pusselBox1.Center = DirectX::XMFLOAT3(-10.f, 1.0f, -104.0f);
-		pusselBox1.Extents = DirectX::XMFLOAT3(20.f, 1.5f,  20.f);
-
-		pusselBox2.Center = DirectX::XMFLOAT3(-10.f, 1.0f, -154.0f);
-		pusselBox2.Extents = DirectX::XMFLOAT3(20.f, 1.5f, 20.8f);
-
-		pusselBox3.Center = DirectX::XMFLOAT3(-10.f, 11.6f, -86.f);
-		pusselBox3.Extents = DirectX::XMFLOAT3(20.f, 13.f, 1.5f);
-
-		pusselBox4.Center = DirectX::XMFLOAT3(-10.f, 23.f, -77.f);
-		pusselBox4.Extents = DirectX::XMFLOAT3(20.f, 1.5f, 10.8f);
-
-		pusselBox5.Center = DirectX::XMFLOAT3(-10.f, 23.f, -45.4f);
-		pusselBox5.Extents = DirectX::XMFLOAT3(20.f, 1.5f, 11.8f);*/
-
-		//DX::Draw(m_batch.get(), pusselBox1, DirectX::Colors::Red);
-		//DX::Draw(m_batch.get(), pusselBox2, DirectX::Colors::Red);
-		//DX::Draw(m_batch.get(), pusselBox3, DirectX::Colors::Red);
-		//DX::Draw(m_batch.get(), pusselBox4, DirectX::Colors::Red);
-		//DX::Draw(m_batch.get(), pusselBox5, DirectX::Colors::Red);
-
+		DX::Draw(m_batch.get(), deathTrap2, DirectX::Colors::Red);
+		DX::Draw(m_batch.get(), tempWall1, DirectX::Colors::Red);
+		DX::Draw(m_batch.get(), tempWall2, DirectX::Colors::Red);
+		
 		m_batch->End();
 	}
 

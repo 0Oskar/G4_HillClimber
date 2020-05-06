@@ -140,6 +140,14 @@ void GameState::addPortalToWorld(XMVECTOR teleportLocation, int mdlIndx, Model* 
 	//this->m_player.addAABB(this->m_gameObjects.back()->getAABBPtr());
 }
 
+void GameState::looseALife(bool looseLife)
+{
+	if (looseLife == true)
+	{
+
+	}
+}
+
 void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext, GameOptions options, std::shared_ptr<DirectX::AudioEngine> audioEngine)
 {
 	// Material
@@ -339,8 +347,12 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	triggerBB.back().Extents = DirectX::XMFLOAT3(20.f, 10.f, 2.5f);
 
 	deathTrapBB.emplace_back();
-	deathTrapBB.back().Center = DirectX::XMFLOAT3(-10.f, 2.f, -129.f);
+	deathTrapBB.back().Center = DirectX::XMFLOAT3(-10.f, -1.5f, -129.f);
 	deathTrapBB.back().Extents = DirectX::XMFLOAT3(27.f, 3.f, 4.f);
+
+	deathTrapBB.emplace_back();
+	deathTrapBB.back().Center = DirectX::XMFLOAT3(-10.f, -0.5f, -63.f);
+	deathTrapBB.back().Extents = DirectX::XMFLOAT3(27.f, 3.f, 5.f);
 
 	pussels.emplace_back();
 	pussels.back().Center = DirectX::XMFLOAT3(-10.f, 1.0f, -104.0f);
@@ -351,7 +363,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	pussels.back().Extents = DirectX::XMFLOAT3(20.f, 1.5f, 20.8f);
 
 	pussels.emplace_back();
-	pussels.back().Center = DirectX::XMFLOAT3(-10.f, 11.6f, -86.f);
+	pussels.back().Center = DirectX::XMFLOAT3(-10.f, 11.f, -86.f);
 	pussels.back().Extents = DirectX::XMFLOAT3(20.f, 13.f, 1.5f);
 
 	pussels.emplace_back();
@@ -361,6 +373,14 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	pussels.emplace_back();
 	pussels.back().Center = DirectX::XMFLOAT3(-10.f, 23.f, -45.4f);
 	pussels.back().Extents = DirectX::XMFLOAT3(20.f, 1.5f, 11.8f);
+
+	pussels.emplace_back();
+	pussels.back().Center = DirectX::XMFLOAT3(9.5f, 2.f, -120.f);
+	pussels.back().Extents = DirectX::XMFLOAT3(2.f, 40.f, 85.f);
+	
+	pussels.emplace_back();
+	pussels.back().Center = DirectX::XMFLOAT3(-31.f, 2.f, -120.f);
+	pussels.back().Extents = DirectX::XMFLOAT3(2.f, 40.f, 85.f);	
 
 
 	for (int i = 0; i < pussels.size(); i++)
@@ -522,11 +542,14 @@ void GameState::update(Keyboard* keyboard, MouseEvent mouseEvent, Mouse* mousePt
 			}
 		}
 
-		if (deathTrapBB[0].Intersects(this->m_player.getAABB()))
+		for (int i = 0; i < deathTrapBB.size(); i++)
 		{
-			OutputDebugString(L"SPIKES");
-			//this->m_player.getMoveCompPtr()->position = DirectX::XMVectorSet(-20.f, -300.f, -165.f, 1.f);
+			if (deathTrapBB[i].Intersects(this->m_player.getAABB()))
+			{
+				this->m_player.getMoveCompPtr()->position = DirectX::XMVectorSet(-20.f, 20.f, -165.f, 1.f);
+			}
 		}
+		
 
 	for (int i = 0; i < dartTrap.size(); i++)
 	{

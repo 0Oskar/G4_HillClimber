@@ -22,6 +22,9 @@ private:
 	DirectX::BoundingBox leverBB2;
 	DirectX::BoundingBox winPuzzleObject;
 	DirectX::BoundingBox deathTrap1;
+	DirectX::BoundingBox deathTrap2;
+	DirectX::BoundingBox tempWall1;
+	DirectX::BoundingBox tempWall2;
 
 
 	// Device

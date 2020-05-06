@@ -49,7 +49,7 @@ void Player::wonPuzzle(bool won)
 {
 	if (won == true)
 	{
-		this->getMoveCompPtr()->position = DirectX::XMVectorSet(-20.f, -300.f, -165.f, 1.f);
+		this->getMoveCompPtr()->position = DirectX::XMVectorSet(-20.f, 50.f, -165.f, 1.f);
 	}
 }
 
@@ -100,7 +100,7 @@ void Player::update(Keyboard* keyboard, Mouse* mouse, float dt)
 		if (keyboard->isKeyPressed(' '))
 
 		{
-			this->m_physicsComp->jump(3.f, dt);
+			this->m_physicsComp->jump(20.f, dt);
 			/*ImporterBFF::Manager* myManager = &ImporterBFF::Manager::GetInstance();
 			ModelBFF myModel = myManager->LoadModel("biFile.bff");
 
