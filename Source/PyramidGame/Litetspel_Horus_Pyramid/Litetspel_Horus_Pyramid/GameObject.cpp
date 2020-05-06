@@ -109,7 +109,6 @@ void GameObject::initializeStatic(bool collidable, int modelIndex, int wvpCBuffe
 	this->m_texturePath = this->m_modelptr->m_originalTexture;
 }
 
-
 void GameObject::initializeDynamic(bool collidable, bool useDeceleration, int modelIndex, int wvpCBufferIndex, float mass, DirectX::XMFLOAT3 acceleration, DirectX::XMFLOAT3 deceleration, Model* mdl)
 {
 	this->m_isStatic = false;

@@ -4,8 +4,7 @@
 #include "MovementComponent.h"
 #include "PhysicsComponent.h"
 #include "Input.h"
-#include"HookHand.h"
-
+#include "HookHand.h"
 
 class Player : public GameObject
 {
@@ -13,9 +12,12 @@ private:
 	std::vector<DirectX::BoundingBox*> m_collidableAABBoxes;
 	DirectX::BoundingOrientedBox m_pyramidOBB;
 	HookHand m_hookHand;
-	bool lastFly;
+	float m_lastOnGroundYPos;
+	float m_failThreshold;
+	bool m_lastFly;
 
-	std::string myString;
+	bool m_QAmode;
+	//std::string myString;
 
 public:
 	Player();

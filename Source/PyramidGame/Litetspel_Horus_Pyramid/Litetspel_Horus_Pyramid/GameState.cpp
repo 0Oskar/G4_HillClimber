@@ -5,7 +5,7 @@ GameState::GameState()
 {
 	this->m_device = nullptr;
 	this->m_dContext = nullptr;
-  this->m_chainGObjects = new std::vector<GameObject*>();
+	this->m_chainGObjects = new std::vector<GameObject*>();
 }
 
 GameState::~GameState() {}
