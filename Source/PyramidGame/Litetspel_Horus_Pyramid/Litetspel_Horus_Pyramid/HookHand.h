@@ -35,6 +35,8 @@ private:
 	PhysicsComponent* m_hookPhysicsComp;
 	MovementComponent* m_playerMovement;
 	std::vector<DirectX::BoundingBox*>* m_boundingBoxes;
+	std::vector<DirectX::BoundingBox*>* m_platformsBB;
+
 
 	Timer m_hookTimer;
 	DirectX::XMVECTOR m_origin;
@@ -53,7 +55,10 @@ private:
 
 public:
 	HookHand();
-	void init(GameObject* gObject, MovementComponent* plyMoveComp, std::vector<DirectX::BoundingBox*>* bb, GameObject* hookGun, std::vector<GameObject*>* chainGObjects, std::shared_ptr<DirectX::AudioEngine> audioEngine);
+
+	void init(GameObject* gObject, MovementComponent* plyMoveComp, std::vector<DirectX::BoundingBox*>* bb, GameObject* hookGun, std::vector<GameObject*>* chainGObjects, std::shared_ptr<DirectX::AudioEngine> audioEngine, std::vector<DirectX::BoundingBox*> platformBB);
+
+	
 	void update(float dt);
 	bool shouldFly();
 	void fire();
