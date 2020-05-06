@@ -22,7 +22,6 @@ void Platform::update(float dt)
 {
 	if (m_hasColided)
 	{
-		OutputDebugString(L"PLATFORM");
 		if (m_shouldDestroy)
 		{
 			this->m_physicsComp->updatePosition(dt);

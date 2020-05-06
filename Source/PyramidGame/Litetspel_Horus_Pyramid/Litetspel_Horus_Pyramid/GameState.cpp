@@ -8,7 +8,6 @@ GameState::GameState()
 	this->m_chainGObjects = new std::vector<GameObject*>();
 	this->m_activeRoom = nullptr;
 	this->m_activeRoomChanged = false;
-
 }
 
 GameState::~GameState() {}

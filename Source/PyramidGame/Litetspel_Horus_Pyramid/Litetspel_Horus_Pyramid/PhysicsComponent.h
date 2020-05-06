@@ -110,6 +110,10 @@ public:
 	{
 		return this->m_aabb;
 	}
+	bool getIsJumping() const
+	{
+		return this->m_isJumping;
+	}
 
 	// Setters
 	void setBoundingBox(DirectX::XMFLOAT3 center, DirectX::XMFLOAT3 extends)
@@ -125,12 +129,15 @@ public:
 	{
 		this->m_acceleration = newAcceleration;
 	}
+	void setIsJumping(bool isJumping)
+	{
+		this->m_isJumping = isJumping;
+	}
 
 	void addForce(DirectX::XMFLOAT3 force, float dt)
 	{
 		this->m_velocity = DirectX::XMFLOAT3(this->m_velocity.x + force.x, this->m_velocity.y + force.y, this->m_velocity.z + force.z);
 	}
-
 	void addForceDir(Direction dir, float dt, float multiplier = 1.f)
 	{
 		DirectX::XMVECTOR finalForce = DirectX::XMVectorZero();
@@ -165,7 +172,6 @@ public:
 
 		this->m_velocity = DirectX::XMFLOAT3(this->m_velocity.x + finalForceF3.x, this->m_velocity.y + finalForceF3.y, this->m_velocity.z + finalForceF3.z);
 	}
-
 	void addForceDir(DirectX::XMVECTOR dir, float dt, float multiplier = 1.f)
 	{
 		DirectX::XMVECTOR finalForce = DirectX::XMVectorZero();
@@ -178,7 +184,6 @@ public:
 
 		this->m_velocity = DirectX::XMFLOAT3(this->m_velocity.x + finalForceF3.x, this->m_velocity.y + finalForceF3.y, this->m_velocity.z + finalForceF3.z);
 	}
-
 	void addGravity(float dt)
 	{
 		this->m_velocity.y += this->m_mass * -GRAVITY;
