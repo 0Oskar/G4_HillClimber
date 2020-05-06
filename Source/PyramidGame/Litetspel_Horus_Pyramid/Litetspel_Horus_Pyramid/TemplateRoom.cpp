@@ -1,3 +1,4 @@
+#include "pch.h"
 #include"TemplateRoom.h"
 
 TemplateRoom::TemplateRoom()

@@ -286,32 +286,32 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
-	this->m_models[5].loadVertexFromOBJ(device, dContext, L"Models/LeverRoom.obj", mat, L"Textures/sandTexture.png");
+	this->m_models[6].loadVertexFromOBJ(device, dContext, L"Models/LeverRoom.obj", mat, L"Textures/sandTexture.png");
 
 	vec = DirectX::XMVectorSet(-10.f, 2, -100, 1.f);
-	this->addGameObjectToWorld(false, false, 2, 5, &m_models[5], vec, DirectX::XMVectorSet(1, 1, 1, 1), DirectX::XMFLOAT3(1.f, 1.f, 1.f));
+	this->addGameObjectToWorld(false, false, 2, 6, &m_models[6], vec, DirectX::XMVectorSet(1, 1, 1, 1), DirectX::XMFLOAT3(1.f, 1.f, 1.f));
 
 	//Lever
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
-	this->m_models[6].loadVertexFromOBJ(device, dContext, L"Models/Lever.obj", mat, L"Textures/platformTextureCracks1.png");
+	this->m_models[7].loadVertexFromOBJ(device, dContext, L"Models/Lever.obj", mat, L"Textures/platformTextureCracks1.png");
 
 	vec = DirectX::XMVectorSet(-15.f, 5.f, -88.f, 1.f);
 	rotation = DirectX::XMVectorSet(0.f, convertDegreesToRadians(-90), convertDegreesToRadians(-270), 1.f);
-	this->addLeverToWorld(6, &m_models[6], vec, rotation, DirectX::XMFLOAT3(2.f, 2.f, 2.f));
+	this->addLeverToWorld(7, &m_models[7], vec, rotation, DirectX::XMFLOAT3(2.f, 2.f, 2.f));
 
 	lever.emplace_back(dynamic_cast<Lever*>(this->m_gameObjects.back()));
 
 	vec = DirectX::XMVectorSet(7.5f, 5.f, -138.f, 1.f);
 	rotation = DirectX::XMVectorSet(0.f, 0.f, convertDegreesToRadians(-270), 1.f);
-	this->addLeverToWorld(6, &m_models[6], vec, rotation, DirectX::XMFLOAT3(2.f, 2.f, 2.f));
+	this->addLeverToWorld(7, &m_models[7], vec, rotation, DirectX::XMFLOAT3(2.f, 2.f, 2.f));
 
 	lever.emplace_back(dynamic_cast<Lever*>(this->m_gameObjects.back()));
 	
 
 	vec = DirectX::XMVectorSet(-11.f, 30.f, -39.8f, 1.f);
 	rotation = DirectX::XMVectorSet(0.f, 0.f, convertDegreesToRadians(-270), 1.f);
-	this->addLeverToWorld(6, &m_models[6], vec, rotation, DirectX::XMFLOAT3(2.f, 2.f, 2.f));
+	this->addLeverToWorld(7, &m_models[7], vec, rotation, DirectX::XMFLOAT3(2.f, 2.f, 2.f));
 
 	wonPuzzleObject.emplace_back(dynamic_cast<Lever*>(this->m_gameObjects.back()));
 
@@ -380,7 +380,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	}
 
 	// Player
-	this->m_player.initialize(-1, -1, 1.f, DirectX::XMFLOAT3(20.f, 20.f, 20.f), DirectX::XMFLOAT3(.01f, .01f, .01f), hook, hookHand, audioEngine, platformBB);
+	this->m_player.initialize(-1, -1, 1.f, DirectX::XMFLOAT3(20.f, 20.f, 20.f), DirectX::XMFLOAT3(.01f, .01f, .01f), hook, hookHand, m_chainGObjects, audioEngine, platformBB);
 
 	for (size_t i = 1; i < NR_OF_CHAIN_LINKS; i++)
 	{
@@ -394,19 +394,19 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 
 	this->m_models.emplace_back(); //add empty model
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); //reset material
-	this->m_models[6].initializeModelBff(device, dContext, "EdvinPuzzleRoom.bff", mat, L"Textures/ColorTexture.png"); //load model
+	this->m_models[8].initializeModelBff(device, dContext, "EdvinPuzzleRoom.bff", mat, L"Textures/ColorTexture.png"); //load model
 	vec = DirectX::XMVectorSet(-80, 7, 0, 1); //world pos
-	this->addGameObjectToWorld(true, false, 1, 6, &m_models[6], vec, NormalScale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
+	this->addGameObjectToWorld(true, false, 1, 8, &m_models[8], vec, NormalScale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
 
 	// Button -------------------------------------------------------------
 
 	this->m_models.emplace_back(); //add empty model
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); //reset material
-	this->m_models[7].initializeModelBff(device, dContext, "Button.bff", mat, L"Textures/BirdHyroglajf.png"); //load model
+	this->m_models[9].initializeModelBff(device, dContext, "Button.bff", mat, L"Textures/BirdHyroglajf.png"); //load model
 	vec = DirectX::XMVectorSet(-120, 0, 0, 1); //world pos
 
 	// Player
-	this->m_player.initialize(-1, -1, 60.f, DirectX::XMFLOAT3(20.f, 20.f, 20.f), DirectX::XMFLOAT3(.01f, .01f, .01f), hook, hookHand, this->m_chainGObjects, audioEngine);
+	//this->m_player.initialize(-1, -1, 60.f, DirectX::XMFLOAT3(20.f, 20.f, 20.f), DirectX::XMFLOAT3(.01f, .01f, .01f), hook, hookHand, this->m_chainGObjects, audioEngine, platformBB);
 	this->m_player.setPosition(DirectX::XMVectorSet(0.f, 5.f, -1.f, 1.f));
 	
 	//Room creation
@@ -438,11 +438,11 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	// Portal
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
-	this->m_models[6].loadVertexFromOBJ(device, dContext, L"Models/PuzzleRoomGate.obj", mat, L"Textures/PuzzleDoor_Texture2.png");
+	this->m_models[10].loadVertexFromOBJ(device, dContext, L"Models/PuzzleRoomGate.obj", mat, L"Textures/PuzzleDoor_Texture2.png");
 
 	vec = DirectX::XMVectorSet(0.f, 120.f, 170.f, 1.f);
 	//XMVECTOR vecScale = DirectX::XMVectorSet(1.f, 1.f, -1.f, 1.f);
-	this->addPortalToWorld(XMVectorSet(0.f, 0.f, 0.f, 1.f), 6, &m_models[6], vec, NormalScale, DirectX::XMFLOAT3(3.f, 8.f, 0.6f), this->m_rooms.back());
+	this->addPortalToWorld(XMVectorSet(0.f, 0.f, 0.f, 1.f), 10, &m_models[10], vec, NormalScale, DirectX::XMFLOAT3(3.f, 8.f, 0.6f), this->m_rooms.back());
 
 
 	// Camera
