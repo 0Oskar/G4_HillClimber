@@ -173,6 +173,7 @@
     </ClCompile>
     <ClCompile Include="Platform.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Portal.cpp" />
     <ClCompile Include="pugixml.cpp" />
     <ClCompile Include="Room.cpp" />
     <ClCompile Include="TemplateRoom.cpp" />
@@ -215,6 +216,7 @@
     <ClInclude Include="PhysicsComponent.h" />
     <ClInclude Include="Platform.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="Portal.h" />
     <ClInclude Include="ResourceHandler.h" />
     <ClInclude Include="Room.h" />
     <ClInclude Include="Shaders.h" />

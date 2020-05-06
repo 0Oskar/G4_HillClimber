@@ -22,7 +22,6 @@
 
 // Utilities
 #include "pugixml.hpp"
-
 #include "../Importer/ImporterBFF.h"
 
 // DirectX 11
