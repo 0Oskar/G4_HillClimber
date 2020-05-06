@@ -21,3 +21,13 @@ struct MaterialBFF
 	float Ambient[3];
 	float Opacity;
 };
+
+struct CameraBFF
+{
+	float pos[3];
+	float upVec[3];
+	float forwardVec[3];
+	float nearPlane;
+	float farPlane;
+	float FOV;
+};

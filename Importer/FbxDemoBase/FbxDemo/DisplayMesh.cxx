@@ -126,7 +126,7 @@ void DisplayMesh(FbxNode* pNode)
 		"AmbientG: " + std::to_string(materialData.Ambient[1]) + "\n" +
 		"AmbientB: " + std::to_string(materialData.Ambient[2]) + "\n" +
 		"\n" + 
-		"Opacity: " + std::to_string(materialData.Opacity) + "\n " );
+		"Opacity: " + std::to_string(materialData.Opacity) + "\n ");
 	DisplayCache(lMesh);
 }
 
@@ -135,9 +135,7 @@ void DisplayControlsPoints(FbxMesh* pMesh)
 {
 	int i, lControlPointsCount = pMesh->GetControlPointsCount();
 	FbxVector4* lControlPoints = pMesh->GetControlPoints();
-	//vertexCount = lControlPointsCount;
-	//vertexData.resize(vertexCount);
-	//meshData.nrOfVertex = vertexCount;
+
 
 	DisplayString("    Control Points");
 	std::string VertexData = "";
@@ -145,15 +143,12 @@ void DisplayControlsPoints(FbxMesh* pMesh)
 	{
 		DisplayInt("        Control Point ", i);
 		Display3DVector("            Coordinates: ", lControlPoints[i]);
-		/*vertexData[currentVertex].pos[0] = lControlPoints[i][0];
-		vertexData[currentVertex].pos[1] = lControlPoints[i][1];
-		vertexData[currentVertex].pos[2] = lControlPoints[i][2]; *///Add VertexPos <------------------------------------------
+
 
 		for (int j = 0; j < pMesh->GetElementNormalCount(); j++)
 		{
 			FbxGeometryElementNormal* leNormals = pMesh->GetElementNormal(j);
-			//FbxGeometryElementTangent* leTangent = pMesh->GetElementTangent(j);
-			//FbxGeometryElementBinormal* leBiNormals = pMesh->GetElementBinormal(j);
+
 			if (leNormals->GetMappingMode() == FbxGeometryElement::eByControlPoint)
 			{
 				char header[100];
@@ -163,36 +158,13 @@ void DisplayControlsPoints(FbxMesh* pMesh)
 				{
 					auto array = leNormals->GetDirectArray().GetAt(i);
 					Display3DVector(header, array);
-					//FbxVector4 temp = leNormals->GetDirectArray().GetAt(i);
-					//vertexData[currentVertex].norm[0] = array[0];
-					//vertexData[currentVertex].norm[1] = array[1];
-					//vertexData[currentVertex].norm[2] = array[2]; //Add Normal <------------------------------------------	
+
 				}
 
-				//FBXSDK_sprintf(header, 100, "            Tanget Vector: ");
-				//if (leTangent->GetReferenceMode() == FbxGeometryElement::eDirect)
-				//{
-				//	//Display3DVector(header, leTangent->GetDirectArray().GetAt(i));
-				//	//vertexData[currentVertex].tan[0] = leTangent->GetDirectArray().GetAt(i)[0];
-				//	//vertexData[currentVertex].tan[1] = leTangent->GetDirectArray().GetAt(i)[1];
-				//	//vertexData[currentVertex].tan[2] = leTangent->GetDirectArray().GetAt(i)[2]; //Add Tangent <------------------------------------------
-				//}
 
-				//FBXSDK_sprintf(header, 100, "            BiNormal Vector: ");
-				//if (leBiNormals->GetReferenceMode() == FbxGeometryElement::eDirect)
-				//{
-				//	Display3DVector(header, leBiNormals->GetDirectArray().GetAt(i));
-				//	//vertexData[currentVertex].norm[0] = leBiNormals->GetDirectArray().GetAt(i)[0];
-				//	//vertexData[currentVertex].norm[1] = leBiNormals->GetDirectArray().GetAt(i)[1];
-				//	//vertexData[currentVertex].norm[2] = leBiNormals->GetDirectArray().GetAt(i)[2]; //Add BiNormals <------------------------------------------
-				//}
 
 			}
-			//if (leBiNormals->GetMappingMode() == FbxGeometryElement::eByControlPoint)
-			//{
-			//	myStringFile.writeToStringFile("Bajs");
-			//}
-			//currentVertex += 1;
+
 		}
 	}
 	DisplayString("");

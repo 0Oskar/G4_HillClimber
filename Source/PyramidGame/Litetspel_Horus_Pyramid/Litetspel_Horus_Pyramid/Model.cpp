@@ -7,6 +7,7 @@ Model::Model()
 	this->m_deviceContextPtr = nullptr;
 	this->m_devicePtr = nullptr;
 	this->m_drawWithIndex = false;
+	myManager = &ImporterBFF::Manager::GetInstance();
 }
 
 void Model::initModel(ID3D11Device* device, ID3D11DeviceContext* dContext, MaterialData material, std::wstring texturePath)
@@ -63,8 +64,13 @@ void Model::loadVertexVector(ID3D11Device* device, ID3D11DeviceContext* dContext
 	HRESULT hr = this->m_vertexBuffer.initialize(this->m_devicePtr, vertexVector.data(), (int)vertexVector.size());
 	assert(SUCCEEDED(hr) && "Error, vertex buffer could not be created!");
 
+	this->m_vertices = vertexVector;
+
 	if (texturePath != L"")
+	{
 		this->m_material.init(device, dContext, material, texturePath.c_str());
+		this->m_originalTexture = texturePath;
+	}
 	else
 		this->m_material.init(device, dContext, material);
 }
@@ -199,6 +205,69 @@ void Model::loadVertexFromOBJ(ID3D11Device* device, ID3D11DeviceContext* dContex
 	}
 	else
 		this->m_material.init(device, dContext, material);
+}
+
+void Model::initializeModelBff(ID3D11Device* device, ID3D11DeviceContext* dContext, std::string fileName, MaterialData material, std::wstring texturePath)
+{
+	this->m_devicePtr = device;
+	this->m_deviceContextPtr = dContext;
+
+	ModelBFF myModel = myManager->LoadModel(fileName.c_str());
+	m_vertices.resize(myModel.mesh.nrOfVertex);
+	for (int i = 0; i < myModel.mesh.nrOfVertex; i++)
+	{
+		m_vertices[i].position = XMFLOAT3(myModel.vertexArr[i].pos);
+		m_vertices[i].normal = XMFLOAT3(myModel.vertexArr[i].norm);
+		m_vertices[i].textureCoord = XMFLOAT2(myModel.vertexArr[i].uv);
+	}
+
+	HRESULT hr = this->m_vertexBuffer.initialize(this->m_devicePtr, m_vertices.data(), (int)m_vertices.size());
+	assert(SUCCEEDED(hr) && "Error, vertex buffer could not be created!");
+
+	if (texturePath != L"")
+	{
+		this->m_material.init(device, dContext, material, texturePath.c_str());
+		this->m_originalTexture = texturePath;
+	}
+	else
+		this->m_material.init(device, dContext, material);
+
+	//printBffModel(myModel); //For testing
+}
+
+void Model::printBffModel(ModelBFF model)
+{
+for (int i = 0; i < model.mesh.nrOfVertex; i++)
+{
+	std::string vtxNr = "\nvtx:		" + std::to_string(i) + "\n";
+
+	std::string vtxPos = "Pos:		" + 
+		(std::to_string(model.vertexArr[i].pos[0]) + " " +
+		(std::to_string(model.vertexArr[i].pos[1])) + " " +
+		(std::to_string(model.vertexArr[i].pos[2]))) + "\n";
+
+	std::string uv = "uv:			" + 
+		(std::to_string(model.vertexArr[i].uv[0]) + " " +
+		(std::to_string(model.vertexArr[i].uv[1]))) + "\n";
+
+	std::string normal = "Normal:		" + 
+		(std::to_string(model.vertexArr[i].norm[0]) + " " +
+		(std::to_string(model.vertexArr[i].norm[1])) + " " +
+		(std::to_string(model.vertexArr[i].norm[2]))) + "\n";
+
+	std::string biNormal = "Binormal:	" + 
+		(std::to_string(model.vertexArr[i].biNorm[0]) + " " +
+		(std::to_string(model.vertexArr[i].biNorm[1])) + " " +
+		(std::to_string(model.vertexArr[i].biNorm[2]))) + "\n";
+
+	std::string tangent = "Tan:		" + 
+		(std::to_string(model.vertexArr[i].tan[0]) + " " +
+		(std::to_string(model.vertexArr[i].tan[1])) + " " +
+		(std::to_string(model.vertexArr[i].tan[2]))) + "\n";
+
+	OutputDebugStringA((vtxNr + vtxPos + uv + normal + biNormal + tangent).c_str());
+}
+OutputDebugStringA(std::to_string(model.material.Diffuse[1]).c_str());
 }
 
 void Model::draw(DirectX::XMMATRIX& viewProjMtx)
