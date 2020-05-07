@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "GameState.h"
 
-
 using namespace DirectX;
 
 GameState::GameState() 
@@ -249,7 +248,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	hookHand = this->m_gameObjects.back();
 
 	//Chain link
-  DirectX::XMFLOAT3 vecF3 = hook->getMoveCompPtr()->getPositionF3();
+    DirectX::XMFLOAT3 vecF3 = hook->getMoveCompPtr()->getPositionF3();
 	vec = DirectX::XMVectorSet(vecF3.x, vecF3.y, vecF3.z - 5.f, 1.f);
 	this->addGameObjectToWorld(true, false, 1, 5, &m_models[5], vec, NormalScale, XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
 	this->m_chainGObjects->push_back(this->m_gameObjects.back());
@@ -361,12 +360,10 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	
 
 	// PuzzleRoom ------------------------------------------------------------- (Edvin)
-
 	vec = DirectX::XMVectorSet(-80, 7, 0, 1); //world pos
 	this->addGameObjectToWorld(true, false, 1, 8, &m_models[8], vec, NormalScale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
 
 	// Button ------------------------------------------------------------- (Edvin)
-
 	vec = DirectX::XMVectorSet(-120, 0, 0, 1); //world pos
 	this->addGameObjectToWorld(true, false, 1, 9, &m_models[9], vec, NormalScale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
 
@@ -434,7 +431,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	// Camera
 	this->m_camera.followMoveComp(this->m_player.getMoveCompPtr());
 	this->m_camera.initialize(
-		0.01f,
+		options.mouseSensitivity,
 		options.fov,
 		(float)options.width / (float)options.height,
 		0.1f,
@@ -494,29 +491,29 @@ void GameState::update(Keyboard* keyboard, MouseEvent mouseEvent, Mouse* mousePt
 
 	//Kevin room logic
 	// DART
-		if (triggerBB[0].Intersects(this->m_player.getAABB()))
+	if (triggerBB[0].Intersects(this->m_player.getAABB()))
+	{
+		if (trapActive1 == true)
 		{
-			if (trapActive1 == true)
-			{
-				dartFly1 = true;
-			}			
-		}
+			dartFly1 = true;
+		}			
+	}
 
-		if (triggerBB[1].Intersects(this->m_player.getAABB()))
+	if (triggerBB[1].Intersects(this->m_player.getAABB()))
+	{
+		if (trapActive2 == true)
 		{
-			if (trapActive2 == true)
-			{
-				dartFly2 = true;
-			}
+			dartFly2 = true;
 		}
+	}
 
-		for (int i = 0; i < deathTrapBB.size(); i++)
+	for (int i = 0; i < deathTrapBB.size(); i++)
+	{
+		if (deathTrapBB[i].Intersects(this->m_player.getAABB()))
 		{
-			if (deathTrapBB[i].Intersects(this->m_player.getAABB()))
-			{
-				this->m_player.getMoveCompPtr()->position = DirectX::XMVectorSet(-20.f, 20.f, -165.f, 1.f);
-			}
+			this->m_player.getMoveCompPtr()->position = DirectX::XMVectorSet(-20.f, 20.f, -165.f, 1.f);
 		}
+	}
 		
 
 	for (int i = 0; i < dartTrap.size(); i++)

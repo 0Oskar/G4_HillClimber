@@ -13,9 +13,6 @@
 
 using namespace std;
 
-
-
-
 class GameState
 {
 private:

@@ -11,6 +11,7 @@ Application::Application()
 	this->m_gameOptions.height = 600;
 	this->m_gameOptions.width = 600;
 	this->m_gameOptions.fov = 40;
+	this->m_gameOptions.mouseSensitivity = 0.1f;
 	this->m_deltaTime = 0.f;
 	this->m_resetAudio = false;
 }
@@ -172,6 +173,7 @@ bool Application::loadGameOptions(std::string fileName)
 		this->m_gameOptions.height = std::stoi(optionsMap.at("Height"));
 		this->m_gameOptions.width = std::stoi(optionsMap.at("Width"));
 		this->m_gameOptions.fov = std::stof(optionsMap.at("FOV"));
+		this->m_gameOptions.mouseSensitivity = std::stof(optionsMap.at("mouseSensitivity"));
 	}
 
 	return result;

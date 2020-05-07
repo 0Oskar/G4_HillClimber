@@ -56,6 +56,7 @@ struct GameOptions
 	int width;
 	int height;
 	float fov;
+	float mouseSensitivity;
 };
 
 enum class Event
