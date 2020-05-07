@@ -1,7 +1,7 @@
 #pragma once
 #include"Room.h"
 
-class TemplateRoom : public Room
+class KevinsRoom : public Room
 {
 private:
 	void createBoundingBoxes();
@@ -9,8 +9,8 @@ private:
 	void onCompleted();
 
 public:
-	TemplateRoom();
-	~TemplateRoom();
+	KevinsRoom();
+	~KevinsRoom();
 	void update(float dt, Camera* camera, Room*& activeRoom, bool& activeRoomChanged);
 	void onEntrance();
 	void init();

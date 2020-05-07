@@ -19,7 +19,7 @@ Room::~Room()
 
 }
 
-void Room::initialize(ID3D11Device* device, ID3D11DeviceContext* dContext, std::vector<Model>* models, std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* cBuffer, Player* player, XMVECTOR position)
+void Room::initialize(ID3D11Device* device, ID3D11DeviceContext* dContext, std::vector<Model>* models, std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* cBuffer, Player* player, XMVECTOR position, std::shared_ptr<DirectX::AudioEngine> audioEngine)
 {
 	this->m_device = device;
 	this->m_dContext = dContext;
@@ -27,14 +27,41 @@ void Room::initialize(ID3D11Device* device, ID3D11DeviceContext* dContext, std::
 	this->m_worldPosition = position;
 	this->m_wvpCBuffers = cBuffer;
 	this->m_models = models;
+	this->audioEngine = audioEngine;
 }
-void Room::update(float dt, Camera* camera)
+void Room::initParent()
+{
+	this->m_active = false;
+	this->m_dContext = nullptr;
+	this->m_device = nullptr;
+	this->m_player = nullptr;
+	this->m_models = nullptr;
+	this->m_wvpCBuffers = nullptr;
+	this->m_entrencePosition = DirectX::XMVectorZero();
+	this->m_worldPosition = DirectX::XMVectorZero();
+}
+void Room::update(float dt, Camera* camera, Room* &activeRoom, bool &activeRoomChanged)
 {
 	if (!this->m_active)
 	{
 		for (int i = 0; i < this->m_gameObjects.size(); i++)
 		{
-			this->m_gameObjects.at(i)->update(dt);
+			Portal* portalPtr = dynamic_cast<Portal*>(this->m_gameObjects[i]);
+
+			if (portalPtr != nullptr)
+			{
+				portalPtr->update();
+				if (portalPtr->shouldChangeActiveRoom())
+				{
+					activeRoom = m_rooms.at(portalPtr->getRoomID());
+					portalPtr->resetActiveRoomVariable();
+					activeRoomChanged = true;
+				}
+			}
+			else
+			{
+				this->m_gameObjects[i]->update(dt);
+			}
 
 			VS_CONSTANT_BUFFER wvpData;
 			DirectX::XMMATRIX viewPMtrx = camera->getViewMatrix() * camera->getProjectionMatrix();
@@ -80,7 +107,7 @@ void Room::addGameObjectToRoom(bool dynamic, bool colide, float weight, int mdlI
 	else
 		gObject->setBoundingBox(boundingBoxSize);
 }
-void Room::addPlatformToRoom(int mdlIndex, DirectX::BoundingOrientedBox* pyramid, Model* mdl, DirectX::XMVECTOR position, DirectX::XMFLOAT3 platformBoundingBox)
+void Room::addPlatformToRoom(int mdlIndex, Model* mdl, DirectX::XMVECTOR position, DirectX::XMFLOAT3 platformBoundingBox, BoundingOrientedBox* pyramid)
 {
 	this->m_wvpCBuffers->emplace_back();
 	this->m_wvpCBuffers->back().init(m_device, m_dContext);
@@ -88,9 +115,25 @@ void Room::addPlatformToRoom(int mdlIndex, DirectX::BoundingOrientedBox* pyramid
 	dynamic_cast<Platform*>(this->m_gameObjects.back())->init(true, mdlIndex, (int)m_wvpCBuffers->size() - 1, pyramid, mdl);
 
 	XMVECTOR pos = m_worldPosition + position;
-	this->m_gameObjects.back()->setPosition(pos);
 	this->m_gameObjects.back()->setBoundingBox(platformBoundingBox);
+	this->m_gameObjects.back()->setPosition(pos);
 	this->m_player->addAABB(this->m_gameObjects.back()->getAABBPtr());
+}
+
+void Room::addPortalToRoom(XMVECTOR teleportLocation, int mdlIndx, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR scale3D, DirectX::XMFLOAT3 boundingBoxSize, int room)
+{
+	this->m_wvpCBuffers->emplace_back();
+	this->m_wvpCBuffers->back().init(m_device, m_dContext);
+	int bufferIndex = (int)m_wvpCBuffers->size() - 1;
+
+	this->m_gameObjects.emplace_back(new Portal());
+	dynamic_cast<Portal*>(this->m_gameObjects.back())->initialize(mdlIndx, (int)m_wvpCBuffers->size() - 1, mdl, teleportLocation, this->m_player, room);
+
+
+	this->m_gameObjects.back()->setScale(scale3D);
+	this->m_gameObjects.back()->setPosition(position);
+	this->m_gameObjects.back()->setBoundingBox(boundingBoxSize);
+	//this->m_player.addAABB(this->m_gameObjects.back()->getAABBPtr());
 }
 
 std::vector<GameObject*>* Room::getGameObjectsPtr()
@@ -114,4 +157,12 @@ void Room::addBoundingBox(XMVECTOR position, XMFLOAT3 extends)
 DirectX::XMVECTOR Room::getEntrancePosition()
 {
 	return this->m_entrencePosition;
+}
+
+void Room::addRooms(std::vector<Room*>* rooms)
+{
+	for (int i = 0; i < rooms->size(); i++)
+	{
+		this->m_rooms.emplace_back(rooms->at(i));
+	}
 }

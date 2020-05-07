@@ -30,6 +30,11 @@ void Player::initialize(int modelIndex, int wvpCBufferIndex, float mass, DirectX
 
 }
 
+void Player::updateHookHandBB(std::vector<DirectX::BoundingBox*> platformBB)
+{
+	this->m_hookHand.setBB(platformBB);
+}
+
 void Player::addAABB(DirectX::BoundingBox* aabb)
 {
 	this->m_collidableAABBoxes.push_back(aabb);

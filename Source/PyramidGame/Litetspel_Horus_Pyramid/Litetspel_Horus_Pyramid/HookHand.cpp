@@ -32,6 +32,11 @@ void HookHand::init(GameObject* gObject, MovementComponent* movementComponent, s
 	m_effect->SetVolume(0.002f);
 }
 
+void HookHand::setBB(std::vector<DirectX::BoundingBox*> platformBB)
+{
+	this->m_platformsBB = new std::vector<DirectX::BoundingBox*>(platformBB);
+}
+
 bool HookHand::canFire()
 {
 	return m_hookState == hookState::idle;
