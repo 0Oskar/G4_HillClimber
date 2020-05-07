@@ -4,14 +4,16 @@
 #include "Camera.h"
 #include "Model.h"
 #include "Platform.h"
-
 #include "ViewLayer.h"
 #include "Lever.h"
+#include "Portal.h"
+#include"TemplateRoom.h"
+#include"PyramidRoom.h"
+#include"KevinsRoom.h"
 
 using namespace std;
 
-#include"TemplateRoom.h"
-#include "Portal.h"
+
 
 
 class GameState
@@ -42,12 +44,10 @@ private:
 
 	bool trapActive1 = true;
 	bool trapActive2 = true;
-
 	bool wonThePuzzle = false;
-
 	bool lifeTaken = false;
 
-
+	void loadModels();
 
 	std::vector<Model> m_models;
 	std::vector<GameObject*> m_gameObjects;
@@ -78,7 +78,7 @@ public:
 	void addLeverToWorld(int mdlIndex, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation, DirectX::XMFLOAT3 leverBB);
 	float convertDegreesToRadians(float degree);
 
-	void addPortalToWorld(XMVECTOR teleportLocation, int mdlIndx, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR scale3D, DirectX::XMFLOAT3 boundingBoxSize, Room* room = nullptr);
+	void addPortalToWorld(XMVECTOR teleportLocation, int mdlIndx, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR scale3D, DirectX::XMFLOAT3 boundingBoxSize, int room);
 	void looseALife(bool looseLife);
 
 	// Initialization

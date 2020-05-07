@@ -78,6 +78,12 @@
     <ClCompile Include="Portal.cpp">
       <Filter>Source\Game Logic\GameObjects</Filter>
     </ClCompile>
+    <ClCompile Include="PyramidRoom.cpp">
+      <Filter>Source\Game Logic\Rooms</Filter>
+    </ClCompile>
+    <ClCompile Include="KevinsRoom.cpp">
+      <Filter>Source\Game Logic\Rooms</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -169,6 +175,12 @@
     </ClInclude>
     <ClInclude Include="Lever.h">
       <Filter>Header\Game Logic\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="PyramidRoom.h">
+      <Filter>Header\Game Logic\Rooms</Filter>
+    </ClInclude>
+    <ClInclude Include="KevinsRoom.h">
+      <Filter>Header\Game Logic\Rooms</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

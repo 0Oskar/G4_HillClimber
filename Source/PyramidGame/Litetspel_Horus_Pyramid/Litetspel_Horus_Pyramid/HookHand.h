@@ -57,7 +57,7 @@ public:
 	HookHand();
 
 	void init(GameObject* gObject, MovementComponent* plyMoveComp, std::vector<DirectX::BoundingBox*>* bb, GameObject* hookGun, std::vector<GameObject*>* chainGObjects, std::shared_ptr<DirectX::AudioEngine> audioEngine, std::vector<DirectX::BoundingBox*> platformBB);
-
+	void setBB(std::vector<DirectX::BoundingBox*> platformBB);
 	
 	void update(float dt);
 	bool shouldFly();
