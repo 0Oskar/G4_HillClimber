@@ -4,8 +4,9 @@
 #include "Camera.h"
 #include "Model.h"
 #include "Platform.h"
-#include"TemplateRoom.h"
 #include "Portal.h"
+#include "TemplateRoom.h"
+#include "CheckpointHandler.h"
 
 class GameState
 {
@@ -13,7 +14,6 @@ private:
 	Player m_player;
 	Camera m_camera;
 	
-
 	std::vector<Model> m_models;
 	std::vector<GameObject*> m_gameObjects;
 	std::vector<ConstBuffer<VS_CONSTANT_BUFFER>> m_wvpCBuffers;
@@ -21,6 +21,7 @@ private:
 	std::vector<GameObject*>* m_chainGObjects;
 	std::vector<Room*> m_rooms;
 	Room* m_activeRoom;
+	CheckpointHandler m_checkpointHandler;
   
 	ID3D11Device* m_device;
 	ID3D11DeviceContext* m_dContext;

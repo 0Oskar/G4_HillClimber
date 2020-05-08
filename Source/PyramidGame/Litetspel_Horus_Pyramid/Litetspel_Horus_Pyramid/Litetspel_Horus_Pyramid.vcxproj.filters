@@ -72,7 +72,12 @@
     <ClCompile Include="TemplateRoom.cpp">
       <Filter>Source\Game Logic\Rooms</Filter>
     </ClCompile>
-    <ClCompile Include="Portal.cpp" />
+    <ClCompile Include="Portal.cpp">
+      <Filter>Source\Game Logic\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="CheckpointHandler.cpp">
+      <Filter>Source\Game Logic</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -153,15 +158,17 @@
     <ClInclude Include="Shaders.h">
       <Filter>Header\View</Filter>
     </ClInclude>
-
     <ClInclude Include="Room.h">
       <Filter>Header\Game Logic</Filter>
     </ClInclude>
     <ClInclude Include="TemplateRoom.h">
       <Filter>Header\Game Logic\Rooms</Filter>
-      </ClInclude>
+    </ClInclude>
     <ClInclude Include="Portal.h">
       <Filter>Header\Game Logic\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="CheckpointHandler.h">
+      <Filter>Header\Game Logic</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
