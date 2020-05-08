@@ -157,6 +157,7 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Chain.cpp" />
     <ClCompile Include="DebugDraw.cpp" />
+    <ClCompile Include="EdvinsRoom.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameState.cpp" />
     <ClCompile Include="HookHand.cpp" />
@@ -213,6 +214,7 @@
     <ClInclude Include="DebugDraw.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameState.h" />
+    <ClInclude Include="EdvinsRoom.h" />
     <ClInclude Include="HookHand.h" />
     <ClInclude Include="IndexBuffer.h" />
     <ClInclude Include="Input.h" />
