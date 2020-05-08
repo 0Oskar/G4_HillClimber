@@ -7,6 +7,21 @@
     <FxCompile Include="Shader Files\PixelShader.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
+    <FxCompile Include="StreamOutParticleVS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="StreamOutParticleGS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="DrawParticleVS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="DrawParticleGS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="DrawParticlePS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp">
@@ -67,6 +82,9 @@
       <Filter>Source\View</Filter>
     </ClCompile>
     <ClCompile Include="Particle.cpp">
+      <Filter>Source\View</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleRenderer.cpp">
       <Filter>Source\View</Filter>
     </ClCompile>
   </ItemGroup>
@@ -150,6 +168,9 @@
       <Filter>Header\View</Filter>
     </ClInclude>
     <ClInclude Include="Particle.h">
+      <Filter>Header\View</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleRenderer.h">
       <Filter>Header\View</Filter>
     </ClInclude>
   </ItemGroup>
