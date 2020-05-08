@@ -9,6 +9,7 @@
 #include"TemplateRoom.h"
 #include"PyramidRoom.h"
 #include"KevinsRoom.h"
+#include"EdvinsRoom.h"
 
 using namespace std;
 
