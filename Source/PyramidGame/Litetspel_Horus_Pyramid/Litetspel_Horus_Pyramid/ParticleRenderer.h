@@ -1,0 +1,32 @@
+#pragma once
+#include "VertexBuffer.h"
+#include "Particle.h"
+
+class ParticleRenderer
+{
+private:
+	Microsoft::WRL::ComPtr< ID3D11RasterizerState > NoCullPR;
+	Microsoft::WRL::ComPtr < ID3D11BlendState > AlphaToCoveragePR;
+	Microsoft::WRL::ComPtr < ID3D11BlendState > TransparentPR;
+
+	ID3D11Device* m_device;
+	ID3D11DeviceContext* m_dContext;
+
+	VertexBuffer<Particle> m_initVB; 
+	VertexBuffer<Particle> m_drawVB;
+	VertexBuffer<Particle> m_streamOutVB;
+
+public:
+	ParticleRenderer();
+	~ParticleRenderer();
+
+	void initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext);
+	void setNoCullPR();
+	void setAlphaToCoveragePR();
+	void setTransparentPR();
+	void render();
+	
+
+
+
+};

@@ -5,6 +5,7 @@
 #include "Timer.h"
 #include "Platform.h"
 #include "Shaders.h"
+#include "Particle.h"
 
 class ViewLayer
 {
@@ -68,6 +69,10 @@ private:
 	std::unique_ptr<DirectX::SpriteFont> m_spriteFont;
 	std::string m_fpsString;
 	int m_fps;
+
+	// Particles
+	ConstBuffer<GS_PARTICLE_BUFFER> m_particleBuffer;
+
 
 	// Initialization Functions
 	void initDeviceAndSwapChain();

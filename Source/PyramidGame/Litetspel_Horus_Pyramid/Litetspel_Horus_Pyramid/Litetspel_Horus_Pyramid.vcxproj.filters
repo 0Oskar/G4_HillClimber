@@ -66,6 +66,9 @@
     <ClCompile Include="Shaders.cpp">
       <Filter>Source\View</Filter>
     </ClCompile>
+    <ClCompile Include="Particle.cpp">
+      <Filter>Source\View</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
