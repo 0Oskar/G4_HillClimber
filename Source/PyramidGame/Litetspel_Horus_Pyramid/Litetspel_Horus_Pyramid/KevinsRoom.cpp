@@ -16,7 +16,6 @@ void KevinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 
 	if (triggerBB[0].Intersects(this->m_player->getAABB()))
 	{
-		OutputDebugString(L"COLIDE WITH THAAP TRIGGER");
 		if (trapActive1 == true)
 		{
 			dartFly1 = true;
@@ -35,7 +34,7 @@ void KevinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 	{
 		if (deathTrapBB[i].Intersects(this->m_player->getAABB()))
 		{
-			this->m_player->getMoveCompPtr()->position = DirectX::XMVectorSet(-20.f, 20.f, -165.f, 1.f);
+			this->m_player->getMoveCompPtr()->position =  this->getRelativePosition(DirectX::XMVectorSet(-20.f, 20.f, -165.f + 140.f, 1.f));
 		}
 	}
 
@@ -44,7 +43,7 @@ void KevinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 	{
 		if (dartTrap[i]->getAABB().Intersects(this->m_player->getAABB()))
 		{
-			this->m_player->getMoveCompPtr()->position = DirectX::XMVectorSet(-20.f, -50.f, -165.f, 1.f);
+			this->m_player->getMoveCompPtr()->position = this->getRelativePosition(DirectX::XMVectorSet(-20.f, -50.f, -165.f + 140.f, 1.f));
 		}
 	}
 
@@ -53,12 +52,12 @@ void KevinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 		if (dartPosition1 <= 0)
 		{
 			dartPosition1 = 40.f;
-			dartTrap[0]->getMoveCompPtr()->position = DirectX::XMVectorSet(10.f, 27, -80, 1.f);
+			dartTrap[0]->getMoveCompPtr()->position = this->getRelativePosition(DirectX::XMVectorSet(10.f, 27, -80 + 140.f, 0.f));
 			dartFly1 = false;
 		}
 		else
 		{
-			dartTrap[0]->getMoveCompPtr()->position += DirectX::XMVectorSet(-40.f * dt, 0, 0, 1.f);
+			dartTrap[0]->getMoveCompPtr()->position = dartTrap[0]->getMoveCompPtr()->position + DirectX::XMVectorSet(-40.f * dt, 0, 0, 0.f);
 			dartPosition1 -= 40.f * dt;
 		}
 	}
@@ -68,12 +67,12 @@ void KevinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 		if (dartPosition2 <= 0)
 		{
 			dartPosition2 = 40.f;
-			dartTrap[1]->getMoveCompPtr()->position = DirectX::XMVectorSet(10.f, 27.f, -60.f, 1.f);
+			dartTrap[1]->getMoveCompPtr()->position = this->getRelativePosition(DirectX::XMVectorSet(10.f, 27.f, -60.f + 140.f, 0.f));
 			dartFly2 = false;
 		}
 		else
 		{
-			dartTrap[1]->getMoveCompPtr()->position += DirectX::XMVectorSet(-40.f * dt, 0, 0, 1.f);
+			dartTrap[1]->getMoveCompPtr()->position = dartTrap[1]->getMoveCompPtr()->position + DirectX::XMVectorSet(-40.f * dt, 0, 0, 0.f);
 			dartPosition2 -= 40.f * dt;
 		}
 	}
@@ -116,7 +115,7 @@ void KevinsRoom::init()
 	this->createBoundingBoxes();
 	this->m_player->addAABBFromVector(&m_boundingBoxes);
 
-	this->m_entrencePosition = m_worldPosition + XMVectorSet(-3, 3, 0, 0);
+	this->m_entrencePosition = m_worldPosition + XMVectorSet(-3, 5, -4, 0);
 }
 
 void KevinsRoom::portals()
@@ -201,7 +200,7 @@ void KevinsRoom::createSceneObjects()
 	wonPuzzleObject[0]->setScale(DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f));
 
 	vec = DirectX::XMVectorSet(10.f, 27, -80 + 140.f, 1.f);
-	this->addGameObjectToRoom(true, false, 2, 3, &m_models->at(3), vec, DirectX::XMVectorSet(0.1f, 0.1f, 0.1f, 1), DirectX::XMFLOAT3(1.f, 1.f, 1.f));
+	this->addGameObjectToRoom(true, false, 2, 3, &m_models->at(3), vec, DirectX::XMVectorSet(.1f, .1f, .1f, 1), DirectX::XMFLOAT3(1.f, 1.f, 1.f));
 	this->m_gameObjects.back()->setDrawBB(true);
 	this->trapBB.emplace_back(this->m_gameObjects.back()->getAABBPtr());
 
@@ -225,6 +224,8 @@ void KevinsRoom::onCompleted()
 	//What should happen when the room is completed(Ex: Play sound, move gameobject etc)
 	this->m_completed = true;
 
+	this->m_player->getphysicsCompPtr()->setVelocity({0, 0, 0 });
 	this->m_player->getMoveCompPtr()->position = this->m_entrencePosition;
+	this->m_player->getphysicsCompPtr()->setVelocity({ 0, 0, 0 });
 
 }

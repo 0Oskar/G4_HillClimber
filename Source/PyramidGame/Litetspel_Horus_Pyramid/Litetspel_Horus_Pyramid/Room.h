@@ -52,6 +52,7 @@ public:
 	DirectX::XMVECTOR getEntrancePosition();
 
 	void addRooms(std::vector<Room*>* rooms);
+	DirectX::XMVECTOR getRelativePosition(DirectX::XMVECTOR pos);
 	bool m_completed;
 
 };

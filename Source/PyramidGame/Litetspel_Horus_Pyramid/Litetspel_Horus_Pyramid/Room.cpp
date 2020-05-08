@@ -190,3 +190,9 @@ void Room::addRooms(std::vector<Room*>* rooms)
 		this->m_rooms.emplace_back(rooms->at(i));
 	}
 }
+
+DirectX::XMVECTOR Room::getRelativePosition(DirectX::XMVECTOR pos)
+{
+	XMVECTOR temp = this->m_worldPosition + pos;
+	return temp;
+}
