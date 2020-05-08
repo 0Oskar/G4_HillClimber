@@ -23,6 +23,7 @@
 // Utilities
 #include "pugixml.hpp"
 #include "../Importer/ImporterBFF.h"
+#include"PyramidMathTools.h"
 
 // DirectX 11
 #include <d3d11.h>

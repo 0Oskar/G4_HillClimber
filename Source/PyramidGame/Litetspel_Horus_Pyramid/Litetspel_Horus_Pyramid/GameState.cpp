@@ -113,16 +113,6 @@ void GameState::addLeverToWorld(int mdlIndex, Model* mdl, DirectX::XMVECTOR posi
 	this->m_gameObjects.back()->getMoveCompPtr()->rotation = rotation;
 }
 
-float GameState::convertDegreesToRadians(float degree)
-{
-	float radians;
-	
-	radians = degree / (180.0f / 3.1415926535f);
-
-	return radians;
-}
-
-
 void GameState::addPortalToWorld(XMVECTOR teleportLocation, int mdlIndx, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR scale3D, DirectX::XMFLOAT3 boundingBoxSize, int room)
 {
 	this->m_wvpCBuffers.emplace_back();
@@ -210,6 +200,24 @@ void GameState::loadModels()
 
 }
 
+void GameState::roomChangeInit()
+{
+	platformBB.clear();
+	//Get active room platforms to send to hookHand.
+	for (size_t i = 0; this->m_activeRoom && i < this->m_activeRoom->getGameObjectsPtr()->size(); i++)
+	{
+		
+		Platform* castToPlatform = dynamic_cast<Platform*>(this->m_activeRoom->getGameObjectsPtr()->at(i));
+		if (castToPlatform != nullptr)
+		{
+			platformBB.emplace_back(castToPlatform->getAABBPtr());
+		}
+	}
+
+	this->m_player.updateHookHandBB(platformBB);
+
+}
+
 void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext, GameOptions options, std::shared_ptr<DirectX::AudioEngine> audioEngine)
 {
 	GameObject* hook = nullptr;
@@ -253,104 +261,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->addGameObjectToWorld(true, false, 1, 5, &m_models[5], vec, NormalScale, XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
 	this->m_chainGObjects->push_back(this->m_gameObjects.back());
 
-	//Kevin room platform
-	vec = DirectX::XMVectorSet(5.f, 25.f, -85.f, 1.f);
-	this->addPlatformToWorld(3, &m_pyramidOBB, &m_models[3], vec, DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f));
-
-	//Puzzle Room (Kevins Lever room)
-	vec = DirectX::XMVectorSet(-10.f, 2, -100, 1.f);
-	this->addGameObjectToWorld(false, false, 2, 6, &m_models[6], vec, DirectX::XMVectorSet(1, 1, 1, 1), DirectX::XMFLOAT3(1.f, 1.f, 1.f));
-
-	//Lever
-	vec = DirectX::XMVectorSet(-15.f, 5.f, -88.f, 1.f);
-	rotation = DirectX::XMVectorSet(0.f, convertDegreesToRadians(-90), convertDegreesToRadians(-270), 1.f);
-	this->addLeverToWorld(7, &m_models[7], vec, rotation, DirectX::XMFLOAT3(2.f, 2.f, 2.f));
-
-	lever.emplace_back(dynamic_cast<Lever*>(this->m_gameObjects.back()));
-
-	//Lever
-	vec = DirectX::XMVectorSet(7.5f, 5.f, -138.f, 1.f);
-	rotation = DirectX::XMVectorSet(0.f, 0.f, convertDegreesToRadians(-270), 1.f);
-	this->addLeverToWorld(7, &m_models[7], vec, rotation, DirectX::XMFLOAT3(2.f, 2.f, 2.f));
-
-	lever.emplace_back(dynamic_cast<Lever*>(this->m_gameObjects.back()));
-	
-	//Lever
-	vec = DirectX::XMVectorSet(-11.f, 30.f, -39.8f, 1.f);
-	rotation = DirectX::XMVectorSet(0.f, 0.f, convertDegreesToRadians(-270), 1.f);
-	this->addLeverToWorld(7, &m_models[7], vec, rotation, DirectX::XMFLOAT3(2.f, 2.f, 2.f));
-
-	//Win object
-	wonPuzzleObject.emplace_back(dynamic_cast<Lever*>(this->m_gameObjects.back()));
-	wonPuzzleObject[0]->setScale(DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f));
-
-	vec = DirectX::XMVectorSet(10.f, 27, -80, 1.f);
-	this->addGameObjectToWorld(true, false, 2, 3, &m_models[3], vec, DirectX::XMVectorSet(0.1f, 0.1f, 0.1f, 1), DirectX::XMFLOAT3(1.f, 1.f, 1.f));
-	this->m_gameObjects.back()->setDrawBB(true);
-	this->trapBB.emplace_back(this->m_gameObjects.back()->getAABBPtr());
-
-	this->dartTrap.emplace_back(this->m_gameObjects.back());
-
-	vec = DirectX::XMVectorSet(10.f, 27, -60, 1.f);
-	this->addGameObjectToWorld(true, false, 2, 3, &m_models[3], vec, DirectX::XMVectorSet(0.1f, 0.1f, 0.1f, 1), DirectX::XMFLOAT3(1.f, 1.f, 1.f));
-	this->m_gameObjects.back()->setDrawBB(true);
-	this->trapBB.emplace_back(this->m_gameObjects.back()->getAABBPtr());
-
-	this->dartTrap.emplace_back(this->m_gameObjects.back());
-
-	triggerBB.emplace_back();
-	triggerBB.back().Center = DirectX::XMFLOAT3(-10.f, 27.f, -80.f);
-	triggerBB.back().Extents = DirectX::XMFLOAT3(20.f, 10.f, 2.5f);
-
-	triggerBB.emplace_back();
-	triggerBB.back().Center = DirectX::XMFLOAT3(-10.f, 27.f, -60.f);
-	triggerBB.back().Extents = DirectX::XMFLOAT3(20.f, 10.f, 2.5f);
-
-	deathTrapBB.emplace_back();
-	deathTrapBB.back().Center = DirectX::XMFLOAT3(-10.f, -1.5f, -129.f);
-	deathTrapBB.back().Extents = DirectX::XMFLOAT3(27.f, 3.f, 4.f);
-
-	deathTrapBB.emplace_back();
-	deathTrapBB.back().Center = DirectX::XMFLOAT3(-10.f, -0.5f, -63.f);
-	deathTrapBB.back().Extents = DirectX::XMFLOAT3(27.f, 3.f, 5.f);
-
-	pussels.emplace_back();
-	pussels.back().Center = DirectX::XMFLOAT3(-10.f, 1.0f, -104.0f);
-	pussels.back().Extents = DirectX::XMFLOAT3(20.f, 1.5f, 20.f);
-
-	pussels.emplace_back();
-	pussels.back().Center = DirectX::XMFLOAT3(-10.f, 1.0f, -154.0f);
-	pussels.back().Extents = DirectX::XMFLOAT3(20.f, 1.5f, 20.8f);
-
-	pussels.emplace_back();
-	pussels.back().Center = DirectX::XMFLOAT3(-10.f, 11.f, -86.f);
-	pussels.back().Extents = DirectX::XMFLOAT3(20.f, 13.f, 1.5f);
-
-	pussels.emplace_back();
-	pussels.back().Center = DirectX::XMFLOAT3(-10.f, 23.f, -77.f);
-	pussels.back().Extents = DirectX::XMFLOAT3(20.f, 1.5f, 10.8f);
-
-	pussels.emplace_back();
-	pussels.back().Center = DirectX::XMFLOAT3(-10.f, 23.f, -45.4f);
-	pussels.back().Extents = DirectX::XMFLOAT3(20.f, 1.5f, 11.8f);
-
-	pussels.emplace_back();
-	pussels.back().Center = DirectX::XMFLOAT3(9.5f, 2.f, -120.f);
-	pussels.back().Extents = DirectX::XMFLOAT3(2.f, 40.f, 85.f);
-	
-	pussels.emplace_back();
-	pussels.back().Center = DirectX::XMFLOAT3(-31.f, 2.f, -120.f);
-	pussels.back().Extents = DirectX::XMFLOAT3(2.f, 40.f, 85.f);	
-
-
-	for (int i = 0; i < pussels.size(); i++)
-	{
-		this->m_player.addAABB(&pussels.at(i));
-	}
-	
-	//!----End of Kevin Puzzle ----------------------------------------!
-
-	//Chain linlk stuff
+	//Chain link stuff
 	for (size_t i = 0; i < NR_OF_CHAIN_LINKS; i++)
 	{
 		vec = DirectX::XMVectorSet(vecF3.x, vecF3.y, vecF3.z - 5.f -((float)i * 0.6f), 1.f);
@@ -358,7 +269,6 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 		this->m_chainGObjects->push_back(this->m_gameObjects.back());
 	}
 	
-
 	// PuzzleRoom ------------------------------------------------------------- (Edvin)
 	vec = DirectX::XMVectorSet(-80, 7, 0, 1); //world pos
 	this->addGameObjectToWorld(true, false, 1, 8, &m_models[8], vec, NormalScale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
@@ -395,11 +305,11 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 
 	//Kevin Room [2]
 	this->m_rooms.emplace_back(new KevinsRoom());
-	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, 0, 1), audioEngine);
+	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(100, 2, 100, 1), audioEngine);
 	dynamic_cast<KevinsRoom*>(this->m_rooms.back())->init();
-	
 
 
+	//Get active room platforms to send to hookHand.
 	for (size_t i = 0; this->m_activeRoom && i < this->m_activeRoom->getGameObjectsPtr()->size(); i++)
 	{
 		Platform* castToPlatform = dynamic_cast<Platform*>(this->m_activeRoom->getGameObjectsPtr()->at(i));
@@ -422,12 +332,6 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 		}
 	}
 
-	//Lever function
-	this->lever[0]->setPlayerBoundingBox(this->m_player.getAABBPtr());
-	this->lever[1]->setPlayerBoundingBox(this->m_player.getAABBPtr());
-	this->wonPuzzleObject[0]->setPlayerBoundingBox(this->m_player.getAABBPtr());
-
-
 	// Camera
 	this->m_camera.followMoveComp(this->m_player.getMoveCompPtr());
 	this->m_camera.initialize(
@@ -438,6 +342,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 		1000.f
 	);
 
+	//Add rooms vector to rooms then add portals
 	for (int i = 0; i < this->m_rooms.size(); i++)
 	{
 		this->m_rooms.at(i)->addRooms(&this->m_rooms);
@@ -452,7 +357,6 @@ void GameState::update(Keyboard* keyboard, MouseEvent mouseEvent, Mouse* mousePt
 
 	// Camera
 	this->m_camera.update(mouseEvent, dt);
-
 
 	// Game Objects from gameState
 	for (size_t i = 0; i < this->m_gameObjects.size(); i++)
@@ -489,106 +393,6 @@ void GameState::update(Keyboard* keyboard, MouseEvent mouseEvent, Mouse* mousePt
 		}
 	}
 
-	//Kevin room logic
-	// DART
-	if (triggerBB[0].Intersects(this->m_player.getAABB()))
-	{
-		if (trapActive1 == true)
-		{
-			dartFly1 = true;
-		}			
-	}
-
-	if (triggerBB[1].Intersects(this->m_player.getAABB()))
-	{
-		if (trapActive2 == true)
-		{
-			dartFly2 = true;
-		}
-	}
-
-	for (int i = 0; i < deathTrapBB.size(); i++)
-	{
-		if (deathTrapBB[i].Intersects(this->m_player.getAABB()))
-		{
-			this->m_player.getMoveCompPtr()->position = DirectX::XMVectorSet(-20.f, 20.f, -165.f, 1.f);
-		}
-	}
-		
-
-	for (int i = 0; i < dartTrap.size(); i++)
-	{
-		if (dartTrap[i]->getAABB().Intersects(this->m_player.getAABB()))
-		{
-			this->m_player.getMoveCompPtr()->position = DirectX::XMVectorSet(-20.f, -50.f, -165.f, 1.f);
-		}
-	}
-	
-	if (dartFly1 == true)
-	{
-		if (dartPosition1 <= 0)
-		{
-			dartPosition1 = 40.f;
-			dartTrap[0]->getMoveCompPtr()->position = DirectX::XMVectorSet(10.f, 27, -80, 1.f);
-			dartFly1 = false;
-		}
-		else
-		{
-			dartTrap[0]->getMoveCompPtr()->position += DirectX::XMVectorSet(-40.f * dt, 0, 0, 1.f);
-			dartPosition1 -= 40.f * dt;
-		}	
-	}
-
-	if (dartFly2 == true)
-	{
-		if (dartPosition2 <= 0)
-		{
-			dartPosition2 = 40.f;
-			dartTrap[1]->getMoveCompPtr()->position = DirectX::XMVectorSet(10.f, 27.f, -60.f, 1.f);
-			dartFly2 = false;
-		}
-		else
-		{
-			dartTrap[1]->getMoveCompPtr()->position += DirectX::XMVectorSet(-40.f * dt, 0, 0, 1.f);
-			dartPosition2 -= 40.f * dt;
-		}
-	}
-
-	//Lever
-
-	
-	this->lever[0]->collidesWithPlayer();
-
-	if (this->lever[0]->getCanUseLever() == true)
-	{
-		if (this->m_player.getinUse() == true)
-		{
-			trapActive1 = false;
-		}
-	}
-
-	this->lever[1]->collidesWithPlayer();
-
-	if (this->lever[1]->getCanUseLever() == true)
-	{
-		if (this->m_player.getinUse() == true)
-		{
-			trapActive2 = false;
-		}
-	}
-
-	this->wonPuzzleObject[0]->collidesWithPlayer();
-
-	if (this->wonPuzzleObject[0]->getCanUseLever() == true)
-	{
-		OutputDebugString(L"WON");
-		if (this->m_player.getinUse() == true)
-		{
-			this->wonThePuzzle = true;
-			this->m_player.wonPuzzle(wonThePuzzle);
-		}
-	}
-
-	if(m_activeRoom != nullptr){}
+	if(m_activeRoom != nullptr)
 		this->m_activeRoom->update(dt, &m_camera, this->m_activeRoom, m_activeRoomChanged);
 }

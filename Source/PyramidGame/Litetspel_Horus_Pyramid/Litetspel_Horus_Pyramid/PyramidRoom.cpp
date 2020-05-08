@@ -13,6 +13,7 @@ PyramidRoom::~PyramidRoom()
 void PyramidRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activeRoomChanged)
 {
 	Room::update(dt, camera, activeRoom, activeRoomChanged);
+
 }
 
 void PyramidRoom::init(DirectX::BoundingOrientedBox* pyramidBB)
@@ -20,6 +21,7 @@ void PyramidRoom::init(DirectX::BoundingOrientedBox* pyramidBB)
 	this->m_pyramidOOB = *pyramidBB; //DirectX::BoundingOrientedBox(*pyramidBB);
 	this->createSceneObjects();
 	this->createBoundingBoxes();
+	this->m_player->addAABBFromVector(&m_boundingBoxes);
 }
 
 void PyramidRoom::portals()
@@ -30,7 +32,7 @@ void PyramidRoom::portals()
 
 	vec = DirectX::XMVectorSet(0.f, 120.f, 170.f, 1.f);
 	XMVECTOR vecScale = DirectX::XMVectorSet(1.f, 1.f, -1.f, 1.f);
-	this->addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 10, &m_models->at(10), vec, NormalScale, DirectX::XMFLOAT3(3.f, 8.f, 0.6f), 0);
+	this->addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 10, &m_models->at(10), vec, NormalScale, DirectX::XMFLOAT3(3.f, 8.f, 0.6f), 2);
 
 
 }
@@ -42,7 +44,7 @@ void PyramidRoom::onEntrance()
 
 void PyramidRoom::createBoundingBoxes()
 {
-//	this->addBoundingBox({ -10, 15, -10, 1 }, { 5, 5, 2 });
+
 }
 void PyramidRoom::createSceneObjects()
 {

@@ -30,6 +30,7 @@ void Portal::update()
 {
 	if (getAABB().Intersects(player->getAABB()))
 	{
+		this->player->getphysicsCompPtr()->setVelocity({ 0.f, 0.f, 0.f });
 		this->player->setPosition(this->m_teleportLocation);
 		this->player->getphysicsCompPtr()->setVelocity({0.f, 0.f, 0.f});
 		if (m_roomID != -1)

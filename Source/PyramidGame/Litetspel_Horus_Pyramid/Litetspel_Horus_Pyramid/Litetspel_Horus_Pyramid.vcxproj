@@ -228,6 +228,7 @@
     <ClInclude Include="Platform.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Portal.h" />
+    <ClInclude Include="PyramidMathTools.h" />
     <ClInclude Include="PyramidRoom.h" />
     <ClInclude Include="ResourceHandler.h" />
     <ClInclude Include="Room.h" />

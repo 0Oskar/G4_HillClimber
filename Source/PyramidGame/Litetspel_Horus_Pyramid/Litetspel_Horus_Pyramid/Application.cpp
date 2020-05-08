@@ -223,6 +223,7 @@ void Application::GameStateChecks()
 		this->m_viewLayerPtr->setgameObjectsFromActiveRoom(this->m_gameState.getActiveRoomGameObjectsPtr());
 		this->m_viewLayerPtr->setBoundingBoxesFromActiveRoom(this->m_gameState.getActiveRoomBoundingBoxsPtr());
 		this->m_gameState.m_activeRoomChanged = false;
+		this->m_gameState.roomChangeInit();
 	}
 }
 

@@ -6,6 +6,8 @@
 #include"Model.h"
 #include"Camera.h"
 #include"Portal.h"
+#include"Lever.h"
+
 class Room
 {
 protected:
@@ -16,6 +18,7 @@ protected:
 	std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* m_wvpCBuffers;
 	std::vector<Model>* m_models;
 	std::vector<DirectX::BoundingBox> m_boundingBoxes;
+	std::vector<DirectX::BoundingBox> m_triggerBoundingBoxes;
 	std::vector<Room*> m_rooms;
 	
 	Player* m_player;
@@ -28,6 +31,7 @@ protected:
 	virtual void createSceneObjects() {};
 	virtual void onCompleted() {};
 	void addBoundingBox(XMVECTOR position, XMFLOAT3 extends);
+	void addTriggerBB(XMVECTOR position, XMFLOAT3 extends);
 public:
 	Room();
 	~Room();
@@ -41,10 +45,13 @@ public:
 	void addGameObjectToRoom(bool dynamic, bool colide, float weight, int mdlIndx, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR scale3D, DirectX::XMFLOAT3 boundingBoxSize = DirectX::XMFLOAT3(0, 0, 0), DirectX::XMFLOAT3 acceleration = DirectX::XMFLOAT3(1, 1, 1), DirectX::XMFLOAT3 deceleration = DirectX::XMFLOAT3(1, 1, 1));
 	void addPlatformToRoom(int mdlIndex, Model* mdl, DirectX::XMVECTOR position, DirectX::XMFLOAT3 platformBoundingBox, BoundingOrientedBox* pyramid = nullptr);
 	void addPortalToRoom(XMVECTOR teleportLocation, int mdlIndx, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR scale3D, DirectX::XMFLOAT3 boundingBoxSize, int room = -1);
+	void addLeverToRoom(int mdlIndex, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation, DirectX::XMFLOAT3 leverBB);
 	std::vector<GameObject*>* getGameObjectsPtr();
 	std::vector<BoundingBox>* getBoundingBoxPtr();
 
 	DirectX::XMVECTOR getEntrancePosition();
 
 	void addRooms(std::vector<Room*>* rooms);
+	bool m_completed;
+
 };

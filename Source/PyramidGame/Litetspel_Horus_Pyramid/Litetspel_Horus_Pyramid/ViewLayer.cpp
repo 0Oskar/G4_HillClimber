@@ -419,49 +419,6 @@ void ViewLayer::render()
 			}
 		}
 		DX::Draw(m_batch.get(), this->m_pyramidOBB, DirectX::Colors::Blue);
-
-		//Kevins pussel1 golv boundingBox
-
-		
-		leverBB.Center = DirectX::XMFLOAT3(-15.f, 5.f, -88.f);
-		leverBB.Extents = DirectX::XMFLOAT3(2.f, 2.f, 2.f);
-
-		leverBB2.Center = DirectX::XMFLOAT3(7.5f, 5.f, -138.f);
-		leverBB2.Extents = DirectX::XMFLOAT3(2.f, 2.f, 2.f);
-
-		triggerBB.Center = DirectX::XMFLOAT3(-10.f, 27.f, -80.f);
-		triggerBB.Extents = DirectX::XMFLOAT3(20.f, 10.f, 2.5f);
-
-		triggerBB2.Center = DirectX::XMFLOAT3(-10.f, 27.f, -60.f); 
-		triggerBB2.Extents = DirectX::XMFLOAT3(20.f, 10.f, 2.5f);
-
-		winPuzzleObject.Center = DirectX::XMFLOAT3(-11.f, 30.f, -39.8f); 
-		winPuzzleObject.Extents = DirectX::XMFLOAT3(2.f, 2.f, 2.f);
-
-		deathTrap1.Center = DirectX::XMFLOAT3(-10.f, -1.5f, -129.f);
-		deathTrap1.Extents = DirectX::XMFLOAT3(27.f, 1.f, 4.f); 
-
-		deathTrap2.Center = DirectX::XMFLOAT3(-10.f, -1.f, -63.f);
-		deathTrap2.Extents = DirectX::XMFLOAT3(27.f, 1.f, 4.f);
-
-		
-
-		tempWall1.Center = DirectX::XMFLOAT3(10.f, 2.f, -120.f);
-		tempWall1.Extents = DirectX::XMFLOAT3(2.f, 40.f, 85.f);
-
-		tempWall2.Center = DirectX::XMFLOAT3(-31.f, 2.f, -120.f);
-		tempWall2.Extents = DirectX::XMFLOAT3(2.f, 40.f, 85.f);
-	
-		DX::Draw(m_batch.get(), leverBB, DirectX::Colors::Red);
-		DX::Draw(m_batch.get(), leverBB2, DirectX::Colors::Red);
-		DX::Draw(m_batch.get(), triggerBB, DirectX::Colors::Red);
-		DX::Draw(m_batch.get(), triggerBB2, DirectX::Colors::Red);
-		DX::Draw(m_batch.get(), winPuzzleObject, DirectX::Colors::Red);
-		DX::Draw(m_batch.get(), deathTrap1, DirectX::Colors::Red);
-		DX::Draw(m_batch.get(), deathTrap2, DirectX::Colors::Red);
-		DX::Draw(m_batch.get(), tempWall1, DirectX::Colors::Red);
-		DX::Draw(m_batch.get(), tempWall2, DirectX::Colors::Red);
-		
 		m_batch->End();
 	}
 

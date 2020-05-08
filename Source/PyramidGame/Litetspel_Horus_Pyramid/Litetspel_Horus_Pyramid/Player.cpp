@@ -39,6 +39,14 @@ void Player::addAABB(DirectX::BoundingBox* aabb)
 {
 	this->m_collidableAABBoxes.push_back(aabb);
 }
+void Player::addAABBFromVector(std::vector<DirectX::BoundingBox>* aabb)
+{
+	for (int i = 0; i < aabb->size(); i++)
+	{
+		this->m_collidableAABBoxes.push_back(&aabb->at(i));
+	}
+}
+
 
 void Player::addPyramidOBB(DirectX::BoundingOrientedBox* obb)
 {
@@ -48,14 +56,6 @@ void Player::addPyramidOBB(DirectX::BoundingOrientedBox* obb)
 bool Player::getinUse()
 {
 	return this->inUse;
-}
-
-void Player::wonPuzzle(bool won)
-{
-	if (won == true)
-	{
-		this->getMoveCompPtr()->position = DirectX::XMVectorSet(-20.f, 50.f, -165.f, 1.f);
-	}
 }
 
 void Player::resetVelocity()

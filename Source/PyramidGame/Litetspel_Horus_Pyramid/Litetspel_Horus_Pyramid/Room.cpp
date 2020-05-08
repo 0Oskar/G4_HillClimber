@@ -126,14 +126,32 @@ void Room::addPortalToRoom(XMVECTOR teleportLocation, int mdlIndx, Model* mdl, D
 	this->m_wvpCBuffers->back().init(m_device, m_dContext);
 	int bufferIndex = (int)m_wvpCBuffers->size() - 1;
 
+	XMVECTOR pos = m_worldPosition + teleportLocation;
 	this->m_gameObjects.emplace_back(new Portal());
-	dynamic_cast<Portal*>(this->m_gameObjects.back())->initialize(mdlIndx, (int)m_wvpCBuffers->size() - 1, mdl, teleportLocation, this->m_player, room);
+	if(room != -1)
+		dynamic_cast<Portal*>(this->m_gameObjects.back())->initialize(mdlIndx, (int)m_wvpCBuffers->size() - 1, mdl, this->m_rooms[room]->getEntrancePosition(), this->m_player, room);
+	else
+		dynamic_cast<Portal*>(this->m_gameObjects.back())->initialize(mdlIndx, (int)m_wvpCBuffers->size() - 1, mdl, pos, this->m_player, room);
 
+	pos = m_worldPosition + position;
 
 	this->m_gameObjects.back()->setScale(scale3D);
-	this->m_gameObjects.back()->setPosition(position);
+	this->m_gameObjects.back()->setPosition(pos);
 	this->m_gameObjects.back()->setBoundingBox(boundingBoxSize);
 	//this->m_player.addAABB(this->m_gameObjects.back()->getAABBPtr());
+}
+
+void Room::addLeverToRoom(int mdlIndex, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation, DirectX::XMFLOAT3 leverBB)
+{
+	XMVECTOR pos = m_worldPosition + position;
+
+	this->m_wvpCBuffers->emplace_back();
+	this->m_wvpCBuffers->back().init(m_device, m_dContext);
+	this->m_gameObjects.emplace_back(new Lever());
+	dynamic_cast<Lever*>(this->m_gameObjects.back())->init(false, mdlIndex, (int)m_wvpCBuffers->size() - 1, mdl);
+	this->m_gameObjects.back()->setPosition(pos);
+	this->m_gameObjects.back()->setBoundingBox(leverBB);
+	this->m_gameObjects.back()->getMoveCompPtr()->rotation = rotation;
 }
 
 std::vector<GameObject*>* Room::getGameObjectsPtr()
@@ -150,8 +168,14 @@ void Room::addBoundingBox(XMVECTOR position, XMFLOAT3 extends)
 {
 	XMFLOAT3 roomPos;
 	XMStoreFloat3(&roomPos, this->m_worldPosition + position);
-	this->m_boundingBoxes.emplace_back(DirectX::BoundingBox(roomPos, extends));
-	this->m_player->addAABB(&this->m_boundingBoxes.back());
+	this->m_boundingBoxes.emplace_back(roomPos, extends);	
+}
+
+void Room::addTriggerBB(XMVECTOR position, XMFLOAT3 extends)
+{
+	XMFLOAT3 roomPos;
+	XMStoreFloat3(&roomPos, this->m_worldPosition + position);
+	this->m_triggerBoundingBoxes.emplace_back(roomPos, extends);
 }
 
 DirectX::XMVECTOR Room::getEntrancePosition()

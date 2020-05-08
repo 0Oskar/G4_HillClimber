@@ -20,7 +20,6 @@ void Lever::init(bool colidable, int modelIndex, int wvpCBufferIndex, Model* mdl
 void Lever::onPlayerColide()
 {
 	canUseLever = true;
-	OutputDebugString(L"Lever Collide");
 }
 
 void Lever::activateLever()
