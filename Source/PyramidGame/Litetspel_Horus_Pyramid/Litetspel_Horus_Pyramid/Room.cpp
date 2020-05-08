@@ -180,7 +180,7 @@ void Room::addTriggerBB(XMVECTOR position, XMFLOAT3 extends)
 
 DirectX::XMVECTOR Room::getEntrancePosition()
 {
-	return this->m_entrencePosition;
+	return (this->m_worldPosition + this->m_entrencePosition + XMVectorSet(0.f, m_player->getAABB().Extents.y + 0.1f, 0, 0));
 }
 
 void Room::addRooms(std::vector<Room*>* rooms)

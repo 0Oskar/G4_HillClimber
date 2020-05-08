@@ -50,6 +50,8 @@ public:
 	DirectX::BoundingBox* getAABBPtr();
 	std::wstring getTexturePath();
 
+	void setTexturePath(std::wstring texturePath);
+
 
 	// Setters
 	void setDrawBB(bool drawable);

@@ -289,14 +289,12 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 
 	// Player
 	this->m_player.initialize(-1, -1, 60.f, DirectX::XMFLOAT3(20.f, 20.f, 20.f), DirectX::XMFLOAT3(.01f, .01f, .01f), hook, hookHand, this->m_chainGObjects, audioEngine, platformBB);
-	this->m_player.setPosition(DirectX::XMVectorSet(0.f, 5.f, -1.f, 1.f));
 	
 	//Room creation
 	//Pyramid Room - [0]
 	this->m_rooms.emplace_back(new PyramidRoom());
 	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, 0, 1), audioEngine);
 	dynamic_cast<PyramidRoom*>(this->m_rooms.back())->init(&m_pyramidOBB);
-	m_activeRoom = m_rooms.back();
 
 	//Template Room [1]
 	this->m_rooms.emplace_back(new TemplateRoom());
@@ -307,6 +305,13 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_rooms.emplace_back(new KevinsRoom());
 	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(100, 2, 100, 1), audioEngine);
 	dynamic_cast<KevinsRoom*>(this->m_rooms.back())->init();
+
+	m_activeRoom = m_rooms.back();
+
+	this->m_player.getphysicsCompPtr()->setVelocity({ 0, 0, 0 });
+	this->m_player.setPosition(this->m_activeRoom->getEntrancePosition());
+	this->m_player.getphysicsCompPtr()->setVelocity({ 0, 0, 0 });
+
 
 
 	//Get active room platforms to send to hookHand.

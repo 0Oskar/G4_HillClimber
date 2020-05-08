@@ -221,6 +221,11 @@ std::wstring GameObject::getTexturePath()
 	return this->m_texturePath;
 }
 
+void GameObject::setTexturePath(std::wstring texturePath)
+{
+	this->m_texturePath = texturePath;
+}
+
 void GameObject::setDrawBB(bool drawable)
 {
 	this->m_drawBB = drawable;

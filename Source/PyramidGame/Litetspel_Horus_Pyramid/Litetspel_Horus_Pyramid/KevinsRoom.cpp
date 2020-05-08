@@ -115,7 +115,7 @@ void KevinsRoom::init()
 	this->createBoundingBoxes();
 	this->m_player->addAABBFromVector(&m_boundingBoxes);
 
-	this->m_entrencePosition = m_worldPosition + XMVectorSet(-3, 5, -4, 0);
+	this->m_entrencePosition = XMVectorSet(-13, 4, -20, 0);
 }
 
 void KevinsRoom::portals()
@@ -125,7 +125,7 @@ void KevinsRoom::portals()
 	DirectX::XMVECTOR rotation = DirectX::XMVectorSet(0.f, 0.f, 0.f, 1.f);
 
 	//Add portals here
-	vec = DirectX::XMVectorSet(-10.f, 3.f, -25.f, 1.f);
+	vec = DirectX::XMVectorSet(-13.f, 3.f, -25.f, 1.f);
 	XMVECTOR vecScale = DirectX::XMVectorSet(1.3f, 1.3f, -1.3f, 1.f);
 	this->addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 10, &m_models->at(10), vec, NormalScale, DirectX::XMFLOAT3(3.f, 8.f, 0.6f), 0);
 }
@@ -225,7 +225,7 @@ void KevinsRoom::onCompleted()
 	this->m_completed = true;
 
 	this->m_player->getphysicsCompPtr()->setVelocity({0, 0, 0 });
-	this->m_player->getMoveCompPtr()->position = this->m_entrencePosition;
+	this->m_player->getMoveCompPtr()->position = this->getEntrancePosition();
 	this->m_player->getphysicsCompPtr()->setVelocity({ 0, 0, 0 });
 
 }
