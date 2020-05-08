@@ -81,11 +81,9 @@ int main(int argc, char** argv)
 
 	if( lFilePath.IsEmpty() )
 	{
-		//lFilePath = "box.fbx";
-        lFilePath = "../CameraAndTri.fbx";
+
+        lFilePath = "../Brick_05.fbx";
 		lResult = LoadScene(lSdkManager, lScene, lFilePath.Buffer());
-        //lResult = false;
-        //FBXSDK_printf("\n\nUsage: ImportScene <FBX file name>\n\n");
 	}
 	else
 	{

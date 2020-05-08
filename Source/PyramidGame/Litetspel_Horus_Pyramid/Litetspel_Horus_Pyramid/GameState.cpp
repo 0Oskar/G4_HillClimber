@@ -182,13 +182,12 @@ void GameState::loadModels()
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
 	this->m_models[7].loadVertexFromOBJ(m_device, m_dContext, L"Models/Lever.obj", mat, L"Textures/platformTextureCracks1.png");
 
-
-	//8. PuzzleRoom ------------------------------------------------------------- (Edvin)
+	//8. PuzzleRoom (Edvin)
 	this->m_models.emplace_back(); //add empty model
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); //reset material
 	this->m_models[8].initializeModelBff(m_device, m_dContext, "EdvinPuzzleRoom.bff", mat, L"Textures/ColorTexture.png"); //load model
 
-	//9. Button ------------------------------------------------------------- (Edvin)
+	//9. Button (Edvin)
 	this->m_models.emplace_back(); //add empty model
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); //reset material
 	this->m_models[9].initializeModelBff(m_device, m_dContext, "Button.bff", mat, L"Textures/BirdHyroglajf.png"); //load model
@@ -198,7 +197,32 @@ void GameState::loadModels()
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
 	this->m_models[10].loadVertexFromOBJ(m_device, m_dContext, L"Models/PuzzleRoomGate.obj", mat, L"Textures/PuzzleDoor_Texture2.png");
 
-}
+	//11. Brick_1 (Edvin)
+	this->m_models.emplace_back(); //add empty model
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); //reset material
+	this->m_models[11].initializeModelBff(m_device, m_dContext, "Brick_1.bff", mat, L"Textures/BirdHyroglajf.png"); //load model
+
+	//12. Brick_2 (Edvin)
+	this->m_models.emplace_back(); //add empty model
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); //reset material
+	this->m_models[12].initializeModelBff(m_device, m_dContext, "Brick_2.bff", mat, L"Textures/BirdHyroglajf.png"); //load model
+
+	//13. Brick_3 (Edvin)
+	this->m_models.emplace_back(); //add empty model
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); //reset material
+	this->m_models[13].initializeModelBff(m_device, m_dContext, "Brick_3.bff", mat, L"Textures/BirdHyroglajf.png"); //load model
+
+	//14. Brick_4 (Edvin)
+	this->m_models.emplace_back(); //add empty model
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); //reset material
+	this->m_models[14].initializeModelBff(m_device, m_dContext, "Brick_4.bff", mat, L"Textures/BirdHyroglajf.png"); //load model
+
+
+	//15. Brick_5 (Edvin)
+	this->m_models.emplace_back(); //add empty model
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); //reset material
+	this->m_models[15].initializeModelBff(m_device, m_dContext, "Brick_5.bff", mat, L"Textures/BirdHyroglajf.png"); //load model
+	}
 
 void GameState::roomChangeInit()
 {
@@ -269,13 +293,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 		this->m_chainGObjects->push_back(this->m_gameObjects.back());
 	}
 	
-	// PuzzleRoom ------------------------------------------------------------- (Edvin)
-	vec = DirectX::XMVectorSet(-80, 7, 0, 1); //world pos
-	this->addGameObjectToWorld(true, false, 1, 8, &m_models[8], vec, NormalScale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
 
-	// Button ------------------------------------------------------------- (Edvin)
-	vec = DirectX::XMVectorSet(-120, 0, 0, 1); //world pos
-	this->addGameObjectToWorld(true, false, 1, 9, &m_models[9], vec, NormalScale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
 
 	//Possible hook gameobjects
 	for (size_t i = 0; i < this->m_gameObjects.size(); i++)
@@ -306,12 +324,16 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(100, 2, 100, 1), audioEngine);
 	dynamic_cast<KevinsRoom*>(this->m_rooms.back())->init();
 
+
+	//Kevin Room [3]
+	this->m_rooms.emplace_back(new EdvinsRoom());
+	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, -100, 1), audioEngine);
+	dynamic_cast<EdvinsRoom*>(this->m_rooms.back())->init();
 	m_activeRoom = m_rooms.back();
 
 	this->m_player.getphysicsCompPtr()->setVelocity({ 0, 0, 0 });
 	this->m_player.setPosition(this->m_activeRoom->getEntrancePosition());
 	this->m_player.getphysicsCompPtr()->setVelocity({ 0, 0, 0 });
-
 
 
 	//Get active room platforms to send to hookHand.
