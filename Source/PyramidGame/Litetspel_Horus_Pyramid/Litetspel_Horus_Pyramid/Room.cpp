@@ -154,6 +154,14 @@ void Room::addLeverToRoom(int mdlIndex, Model* mdl, DirectX::XMVECTOR position, 
 	this->m_gameObjects.back()->getMoveCompPtr()->rotation = rotation;
 }
 
+void Room::addObjectToRoom(GameObject* object)
+{
+	this->m_wvpCBuffers->emplace_back();
+	this->m_wvpCBuffers->back().init(m_device, m_dContext);
+	this->m_gameObjects.emplace_back(object);
+	this->m_gameObjects.back()->setWvpCBufferIndex((int)m_wvpCBuffers->size() - 1);
+}
+
 std::vector<GameObject*>* Room::getGameObjectsPtr()
 {
 	return &this->m_gameObjects;

@@ -182,6 +182,11 @@ int GameObject::getWvpCBufferIndex() const
 	return this->m_wvpCBufferIndex;
 }
 
+void GameObject::setWvpCBufferIndex(int index)
+{
+	this->m_wvpCBufferIndex = index;
+}
+
 MovementComponent* GameObject::getMoveCompPtr()
 {
 	return this->m_movementComp;

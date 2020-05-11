@@ -44,6 +44,7 @@ public:
 	DirectX::XMMATRIX getTranslationMatrix() const;
 	int getModelIndex() const;
 	int getWvpCBufferIndex() const;
+	void setWvpCBufferIndex(int index);
 	MovementComponent* getMoveCompPtr();
 	PhysicsComponent* getphysicsCompPtr();
 	DirectX::BoundingBox getAABB();

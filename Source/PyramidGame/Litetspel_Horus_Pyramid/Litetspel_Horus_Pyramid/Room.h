@@ -41,18 +41,20 @@ public:
 	virtual void init() {};
 	virtual void portals() {};
 	virtual void onEntrance() {};
+
 	void setActive(bool activityStatus);
 	void addGameObjectToRoom(bool dynamic, bool colide, float weight, int mdlIndx, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR scale3D, DirectX::XMFLOAT3 boundingBoxSize = DirectX::XMFLOAT3(0, 0, 0), DirectX::XMFLOAT3 acceleration = DirectX::XMFLOAT3(1, 1, 1), DirectX::XMFLOAT3 deceleration = DirectX::XMFLOAT3(1, 1, 1));
 	void addPlatformToRoom(int mdlIndex, Model* mdl, DirectX::XMVECTOR position, DirectX::XMFLOAT3 platformBoundingBox, BoundingOrientedBox* pyramid = nullptr);
 	void addPortalToRoom(XMVECTOR teleportLocation, int mdlIndx, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR scale3D, DirectX::XMFLOAT3 boundingBoxSize, int room = -1);
 	void addLeverToRoom(int mdlIndex, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation, DirectX::XMFLOAT3 leverBB);
+	void addObjectToRoom(GameObject* object);
+	void addRooms(std::vector<Room*>* rooms);
+
 	std::vector<GameObject*>* getGameObjectsPtr();
 	std::vector<BoundingBox>* getBoundingBoxPtr();
-
 	DirectX::XMVECTOR getEntrancePosition();
-
-	void addRooms(std::vector<Room*>* rooms);
 	DirectX::XMVECTOR getRelativePosition(DirectX::XMVECTOR pos);
+
 	bool m_completed;
 
 };
