@@ -383,7 +383,16 @@ void GameState::update(Keyboard* keyboard, MouseEvent mouseEvent, Mouse* mousePt
 	this->m_player.update(keyboard, mousePtr, dt);
 
 	// Camera
-	this->m_camera.update(mouseEvent, dt);
+	while(!mousePtr->empty())
+	{
+		MouseEvent mEvent = mousePtr->readEvent();
+		if (mEvent.getEvent() == Event::MouseRAW_MOVE)
+		{
+			this->m_camera.update(mEvent, dt);
+		}
+	}
+	//this->m_camera.update(mouseEvent, dt);
+
 
 	// Game Objects from gameState
 	for (size_t i = 0; i < this->m_gameObjects.size(); i++)
