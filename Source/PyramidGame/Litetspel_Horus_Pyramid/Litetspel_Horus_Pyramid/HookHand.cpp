@@ -175,7 +175,7 @@ void HookHand::update(float dt)
 				this->m_hookState = hookState::idle;
 			}
 		}
-		this->m_hookGameObject->getMoveCompPtr()->rotation = DirectX::XMVectorAdd(this->invertX(this->m_playerMovement->rotation), this->hookRotOffsetConst);;
+		this->m_hookGameObject->getMoveCompPtr()->rotation = this->invertX(this->m_playerMovement->rotation) + this->hookRotOffsetConst;
 		this->m_hookGameObject->getMoveCompPtr()->position = DirectX::XMVectorAdd(this->m_gunGameObject->getMoveCompPtr()->position, hookPosOffset);
 	}
 

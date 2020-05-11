@@ -379,11 +379,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 
 void GameState::update(Keyboard* keyboard, MouseEvent mouseEvent, Mouse* mousePtr, float dt)
 {
-	// Player
-	this->m_player.update(keyboard, mousePtr, dt);
-
-	// Camera
-	while(!mousePtr->empty())
+	while (!mousePtr->empty())
 	{
 		MouseEvent mEvent = mousePtr->readEvent();
 		if (mEvent.getEvent() == Event::MouseRAW_MOVE)
@@ -391,8 +387,9 @@ void GameState::update(Keyboard* keyboard, MouseEvent mouseEvent, Mouse* mousePt
 			this->m_camera.update(mEvent, dt);
 		}
 	}
-	//this->m_camera.update(mouseEvent, dt);
 
+	// Player
+	this->m_player.update(keyboard, mousePtr, dt);
 
 	// Game Objects from gameState
 	for (size_t i = 0; i < this->m_gameObjects.size(); i++)
