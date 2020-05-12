@@ -12,6 +12,7 @@ private:
 	std::vector<DirectX::BoundingBox*> m_collidableAABBoxes;
 	DirectX::BoundingOrientedBox m_pyramidOBB;
 	HookHand m_hookHand;
+	XMVECTOR m_spawnPosition;
 	float m_lastOnGroundYPos;
 	float m_failThreshold;
 	bool m_lastFly;
@@ -30,6 +31,10 @@ public:
 	void addAABB(DirectX::BoundingBox* aabb);
 	void addPyramidOBB(DirectX::BoundingOrientedBox* obb);
 
+	// Setters
+	void setSpawnPosition(XMVECTOR position);
+
 	// Update
+	void respawn();
 	void update(Keyboard* keyboard, Mouse* mouse, float dt);
 };

@@ -84,7 +84,6 @@ void GameState::addGameObjectToWorld(bool dynamic, bool colide, float weight, in
 	}
 	else
 		gObject->setBoundingBox(boundingBoxSize);
-
 }
 
 void GameState::addPlatformToWorld(int mdlIndex, DirectX::BoundingOrientedBox* pyramid, Model* mdl, DirectX::XMVECTOR position, DirectX::XMFLOAT3 platformBoundingBox)
@@ -229,20 +228,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	vec = DirectX::XMVectorSet(5.f, 1.f, 5.f, 1.f);
 	this->m_gameObjects.back()->setScale(vec);
 
-
-
-	vec = DirectX::XMVectorSet(10.f, 10, 0, 1.f);
-	this->addGameObjectToWorld(true, true, 2, 3, &m_models[3], vec, DirectX::XMVectorSet(1, 1, 1, 1), DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f));
-	vec = DirectX::XMVectorSet(10.f, 15, 0, 1.f);
-	this->addGameObjectToWorld(true, true, 2, 3, &m_models[3], vec, DirectX::XMVectorSet(1, 1, 1, 1), DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f));
-
-	vec = DirectX::XMVectorSet(10.f, 25, 0, 1.f);
-	this->addPlatformToWorld(3, &m_pyramidOBB, &m_models[3], vec, DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f));
-
-	vec = DirectX::XMVectorSet(0.f, 10.f, 24.f, 1.f);
-	this->addPlatformToWorld(3, &m_pyramidOBB, &m_models[3], vec, DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f));
-  
-  // Chain Link
+	// Chain Link
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
 	this->m_models[5].loadVertexFromOBJ(device, dContext, L"Models/FinalChainLink.obj", mat, L"Textures/ColorTexture.png");
@@ -275,7 +261,8 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 
 	// Player
 	this->m_player.initialize(-1, -1, 60.f, DirectX::XMFLOAT3(20.f, 20.f, 20.f), DirectX::XMFLOAT3(.01f, .01f, .01f), hook, hookHand, this->m_chainGObjects, audioEngine);
-	this->m_player.setPosition(DirectX::XMVectorSet(0.f, 5.f, -1.f, 1.f));
+	this->m_player.setSpawnPosition(DirectX::XMVectorSet(0.f, 10.f, -1.f, 1.f));
+	this->m_player.respawn();
 	
 	//Room creation
 	this->m_rooms.emplace_back(new TemplateRoom());
@@ -311,7 +298,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	vec = DirectX::XMVectorSet(10.f, 85.f, 114.f, 1.f);
 	this->addGameObjectToWorld(false, true, 0, 9, &m_models[9], vec, {0.7f, 0.7f, 0.7f}, DirectX::XMFLOAT3(7.f, 1.f, 5.f));
 	this->m_gameObjects.back()->setRotation({0.f, 1.57f, 0.f});
-	this->m_checkpointHandler.addCheckpointGameObject(this->m_gameObjects.size()-1, vec);
+	this->m_checkpointHandler.addCheckpointGameObject(this->m_gameObjects.size() - 1, vec);
 
 	vec = DirectX::XMVectorSet(0.f, 25.f, 42.f, 1.f);
 	this->addGameObjectToWorld(false, true, 0, 9, &m_models[9], vec, { 0.7f, 0.7f, 0.7f }, DirectX::XMFLOAT3(7.f, 1.f, 5.f));
@@ -354,13 +341,25 @@ void GameState::update(Keyboard* keyboard, MouseEvent mouseEvent, Mouse* mousePt
 		wvpData.worldMatrix = this->m_gameObjects[i]->getWorldMatrix();
 
 		this->m_wvpCBuffers[this->m_gameObjects[i]->getWvpCBufferIndex()].upd(&wvpData);
-		if (m_gameObjects[i]->m_removeMe)
+		if (this->m_gameObjects[i]->m_removeMe)
 		{
-			delete m_gameObjects[i];
-			m_gameObjects[i] = nullptr;
-			m_gameObjects.erase(m_gameObjects.begin() + i);
+			this->m_gameObjects[i]->setVisibility(false);
+			this->m_gameObjects[i]->setIfCollidable(false);
 		}
 	}
 	if(m_activeRoom != nullptr)
 		this->m_activeRoom->update(dt, &m_camera);
+
+	// Checkpoints
+	for (size_t i = 0; i < this->m_checkpointHandler.size(); i++)
+	{
+		std::pair<int, XMVECTOR> checkpoint = this->m_checkpointHandler.getIndexPosAt(i);
+		BoundingBox checkpointAABB = this->m_gameObjects[checkpoint.first]->getAABB();
+		if (checkpointAABB.Intersects(this->m_player.getAABB()))
+			if (XMVectorGetY(checkpoint.second) > XMVectorGetY(this->m_checkpointHandler.getCurrentpos()))
+			{
+				this->m_checkpointHandler.setCurrent(checkpoint.first, checkpoint.second);
+				this->m_player.setSpawnPosition(checkpoint.second + XMVectorSet(0.f, checkpointAABB.Extents.y + 5, 0.f, 0.f));
+			}
+	}
 }

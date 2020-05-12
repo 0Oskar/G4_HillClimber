@@ -3,23 +3,39 @@
 
 CheckpointHandler::CheckpointHandler()
 {
-	this->m_currentCheckpoint.first = -1;
-	this->m_currentCheckpoint.second = {0.f, 0.f, 0.f, 0.f};
+	this->m_current.first = -1;
+	this->m_current.second = {0.f, 0.f, 0.f, 0.f};
 }
 
 CheckpointHandler::~CheckpointHandler() {}
+
+void CheckpointHandler::setCurrent(int index, XMVECTOR position)
+{
+	this->m_current.first = index;
+	this->m_current.second = position;
+}
 
 void CheckpointHandler::addCheckpointGameObject(int index, XMVECTOR gameObjectPosition)
 {
 	this->m_checkpointIndexPos.push_back(std::make_pair(index, gameObjectPosition));
 }
 
-int CheckpointHandler::getCurrentCheckpointIndex() const
+int CheckpointHandler::size() const
 {
-	return this->m_currentCheckpoint.first;
+	return this->m_checkpointIndexPos.size();
 }
 
-XMVECTOR CheckpointHandler::getCurrentCheckpointpos() const
+std::pair<int, XMVECTOR> CheckpointHandler::getIndexPosAt(int index) const
 {
-	return this->m_currentCheckpoint.second;
+	return this->m_checkpointIndexPos[index];
+}
+
+int CheckpointHandler::getCurrentIndex() const
+{
+	return this->m_current.first;
+}
+
+XMVECTOR CheckpointHandler::getCurrentpos() const
+{
+	return this->m_current.second;
 }

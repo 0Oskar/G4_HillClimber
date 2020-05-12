@@ -197,6 +197,11 @@ void GameObject::setVisibility(bool visible)
 	this->m_visible = visible;
 }
 
+void GameObject::setIfCollidable(bool collidable)
+{
+	this->m_collidable = collidable;
+}
+
 void GameObject::setRotation(DirectX::XMVECTOR newRotation)
 {
 	if (this->m_movementComp)

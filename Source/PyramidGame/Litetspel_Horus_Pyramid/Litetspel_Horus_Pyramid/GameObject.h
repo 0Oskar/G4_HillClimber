@@ -50,6 +50,7 @@ public:
 
 	// Setters
 	void setVisibility(bool visible);
+	void setIfCollidable(bool collidable);
 	void setRotation(DirectX::XMVECTOR newRotation);
 	void setScale(DirectX::XMVECTOR newScale);
 	void setPosition(DirectX::XMVECTOR newPosition);
