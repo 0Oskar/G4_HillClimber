@@ -84,7 +84,9 @@
     <ClCompile Include="KevinsRoom.cpp">
       <Filter>Source\Game Logic\Rooms</Filter>
     </ClCompile>
-    <ClCompile Include="EdvinsRoom.cpp" />
+    <ClCompile Include="EdvinsRoom.cpp">
+      <Filter>Source\Game Logic\Rooms</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">

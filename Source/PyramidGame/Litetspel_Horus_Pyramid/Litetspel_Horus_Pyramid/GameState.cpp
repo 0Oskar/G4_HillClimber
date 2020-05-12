@@ -242,6 +242,11 @@ void GameState::roomChangeInit()
 
 }
 
+Timer* GameState::getGameTimerPtr()
+{
+	return &this->m_gameTime;
+}
+
 void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext, GameOptions options, std::shared_ptr<DirectX::AudioEngine> audioEngine)
 {
 	GameObject* hook = nullptr;
@@ -311,23 +316,23 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	//Room creation
 	//Pyramid Room - [0]
 	this->m_rooms.emplace_back(new PyramidRoom());
-	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, 0, 1), audioEngine);
+	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, 0, 1), audioEngine, &this->m_gameTime);
 	dynamic_cast<PyramidRoom*>(this->m_rooms.back())->init(&m_pyramidOBB);
 
 	//Template Room [1]
 	this->m_rooms.emplace_back(new TemplateRoom());
-	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, 0, 1), audioEngine);
+	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, 0, 1), audioEngine, &this->m_gameTime);
 	dynamic_cast<TemplateRoom*>(this->m_rooms.back())->init();
 
 	//Kevin Room [2]
 	this->m_rooms.emplace_back(new KevinsRoom());
-	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(100, 2, 100, 1), audioEngine);
+	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(100, 2, 100, 1), audioEngine, &this->m_gameTime);
 	dynamic_cast<KevinsRoom*>(this->m_rooms.back())->init();
 
 
 	//Kevin Room [3]
 	this->m_rooms.emplace_back(new EdvinsRoom());
-	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, -100, 1), audioEngine);
+	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, -100, 1), audioEngine, &this->m_gameTime);
 	dynamic_cast<EdvinsRoom*>(this->m_rooms.back())->init();
 	m_activeRoom = m_rooms.back();
 
@@ -375,6 +380,8 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 		this->m_rooms.at(i)->addRooms(&this->m_rooms);
 		this->m_rooms.at(i)->portals();
 	}
+
+	this->m_gameTime.start();
 }
 
 void GameState::update(Keyboard* keyboard, MouseEvent mouseEvent, Mouse* mousePtr, float dt)
