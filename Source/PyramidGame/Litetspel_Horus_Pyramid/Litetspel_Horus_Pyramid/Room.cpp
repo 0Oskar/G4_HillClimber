@@ -9,6 +9,7 @@ Room::Room()
 	this->m_player = nullptr;
 	this->m_models = nullptr;
 	this->m_wvpCBuffers = nullptr;
+	this->m_gameTimerPointer = nullptr;
 	this->m_entrencePosition = DirectX::XMVectorZero();
 	this->m_worldPosition = DirectX::XMVectorZero();
 }
@@ -18,7 +19,7 @@ Room::~Room()
 
 }
 
-void Room::initialize(ID3D11Device* device, ID3D11DeviceContext* dContext, std::vector<Model>* models, std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* cBuffer, Player* player, XMVECTOR position, std::shared_ptr<DirectX::AudioEngine> audioEngine)
+void Room::initialize(ID3D11Device* device, ID3D11DeviceContext* dContext, std::vector<Model>* models, std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* cBuffer, Player* player, XMVECTOR position, std::shared_ptr<DirectX::AudioEngine> audioEngine, Timer* gameTimer)
 {
 	this->m_device = device;
 	this->m_dContext = dContext;
@@ -27,6 +28,7 @@ void Room::initialize(ID3D11Device* device, ID3D11DeviceContext* dContext, std::
 	this->m_wvpCBuffers = cBuffer;
 	this->m_models = models;
 	this->audioEngine = audioEngine;
+	this->m_gameTimerPointer = gameTimer;
 }
 void Room::initParent()
 {
@@ -55,6 +57,7 @@ void Room::update(float dt, Camera* camera, Room* &activeRoom, bool &activeRoomC
 					activeRoom = m_rooms.at(portalPtr->getRoomID());
 					portalPtr->resetActiveRoomVariable();
 					activeRoomChanged = true;
+					activeRoom->onEntrance();
 				}
 			}
 			else
