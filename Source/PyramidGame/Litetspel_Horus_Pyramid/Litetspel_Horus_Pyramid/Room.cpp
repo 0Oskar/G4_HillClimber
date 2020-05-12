@@ -3,7 +3,6 @@
 
 Room::Room()
 {
-	this->m_active = false;
 	this->m_dContext = nullptr;
 	this->m_device = nullptr;
 	this->m_player = nullptr;
@@ -32,7 +31,6 @@ void Room::initialize(ID3D11Device* device, ID3D11DeviceContext* dContext, std::
 }
 void Room::initParent()
 {
-	this->m_active = false;
 	this->m_dContext = nullptr;
 	this->m_device = nullptr;
 	this->m_player = nullptr;
@@ -43,42 +41,36 @@ void Room::initParent()
 }
 void Room::update(float dt, Camera* camera, Room* &activeRoom, bool &activeRoomChanged)
 {
-	if (!this->m_active)
+	for (int i = 0; i < this->m_gameObjects.size(); i++)
 	{
-		for (int i = 0; i < this->m_gameObjects.size(); i++)
+		Portal* portalPtr = dynamic_cast<Portal*>(this->m_gameObjects[i]);
+
+		if (portalPtr != nullptr)
 		{
-			Portal* portalPtr = dynamic_cast<Portal*>(this->m_gameObjects[i]);
-
-			if (portalPtr != nullptr)
+			portalPtr->update();
+			if (portalPtr->shouldChangeActiveRoom())
 			{
-				portalPtr->update();
-				if (portalPtr->shouldChangeActiveRoom())
-				{
-					activeRoom = m_rooms.at(portalPtr->getRoomID());
-					portalPtr->resetActiveRoomVariable();
-					activeRoomChanged = true;
-					activeRoom->onEntrance();
-				}
+				activeRoom = m_rooms.at(portalPtr->getRoomID());
+				portalPtr->resetActiveRoomVariable();
+				activeRoomChanged = true;
+				activeRoom->onEntrance();
 			}
-			else
-			{
-				this->m_gameObjects[i]->update(dt);
-			}
-
-			VS_CONSTANT_BUFFER wvpData;
-			DirectX::XMMATRIX viewPMtrx = camera->getViewMatrix() * camera->getProjectionMatrix();
-			wvpData.wvp = this->m_gameObjects[i]->getWorldMatrix() * viewPMtrx;
-			wvpData.worldMatrix = this->m_gameObjects[i]->getWorldMatrix();
-			
-			this->m_wvpCBuffers->at(this->m_gameObjects.at(i)->getWvpCBufferIndex()).upd(&wvpData);
-
 		}
+		else
+		{
+			this->m_gameObjects[i]->update(dt);
+		}
+
+		VS_CONSTANT_BUFFER wvpData;
+		DirectX::XMMATRIX viewPMtrx = camera->getViewMatrix() * camera->getProjectionMatrix();
+		wvpData.wvp = this->m_gameObjects[i]->getWorldMatrix() * viewPMtrx;
+		wvpData.worldMatrix = this->m_gameObjects[i]->getWorldMatrix();
+			
+		this->m_wvpCBuffers->at(this->m_gameObjects.at(i)->getWvpCBufferIndex()).upd(&wvpData);
+
 	}
 }
-void Room::setActive(bool activityStatus)
-{
-	this->m_active = activityStatus;
-}
+
 void Room::addGameObjectToRoom(bool dynamic, bool colide, float weight, int mdlIndx, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR scale3D, DirectX::XMFLOAT3 boundingBoxSize, DirectX::XMFLOAT3 acceleration, DirectX::XMFLOAT3 deceleration)
 {
 	this->m_gameObjects.emplace_back(new GameObject());

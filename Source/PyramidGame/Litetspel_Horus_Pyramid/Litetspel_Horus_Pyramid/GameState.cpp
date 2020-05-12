@@ -430,6 +430,7 @@ void GameState::update(Keyboard* keyboard, MouseEvent mouseEvent, Mouse* mousePt
 				m_activeRoom = m_rooms.at(portalPtr->getRoomID());
 				portalPtr->resetActiveRoomVariable();
 				this->m_activeRoomChanged = true;
+				this->m_activeRoom->onEntrance();
 			}
 		}
 		else
