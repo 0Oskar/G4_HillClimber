@@ -153,7 +153,7 @@ void GameState::loadModels()
 	//2- HookHead model
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
-	this->m_models[2].loadVertexFromOBJ(m_device, m_dContext, L"Models/BirdHookModel.obj", mat, L"Textures/BirdTexture.png");
+	this->m_models[2].loadVertexFromOBJ(m_device, m_dContext, L"Models/FinalBird.obj", mat, L"Textures/ColorTexture.png");
 
 	//3- platform model
 	this->m_models.emplace_back();
@@ -163,13 +163,12 @@ void GameState::loadModels()
 	//4- HookHand
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
-	this->m_models[4].loadVertexFromOBJ(m_device, m_dContext, L"Models/HookModel.obj", mat, L"Textures/HookTexture.png");
-
+	this->m_models[4].loadVertexFromOBJ(m_device, m_dContext, L"Models/FinalHook.obj", mat, L"Textures/ColorTexture.png");
 
 	//5- Chain Link
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
-	this->m_models[5].loadVertexFromOBJ(m_device, m_dContext, L"Models/ChainLink.obj", mat, L"Textures/BirdTexture.png");
+	this->m_models[5].loadVertexFromOBJ(m_device, m_dContext, L"Models/FinalChainLink.obj", mat, L"Textures/ColorTexture.png");
 
 	//6- Lever Room aka Kevins room
 	this->m_models.emplace_back();
@@ -215,7 +214,6 @@ void GameState::loadModels()
 	this->m_models.emplace_back(); //add empty model
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); //reset material
 	this->m_models[14].initializeModelBff(m_device, m_dContext, "Brick_4.bff", mat, L"Textures/BirdHyroglajf.png"); //load model
-
 
 	//15. Brick_5 (Edvin)
 	this->m_models.emplace_back(); //add empty model
@@ -313,7 +311,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 
 	// Player
 	this->m_player.initialize(-1, -1, 60.f, DirectX::XMFLOAT3(20.f, 20.f, 20.f), DirectX::XMFLOAT3(.01f, .01f, .01f), hook, hookHand, this->m_chainGObjects, audioEngine, platformBB);
-  this->m_player.setSpawnPosition(DirectX::XMVectorSet(0.f, 10.f, -1.f, 1.f));
+    this->m_player.setSpawnPosition(DirectX::XMVectorSet(0.f, 10.f, -1.f, 1.f));
 	this->m_player.respawn();
 	
 	//Room creation
@@ -321,6 +319,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_rooms.emplace_back(new PyramidRoom());
 	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, 0, 1), audioEngine, &this->m_gameTime);
 	dynamic_cast<PyramidRoom*>(this->m_rooms.back())->init(&m_pyramidOBB);
+	m_activeRoom = m_rooms.back();
 
 	//Template Room [1]
 	this->m_rooms.emplace_back(new TemplateRoom());
@@ -332,12 +331,10 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(100, 2, 100, 1), audioEngine, &this->m_gameTime);
 	dynamic_cast<KevinsRoom*>(this->m_rooms.back())->init();
 
-
 	//Kevin Room [3]
 	this->m_rooms.emplace_back(new EdvinsRoom());
 	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, -100, 1), audioEngine, &this->m_gameTime);
 	dynamic_cast<EdvinsRoom*>(this->m_rooms.back())->init();
-	m_activeRoom = m_rooms.back();
 
 	this->m_player.getphysicsCompPtr()->setVelocity({ 0, 0, 0 });
 	this->m_player.setPosition(this->m_activeRoom->getEntrancePosition());
@@ -417,8 +414,8 @@ void GameState::update(Keyboard* keyboard, MouseEvent mouseEvent, Mouse* mousePt
 	  Portal* portalPtr = dynamic_cast<Portal*>(this->m_gameObjects[i]);
 
 		if (portalPtr != nullptr)
-    {
-	    portalPtr->update();
+		{
+			portalPtr->update();
 
 			if (portalPtr->shouldChangeActiveRoom())
 			{
@@ -453,12 +450,12 @@ void GameState::update(Keyboard* keyboard, MouseEvent mouseEvent, Mouse* mousePt
 		std::pair<int, XMVECTOR> checkpoint = this->m_checkpointHandler.getIndexPosAt((int)i);
 		BoundingBox checkpointAABB = this->m_gameObjects[checkpoint.first]->getAABB();
 		if (checkpointAABB.Intersects(this->m_player.getAABB()))
-    {
+		{
 			if (XMVectorGetY(checkpoint.second) > XMVectorGetY(this->m_checkpointHandler.getCurrentpos()))
 			{
 				this->m_checkpointHandler.setCurrent(checkpoint.first, checkpoint.second);
 				this->m_player.setSpawnPosition(checkpoint.second + XMVectorSet(0.f, checkpointAABB.Extents.y + 5, 0.f, 0.f));
 			}
-    }
+		}
 	}
 }

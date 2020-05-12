@@ -443,7 +443,7 @@ void ViewLayer::render()
 	// Draw Sprites
 	this->m_spriteBatch->Begin();
 	this->m_spriteBatch->Draw(this->m_crossHairSRV, this->m_crosshairPosition);
-	this->m_spriteFont->DrawString(this->m_spriteBatch.get(), this->m_fpsString.c_str(), DirectX::XMFLOAT2(this->m_options->width - 100, 0), DirectX::Colors::White, 0.f, DirectX::XMFLOAT2(0.f, 0.f));
+	this->m_spriteFont->DrawString(this->m_spriteBatch.get(), this->m_fpsString.c_str(), DirectX::XMFLOAT2((float)this->m_options->width - 100.f, 0), DirectX::Colors::White, 0.f, DirectX::XMFLOAT2(0.f, 0.f));
 	this->m_spriteFont->DrawString(this->m_spriteBatch.get(), this->m_timerString.c_str(), DirectX::XMFLOAT2(10.f, 0.f), this->m_gameTimePtr->isActive() ? DirectX::Colors::White : DirectX::Colors::Green, 0.f, DirectX::XMFLOAT2(0.f, 0.f));
 	this->m_spriteFont->DrawString(this->m_spriteBatch.get(), std::to_string(this->m_gameTimePtr->timeElapsed()).c_str(), DirectX::XMFLOAT2(65.f, 0.f), DirectX::Colors::Green, 0.f, DirectX::XMFLOAT2(0.f, 0.f));
 	this->m_spriteBatch->End();
