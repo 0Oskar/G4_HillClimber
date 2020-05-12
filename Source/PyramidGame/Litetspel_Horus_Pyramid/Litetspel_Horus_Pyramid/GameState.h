@@ -19,6 +19,7 @@ class GameState
 private:
 	Player m_player;
 	Camera m_camera;
+	Timer m_gameTime;
 	DirectX::BoundingOrientedBox m_pyramidOBB;
 	
 	ID3D11Device* m_device;
@@ -59,4 +60,5 @@ public:
 
 	bool m_activeRoomChanged;
 	void roomChangeInit();
+	Timer* getGameTimerPtr();
 };

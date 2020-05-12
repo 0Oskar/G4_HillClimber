@@ -23,6 +23,7 @@ protected:
 	
 	Player* m_player;
 	std::shared_ptr<DirectX::AudioEngine> audioEngine;
+	Timer* m_gameTimerPointer;
 	bool m_active;
 	DirectX::XMVECTOR m_entrencePosition;
 	DirectX::XMVECTOR m_worldPosition;
@@ -35,7 +36,7 @@ protected:
 public:
 	Room();
 	~Room();
-	virtual void initialize(ID3D11Device* device, ID3D11DeviceContext* dContext, std::vector<Model>* models, std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>*, Player* player, XMVECTOR position, std::shared_ptr<DirectX::AudioEngine> audioEngine);
+	virtual void initialize(ID3D11Device* device, ID3D11DeviceContext* dContext, std::vector<Model>* models, std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* cBuffer, Player* player, XMVECTOR position, std::shared_ptr<DirectX::AudioEngine> audioEngine, Timer* gameTimer);
 	void initParent();
 	virtual void update(float dt, Camera* camera, Room*& activeRoom, bool& activeRoomChanged) = 0;
 	virtual void init() {};

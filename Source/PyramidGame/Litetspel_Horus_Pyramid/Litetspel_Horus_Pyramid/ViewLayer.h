@@ -71,7 +71,9 @@ private:
 	Timer m_timer;
 	std::unique_ptr<DirectX::SpriteFont> m_spriteFont;
 	std::string m_fpsString;
+	std::string m_timerString;
 	int m_fps;
+	Timer* m_gameTimePtr;
 
 	// Initialization Functions
 	void initDeviceAndSwapChain();
@@ -99,7 +101,7 @@ public:
 	void setBoundingBoxesFromActiveRoom(std::vector<BoundingBox>* bbFromRoom);
 	void setModelsFromState(std::vector<Model>* models);
 	void setWvpCBufferFromState(std::vector< ConstBuffer<VS_CONSTANT_BUFFER> >* models);
-
+	void setGameTimePtr(Timer* gameTimer);
 	// Initialization
 	void initialize(HWND window, GameOptions* options);
 
