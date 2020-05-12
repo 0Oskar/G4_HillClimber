@@ -12,6 +12,7 @@ private:
 	std::vector<DirectX::BoundingBox*> m_collidableAABBoxes;
 	DirectX::BoundingOrientedBox m_pyramidOBB;
 	HookHand m_hookHand;
+	XMVECTOR m_spawnPosition;
 
 	bool inUse;
 
@@ -42,6 +43,10 @@ public:
 	void resetVelocity();
 	void flyDown(float speed);
 
+	// Setters
+	void setSpawnPosition(XMVECTOR position);
+
 	// Update
+	void respawn();
 	void update(Keyboard* keyboard, Mouse* mouse, float dt);
 };

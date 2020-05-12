@@ -156,6 +156,7 @@
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Chain.cpp" />
+    <ClCompile Include="CheckpointHandler.cpp" />
     <ClCompile Include="DebugDraw.cpp" />
     <ClCompile Include="EdvinsRoom.cpp" />
     <ClCompile Include="GameObject.cpp" />
@@ -210,6 +211,7 @@
     <ClInclude Include="BoundingPrim.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Chain.h" />
+    <ClInclude Include="CheckpointHandler.h" />
     <ClInclude Include="ConstantBuffer.h" />
     <ClInclude Include="DebugDraw.h" />
     <ClInclude Include="GameObject.h" />

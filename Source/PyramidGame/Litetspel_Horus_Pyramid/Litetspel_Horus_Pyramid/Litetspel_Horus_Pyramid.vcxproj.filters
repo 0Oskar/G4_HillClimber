@@ -78,6 +78,9 @@
     <ClCompile Include="Portal.cpp">
       <Filter>Source\Game Logic\GameObjects</Filter>
     </ClCompile>
+    <ClCompile Include="CheckpointHandler.cpp">
+      <Filter>Source\Game Logic</Filter>
+    </ClCompile>
     <ClCompile Include="PyramidRoom.cpp">
       <Filter>Source\Game Logic\Rooms</Filter>
     </ClCompile>
@@ -175,6 +178,9 @@
     </ClInclude>
     <ClInclude Include="Portal.h">
       <Filter>Header\Game Logic\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="CheckpointHandler.h">
+      <Filter>Header\Game Logic</Filter>
     </ClInclude>
     <ClInclude Include="Lever.h">
       <Filter>Header\Game Logic\GameObjects</Filter>

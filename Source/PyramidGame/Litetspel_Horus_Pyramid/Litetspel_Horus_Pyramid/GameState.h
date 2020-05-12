@@ -3,6 +3,7 @@
 #include "Camera.h"
 #include "Model.h"
 #include "Platform.h"
+#include "CheckpointHandler.h"
 #include "ViewLayer.h"
 #include "Lever.h"
 #include "Portal.h"
@@ -24,12 +25,13 @@ private:
 	ID3D11Device* m_device;
 	ID3D11DeviceContext* m_dContext;
 	Room* m_activeRoom;
-
-
+  
 	std::vector<Model> m_models;
 	std::vector<GameObject*> m_gameObjects;
 	std::vector<ConstBuffer<VS_CONSTANT_BUFFER>> m_wvpCBuffers;
 	std::vector<Room*> m_rooms;
+
+	CheckpointHandler m_checkpointHandler;
 	std::vector<DirectX::BoundingBox*> platformBB;
 	std::vector<GameObject*>* m_chainGObjects;
 	

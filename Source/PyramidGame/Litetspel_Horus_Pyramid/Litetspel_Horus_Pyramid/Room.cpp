@@ -1,7 +1,6 @@
 #include "pch.h"
-#include"Room.h"
+#include "Room.h"
 
-using namespace DirectX;
 Room::Room()
 {
 	this->m_active = false;
