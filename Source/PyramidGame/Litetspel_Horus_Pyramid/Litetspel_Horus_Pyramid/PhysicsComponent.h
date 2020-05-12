@@ -15,6 +15,7 @@ private:
 
 	// Jump
 	bool m_isJumping;
+	bool m_isFalling;
 
 	DirectX::BoundingBox* m_aabb;
 
@@ -29,6 +30,7 @@ public:
 		this->m_deceleration = DirectX::XMFLOAT3(0.f, 0.f, 0.f);
 		this->m_mass = 0.f;
 		this->m_isJumping = false;
+		this->m_isFalling = true;
 		this->m_aabb = nullptr;
 		this->m_moveComp = nullptr;
 	}
@@ -39,6 +41,7 @@ public:
 		this->m_deceleration = otherPhysicsComponent.m_deceleration;
 		this->m_mass = otherPhysicsComponent.m_mass;
 		this->m_isJumping = otherPhysicsComponent.m_isJumping;
+		this->m_isFalling = otherPhysicsComponent.m_isFalling;
 
 		// AABB
 		if (this->m_aabb)
@@ -71,6 +74,7 @@ public:
 		this->m_deceleration = otherPhysicsComponent.m_deceleration;
 		this->m_mass = otherPhysicsComponent.m_mass;
 		this->m_isJumping = otherPhysicsComponent.m_isJumping;
+		this->m_isFalling = otherPhysicsComponent.m_isFalling;
 
 		// AABB
 		if (this->m_aabb)
@@ -114,6 +118,10 @@ public:
 	{
 		return this->m_isJumping;
 	}
+	bool getIsFalling() const
+	{
+		return this->m_isFalling;
+	}
 
 	// Setters
 	void setBoundingBox(DirectX::XMFLOAT3 center, DirectX::XMFLOAT3 extends)
@@ -132,6 +140,10 @@ public:
 	void setIsJumping(bool isJumping)
 	{
 		this->m_isJumping = isJumping;
+	}
+	void setIsFalling(bool isFalling)
+	{
+		this->m_isFalling = isFalling;
 	}
 
 	void addForce(DirectX::XMFLOAT3 force, float dt)
@@ -194,6 +206,7 @@ public:
 		if (!this->m_isJumping)
 		{
 			this->m_isJumping = true;
+			this->m_isFalling = false;
 			this->m_velocity.y += this->m_acceleration.y * accelerationMultipler;
 		}
 	}
@@ -209,6 +222,7 @@ public:
 		{
 			this->m_velocity.z = -25.f;
 			this->m_velocity.y = -20.f;
+			this->m_isFalling = true;
 			//if (xAABB.Intersects(pyramidOBB))
 			//{
 			//	//OutputDebugString(L"X Collision!\n");
@@ -279,9 +293,14 @@ public:
 					{
 						this->m_moveComp->position = DirectX::XMVectorSetY(this->m_moveComp->position, boundingBoxes[i]->Center.y + boundingBoxes[i]->Extents.y + AABBNextFrame.Extents.y + 0.0001f);
 						this->m_isJumping = false;
+						this->m_isFalling = false;
 					}
 					
 					this->m_velocity.y = 0;
+				}
+				else
+				{
+					this->m_isFalling = true;
 				}
 
 				if (zAABB.Intersects(*boundingBoxes[i]))

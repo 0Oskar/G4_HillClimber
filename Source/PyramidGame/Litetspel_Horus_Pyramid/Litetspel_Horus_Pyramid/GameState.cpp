@@ -50,7 +50,6 @@ std::vector<BoundingBox>* GameState::getActiveRoomBoundingBoxsPtr()
 		return nullptr;
 }
 
-
 std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* GameState::getWvpCBuffersPtr()
 {
 	return &this->m_wvpCBuffers;
@@ -87,7 +86,6 @@ void GameState::addGameObjectToWorld(bool dynamic, bool colide, float weight, in
 	}
 	else
 		gObject->setBoundingBox(boundingBoxSize);
-
 }
 
 void GameState::addPlatformToWorld(int mdlIndex, DirectX::BoundingOrientedBox* pyramid, Model* mdl, DirectX::XMVECTOR position, DirectX::XMFLOAT3 platformBoundingBox)
@@ -167,6 +165,7 @@ void GameState::loadModels()
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
 	this->m_models[4].loadVertexFromOBJ(m_device, m_dContext, L"Models/HookModel.obj", mat, L"Textures/HookTexture.png");
 
+
 	//5- Chain Link
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
@@ -222,7 +221,11 @@ void GameState::loadModels()
 	this->m_models.emplace_back(); //add empty model
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); //reset material
 	this->m_models[15].initializeModelBff(m_device, m_dContext, "Brick_5.bff", mat, L"Textures/BirdHyroglajf.png"); //load model
-	}
+  
+  this->m_models.emplace_back();
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
+	this->m_models[16].loadVertexFromOBJ(device, dContext, L"Models/checkpoint.obj", mat, L"Textures/ColorTexture.png");
+}
 
 void GameState::roomChangeInit()
 {
@@ -280,7 +283,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	hookHand = this->m_gameObjects.back();
 
 	//Chain link
-    DirectX::XMFLOAT3 vecF3 = hook->getMoveCompPtr()->getPositionF3();
+  DirectX::XMFLOAT3 vecF3 = hook->getMoveCompPtr()->getPositionF3();
 	vec = DirectX::XMVectorSet(vecF3.x, vecF3.y, vecF3.z - 5.f, 1.f);
 	this->addGameObjectToWorld(true, false, 1, 5, &m_models[5], vec, NormalScale, XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
 	this->m_chainGObjects->push_back(this->m_gameObjects.back());
@@ -292,8 +295,6 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	  this->addGameObjectToWorld(true, false, 1, 5, &m_models[5], vec, NormalScale, XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
 		this->m_chainGObjects->push_back(this->m_gameObjects.back());
 	}
-	
-
 
 	//Possible hook gameobjects
 	for (size_t i = 0; i < this->m_gameObjects.size(); i++)
@@ -307,6 +308,8 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 
 	// Player
 	this->m_player.initialize(-1, -1, 60.f, DirectX::XMFLOAT3(20.f, 20.f, 20.f), DirectX::XMFLOAT3(.01f, .01f, .01f), hook, hookHand, this->m_chainGObjects, audioEngine, platformBB);
+  this->m_player.setSpawnPosition(DirectX::XMVectorSet(0.f, 10.f, -1.f, 1.f));
+	this->m_player.respawn();
 	
 	//Room creation
 	//Pyramid Room - [0]
@@ -335,7 +338,6 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_player.setPosition(this->m_activeRoom->getEntrancePosition());
 	this->m_player.getphysicsCompPtr()->setVelocity({ 0, 0, 0 });
 
-
 	//Get active room platforms to send to hookHand.
 	for (size_t i = 0; this->m_activeRoom && i < this->m_activeRoom->getGameObjectsPtr()->size(); i++)
 	{
@@ -358,6 +360,17 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 			castToPlatform->initAudioComponent(audioEngine, m_player.getMoveCompPtr());
 		}
 	}
+
+	// Checkpoints
+	vec = DirectX::XMVectorSet(10.f, 85.f, 114.f, 1.f);
+	this->addGameObjectToWorld(false, true, 0, 16, &m_models[16], vec, {0.7f, 0.7f, 0.7f}, DirectX::XMFLOAT3(7.f, 1.f, 5.f));
+	this->m_gameObjects.back()->setRotation({0.f, 1.57f, 0.f});
+	this->m_checkpointHandler.addCheckpointGameObject(this->m_gameObjects.size() - 1, vec);
+
+	vec = DirectX::XMVectorSet(0.f, 25.f, 42.f, 1.f);
+	this->addGameObjectToWorld(false, true, 0, 16, &m_models[16], vec, { 0.7f, 0.7f, 0.7f }, DirectX::XMFLOAT3(7.f, 1.f, 5.f));
+	this->m_gameObjects.back()->setRotation({ 0.f, 1.57f, 0.f });
+	this->m_checkpointHandler.addCheckpointGameObject(this->m_gameObjects.size() - 1, vec);
 
 	// Camera
 	this->m_camera.followMoveComp(this->m_player.getMoveCompPtr());
@@ -394,11 +407,12 @@ void GameState::update(Keyboard* keyboard, MouseEvent mouseEvent, Mouse* mousePt
 	// Game Objects from gameState
 	for (size_t i = 0; i < this->m_gameObjects.size(); i++)
 	{
-		Portal* portalPtr = dynamic_cast<Portal*>(this->m_gameObjects[i]);
+	  Portal* portalPtr = dynamic_cast<Portal*>(this->m_gameObjects[i]);
 
 		if (portalPtr != nullptr)
-		{
-			portalPtr->update();
+    {
+	    portalPtr->update();
+
 			if (portalPtr->shouldChangeActiveRoom())
 			{
 				m_activeRoom = m_rooms.at(portalPtr->getRoomID());
@@ -407,9 +421,7 @@ void GameState::update(Keyboard* keyboard, MouseEvent mouseEvent, Mouse* mousePt
 			}
 		}
 		else
-		{
 			this->m_gameObjects[i]->update(dt);
-		}
 
 		// World View Projection Matrix Contruction
 		VS_CONSTANT_BUFFER wvpData;
@@ -418,14 +430,28 @@ void GameState::update(Keyboard* keyboard, MouseEvent mouseEvent, Mouse* mousePt
 		wvpData.worldMatrix = this->m_gameObjects[i]->getWorldMatrix();
 
 		this->m_wvpCBuffers[this->m_gameObjects[i]->getWvpCBufferIndex()].upd(&wvpData);
-		if (m_gameObjects[i]->m_removeMe)
+		if (this->m_gameObjects[i]->m_removeMe)
 		{
-			delete m_gameObjects[i];
-			m_gameObjects[i] = nullptr;
-			m_gameObjects.erase(m_gameObjects.begin() + i);
+			this->m_gameObjects[i]->setVisibility(false);
+			this->m_gameObjects[i]->setIfCollidable(false);
 		}
 	}
 
 	if(m_activeRoom != nullptr)
 		this->m_activeRoom->update(dt, &m_camera, this->m_activeRoom, m_activeRoomChanged);
+
+	// Checkpoints
+	for (size_t i = 0; i < this->m_checkpointHandler.size(); i++)
+	{
+		std::pair<int, XMVECTOR> checkpoint = this->m_checkpointHandler.getIndexPosAt(i);
+		BoundingBox checkpointAABB = this->m_gameObjects[checkpoint.first]->getAABB();
+		if (checkpointAABB.Intersects(this->m_player.getAABB()))
+    {
+			if (XMVectorGetY(checkpoint.second) > XMVectorGetY(this->m_checkpointHandler.getCurrentpos()))
+			{
+				this->m_checkpointHandler.setCurrent(checkpoint.first, checkpoint.second);
+				this->m_player.setSpawnPosition(checkpoint.second + XMVectorSet(0.f, checkpointAABB.Extents.y + 5, 0.f, 0.f));
+			}
+    }
+	}
 }
