@@ -25,7 +25,9 @@ void Platform::update(float dt)
 		if (m_shouldDestroy)
 		{
 			this->m_physicsComp->updatePosition(dt);
-			this->m_physicsComp->handleCollision(std::vector<DirectX::BoundingBox*>(), *m_pyramidBoundingBox, dt);
+
+			if(this->m_pyramidBoundingBox != nullptr)
+				this->m_physicsComp->handleCollision(std::vector<DirectX::BoundingBox*>(), *m_pyramidBoundingBox, dt);
 
 			if ((this->m_destroyTime + this->m_removeTime) < this->m_destructionTimer.timeElapsed())
 			{

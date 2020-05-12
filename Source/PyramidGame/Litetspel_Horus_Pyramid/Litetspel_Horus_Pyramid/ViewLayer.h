@@ -6,12 +6,14 @@
 #include "Platform.h"
 #include "Shaders.h"
 
+
 class ViewLayer
 {
 private:
 	// Window
 	HWND m_window;
 	GameOptions* m_options;
+
 
 	// Device
 	Microsoft::WRL::ComPtr< ID3D11Device > m_device;

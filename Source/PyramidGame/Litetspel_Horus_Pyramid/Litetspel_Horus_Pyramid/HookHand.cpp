@@ -8,7 +8,8 @@ HookHand::HookHand()
 }
 
 
-void HookHand::init(GameObject* gObject, MovementComponent* movementComponent, std::vector<DirectX::BoundingBox*>* boundingBoxes, GameObject* hookGun, std::vector<GameObject*>* chainGObjects, std::shared_ptr<DirectX::AudioEngine> audioEngine)
+
+void HookHand::init(GameObject* gObject, MovementComponent* movementComponent, std::vector<DirectX::BoundingBox*>* boundingBoxes, GameObject* hookGun, std::vector<GameObject*>* chainGObjects, std::shared_ptr<DirectX::AudioEngine> audioEngine, std::vector<DirectX::BoundingBox*> platformBB)
 {
 	MaterialData mat;
 	mat.diffuse = DirectX::XMFLOAT4(0.5, 0.5, 0.5, 1);
@@ -20,6 +21,8 @@ void HookHand::init(GameObject* gObject, MovementComponent* movementComponent, s
 	this->m_hookGameObject->setPosition(this->m_playerMovement->position);
 	this->m_hookTimer.start();
 	this->m_boundingBoxes = boundingBoxes;
+	this->m_platformsBB = new std::vector<DirectX::BoundingBox*>(platformBB);
+	
 
 	//Audio
 	this->m_audioEngine = audioEngine;
@@ -27,6 +30,11 @@ void HookHand::init(GameObject* gObject, MovementComponent* movementComponent, s
 	this->m_ejectSound = std::make_shared<DirectX::SoundEffect>(audioEngine.get(), L"Sounds/Explo1.wav");
 	m_effect = m_ejectSound->CreateInstance();
 	m_effect->SetVolume(0.002f);
+}
+
+void HookHand::setBB(std::vector<DirectX::BoundingBox*> platformBB)
+{
+	this->m_platformsBB = new std::vector<DirectX::BoundingBox*>(platformBB);
 }
 
 bool HookHand::canFire()
@@ -60,12 +68,12 @@ void HookHand::retract()
 bool HookHand::colide()
 {
 	bool colided = false;
-	for (int i = 0; i < m_boundingBoxes->size(); i++)
+	for (int i = 0; i < m_platformsBB->size(); i++)
 	{
-		if (this->m_hookGameObject->getAABB().Intersects(*m_boundingBoxes->at(i)))
+		if (this->m_hookGameObject->getAABB().Intersects(*m_platformsBB->at(i)))
 		{
-			DirectX::XMVECTOR posToTopAndCenterOfBox = DirectX::XMVectorSet(DirectX::XMVectorGetX(this->m_hookGameObject->getPosition()), m_boundingBoxes->at(i)->Center.y, DirectX::XMVectorGetZ(this->m_hookGameObject->getPosition()), 0);
-			posToTopAndCenterOfBox = DirectX::XMVectorAdd(posToTopAndCenterOfBox, DirectX::XMVectorSet(0, m_boundingBoxes->at(i)->Extents.y + (this->m_hookGameObject->getAABB().Extents.y * 2), 0, 0));  // Move in Y the platform extends then + the size of the boundingbox of the hookHead.
+			DirectX::XMVECTOR posToTopAndCenterOfBox = DirectX::XMVectorSet(DirectX::XMVectorGetX(this->m_hookGameObject->getPosition()), m_platformsBB->at(i)->Center.y, DirectX::XMVectorGetZ(this->m_hookGameObject->getPosition()), 0);
+			posToTopAndCenterOfBox = DirectX::XMVectorAdd(posToTopAndCenterOfBox, DirectX::XMVectorSet(0, m_platformsBB->at(i)->Extents.y + (this->m_hookGameObject->getAABB().Extents.y * 2), 0, 0));  // Move in Y the platform extends then + the size of the boundingbox of the hookHead.
 			m_platformCenter = DirectX::XMVectorAdd(posToTopAndCenterOfBox, DirectX::XMVectorScale(this->m_playerMovement->forward, 2));
 			colided = true;
 		}
@@ -167,7 +175,7 @@ void HookHand::update(float dt)
 				this->m_hookState = hookState::idle;
 			}
 		}
-		this->m_hookGameObject->getMoveCompPtr()->rotation = DirectX::XMVectorAdd(this->invertX(this->m_playerMovement->rotation), this->hookRotOffsetConst);;
+		this->m_hookGameObject->getMoveCompPtr()->rotation = this->invertX(this->m_playerMovement->rotation) + this->hookRotOffsetConst;
 		this->m_hookGameObject->getMoveCompPtr()->position = DirectX::XMVectorAdd(this->m_gunGameObject->getMoveCompPtr()->position, hookPosOffset);
 	}
 

@@ -6,6 +6,7 @@ GameObject::GameObject()
 	this->m_visible = true;
 	this->m_collidable = false;
 	this->m_isStatic = false;
+	this->m_drawBB = false;
 	this->m_useDeceleration = true;
 	this->m_modelIndex = -1;
 	this->m_wvpCBufferIndex = -1;
@@ -21,6 +22,7 @@ GameObject::GameObject(const GameObject& otherGameObject)
 	this->m_visible = otherGameObject.m_visible;
 	this->m_collidable = otherGameObject.m_collidable;
 	this->m_isStatic = otherGameObject.m_isStatic;
+	this->m_drawBB = otherGameObject.m_drawBB;
 	this->m_useDeceleration = otherGameObject.m_useDeceleration;
 	this->m_modelIndex = otherGameObject.m_modelIndex;
 	this->m_wvpCBufferIndex = otherGameObject.m_wvpCBufferIndex;
@@ -67,6 +69,7 @@ GameObject& GameObject::operator=(const GameObject& otherGameObject)
 	this->m_visible = otherGameObject.m_visible;
 	this->m_collidable = otherGameObject.m_collidable;
 	this->m_isStatic = otherGameObject.m_isStatic;
+	this->m_drawBB = otherGameObject.m_drawBB;
 	this->m_useDeceleration = otherGameObject.m_useDeceleration;
 	this->m_modelIndex = otherGameObject.m_modelIndex;
 	this->m_wvpCBufferIndex = otherGameObject.m_wvpCBufferIndex;
@@ -95,8 +98,9 @@ GameObject& GameObject::operator=(const GameObject& otherGameObject)
 
 void GameObject::initializeStatic(bool collidable, int modelIndex, int wvpCBufferIndex, Model* mdl)
 {
-	this->m_isStatic = true;
 	this->m_collidable = collidable;
+	this->m_isStatic = true;
+	this->m_drawBB = collidable;
 	this->m_useDeceleration = false;
 	this->m_modelIndex = modelIndex;
 	this->m_wvpCBufferIndex = wvpCBufferIndex;
@@ -111,8 +115,9 @@ void GameObject::initializeStatic(bool collidable, int modelIndex, int wvpCBuffe
 
 void GameObject::initializeDynamic(bool collidable, bool useDeceleration, int modelIndex, int wvpCBufferIndex, float mass, DirectX::XMFLOAT3 acceleration, DirectX::XMFLOAT3 deceleration, Model* mdl)
 {
-	this->m_isStatic = false;
 	this->m_collidable = collidable;
+	this->m_isStatic = false;
+	this->m_drawBB = collidable;
 	this->m_useDeceleration = useDeceleration;
 	this->m_modelIndex = modelIndex;
 	this->m_wvpCBufferIndex = wvpCBufferIndex;
@@ -144,6 +149,11 @@ bool GameObject::collidable() const
 	return this->m_collidable;
 }
 
+bool GameObject::getDrawBB() const
+{
+	return this->m_drawBB;
+}
+
 DirectX::XMVECTOR GameObject::getPosition() const
 {
 	return this->m_movementComp->position;
@@ -170,6 +180,11 @@ int GameObject::getModelIndex() const
 int GameObject::getWvpCBufferIndex() const
 {
 	return this->m_wvpCBufferIndex;
+}
+
+void GameObject::setWvpCBufferIndex(int index)
+{
+	this->m_wvpCBufferIndex = index;
 }
 
 MovementComponent* GameObject::getMoveCompPtr()
@@ -214,6 +229,16 @@ void GameObject::setRotation(DirectX::XMVECTOR newRotation)
 std::wstring GameObject::getTexturePath()
 {
 	return this->m_texturePath;
+}
+
+void GameObject::setTexturePath(std::wstring texturePath)
+{
+	this->m_texturePath = texturePath;
+}
+
+void GameObject::setDrawBB(bool drawable)
+{
+	this->m_drawBB = drawable;
 }
 
 void GameObject::setScale(DirectX::XMVECTOR newScale)

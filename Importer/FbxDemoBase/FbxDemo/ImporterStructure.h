@@ -22,6 +22,15 @@ struct MaterialBFF
 	float Opacity;
 };
 
+struct LightBFF
+{
+	char name[64];
+	char type[64];
+	float color[3];
+	float dir;
+	float intencity;
+};
+
 struct CameraBFF
 {
 	float pos[3];

@@ -8,10 +8,12 @@ private:
 	void createSceneObjects();
 	void onCompleted();
 
+	Lever* m_objectTest;
 public:
 	TemplateRoom();
 	~TemplateRoom();
+	void update(float dt, Camera* camera, Room*& activeRoom, bool& activeRoomChanged);
 	void onEntrance();
-	void update(float dt, Camera* camera);
 	void init();
+	void portals();
 };

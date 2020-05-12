@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "ViewLayer.h"
+//Jag lade till så gamestate.h är includad här
 
 void ViewLayer::initDeviceAndSwapChain()
 {
@@ -171,6 +172,8 @@ ID3D11DeviceContext* ViewLayer::getContextDevice()
 	return this->m_deviceContext.Get();
 }
 
+
+
 void ViewLayer::setViewMatrix(DirectX::XMMATRIX* newViewMatrix)
 {
 	this->m_viewMatrix = newViewMatrix;
@@ -253,7 +256,7 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 	// Directional Light buffer
 	PS_DIR_BUFFER dirBuffer;
 	dirBuffer.lightColor = DirectX::XMFLOAT4(.8f, 0.8f, 0.8f, 1.f);
-	dirBuffer.lightDirection = DirectX::XMFLOAT4(-1.0f, 1.0f, -0.7f, 0.0f);
+	dirBuffer.lightDirection = DirectX::XMFLOAT4(0.0f, 1.0f, -0.7f, 0.0f);
 	this->m_dirLightBuffer.m_data = dirBuffer;
 	this->m_dirLightBuffer.upd();
 
@@ -391,7 +394,7 @@ void ViewLayer::render()
 		this->m_effect->Apply(this->m_deviceContext.Get());
 		for (size_t i = 0; i < this->m_gameObjectsFromState->size(); i++)
 		{
-			if (this->m_gameObjectsFromState->at(i)->collidable())
+			if (this->m_gameObjectsFromState->at(i)->getDrawBB())
 			{
 				// Draw Primitive
 				DX::Draw(m_batch.get(), *(this->m_gameObjectsFromState->at(i)->getAABBPtr()), DirectX::Colors::Blue);
@@ -416,7 +419,6 @@ void ViewLayer::render()
 			}
 		}
 		DX::Draw(m_batch.get(), this->m_pyramidOBB, DirectX::Colors::Blue);
-
 		m_batch->End();
 	}
 
