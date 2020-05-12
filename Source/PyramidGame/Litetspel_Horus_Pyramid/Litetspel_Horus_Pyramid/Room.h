@@ -18,6 +18,7 @@ protected:
 	std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* m_wvpCBuffers;
 	std::vector<Model>* m_models;
 	std::vector<DirectX::BoundingBox> m_boundingBoxes;
+	std::vector<DirectX::BoundingOrientedBox> m_orientedBoundingBoxes;
 	std::vector<DirectX::BoundingBox> m_triggerBoundingBoxes;
 	std::vector<Room*> m_rooms;
 	
@@ -32,6 +33,7 @@ protected:
 	virtual void createSceneObjects() {};
 	virtual void onCompleted() {};
 	void addBoundingBox(XMVECTOR position, XMFLOAT3 extends);
+	void addOrientedBoundingBox(XMVECTOR position, XMFLOAT3 extends, XMVECTOR rotation);
 	void addTriggerBB(XMVECTOR position, XMFLOAT3 extends);
 public:
 	Room();
@@ -53,6 +55,7 @@ public:
 
 	std::vector<GameObject*>* getGameObjectsPtr();
 	std::vector<BoundingBox>* getBoundingBoxPtr();
+	std::vector<BoundingOrientedBox>* getOrientedBoundingBoxPtr();
 	DirectX::XMVECTOR getEntrancePosition();
 	DirectX::XMVECTOR getRelativePosition(DirectX::XMVECTOR pos);
 

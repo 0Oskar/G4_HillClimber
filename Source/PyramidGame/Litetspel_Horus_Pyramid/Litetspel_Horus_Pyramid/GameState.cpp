@@ -50,6 +50,14 @@ std::vector<BoundingBox>* GameState::getActiveRoomBoundingBoxsPtr()
 		return nullptr;
 }
 
+std::vector<BoundingOrientedBox>* GameState::getActiveRoomOrientedBoundingBoxPtr()
+{
+	if (this->m_activeRoom != nullptr)
+		return this->m_activeRoom->getOrientedBoundingBoxPtr();
+	else
+		return nullptr;
+}
+
 std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* GameState::getWvpCBuffersPtr()
 {
 	return &this->m_wvpCBuffers;
@@ -286,7 +294,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	hookHand = this->m_gameObjects.back();
 
 	//Chain link
-  DirectX::XMFLOAT3 vecF3 = hook->getMoveCompPtr()->getPositionF3();
+    DirectX::XMFLOAT3 vecF3 = hook->getMoveCompPtr()->getPositionF3();
 	vec = DirectX::XMVectorSet(vecF3.x, vecF3.y, vecF3.z - 5.f, 1.f);
 	this->addGameObjectToWorld(true, false, 1, 5, &m_models[5], vec, NormalScale, XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
 	this->m_chainGObjects->push_back(this->m_gameObjects.back());

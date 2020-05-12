@@ -201,6 +201,11 @@ void ViewLayer::setBoundingBoxesFromActiveRoom(std::vector<BoundingBox>* bbFromR
 	this->m_boundingBoxesFromActiveRoom = bbFromRoom;
 }
 
+void ViewLayer::setOrientedBoundingBoxesFromActiveRoom(std::vector<BoundingOrientedBox>* bbFromRoom)
+{
+	this->m_orientedBoundingBoxesFromActiveRoom = bbFromRoom;
+}
+
 void ViewLayer::setModelsFromState(std::vector<Model>* models)
 {
 	this->m_modelsFromState = models;
@@ -273,7 +278,6 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 	DirectX::XMVECTOR quaternion = DirectX::XMQuaternionRotationRollPitchYaw(0.9f, 0.f, 0.f);
 	DirectX::XMFLOAT4 orientation;
 	DirectX::XMStoreFloat4(&orientation, quaternion);
-
 	this->m_pyramidOBB = DirectX::BoundingOrientedBox(
 		center,
 		extents,
@@ -416,6 +420,13 @@ void ViewLayer::render()
 					// Draw Primitive
 					DX::Draw(m_batch.get(), *(this->m_gameObjectsFromActiveRoom->at(i)->getAABBPtr()), DirectX::Colors::Blue);
 				}
+			}
+		}
+		if (this->m_orientedBoundingBoxesFromActiveRoom != nullptr)
+		{
+			for (size_t i = 0; i < this->m_orientedBoundingBoxesFromActiveRoom->size(); i++)
+			{
+				DX::Draw(m_batch.get(), this->m_orientedBoundingBoxesFromActiveRoom->at(i), DirectX::Colors::Red);
 			}
 		}
 		if (this->m_boundingBoxesFromActiveRoom != nullptr)

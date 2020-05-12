@@ -57,6 +57,7 @@ private:
 	std::vector<GameObject*>* m_gameObjectsFromState;
 	std::vector<GameObject*>* m_gameObjectsFromActiveRoom;
 	std::vector<BoundingBox>* m_boundingBoxesFromActiveRoom;
+	std::vector<BoundingOrientedBox>* m_orientedBoundingBoxesFromActiveRoom;
 	std::vector<Model>* m_modelsFromState;
 	std::vector< ConstBuffer<VS_CONSTANT_BUFFER> >* m_wvpCBufferFromState;
 	DirectX::BoundingOrientedBox m_pyramidOBB;
@@ -99,6 +100,7 @@ public:
 	void setgameObjectsFromState(std::vector<GameObject*>* gameObjectsFromState);
 	void setgameObjectsFromActiveRoom(std::vector<GameObject*>* gameObjectsFromState);
 	void setBoundingBoxesFromActiveRoom(std::vector<BoundingBox>* bbFromRoom);
+	void setOrientedBoundingBoxesFromActiveRoom(std::vector<BoundingOrientedBox>* bbFromRoom);
 	void setModelsFromState(std::vector<Model>* models);
 	void setWvpCBufferFromState(std::vector< ConstBuffer<VS_CONSTANT_BUFFER> >* models);
 	void setGameTimePtr(Timer* gameTimer);

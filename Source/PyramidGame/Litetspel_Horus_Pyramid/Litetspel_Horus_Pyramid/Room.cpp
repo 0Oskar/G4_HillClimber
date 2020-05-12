@@ -174,11 +174,27 @@ std::vector<BoundingBox>* Room::getBoundingBoxPtr()
 	return &this->m_boundingBoxes;
 }
 
+std::vector<BoundingOrientedBox>* Room::getOrientedBoundingBoxPtr()
+{
+	return &this->m_orientedBoundingBoxes;
+}
+
 void Room::addBoundingBox(XMVECTOR position, XMFLOAT3 extends)
 {
 	XMFLOAT3 roomPos;
 	XMStoreFloat3(&roomPos, this->m_worldPosition + position);
 	this->m_boundingBoxes.emplace_back(roomPos, extends);	
+}
+
+void Room::addOrientedBoundingBox(XMVECTOR position, XMFLOAT3 extends, XMVECTOR rotation)
+{
+	XMFLOAT3 roomPos;
+	XMStoreFloat3(&roomPos, this->m_worldPosition + position);
+	XMVECTOR rotationVector = XMQuaternionRotationRollPitchYawFromVector(rotation);
+	XMFLOAT4 rot;
+	XMStoreFloat4(&rot, rotationVector);
+	this->m_orientedBoundingBoxes.emplace_back(roomPos, extends, rot);
+
 }
 
 void Room::addTriggerBB(XMVECTOR position, XMFLOAT3 extends)
