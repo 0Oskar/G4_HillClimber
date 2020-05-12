@@ -224,7 +224,7 @@ void GameState::loadModels()
   
   this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
-	this->m_models[16].loadVertexFromOBJ(device, dContext, L"Models/checkpoint.obj", mat, L"Textures/ColorTexture.png");
+	this->m_models[16].loadVertexFromOBJ(m_device, m_dContext, L"Models/checkpoint.obj", mat, L"Textures/ColorTexture.png");
 }
 
 void GameState::roomChangeInit()
@@ -365,12 +365,12 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	vec = DirectX::XMVectorSet(10.f, 85.f, 114.f, 1.f);
 	this->addGameObjectToWorld(false, true, 0, 16, &m_models[16], vec, {0.7f, 0.7f, 0.7f}, DirectX::XMFLOAT3(7.f, 1.f, 5.f));
 	this->m_gameObjects.back()->setRotation({0.f, 1.57f, 0.f});
-	this->m_checkpointHandler.addCheckpointGameObject(this->m_gameObjects.size() - 1, vec);
+	this->m_checkpointHandler.addCheckpointGameObject((int)this->m_gameObjects.size() - 1, vec);
 
 	vec = DirectX::XMVectorSet(0.f, 25.f, 42.f, 1.f);
 	this->addGameObjectToWorld(false, true, 0, 16, &m_models[16], vec, { 0.7f, 0.7f, 0.7f }, DirectX::XMFLOAT3(7.f, 1.f, 5.f));
 	this->m_gameObjects.back()->setRotation({ 0.f, 1.57f, 0.f });
-	this->m_checkpointHandler.addCheckpointGameObject(this->m_gameObjects.size() - 1, vec);
+	this->m_checkpointHandler.addCheckpointGameObject((int)this->m_gameObjects.size() - 1, vec);
 
 	// Camera
 	this->m_camera.followMoveComp(this->m_player.getMoveCompPtr());
@@ -443,7 +443,7 @@ void GameState::update(Keyboard* keyboard, MouseEvent mouseEvent, Mouse* mousePt
 	// Checkpoints
 	for (size_t i = 0; i < this->m_checkpointHandler.size(); i++)
 	{
-		std::pair<int, XMVECTOR> checkpoint = this->m_checkpointHandler.getIndexPosAt(i);
+		std::pair<int, XMVECTOR> checkpoint = this->m_checkpointHandler.getIndexPosAt((int)i);
 		BoundingBox checkpointAABB = this->m_gameObjects[checkpoint.first]->getAABB();
 		if (checkpointAABB.Intersects(this->m_player.getAABB()))
     {

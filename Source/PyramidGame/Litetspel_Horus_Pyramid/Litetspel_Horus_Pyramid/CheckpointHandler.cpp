@@ -22,7 +22,7 @@ void CheckpointHandler::addCheckpointGameObject(int index, XMVECTOR gameObjectPo
 
 int CheckpointHandler::size() const
 {
-	return this->m_checkpointIndexPos.size();
+	return (int)this->m_checkpointIndexPos.size();
 }
 
 std::pair<int, XMVECTOR> CheckpointHandler::getIndexPosAt(int index) const
