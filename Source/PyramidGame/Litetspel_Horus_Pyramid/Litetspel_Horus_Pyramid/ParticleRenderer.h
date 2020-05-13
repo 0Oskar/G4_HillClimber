@@ -1,6 +1,7 @@
 #pragma once
 #include "VertexBuffer.h"
-#include "Particle.h"
+#include "ParticleSystem.h"
+#include "ConstantBuffer.h"
 
 class ParticleRenderer
 {
@@ -11,6 +12,9 @@ private:
 
 	ID3D11Device* m_device;
 	ID3D11DeviceContext* m_dContext;
+
+	ConstBuffer<GS_PARTICLE_BUFFER> m_particleBuffer;
+	ParticleSystem* m_particleSystem;
 
 	VertexBuffer<Particle> m_initVB; 
 	VertexBuffer<Particle> m_drawVB;
@@ -24,6 +28,8 @@ public:
 	void setNoCullPR();
 	void setAlphaToCoveragePR();
 	void setTransparentPR();
+
+	void setParticleSystem(ParticleSystem* m_particleSystem);
 	void render();
 	
 

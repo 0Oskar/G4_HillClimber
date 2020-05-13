@@ -3,11 +3,11 @@
 
 struct Particle
 {
-    float3 Position;
-    float3 Velocity;
-    float Size;
-    float ParticleLifetime;
-    uint Type;
+    float3 Position        : POSITION;
+    float3 Velocity        : VELOCITY;
+    float Size             : SIZE;
+    float ParticleLifetime : AGE;
+    uint Type              : TYPE;
 };
 
 cbuffer GS_PARTICLE_BUFFER : register(b0)
@@ -50,7 +50,7 @@ struct GSOutput
 };
 
 [maxvertexcount(2)]
-void main(Particle pIN[1], inout PointStream<Particle> pOutput)
+void main(point Particle pIN[1], inout PointStream<Particle> pOutput)
 {
 	//for (uint i = 0; i < 3; i++)
 	//{

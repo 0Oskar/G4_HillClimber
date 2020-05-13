@@ -10,6 +10,9 @@ private:
 	UINT m_stride;
 	UINT m_nrOf;
 
+	ID3D11DeviceContext* m_dContextPtr;
+	//ID3D11Device* m_Device;
+
 public:
 	VertexBuffer()
 	{
@@ -19,17 +22,22 @@ public:
 
 	~VertexBuffer() {}
 
-	HRESULT initialize(ID3D11Device* device, T* data, int nrOfVertices)
+	HRESULT initialize(ID3D11Device* device, T* data, int nrOfVertices, bool immutable = true) // PARTICLE EDIT HERE
 	{
 		this->m_nrOf = nrOfVertices;
 		this->m_stride = UINT(sizeof(T));
+		this->m_dContextPtr = nullptr;
+		//this->m_Device = nullptr;
 
 		// Buffer Description
 		D3D11_BUFFER_DESC vertexBufferDesc;
 		ZeroMemory(&vertexBufferDesc, sizeof(vertexBufferDesc));
 
 		vertexBufferDesc.ByteWidth = this->m_stride * this->m_nrOf;
-		vertexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
+		if(immutable)
+			vertexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
+		else 
+			vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
 		vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 		vertexBufferDesc.CPUAccessFlags = 0;
 		vertexBufferDesc.MiscFlags = 0;
@@ -52,4 +60,18 @@ public:
 	const UINT* getStridePointer() const { return &this->m_stride; }
 
 	UINT getSize() const { return this->m_nrOf; }
+
+	// Update
+	void update(T* data, int nrOfVertices)
+	{
+
+		D3D11_MAPPED_SUBRESOURCE mapSubresource;
+		HRESULT hr = this->m_dContextPtr->Map(this->buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mapSubresource);
+		assert(SUCCEEDED(hr) && "Error, failed to map VertexBuffer!");
+		CopyMemory(mapSubresource.pData, &data, sizeof(T));
+
+		m_dContextPtr->Unmap(this->m_buffer.Get(), 0);
+	}
+	
+
 };

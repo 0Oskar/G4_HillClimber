@@ -5,7 +5,8 @@
 #include "Timer.h"
 #include "Platform.h"
 #include "Shaders.h"
-#include "Particle.h"
+#include "ParticleSystem.h"
+#include "ParticleRenderer.h"
 
 class ViewLayer
 {
@@ -71,7 +72,8 @@ private:
 	int m_fps;
 
 	// Particles
-	ConstBuffer<GS_PARTICLE_BUFFER> m_particleBuffer;
+	ParticleRenderer m_particleRenderer;
+	ParticleSystem m_particleSystem;
 
 
 	// Initialization Functions

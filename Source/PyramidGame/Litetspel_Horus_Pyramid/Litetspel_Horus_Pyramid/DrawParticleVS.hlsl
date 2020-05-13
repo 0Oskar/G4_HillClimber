@@ -1,10 +1,10 @@
 struct Particle
 {
-    float3 Position;
-    float3 Velocity;
-    float Size;
-    float ParticleLifetime;
-    uint Type;
+    float3 Position        : POSITION;
+    float3 Velocity        : VELOCITY;
+    float Size             : SIZE;
+    float ParticleLifetime : AGE;
+    uint Type              : TYPE;
 };
 
 struct P_VS_OUT

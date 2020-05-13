@@ -49,6 +49,14 @@ void ParticleRenderer::initlialize(ID3D11Device* device, ID3D11DeviceContext* dC
 	hr = (device->CreateBlendState(&transparentDesc, TransparentPR.GetAddressOf()));
 	assert(SUCCEEDED(hr) && "Error when creating blendDesc_Transparent, in ParticleRenderer!");
 
+	Particle p;
+	p.ParticleLifetime = 0.0f;
+	p.Type = 0;
+	this->m_initVB.initialize(this->m_device, &p, 1, false);
+	
+	this->m_drawVB.initialize(this->m_device, &p, 1, false);
+	this->m_streamOutVB.initialize(this->m_device, &p, 1, false);
+
 }
 
 void ParticleRenderer::setNoCullPR()
@@ -64,6 +72,11 @@ void ParticleRenderer::setAlphaToCoveragePR()
 void ParticleRenderer::setTransparentPR()
 {
 	this->m_dContext->OMSetBlendState(TransparentPR.Get(), nullptr, 0xFFFFFFFF);
+}
+
+void ParticleRenderer::setParticleSystem(ParticleSystem* m_particleSystem)
+{
+
 }
 
 void ParticleRenderer::render()

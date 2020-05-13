@@ -238,6 +238,17 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 		}
 	}
 
+	/// Test - Remove
+	//this->m_models.emplace_back();
+	//mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
+	//this->m_models[6].loadVertexFromOBJ(device, dContext, L"Models/FinalPyramid.obj", mat, L"Textures/pyramidTexture.png");
+
+	//vec = DirectX::XMVectorSet(0.f, 0.f, -325.f, 1.f);
+	//this->addGameObjectToWorld(true, false, 1, 6, &m_models[6], vec, DirectX::XMVectorSet(1.0f, 1.0f, 1.0f, 1.f), DirectX::XMFLOAT3(0, 0, 0), DirectX::XMFLOAT3(10, 10, 10), DirectX::XMFLOAT3(10, 10, 10));
+
+	
+
+
 	// Camera
 	this->m_camera.followMoveComp(this->m_player.getMoveCompPtr());
 	this->m_camera.initialize(

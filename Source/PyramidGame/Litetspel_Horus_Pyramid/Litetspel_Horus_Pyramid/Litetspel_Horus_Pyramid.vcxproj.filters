@@ -87,6 +87,9 @@
     <ClCompile Include="ParticleRenderer.cpp">
       <Filter>Source\View</Filter>
     </ClCompile>
+    <ClCompile Include="ParticleSystem.cpp">
+      <Filter>Source\View</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -171,6 +174,9 @@
       <Filter>Header\View</Filter>
     </ClInclude>
     <ClInclude Include="ParticleRenderer.h">
+      <Filter>Header\View</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleSystem.h">
       <Filter>Header\View</Filter>
     </ClInclude>
   </ItemGroup>
