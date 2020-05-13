@@ -182,6 +182,11 @@ int GameObject::getWvpCBufferIndex() const
 	return this->m_wvpCBufferIndex;
 }
 
+void GameObject::setWvpCBufferIndex(int index)
+{
+	this->m_wvpCBufferIndex = index;
+}
+
 MovementComponent* GameObject::getMoveCompPtr()
 {
 	return this->m_movementComp;
@@ -205,6 +210,11 @@ DirectX::BoundingBox* GameObject::getAABBPtr()
 void GameObject::setVisibility(bool visible)
 {
 	this->m_visible = visible;
+}
+
+void GameObject::setIfCollidable(bool collidable)
+{
+	this->m_collidable = collidable;
 }
 
 void GameObject::setRotation(DirectX::XMVECTOR newRotation)

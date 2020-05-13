@@ -8,6 +8,7 @@ private:
 	void createSceneObjects();
 	void onCompleted();
 
+	Lever* m_objectTest;
 public:
 	TemplateRoom();
 	~TemplateRoom();

@@ -1,15 +1,14 @@
 #include "pch.h"
-#include"Room.h"
+#include "Room.h"
 
-using namespace DirectX;
 Room::Room()
 {
-	this->m_active = false;
 	this->m_dContext = nullptr;
 	this->m_device = nullptr;
 	this->m_player = nullptr;
 	this->m_models = nullptr;
 	this->m_wvpCBuffers = nullptr;
+	this->m_gameTimerPointer = nullptr;
 	this->m_entrencePosition = DirectX::XMVectorZero();
 	this->m_worldPosition = DirectX::XMVectorZero();
 }
@@ -19,7 +18,7 @@ Room::~Room()
 
 }
 
-void Room::initialize(ID3D11Device* device, ID3D11DeviceContext* dContext, std::vector<Model>* models, std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* cBuffer, Player* player, XMVECTOR position, std::shared_ptr<DirectX::AudioEngine> audioEngine)
+void Room::initialize(ID3D11Device* device, ID3D11DeviceContext* dContext, std::vector<Model>* models, std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* cBuffer, Player* player, XMVECTOR position, std::shared_ptr<DirectX::AudioEngine> audioEngine, Timer* gameTimer)
 {
 	this->m_device = device;
 	this->m_dContext = dContext;
@@ -28,10 +27,10 @@ void Room::initialize(ID3D11Device* device, ID3D11DeviceContext* dContext, std::
 	this->m_wvpCBuffers = cBuffer;
 	this->m_models = models;
 	this->audioEngine = audioEngine;
+	this->m_gameTimerPointer = gameTimer;
 }
 void Room::initParent()
 {
-	this->m_active = false;
 	this->m_dContext = nullptr;
 	this->m_device = nullptr;
 	this->m_player = nullptr;
@@ -42,41 +41,36 @@ void Room::initParent()
 }
 void Room::update(float dt, Camera* camera, Room* &activeRoom, bool &activeRoomChanged)
 {
-	if (!this->m_active)
+	for (int i = 0; i < this->m_gameObjects.size(); i++)
 	{
-		for (int i = 0; i < this->m_gameObjects.size(); i++)
+		Portal* portalPtr = dynamic_cast<Portal*>(this->m_gameObjects[i]);
+
+		if (portalPtr != nullptr)
 		{
-			Portal* portalPtr = dynamic_cast<Portal*>(this->m_gameObjects[i]);
-
-			if (portalPtr != nullptr)
+			portalPtr->update();
+			if (portalPtr->shouldChangeActiveRoom())
 			{
-				portalPtr->update();
-				if (portalPtr->shouldChangeActiveRoom())
-				{
-					activeRoom = m_rooms.at(portalPtr->getRoomID());
-					portalPtr->resetActiveRoomVariable();
-					activeRoomChanged = true;
-				}
+				activeRoom = m_rooms.at(portalPtr->getRoomID());
+				portalPtr->resetActiveRoomVariable();
+				activeRoomChanged = true;
+				activeRoom->onEntrance();
 			}
-			else
-			{
-				this->m_gameObjects[i]->update(dt);
-			}
-
-			VS_CONSTANT_BUFFER wvpData;
-			DirectX::XMMATRIX viewPMtrx = camera->getViewMatrix() * camera->getProjectionMatrix();
-			wvpData.wvp = this->m_gameObjects[i]->getWorldMatrix() * viewPMtrx;
-			wvpData.worldMatrix = this->m_gameObjects[i]->getWorldMatrix();
-			
-			this->m_wvpCBuffers->at(this->m_gameObjects.at(i)->getWvpCBufferIndex()).upd(&wvpData);
-
 		}
+		else
+		{
+			this->m_gameObjects[i]->update(dt);
+		}
+
+		VS_CONSTANT_BUFFER wvpData;
+		DirectX::XMMATRIX viewPMtrx = camera->getViewMatrix() * camera->getProjectionMatrix();
+		wvpData.wvp = this->m_gameObjects[i]->getWorldMatrix() * viewPMtrx;
+		wvpData.worldMatrix = this->m_gameObjects[i]->getWorldMatrix();
+			
+		this->m_wvpCBuffers->at(this->m_gameObjects.at(i)->getWvpCBufferIndex()).upd(&wvpData);
+
 	}
 }
-void Room::setActive(bool activityStatus)
-{
-	this->m_active = activityStatus;
-}
+
 void Room::addGameObjectToRoom(bool dynamic, bool colide, float weight, int mdlIndx, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR scale3D, DirectX::XMFLOAT3 boundingBoxSize, DirectX::XMFLOAT3 acceleration, DirectX::XMFLOAT3 deceleration)
 {
 	this->m_gameObjects.emplace_back(new GameObject());
@@ -120,7 +114,7 @@ void Room::addPlatformToRoom(int mdlIndex, Model* mdl, DirectX::XMVECTOR positio
 	this->m_player->addAABB(this->m_gameObjects.back()->getAABBPtr());
 }
 
-void Room::addPortalToRoom(XMVECTOR teleportLocation, int mdlIndx, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR scale3D, DirectX::XMFLOAT3 boundingBoxSize, int room)
+void Room::addPortalToRoom(XMVECTOR teleportLocation, int mdlIndx, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR scale3D, DirectX::XMFLOAT3 boundingBoxSize, int room, bool oneTimeUse)
 {
 	this->m_wvpCBuffers->emplace_back();
 	this->m_wvpCBuffers->back().init(m_device, m_dContext);
@@ -129,9 +123,9 @@ void Room::addPortalToRoom(XMVECTOR teleportLocation, int mdlIndx, Model* mdl, D
 	XMVECTOR pos = m_worldPosition + teleportLocation;
 	this->m_gameObjects.emplace_back(new Portal());
 	if(room != -1)
-		dynamic_cast<Portal*>(this->m_gameObjects.back())->initialize(mdlIndx, (int)m_wvpCBuffers->size() - 1, mdl, this->m_rooms[room]->getEntrancePosition(), this->m_player, room);
+		dynamic_cast<Portal*>(this->m_gameObjects.back())->initialize(mdlIndx, (int)m_wvpCBuffers->size() - 1, mdl, this->m_rooms[room]->getEntrancePosition(), this->m_player, room, oneTimeUse);
 	else
-		dynamic_cast<Portal*>(this->m_gameObjects.back())->initialize(mdlIndx, (int)m_wvpCBuffers->size() - 1, mdl, pos, this->m_player, room);
+		dynamic_cast<Portal*>(this->m_gameObjects.back())->initialize(mdlIndx, (int)m_wvpCBuffers->size() - 1, mdl, pos, this->m_player, room, oneTimeUse);
 
 	pos = m_worldPosition + position;
 
@@ -154,6 +148,14 @@ void Room::addLeverToRoom(int mdlIndex, Model* mdl, DirectX::XMVECTOR position, 
 	this->m_gameObjects.back()->getMoveCompPtr()->rotation = rotation;
 }
 
+void Room::addObjectToRoom(GameObject* object)
+{
+	this->m_wvpCBuffers->emplace_back();
+	this->m_wvpCBuffers->back().init(m_device, m_dContext);
+	this->m_gameObjects.emplace_back(object);
+	this->m_gameObjects.back()->setWvpCBufferIndex((int)m_wvpCBuffers->size() - 1);
+}
+
 std::vector<GameObject*>* Room::getGameObjectsPtr()
 {
 	return &this->m_gameObjects;
@@ -164,11 +166,34 @@ std::vector<BoundingBox>* Room::getBoundingBoxPtr()
 	return &this->m_boundingBoxes;
 }
 
+std::vector<BoundingOrientedBox>* Room::getOrientedBoundingBoxPtr()
+{
+	return &this->m_orientedBoundingBoxes;
+}
+
+
+std::vector<BoundingBox>* Room::getTriggerBoxes()
+{
+	return &this->m_triggerBoundingBoxes;
+}
+
+
 void Room::addBoundingBox(XMVECTOR position, XMFLOAT3 extends)
 {
 	XMFLOAT3 roomPos;
 	XMStoreFloat3(&roomPos, this->m_worldPosition + position);
 	this->m_boundingBoxes.emplace_back(roomPos, extends);	
+}
+
+void Room::addOrientedBoundingBox(XMVECTOR position, XMFLOAT3 extends, XMVECTOR rotation)
+{
+	XMFLOAT3 roomPos;
+	XMStoreFloat3(&roomPos, this->m_worldPosition + position);
+	XMVECTOR rotationVector = XMQuaternionRotationRollPitchYawFromVector(rotation);
+	XMFLOAT4 rot;
+	XMStoreFloat4(&rot, rotationVector);
+	this->m_orientedBoundingBoxes.emplace_back(roomPos, extends, rot);
+
 }
 
 void Room::addTriggerBB(XMVECTOR position, XMFLOAT3 extends)
