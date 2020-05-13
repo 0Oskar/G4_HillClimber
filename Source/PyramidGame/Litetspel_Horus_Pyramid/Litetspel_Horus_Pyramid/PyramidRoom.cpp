@@ -176,13 +176,13 @@ void PyramidRoom::createSceneObjects()
 
 	// Checkpoints
 	vec = DirectX::XMVectorSet(0.f, 25.f, 42.f, 1.f);
-	this->addGameObjectToRoom(false, true, 0, 16, &m_models->at(16), vec, { 0.7f, 0.7f, 0.7f }, DirectX::XMFLOAT3(7.f, 1.f, 5.f));
+	this->addGameObjectToRoom(false, true, 0, 19, &m_models->at(19), vec, { 0.7f, 0.7f, 0.7f }, DirectX::XMFLOAT3(7.f, 1.f, 5.f));
 	this->m_gameObjects.back()->setRotation({ 0.f, 1.57f, 0.f });
 	this->m_checkpointHandler.addCheckpointGameObject((int)this->m_gameObjects.size() - 1, this->m_gameObjects.back()->getPosition());
 	platformBB.emplace_back(this->m_gameObjects.back()->getAABBPtr());
 
 	vec = DirectX::XMVectorSet(10.f, 85.f, 114.f, 1.f);
-	this->addGameObjectToRoom(false, true, 0, 16, &m_models->at(16), vec, { 0.7f, 0.7f, 0.7f }, DirectX::XMFLOAT3(7.f, 1.f, 5.f));
+	this->addGameObjectToRoom(false, true, 0, 19, &m_models->at(19), vec, { 0.7f, 0.7f, 0.7f }, DirectX::XMFLOAT3(7.f, 1.f, 5.f));
 	this->m_gameObjects.back()->setRotation({ 0.f, 1.57f, 0.f });
 	this->m_checkpointHandler.addCheckpointGameObject((int)this->m_gameObjects.size() - 1, this->m_gameObjects.back()->getPosition());
 	platformBB.emplace_back(this->m_gameObjects.back()->getAABBPtr());
