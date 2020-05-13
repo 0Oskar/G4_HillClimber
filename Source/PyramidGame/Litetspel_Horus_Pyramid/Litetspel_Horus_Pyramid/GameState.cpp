@@ -58,6 +58,14 @@ std::vector<BoundingOrientedBox>* GameState::getActiveRoomOrientedBoundingBoxPtr
 		return nullptr;
 }
 
+std::vector<BoundingBox>* GameState::getActiveRoomTriggerBox()
+{
+	if (this->m_activeRoom != nullptr)
+		return this->m_activeRoom->getTriggerBoxes();
+	else
+		return nullptr;
+}
+
 std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* GameState::getWvpCBuffersPtr()
 {
 	return &this->m_wvpCBuffers;

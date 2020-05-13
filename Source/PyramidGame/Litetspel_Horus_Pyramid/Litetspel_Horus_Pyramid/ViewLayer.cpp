@@ -206,6 +206,11 @@ void ViewLayer::setOrientedBoundingBoxesFromActiveRoom(std::vector<BoundingOrien
 	this->m_orientedBoundingBoxesFromActiveRoom = bbFromRoom;
 }
 
+void ViewLayer::setTriggerBoxFromActiveRoom(std::vector<BoundingBox>* bbFromRoom)
+{
+	this->m_triggerBoxes = bbFromRoom;
+}
+
 void ViewLayer::setModelsFromState(std::vector<Model>* models)
 {
 	this->m_modelsFromState = models;
@@ -434,6 +439,13 @@ void ViewLayer::render()
 			for (size_t i = 0; i < this->m_boundingBoxesFromActiveRoom->size(); i++)
 			{
 				DX::Draw(m_batch.get(), this->m_boundingBoxesFromActiveRoom->at(i), DirectX::Colors::Red);
+			}
+		}
+		if (this->m_triggerBoxes != nullptr)
+		{
+			for (size_t i = 0; i < this->m_triggerBoxes->size(); i++)
+			{
+				DX::Draw(m_batch.get(), this->m_triggerBoxes->at(i), DirectX::Colors::DarkTurquoise);
 			}
 		}
 		DX::Draw(m_batch.get(), this->m_pyramidOBB, DirectX::Colors::Blue);

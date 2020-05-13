@@ -48,6 +48,7 @@ public:
 	std::vector<GameObject*>* getActiveRoomGameObjectsPtr();
 	std::vector<BoundingBox>* getActiveRoomBoundingBoxsPtr();
 	std::vector<BoundingOrientedBox>* getActiveRoomOrientedBoundingBoxPtr();
+	std::vector<BoundingBox>* getActiveRoomTriggerBox();
 	std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* getWvpCBuffersPtr();
 	void addGameObjectToWorld(bool dynamic, bool colide, float weight, int mdlIndx, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR scale3D, DirectX::XMFLOAT3 boundingBoxSize, DirectX::XMFLOAT3 acceleration, DirectX::XMFLOAT3 deceleration);
 	void addPlatformToWorld(int mdlIndex, DirectX::BoundingOrientedBox* pyramid, Model* mdl, DirectX::XMVECTOR position, DirectX::XMFLOAT3 platformBoundingBox);

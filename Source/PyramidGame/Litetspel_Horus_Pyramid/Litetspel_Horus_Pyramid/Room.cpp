@@ -171,6 +171,13 @@ std::vector<BoundingOrientedBox>* Room::getOrientedBoundingBoxPtr()
 	return &this->m_orientedBoundingBoxes;
 }
 
+
+std::vector<BoundingBox>* Room::getTriggerBoxes()
+{
+	return &this->m_triggerBoundingBoxes;
+}
+
+
 void Room::addBoundingBox(XMVECTOR position, XMFLOAT3 extends)
 {
 	XMFLOAT3 roomPos;

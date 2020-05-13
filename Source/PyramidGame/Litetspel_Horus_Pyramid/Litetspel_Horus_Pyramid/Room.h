@@ -54,6 +54,7 @@ public:
 	std::vector<GameObject*>* getGameObjectsPtr();
 	std::vector<BoundingBox>* getBoundingBoxPtr();
 	std::vector<BoundingOrientedBox>* getOrientedBoundingBoxPtr();
+	std::vector<BoundingBox>* getTriggerBoxes();
 	DirectX::XMVECTOR getEntrancePosition();
 	DirectX::XMVECTOR getRelativePosition(DirectX::XMVECTOR pos);
 
