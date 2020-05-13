@@ -126,7 +126,10 @@ void GameState::addPortalToWorld(XMVECTOR teleportLocation, int mdlIndx, Model* 
 	int bufferIndex = (int)m_wvpCBuffers.size() - 1;
 
 	this->m_gameObjects.emplace_back(new Portal());
-	dynamic_cast<Portal*>(this->m_gameObjects.back())->initialize(mdlIndx, (int)m_wvpCBuffers.size() - 1, mdl, teleportLocation, &this->m_player, room);
+	if (room != -1)
+		dynamic_cast<Portal*>(this->m_gameObjects.back())->initialize(mdlIndx, (int)m_wvpCBuffers.size() - 1, mdl, this->m_rooms[room]->getEntrancePosition(), &this->m_player, room);
+	else
+		dynamic_cast<Portal*>(this->m_gameObjects.back())->initialize(mdlIndx, (int)m_wvpCBuffers.size() - 1, mdl, position, &this->m_player, room);
 
 
 	this->m_gameObjects.back()->setScale(scale3D);
@@ -329,7 +332,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	dynamic_cast<PyramidRoom*>(this->m_rooms.back())->init(&m_pyramidOBB);
 	m_activeRoom = m_rooms.back();
 
-	//Template Room [1]
+	//Template Room [1] //Up for grabs
 	this->m_rooms.emplace_back(new TemplateRoom());
 	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, 0, 1), audioEngine, &this->m_gameTime);
 	dynamic_cast<TemplateRoom*>(this->m_rooms.back())->init();
@@ -339,10 +342,15 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(100, 2, 100, 1), audioEngine, &this->m_gameTime);
 	dynamic_cast<KevinsRoom*>(this->m_rooms.back())->init();
 
-	//Kevin Room [3]
+	//Edvin Room [3]
 	this->m_rooms.emplace_back(new EdvinsRoom());
 	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, -100, 1), audioEngine, &this->m_gameTime);
 	dynamic_cast<EdvinsRoom*>(this->m_rooms.back())->init();
+
+	//Otaget rum [4] -
+	/*this->m_rooms.emplace_back(new NamnRoom());
+	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, -100, 1), audioEngine, &this->m_gameTime);
+	dynamic_cast<NamnRoom*>(this->m_rooms.back())->init();*/
 
 	this->m_player.getphysicsCompPtr()->setVelocity({ 0, 0, 0 });
 	this->m_player.setPosition(this->m_activeRoom->getEntrancePosition());
@@ -398,6 +406,13 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 		this->m_rooms.at(i)->addRooms(&this->m_rooms);
 		this->m_rooms.at(i)->portals();
 	}
+
+	this->addPortalToWorld({ 0, 0, 0, 0 }, 10, &m_models[10], { -40, 0, -5, 1 }, { 1, 1, 1, 1 }, { 2, 2, 1 }, 0); //Pyramid "Room"
+	this->addPortalToWorld({ 0, 0, 0, 0 }, 10, &m_models[10], { -30, 0, -5, 1 }, { 1, 1, 1, 1 }, { 2, 2, 1 }, 1); //Up for grabs - currently template room
+	this->addPortalToWorld({ 0, 0, 0, 0 }, 10, &m_models[10], { -20, 0, -5, 1 }, { 1, 1, 1, 1 }, { 2, 2, 1 }, 2); // Kevins room
+	this->addPortalToWorld({ 0, 0, 0, 0 }, 10, & m_models[10], { -10, 0, -5, 1 }, { 1, 1, 1, 1 }, { 2, 2, 1 }, 3); //Edvins room
+	this->addPortalToWorld({ 0, 0, 0, 0 }, 10, & m_models[10], { -0, 0, -5, 1 }, { 1, 1, 1, 1 }, { 2, 2, 1 }, 0); //Up for grabs, change room index to 4 when room avalible.
+
 
 	this->m_gameTime.start();
 }

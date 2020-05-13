@@ -13,15 +13,18 @@ PyramidRoom::~PyramidRoom()
 void PyramidRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activeRoomChanged)
 {
 	Room::update(dt, camera, activeRoom, activeRoomChanged);
+
 }
 
 void PyramidRoom::init(DirectX::BoundingOrientedBox* pyramidBB)
 {
-	this->m_pyramidOOB = DirectX::BoundingOrientedBox(*pyramidBB);
+	this->m_pyramidOOB = *pyramidBB; //DirectX::BoundingOrientedBox(*pyramidBB);
 	this->createSceneObjects();
 	this->createBoundingBoxes();
 	this->m_player->addAABBFromVector(&m_boundingBoxes);
 	this->m_player->addOrientedBBFromVector(&m_orientedBoundingBoxes);
+
+	this->m_entrencePosition = { -25, 0, -20 };
 }
 
 void PyramidRoom::portals()
