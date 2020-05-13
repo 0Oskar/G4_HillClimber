@@ -48,6 +48,8 @@ private:
 	bool wonThePuzzle = false;
 	bool lifeTaken = false;
 
+
+	float someVar;
 public:
 	EdvinsRoom();
 	~EdvinsRoom();
