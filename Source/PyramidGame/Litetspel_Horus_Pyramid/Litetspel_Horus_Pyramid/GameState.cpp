@@ -50,6 +50,14 @@ std::vector<BoundingBox>* GameState::getActiveRoomBoundingBoxsPtr()
 		return nullptr;
 }
 
+std::vector<BoundingOrientedBox>* GameState::getActiveRoomOrientedBoundingBoxPtr()
+{
+	if (this->m_activeRoom != nullptr)
+		return this->m_activeRoom->getOrientedBoundingBoxPtr();
+	else
+		return nullptr;
+}
+
 std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* GameState::getWvpCBuffersPtr()
 {
 	return &this->m_wvpCBuffers;
@@ -118,7 +126,10 @@ void GameState::addPortalToWorld(XMVECTOR teleportLocation, int mdlIndx, Model* 
 	int bufferIndex = (int)m_wvpCBuffers.size() - 1;
 
 	this->m_gameObjects.emplace_back(new Portal());
-	dynamic_cast<Portal*>(this->m_gameObjects.back())->initialize(mdlIndx, (int)m_wvpCBuffers.size() - 1, mdl, teleportLocation, &this->m_player, room);
+	if (room != -1)
+		dynamic_cast<Portal*>(this->m_gameObjects.back())->initialize(mdlIndx, (int)m_wvpCBuffers.size() - 1, mdl, this->m_rooms[room]->getEntrancePosition(), &this->m_player, room);
+	else
+		dynamic_cast<Portal*>(this->m_gameObjects.back())->initialize(mdlIndx, (int)m_wvpCBuffers.size() - 1, mdl, position, &this->m_player, room);
 
 
 	this->m_gameObjects.back()->setScale(scale3D);
@@ -153,7 +164,7 @@ void GameState::loadModels()
 	//2- HookHead model
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
-	this->m_models[2].loadVertexFromOBJ(m_device, m_dContext, L"Models/BirdHookModel.obj", mat, L"Textures/BirdTexture.png");
+	this->m_models[2].loadVertexFromOBJ(m_device, m_dContext, L"Models/FinalBird.obj", mat, L"Textures/ColorTexture.png");
 
 	//3- platform model
 	this->m_models.emplace_back();
@@ -163,13 +174,12 @@ void GameState::loadModels()
 	//4- HookHand
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
-	this->m_models[4].loadVertexFromOBJ(m_device, m_dContext, L"Models/HookModel.obj", mat, L"Textures/HookTexture.png");
-
+	this->m_models[4].loadVertexFromOBJ(m_device, m_dContext, L"Models/FinalHook.obj", mat, L"Textures/ColorTexture.png");
 
 	//5- Chain Link
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
-	this->m_models[5].loadVertexFromOBJ(m_device, m_dContext, L"Models/ChainLink.obj", mat, L"Textures/BirdTexture.png");
+	this->m_models[5].loadVertexFromOBJ(m_device, m_dContext, L"Models/FinalChainLink.obj", mat, L"Textures/ColorTexture.png");
 
 	//6- Lever Room aka Kevins room
 	this->m_models.emplace_back();
@@ -216,7 +226,6 @@ void GameState::loadModels()
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); //reset material
 	this->m_models[14].initializeModelBff(m_device, m_dContext, "Brick_4.bff", mat, L"Textures/BirdHyroglajf.png"); //load model
 
-
 	//15. Brick_5 (Edvin)
 	this->m_models.emplace_back(); //add empty model
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); //reset material
@@ -224,7 +233,7 @@ void GameState::loadModels()
   
   this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
-	this->m_models[16].loadVertexFromOBJ(device, dContext, L"Models/checkpoint.obj", mat, L"Textures/ColorTexture.png");
+	this->m_models[16].loadVertexFromOBJ(m_device, m_dContext, L"Models/checkpoint.obj", mat, L"Textures/ColorTexture.png");
 }
 
 void GameState::roomChangeInit()
@@ -243,6 +252,11 @@ void GameState::roomChangeInit()
 
 	this->m_player.updateHookHandBB(platformBB);
 
+}
+
+Timer* GameState::getGameTimerPtr()
+{
+	return &this->m_gameTime;
 }
 
 void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext, GameOptions options, std::shared_ptr<DirectX::AudioEngine> audioEngine)
@@ -283,7 +297,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	hookHand = this->m_gameObjects.back();
 
 	//Chain link
-  DirectX::XMFLOAT3 vecF3 = hook->getMoveCompPtr()->getPositionF3();
+    DirectX::XMFLOAT3 vecF3 = hook->getMoveCompPtr()->getPositionF3();
 	vec = DirectX::XMVectorSet(vecF3.x, vecF3.y, vecF3.z - 5.f, 1.f);
 	this->addGameObjectToWorld(true, false, 1, 5, &m_models[5], vec, NormalScale, XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
 	this->m_chainGObjects->push_back(this->m_gameObjects.back());
@@ -308,31 +322,35 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 
 	// Player
 	this->m_player.initialize(-1, -1, 60.f, DirectX::XMFLOAT3(20.f, 20.f, 20.f), DirectX::XMFLOAT3(.01f, .01f, .01f), hook, hookHand, this->m_chainGObjects, audioEngine, platformBB);
-  this->m_player.setSpawnPosition(DirectX::XMVectorSet(0.f, 10.f, -1.f, 1.f));
+    this->m_player.setSpawnPosition(DirectX::XMVectorSet(0.f, 10.f, -1.f, 1.f));
 	this->m_player.respawn();
 	
 	//Room creation
 	//Pyramid Room - [0]
 	this->m_rooms.emplace_back(new PyramidRoom());
-	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, 0, 1), audioEngine);
+	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, 0, 1), audioEngine, &this->m_gameTime);
 	dynamic_cast<PyramidRoom*>(this->m_rooms.back())->init(&m_pyramidOBB);
+	m_activeRoom = m_rooms.back();
 
-	//Template Room [1]
+	//Template Room [1] //Up for grabs
 	this->m_rooms.emplace_back(new TemplateRoom());
-	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, 0, 1), audioEngine);
+	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, 0, 1), audioEngine, &this->m_gameTime);
 	dynamic_cast<TemplateRoom*>(this->m_rooms.back())->init();
 
 	//Kevin Room [2]
 	this->m_rooms.emplace_back(new KevinsRoom());
-	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(100, 2, 100, 1), audioEngine);
+	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(100, 2, 100, 1), audioEngine, &this->m_gameTime);
 	dynamic_cast<KevinsRoom*>(this->m_rooms.back())->init();
 
-
-	//Kevin Room [3]
+	//Edvin Room [3]
 	this->m_rooms.emplace_back(new EdvinsRoom());
-	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, -100, 1), audioEngine);
+	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, -100, 1), audioEngine, &this->m_gameTime);
 	dynamic_cast<EdvinsRoom*>(this->m_rooms.back())->init();
-	m_activeRoom = m_rooms.back();
+
+	//Otaget rum [4] -
+	/*this->m_rooms.emplace_back(new NamnRoom());
+	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, -100, 1), audioEngine, &this->m_gameTime);
+	dynamic_cast<NamnRoom*>(this->m_rooms.back())->init();*/
 
 	this->m_player.getphysicsCompPtr()->setVelocity({ 0, 0, 0 });
 	this->m_player.setPosition(this->m_activeRoom->getEntrancePosition());
@@ -365,12 +383,12 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	vec = DirectX::XMVectorSet(10.f, 85.f, 114.f, 1.f);
 	this->addGameObjectToWorld(false, true, 0, 16, &m_models[16], vec, {0.7f, 0.7f, 0.7f}, DirectX::XMFLOAT3(7.f, 1.f, 5.f));
 	this->m_gameObjects.back()->setRotation({0.f, 1.57f, 0.f});
-	this->m_checkpointHandler.addCheckpointGameObject(this->m_gameObjects.size() - 1, vec);
+	this->m_checkpointHandler.addCheckpointGameObject((int)this->m_gameObjects.size() - 1, vec);
 
 	vec = DirectX::XMVectorSet(0.f, 25.f, 42.f, 1.f);
 	this->addGameObjectToWorld(false, true, 0, 16, &m_models[16], vec, { 0.7f, 0.7f, 0.7f }, DirectX::XMFLOAT3(7.f, 1.f, 5.f));
 	this->m_gameObjects.back()->setRotation({ 0.f, 1.57f, 0.f });
-	this->m_checkpointHandler.addCheckpointGameObject(this->m_gameObjects.size() - 1, vec);
+	this->m_checkpointHandler.addCheckpointGameObject((int)this->m_gameObjects.size() - 1, vec);
 
 	// Camera
 	this->m_camera.followMoveComp(this->m_player.getMoveCompPtr());
@@ -388,6 +406,15 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 		this->m_rooms.at(i)->addRooms(&this->m_rooms);
 		this->m_rooms.at(i)->portals();
 	}
+
+	this->addPortalToWorld({ 0, 0, 0, 0 }, 10, &m_models[10], { -40, 0, -5, 1 }, { 1, 1, 1, 1 }, { 2, 2, 1 }, 0); //Pyramid "Room"
+	this->addPortalToWorld({ 0, 0, 0, 0 }, 10, &m_models[10], { -30, 0, -5, 1 }, { 1, 1, 1, 1 }, { 2, 2, 1 }, 1); //Up for grabs - currently template room
+	this->addPortalToWorld({ 0, 0, 0, 0 }, 10, &m_models[10], { -20, 0, -5, 1 }, { 1, 1, 1, 1 }, { 2, 2, 1 }, 2); // Kevins room
+	this->addPortalToWorld({ 0, 0, 0, 0 }, 10, & m_models[10], { -10, 0, -5, 1 }, { 1, 1, 1, 1 }, { 2, 2, 1 }, 3); //Edvins room
+	this->addPortalToWorld({ 0, 0, 0, 0 }, 10, & m_models[10], { -0, 0, -5, 1 }, { 1, 1, 1, 1 }, { 2, 2, 1 }, 0); //Up for grabs, change room index to 4 when room avalible.
+
+
+	this->m_gameTime.start();
 }
 
 void GameState::update(Keyboard* keyboard, MouseEvent mouseEvent, Mouse* mousePtr, float dt)
@@ -410,14 +437,15 @@ void GameState::update(Keyboard* keyboard, MouseEvent mouseEvent, Mouse* mousePt
 	  Portal* portalPtr = dynamic_cast<Portal*>(this->m_gameObjects[i]);
 
 		if (portalPtr != nullptr)
-    {
-	    portalPtr->update();
+		{
+			portalPtr->update();
 
 			if (portalPtr->shouldChangeActiveRoom())
 			{
 				m_activeRoom = m_rooms.at(portalPtr->getRoomID());
 				portalPtr->resetActiveRoomVariable();
 				this->m_activeRoomChanged = true;
+				this->m_activeRoom->onEntrance();
 			}
 		}
 		else
@@ -443,15 +471,15 @@ void GameState::update(Keyboard* keyboard, MouseEvent mouseEvent, Mouse* mousePt
 	// Checkpoints
 	for (size_t i = 0; i < this->m_checkpointHandler.size(); i++)
 	{
-		std::pair<int, XMVECTOR> checkpoint = this->m_checkpointHandler.getIndexPosAt(i);
+		std::pair<int, XMVECTOR> checkpoint = this->m_checkpointHandler.getIndexPosAt((int)i);
 		BoundingBox checkpointAABB = this->m_gameObjects[checkpoint.first]->getAABB();
 		if (checkpointAABB.Intersects(this->m_player.getAABB()))
-    {
+		{
 			if (XMVectorGetY(checkpoint.second) > XMVectorGetY(this->m_checkpointHandler.getCurrentpos()))
 			{
 				this->m_checkpointHandler.setCurrent(checkpoint.first, checkpoint.second);
 				this->m_player.setSpawnPosition(checkpoint.second + XMVectorSet(0.f, checkpointAABB.Extents.y + 5, 0.f, 0.f));
 			}
-    }
+		}
 	}
 }

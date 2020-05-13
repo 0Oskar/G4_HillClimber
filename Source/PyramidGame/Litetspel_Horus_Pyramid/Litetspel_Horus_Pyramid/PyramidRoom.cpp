@@ -22,6 +22,9 @@ void PyramidRoom::init(DirectX::BoundingOrientedBox* pyramidBB)
 	this->createSceneObjects();
 	this->createBoundingBoxes();
 	this->m_player->addAABBFromVector(&m_boundingBoxes);
+	this->m_player->addOrientedBBFromVector(&m_orientedBoundingBoxes);
+
+	this->m_entrencePosition = { -25, 0, -20 };
 }
 
 void PyramidRoom::portals()
@@ -44,6 +47,7 @@ void PyramidRoom::onEntrance()
 
 void PyramidRoom::createBoundingBoxes()
 {
+	this->addOrientedBoundingBox({ -10, 5, -10 }, { 10, 5, 2 }, { 0, 1, 0, 0 });
 
 }
 void PyramidRoom::createSceneObjects()

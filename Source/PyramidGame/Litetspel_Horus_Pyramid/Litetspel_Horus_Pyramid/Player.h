@@ -10,6 +10,7 @@ class Player : public GameObject
 {
 private:
 	std::vector<DirectX::BoundingBox*> m_collidableAABBoxes;
+	std::vector<DirectX::BoundingOrientedBox*> m_collidableOrientedBoxes;
 	DirectX::BoundingOrientedBox m_pyramidOBB;
 	HookHand m_hookHand;
 	XMVECTOR m_spawnPosition;
@@ -37,6 +38,7 @@ public:
 	// Collidable Bounding Boxes
 	void addAABB(DirectX::BoundingBox* aabb);
 	void addAABBFromVector(std::vector<DirectX::BoundingBox>* aabb);
+	void addOrientedBBFromVector(std::vector<DirectX::BoundingOrientedBox>* obb);
 	void addPyramidOBB(DirectX::BoundingOrientedBox* obb);
 	bool getinUse();
 

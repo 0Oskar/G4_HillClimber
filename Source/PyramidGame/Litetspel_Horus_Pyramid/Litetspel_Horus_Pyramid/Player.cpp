@@ -47,6 +47,14 @@ void Player::addAABBFromVector(std::vector<DirectX::BoundingBox>* aabb)
 	}
 }
 
+void Player::addOrientedBBFromVector(std::vector<DirectX::BoundingOrientedBox>* obb)
+{
+	for (int i = 0; i < obb->size(); i++)
+	{
+		this->m_collidableOrientedBoxes.push_back(&obb->at(i));
+	}
+}
+
 void Player::addPyramidOBB(DirectX::BoundingOrientedBox* obb)
 {
 	this->m_pyramidOBB = *obb;
@@ -147,7 +155,7 @@ void Player::update(Keyboard* keyboard, Mouse* mouse, float dt)
 		}
 
 		// Handle Collisions
-		this->m_physicsComp->handleCollision(this->m_collidableAABBoxes, this->m_pyramidOBB, dt);
+		this->m_physicsComp->handleCollision(this->m_collidableAABBoxes, this->m_pyramidOBB, dt, this->m_collidableOrientedBoxes);
 	}
 
 	if (keyboard->isKeyPressed('Q') || mouse->isRDown())

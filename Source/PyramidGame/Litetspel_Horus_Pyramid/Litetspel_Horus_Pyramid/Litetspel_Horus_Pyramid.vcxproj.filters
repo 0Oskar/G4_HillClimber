@@ -88,7 +88,7 @@
       <Filter>Source\Game Logic\Rooms</Filter>
     </ClCompile>
     <ClCompile Include="EdvinsRoom.cpp">
-    <Filter>Source\Game Logic\Rooms</Filter>
+      <Filter>Source\Game Logic\Rooms</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

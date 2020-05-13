@@ -19,6 +19,7 @@ class GameState
 private:
 	Player m_player;
 	Camera m_camera;
+	Timer m_gameTime;
 	DirectX::BoundingOrientedBox m_pyramidOBB;
 	
 	ID3D11Device* m_device;
@@ -46,6 +47,7 @@ public:
 	std::vector<GameObject*>* getGameObjectsPtr();
 	std::vector<GameObject*>* getActiveRoomGameObjectsPtr();
 	std::vector<BoundingBox>* getActiveRoomBoundingBoxsPtr();
+	std::vector<BoundingOrientedBox>* getActiveRoomOrientedBoundingBoxPtr();
 	std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* getWvpCBuffersPtr();
 	void addGameObjectToWorld(bool dynamic, bool colide, float weight, int mdlIndx, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR scale3D, DirectX::XMFLOAT3 boundingBoxSize, DirectX::XMFLOAT3 acceleration, DirectX::XMFLOAT3 deceleration);
 	void addPlatformToWorld(int mdlIndex, DirectX::BoundingOrientedBox* pyramid, Model* mdl, DirectX::XMVECTOR position, DirectX::XMFLOAT3 platformBoundingBox);
@@ -59,4 +61,5 @@ public:
 
 	bool m_activeRoomChanged;
 	void roomChangeInit();
+	Timer* getGameTimerPtr();
 };

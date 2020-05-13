@@ -212,7 +212,7 @@ public:
 	}
 
 	// Update
-	void handleCollision(std::vector<DirectX::BoundingBox*> boundingBoxes, DirectX::BoundingOrientedBox pyramidOBB,float dt)
+	void handleCollision(std::vector<DirectX::BoundingBox*> boundingBoxes, DirectX::BoundingOrientedBox pyramidOBB,float dt, std::vector<DirectX::BoundingOrientedBox*> orientedBoundingBoxes)
 	{
 		DirectX::BoundingBox AABBNextFrame = *(this->m_aabb);
 		AABBNextFrame.Center = DirectX::XMFLOAT3(this->m_aabb->Center.x + this->m_velocity.x * dt, this->m_aabb->Center.y + this->m_velocity.y * dt, this->m_aabb->Center.z + this->m_velocity.z * dt);
