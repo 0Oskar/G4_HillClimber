@@ -52,20 +52,11 @@ void Lever::setPlayerBoundingBox(DirectX::BoundingBox* boundingBox)
 	this->leverTriggerBox = this->getAABB();
 }
 
-void Lever::setCnaUseLever(bool state)
-{
-	this->canUseLever = state;
-}
-
 void Lever::collidesWithPlayer()
 {
 	if (this->leverTriggerBox.Intersects(*m_playerBoundingBox))
 	{
 		onPlayerColide();
-	}
-	else
-	{
-		this->canUseLever = false;
 	}
 }
 

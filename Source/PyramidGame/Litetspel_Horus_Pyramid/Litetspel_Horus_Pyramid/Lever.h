@@ -28,7 +28,6 @@ public:
 	bool getLeverValue();
 	bool getCanUseLever();
 	void setPlayerBoundingBox(DirectX::BoundingBox* boundingBox);
-	void setCnaUseLever(bool state);
 	void collidesWithPlayer();
 	void initAudioComponent(std::shared_ptr<DirectX::AudioEngine> audioEngine, MovementComponent* playerMovementComponent);
 
