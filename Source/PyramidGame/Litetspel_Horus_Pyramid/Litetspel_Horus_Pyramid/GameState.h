@@ -31,7 +31,6 @@ private:
 	std::vector<ConstBuffer<VS_CONSTANT_BUFFER>> m_wvpCBuffers;
 	std::vector<Room*> m_rooms;
 
-	CheckpointHandler m_checkpointHandler;
 	std::vector<DirectX::BoundingBox*> platformBB;
 	std::vector<GameObject*>* m_chainGObjects;
 	

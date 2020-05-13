@@ -114,7 +114,7 @@ void Room::addPlatformToRoom(int mdlIndex, Model* mdl, DirectX::XMVECTOR positio
 	this->m_player->addAABB(this->m_gameObjects.back()->getAABBPtr());
 }
 
-void Room::addPortalToRoom(XMVECTOR teleportLocation, int mdlIndx, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR scale3D, DirectX::XMFLOAT3 boundingBoxSize, int room)
+void Room::addPortalToRoom(XMVECTOR teleportLocation, int mdlIndx, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR scale3D, DirectX::XMFLOAT3 boundingBoxSize, int room, bool oneTimeUse)
 {
 	this->m_wvpCBuffers->emplace_back();
 	this->m_wvpCBuffers->back().init(m_device, m_dContext);
@@ -123,9 +123,9 @@ void Room::addPortalToRoom(XMVECTOR teleportLocation, int mdlIndx, Model* mdl, D
 	XMVECTOR pos = m_worldPosition + teleportLocation;
 	this->m_gameObjects.emplace_back(new Portal());
 	if(room != -1)
-		dynamic_cast<Portal*>(this->m_gameObjects.back())->initialize(mdlIndx, (int)m_wvpCBuffers->size() - 1, mdl, this->m_rooms[room]->getEntrancePosition(), this->m_player, room);
+		dynamic_cast<Portal*>(this->m_gameObjects.back())->initialize(mdlIndx, (int)m_wvpCBuffers->size() - 1, mdl, this->m_rooms[room]->getEntrancePosition(), this->m_player, room, oneTimeUse);
 	else
-		dynamic_cast<Portal*>(this->m_gameObjects.back())->initialize(mdlIndx, (int)m_wvpCBuffers->size() - 1, mdl, pos, this->m_player, room);
+		dynamic_cast<Portal*>(this->m_gameObjects.back())->initialize(mdlIndx, (int)m_wvpCBuffers->size() - 1, mdl, pos, this->m_player, room, oneTimeUse);
 
 	pos = m_worldPosition + position;
 

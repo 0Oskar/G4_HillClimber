@@ -257,6 +257,11 @@ void GameState::roomChangeInit()
 			platformBB.emplace_back(castToPlatform->getAABBPtr());
 		}
 	}
+	PyramidRoom* pyramidRoomPtr = dynamic_cast<PyramidRoom*>(this->m_rooms[0]);
+	for (size_t i = 0; pyramidRoomPtr && i < pyramidRoomPtr->getBBForHook().size(); i++)
+	{
+		this->platformBB.emplace_back(pyramidRoomPtr->getBBForHook().at(i));
+	}
 
 	this->m_player.updateHookHandBB(platformBB);
 
@@ -373,20 +378,12 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 			platformBB.emplace_back(castToPlatform->getAABBPtr());
 		}
 	}
-
-	// Checkpoints
-	vec = DirectX::XMVectorSet(10.f, 85.f, 114.f, 1.f);
-	this->addGameObjectToWorld(false, true, 0, 16, &m_models[16], vec, { 0.7f, 0.7f, 0.7f }, DirectX::XMFLOAT3(7.f, 1.f, 5.f));
-	this->m_gameObjects.back()->setRotation({ 0.f, 1.57f, 0.f });
-	this->m_checkpointHandler.addCheckpointGameObject((int)this->m_gameObjects.size() - 1, vec);
-	platformBB.emplace_back(this->m_gameObjects.back()->getAABBPtr());
-
-	vec = DirectX::XMVectorSet(0.f, 25.f, 42.f, 1.f);
-	this->addGameObjectToWorld(false, true, 0, 16, &m_models[16], vec, { 0.7f, 0.7f, 0.7f }, DirectX::XMFLOAT3(7.f, 1.f, 5.f));
-	this->m_gameObjects.back()->setRotation({ 0.f, 1.57f, 0.f });
-	this->m_checkpointHandler.addCheckpointGameObject((int)this->m_gameObjects.size() - 1, vec);
-	platformBB.emplace_back(this->m_gameObjects.back()->getAABBPtr());
-
+	
+	PyramidRoom* pyramidRoomPtr = dynamic_cast<PyramidRoom*>(this->m_rooms[0]);
+	for (size_t i = 0; pyramidRoomPtr && i < pyramidRoomPtr->getBBForHook().size(); i++)
+	{
+		this->platformBB.emplace_back(pyramidRoomPtr->getBBForHook().at(i));
+	}
 	this->m_player.updateHookHandBB(platformBB);
 
 	//Initialize audio component for platforms and add theire boundingboxes to playerBoundingBoxes
@@ -478,18 +475,4 @@ void GameState::update(Keyboard* keyboard, MouseEvent mouseEvent, Mouse* mousePt
 	if(m_activeRoom != nullptr)
 		this->m_activeRoom->update(dt, &m_camera, this->m_activeRoom, m_activeRoomChanged);
 
-	// Checkpoints
-	for (size_t i = 0; i < this->m_checkpointHandler.size(); i++)
-	{
-		std::pair<int, XMVECTOR> checkpoint = this->m_checkpointHandler.getIndexPosAt((int)i);
-		BoundingBox checkpointAABB = this->m_gameObjects[checkpoint.first]->getAABB();
-		if (checkpointAABB.Intersects(this->m_player.getAABB()))
-		{
-			if (XMVectorGetY(checkpoint.second) > XMVectorGetY(this->m_checkpointHandler.getCurrentpos()))
-			{
-				this->m_checkpointHandler.setCurrent(checkpoint.first, checkpoint.second);
-				this->m_player.setSpawnPosition(checkpoint.second + XMVectorSet(0.f, checkpointAABB.Extents.y + 5, 0.f, 0.f));
-			}
-		}
-	}
 }

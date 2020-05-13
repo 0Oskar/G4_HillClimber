@@ -62,6 +62,7 @@ bool Application::initApplication(HINSTANCE hInstance, LPWSTR lpCmdLine, HWND hW
 	this->m_viewLayerPtr->setgameObjectsFromActiveRoom(this->m_gameState.getActiveRoomGameObjectsPtr());
 	this->m_viewLayerPtr->setBoundingBoxesFromActiveRoom(this->m_gameState.getActiveRoomBoundingBoxsPtr());
 	this->m_viewLayerPtr->setOrientedBoundingBoxesFromActiveRoom(this->m_gameState.getActiveRoomOrientedBoundingBoxPtr());
+	this->m_viewLayerPtr->setTriggerBoxFromActiveRoom(this->m_gameState.getActiveRoomTriggerBox());
 	this->m_viewLayerPtr->setGameTimePtr(this->m_gameState.getGameTimerPtr());
 	this->m_viewLayerPtr->setWvpCBufferFromState(this->m_gameState.getWvpCBuffersPtr());
 	this->m_timer.start();
