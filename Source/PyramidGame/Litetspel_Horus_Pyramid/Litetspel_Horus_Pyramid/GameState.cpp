@@ -263,11 +263,6 @@ void GameState::loadModels()
 	this->m_models.emplace_back(); //add empty model
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); //reset material
 	this->m_models[20].initializeModelBff(m_device, m_dContext, "LeverHandle.bff", mat, L"Textures/ColorTexture.png"); //load model
-	
-	//21. PuzzleRoom (Tristan)
-	this->m_models.emplace_back(); //add empty model
-	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); //reset material
-	this->m_models[21].initializeModelBff(m_device, m_dContext, "TristanPuzzleRoom.bff", mat, L"Textures/ColorTexture.png"); //load model
 }
 
 
@@ -387,11 +382,6 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, -100, 1), audioEngine, &this->m_gameTime);
 	dynamic_cast<EdvinsRoom*>(this->m_rooms.back())->init();
 
-	// Tristan Room [4]
-	this->m_rooms.emplace_back(new TristansRoom());
-	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, -200, 1), audioEngine, &this->m_gameTime);
-	dynamic_cast<TristansRoom*>(this->m_rooms.back())->init();
-
 	//Otaget rum [4] -
 	/*this->m_rooms.emplace_back(new NamnRoom());
 	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, -100, 1), audioEngine, &this->m_gameTime);
@@ -449,9 +439,8 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->addPortalToWorld({ 0, 0, 0, 0 }, 10, &m_models[10], { -40, 0, -5, 1 }, { 1, 1, 1, 1 }, { 2, 2, 1 }, 0); //Pyramid "Room"
 	this->addPortalToWorld({ 0, 0, 0, 0 }, 10, &m_models[10], { -30, 0, -5, 1 }, { 1, 1, 1, 1 }, { 2, 2, 1 }, 1); //Up for grabs - currently template room
 	this->addPortalToWorld({ 0, 0, 0, 0 }, 10, &m_models[10], { -20, 0, -5, 1 }, { 1, 1, 1, 1 }, { 2, 2, 1 }, 2); // Kevins room
-	this->addPortalToWorld({ 0, 0, 0, 0 }, 10, &m_models[10], { -10, 0, -5, 1 }, { 1, 1, 1, 1 }, { 2, 2, 1 }, 3); //Edvins room
-	this->addPortalToWorld({ 0, 0, 0, 0 }, 10, &m_models[10], { 30, 0, -5, 1 }, { 1, 1, 1, 1 }, { 2, 2, 1 }, 4); //Tristans Room
-	//this->addPortalToWorld({ 0, 0, 0, 0 }, 10, &m_models[10], { 10, 0, -5, 1 }, { 1, 1, 1, 1 }, { 2, 2, 1 }, 0); //Up for grabs, change room index to 5 when room avalible.
+	this->addPortalToWorld({ 0, 0, 0, 0 }, 10, & m_models[10], { -10, 0, -5, 1 }, { 1, 1, 1, 1 }, { 2, 2, 1 }, 3); //Edvins room
+	this->addPortalToWorld({ 0, 0, 0, 0 }, 10, & m_models[10], { -0, 0, -5, 1 }, { 1, 1, 1, 1 }, { 2, 2, 1 }, 0); //Up for grabs, change room index to 4 when room avalible.
 
 
 	this->m_gameTime.start();
