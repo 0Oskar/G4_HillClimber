@@ -1,0 +1,37 @@
+#pragma once
+
+#include "pch.h"
+#include "GameObject.h"
+#include "MovementComponent.h"
+#include "Player.h"
+
+class followingEnemy : public GameObject
+{
+
+private:
+
+
+	bool m_hasColided;
+	bool reachedEdge;
+	Player *thePlayer;
+
+	float delayForMove = 1.0f;
+
+
+
+	//std::vector<float> currentPosition;
+
+
+public:
+
+	followingEnemy();
+
+	void init(bool colidable, int modelIndex, int wvpCBufferIndex, Model* mdl, Player *player);
+	void update(float dt);
+	void onPlayerColide();
+	void setReachedEdge(bool aValue);
+
+	void followPlayer(float dt);
+	
+
+};

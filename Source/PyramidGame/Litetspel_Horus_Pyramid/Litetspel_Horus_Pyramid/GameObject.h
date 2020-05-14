@@ -41,6 +41,7 @@ public:
 	bool getDrawBB() const;
 	DirectX::XMVECTOR getPosition() const;
 	DirectX::XMMATRIX getWorldMatrix() const;
+
 	DirectX::XMMATRIX getTranslationMatrix() const;
 	int getModelIndex() const;
 	int getWvpCBufferIndex() const;

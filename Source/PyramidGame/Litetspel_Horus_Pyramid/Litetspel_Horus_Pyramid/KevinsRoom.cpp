@@ -30,6 +30,11 @@ void KevinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 		}
 	}
 
+	if (triggerBB[2].Intersects(this->scorpion->getAABB()))
+	{
+		this->scorpion->setReachedEdge(true);
+	}
+
 	for (int i = 0; i < deathTrapBB.size(); i++)
 	{
 		if (deathTrapBB[i].Intersects(this->m_player->getAABB()))
@@ -144,6 +149,10 @@ void KevinsRoom::createBoundingBoxes()
 	this->addBoundingBox({ -10.f, 23.f, -45.4f + 140.f, 1}, DirectX::XMFLOAT3(20.f, 2.5f, 11.8f));
 	this->addBoundingBox({ 9.5f, 2.f, -120.f + 140.f, 1 }, DirectX::XMFLOAT3(2.f, 40.f, 85.f));
 	this->addBoundingBox({ -31.f, 2.f, -120.f + 140.f, 1 }, DirectX::XMFLOAT3(2.f, 40.f, 85.f));
+	
+	//scorpionEDGE ONLY FOR VISUAL
+	//this->addBoundingBox({ -15.f, 10.f, -126.f + 140.f, 1}, DirectX::XMFLOAT3(20.f, 10.f, 2.5f));
+
 
 	triggerBB.emplace_back();
 	this->addTriggerBB({ -10.f, 27.f, -80.f + 140.f }, DirectX::XMFLOAT3(20.f, 10.f, 2.5f));
@@ -151,6 +160,11 @@ void KevinsRoom::createBoundingBoxes()
 
 	triggerBB.emplace_back();
 	this->addTriggerBB({ -10.f, 27.f, -60.f + 140.f }, DirectX::XMFLOAT3(20.f, 10.f, 2.5f));
+	triggerBB.back() = this->m_triggerBoundingBoxes.back();
+
+	//scorpionEdge
+	triggerBB.emplace_back();
+	this->addTriggerBB({ -15.f, 10.f, -126.f + 140.f }, DirectX::XMFLOAT3(20.f, 10.f, 2.5f));
 	triggerBB.back() = this->m_triggerBoundingBoxes.back();
 
 	deathTrapBB.emplace_back();
@@ -169,8 +183,8 @@ void KevinsRoom::createSceneObjects()
 	DirectX::XMVECTOR rotation = DirectX::XMVectorSet(0.f, 0.f, 0.f, 1.f);
 
 	//Kevin room platform
-	vec = DirectX::XMVectorSet(5.f, 25.f, -85.f + 140.f, 1.f);
-	this->addPlatformToRoom(3, &m_models->at(3), vec, DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f));
+	//vec = DirectX::XMVectorSet(5.f, 25.f, -85.f + 140.f, 1.f);
+	//this->addPlatformToRoom(3, &m_models->at(3), vec, DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f));
 
 	//Puzzle Room (Kevins Lever room)
 	vec = DirectX::XMVectorSet(-10.f, 2, -100 + 140.f, 1.f);
@@ -217,6 +231,19 @@ void KevinsRoom::createSceneObjects()
 	this->lever[0]->setPlayerBoundingBox(this->m_player->getAABBPtr());
 	this->lever[1]->setPlayerBoundingBox(this->m_player->getAABBPtr());
 	this->wonPuzzleObject[0]->setPlayerBoundingBox(this->m_player->getAABBPtr());
+
+	this->m_wvpCBuffers->emplace_back();
+
+	this->m_wvpCBuffers->back().init(this->m_device, this->m_dContext);
+
+
+	//SCORPION
+
+	this->scorpion = new followingEnemy();
+	this->scorpion->init(true, 16, this->m_wvpCBuffers->size() - 1, &m_models->at(16), m_player);
+	this->scorpion->getMoveCompPtr()->position = XMVectorSet(-11.f, 2.9f, -100.f + 140.f, 1.f) + this->m_worldPosition;
+
+	this->m_gameObjects.emplace_back(this->scorpion);
 
 }
 void KevinsRoom::onCompleted()

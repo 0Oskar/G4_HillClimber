@@ -222,6 +222,12 @@ void GameState::loadModels()
 	this->m_models.emplace_back(); //add empty model
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); //reset material
 	this->m_models[15].initializeModelBff(m_device, m_dContext, "Brick_5.bff", mat, L"Textures/BirdHyroglajf.png"); //load model
+
+	//16. Scorpion
+	this->m_models.emplace_back();
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
+	this->m_models[16].loadVertexFromOBJ(m_device, m_dContext, L"Models/scorpionDone.obj", mat, L"Textures/platformTextureCracks1.png");
+
 	}
 
 void GameState::roomChangeInit()
@@ -321,15 +327,15 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 
 	//Kevin Room [2]
 	this->m_rooms.emplace_back(new KevinsRoom());
-	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(100, 2, 100, 1), audioEngine);
+	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(100, 0, 100, 1), audioEngine); //2 innan i y
 	dynamic_cast<KevinsRoom*>(this->m_rooms.back())->init();
+	m_activeRoom = m_rooms.back();
 
-
-	//Kevin Room [3]
+	//Edvins Room [3]
 	this->m_rooms.emplace_back(new EdvinsRoom());
 	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, -100, 1), audioEngine);
 	dynamic_cast<EdvinsRoom*>(this->m_rooms.back())->init();
-	m_activeRoom = m_rooms.back();
+	
 
 	this->m_player.getphysicsCompPtr()->setVelocity({ 0, 0, 0 });
 	this->m_player.setPosition(this->m_activeRoom->getEntrancePosition());

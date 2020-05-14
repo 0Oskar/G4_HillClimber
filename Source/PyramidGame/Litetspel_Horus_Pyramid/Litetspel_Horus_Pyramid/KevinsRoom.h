@@ -1,5 +1,6 @@
 #pragma once
 #include"Room.h"
+#include "followingEnemy.h"
 
 class KevinsRoom : public Room
 {
@@ -11,7 +12,8 @@ private:
 	std::vector<DirectX::BoundingBox> pussels;
 	std::vector<DirectX::BoundingBox*> trapBB;
 	std::vector<DirectX::BoundingBox*> leverBB;
-
+    
+	followingEnemy *scorpion;
 
 	std::vector<GameObject*> dartTrap;
 	std::vector<Lever*> lever;
