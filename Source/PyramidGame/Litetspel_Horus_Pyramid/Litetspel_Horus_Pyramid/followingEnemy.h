@@ -20,7 +20,7 @@ private:
 	bool startCountDown = false;
 	float countDown = 0.5f;
 
-
+	float currentRotationY = 0.0f;
 
 
 public:

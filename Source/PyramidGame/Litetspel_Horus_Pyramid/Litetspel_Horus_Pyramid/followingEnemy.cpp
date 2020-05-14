@@ -60,193 +60,23 @@ void followingEnemy::followPlayer(float dt)
 	previousPosition = playerPosition;
 
 	walkDirection = playerPosition -scorpionPos;
-	walkDirection = XMVector3NormalizeEst(walkDirection);
+	walkDirection = XMVector3Normalize(walkDirection);
 
-	if (this-> reachedEdge == false)
-	{
+	//if (this-> reachedEdge == false)
+	//{
 		this->getMoveCompPtr()->position += (walkDirection * dt * 5);
-		walkDirection = XMVectorSetX(walkDirection, 0.0f);
-	}
+		//walkDirection = XMVectorSetX(walkDirection, 0.0f);
+	//}
 	
 
-	//XMMATRIX lookAt = XMMatrixLookAtLH(this->getMoveCompPtr()->position, this->thePlayer->getMoveCompPtr()->position, upDir);
-
-	//XMVECTOR scorpionRotation = XMVector3TransformCoord(DirectX::XMVectorSet(0.f, 0.f, 0.f, 0.f), lookAt);
-
-	//this->setRotation(scorpionRotation);
-
-	///////////////
-
-	//XMVECTOR toCam = this->thePlayer->getMoveCompPtr()->position - scorpionPos;
-	//XMVECTOR fwdVector = XMVector3NormalizeEst(toCam);
-	//
-	//
-	//XMVECTOR upVector = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-	//XMVECTOR sideVector = XMVector3Cross(upVector, fwdVector);
-	//upVector = XMVector3Cross(sideVector, fwdVector);
-
-	//XMVECTOR normalizedUp = XMVector3NormalizeEst(upVector);
-
-	//XMVECTOR normalizedSide = XMVector3NormalizeEst(sideVector);
-	//
-	//XMMATRIX orientation(XMVectorGetX(sideVector), XMVectorGetY(sideVector), XMVectorGetZ(sideVector), 0.0f,
-	//	XMVectorGetX(upVector), XMVectorGetY(upVector), XMVectorGetZ(upVector), 0.0f,
-	//	XMVectorGetX(fwdVector), XMVectorGetY(fwdVector), XMVectorGetZ(fwdVector), 0.0f,
-	//	XMVectorGetX(scorpionPos), XMVectorGetY(scorpionPos), XMVectorGetZ(scorpionPos), 0.0f);
-	//
-	//XMVECTOR scorpionRotation = XMVector3TransformCoord(DirectX::XMVectorSet(0.f, 0.f, 0.f, 0.f), orientation);
-
-	//this->setRotation(scorpionRotation);
-
-	///////////////
 
 	XMVECTOR newPlayerPosition = this->thePlayer->getMoveCompPtr()->position;
-	
-	float playerPositionX = XMVectorGetX(playerPosition);
-	float playerPositionY = XMVectorGetY(playerPosition);
-	float playerPositionZ = XMVectorGetZ(playerPosition);
-
 	XMVECTOR scorpionPosition = this->getMoveCompPtr()->position;
 
-	float scorpionPositionX = XMVectorGetX(scorpionPosition);
-	float scorpionPositionY = XMVectorGetY(scorpionPosition);
-	float scorpionPositionZ = XMVectorGetX(scorpionPosition);
 
-	XMVECTOR scorpionRotation = this->getMoveCompPtr()->rotation;
+	float targetRotation = (float)atan2((double)(walkDirection.m128_f32[0]), (double)(walkDirection.m128_f32[2])) + XM_PI;
 
-	float scorpionRotationY = XMVectorGetY(scorpionRotation);
-	float scorpionRotationX = XMVectorGetX(scorpionRotation);
-
-	////////
-	//XMVECTOR vectorBetweenThem = playerPosition - scorpionPosition;
-
-
-	//if (XMVectorGetX(vectorBetweenThem) * scorpionRotationY > (XMVectorGetY(vectorBetweenThem) * scorpionRotationX))
-	//{
-	//	scorpionRotationY += XMConvertToRadians(100 * dt);
-	//	scorpionRotation = XMVectorSet(0.0f, scorpionRotationY, 0.0f, 0.0f);
-
-	//	this->setRotation(scorpionRotation);
-	//}
-
-	//else 
-	//{
-	//	scorpionRotationY -= XMConvertToRadians(100 * dt);
-	//	scorpionRotation = XMVectorSet(0.0f, scorpionRotationY, 0.0f, 0.0f);;
-
-	//	this->setRotation(scorpionRotation);
-	//}
-	////////////
-	
-	////////////////
-	//float targetRotation = (float)atan2((double)(playerPositionY - scorpionPositionY ), (double)(playerPositionX - scorpionPositionX));
-
-	//float rotationDifference = scorpionRotationY -targetRotation;
-
-
-	//if (rotationDifference > XM_PI)
-	//{
-	//	rotationDifference -= (float)XM_PI * 2;
-	//}
-
-	//if (rotationDifference < -XM_PI)
-	//{
-	//	rotationDifference += (float)XM_PI * 2;	
-	//}
-
-	//int rotationsDegree = (int)(XMConvertToDegrees(rotationDifference));
-	//
-	//if (rotationsDegree < 0)
-	//{
-	//	scorpionRotationY += XMConvertToRadians(100 * dt);
-	//	scorpionRotation = XMVectorSet(0.0f, scorpionRotationY, 0.0f, 0.0f);
-
-	//	
-	//	this->setRotation(scorpionRotation);
-	//}
-
-	//else if (rotationsDegree > 0)
-	//{
-	//	scorpionRotationY -= XMConvertToRadians(100 * dt);
-	//	scorpionRotation = XMVectorSet(0.0f, scorpionRotationY, 0.0f, 0.0f);;
-
-	//	
-	//	this->setRotation(scorpionRotation);
-	//}
-
-	//Bad billboarding try
-	////////////////////////////////////////////////////////////////
-
-	//XMVECTOR right = XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
-	//XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-	//XMVECTOR lookAt = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
-
-	//XMVECTOR enemyToPlayer = newPlayerPosition - scorpionPosition;
-
-	//XMVECTOR enemyToPlayerProj = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-	//enemyToPlayerProj = XMVectorSetY(enemyToPlayerProj, 0);
-
-	////Normalize
-	//enemyToPlayerProj = XMVector3NormalizeEst(enemyToPlayerProj);
-	//enemyToPlayerProj = XMVector4Cross(up, lookAt, enemyToPlayerProj);
-
-	//
-	//this->setRotation(enemyToPlayerProj);
-
-	////////////////////////////////////////////////////////////////
-
-	//Närmst till lösning
-
-	//COUNTDOWN FÖRSÖK
-
-	/*countDown -= 100 * dt;
-
-	if (startCountDown == false)
-	{
-		float targetRotation = (float)atan2((double)(scorpionPositionX - playerPositionX), (double)(scorpionPositionZ - playerPositionZ));
-
-
-		float rotationDifference = scorpionRotationY - targetRotation;
-
-
-		float finalRotation1 = XMConvertToRadians(rotationDifference);
-
-		
-
-		if (countDown <= 0.0f)
-		{
-			float targetRotation2 = (float)atan2((double)(scorpionPositionX - playerPositionX), (double)(scorpionPositionZ - playerPositionZ));
-
-			float rotationDifference2 = scorpionRotationY - targetRotation2;
-
-
-			float finalRotation2 = XMConvertToRadians(rotationDifference2);
-
-
-			if (rotationDifference > rotationDifference2)
-			{
-				scorpionRotationY -= XMConvertToRadians(100 * dt);
-				scorpionRotation = XMVectorSet(0.0f, scorpionRotationY, 0.0f, 0.0f);
-
-				this->setRotation(XMVectorSet(0.0f, scorpionRotationY, 0.0f, 0.0f));
-				countDown = 0.5f;
-			}
-
-			else if (rotationDifference < rotationDifference2)
-			{
-				this->setRotation(XMVectorSet(0.0f, scorpionRotationY, 0.0f, 0.0f));
-
-				scorpionRotationY += XMConvertToRadians(100 * dt);
-				scorpionRotation = XMVectorSet(0.0f, scorpionRotationY, 0.0f, 0.0f);
-				countDown = 0.5f;
-			}
-		}*/
-	////////////////////////
-
-float targetRotation = (float)atan2((double)(playerPositionY - scorpionPositionY), (double)(playerPositionX - scorpionPositionX));
-
-	float rotationDifference = scorpionRotationY -targetRotation;
-
+	float rotationDifference = targetRotation - currentRotationY;
 
 	if (rotationDifference > XM_PI)
 	{
@@ -255,128 +85,18 @@ float targetRotation = (float)atan2((double)(playerPositionY - scorpionPositionY
 
 	if (rotationDifference < -XM_PI)
 	{
-		rotationDifference += (float)XM_PI * 2;	
+		rotationDifference += (float)XM_PI * 2;
 	}
-
-	int rotationsDegree = (int)(XMConvertToDegrees(rotationDifference));
-
-	if (rotationsDegree < 0)
-	{
-		scorpionRotationY += XMConvertToRadians(100 * dt);
-		scorpionRotation = XMVectorSet(0.0f, scorpionRotationY, 0.0f, 0.0f);
-
 	
-		this->setRotation(scorpionRotation);
-	}
+	currentRotationY += (rotationDifference) * dt * 5;
 
-	else if (rotationsDegree > 0)
-	{
-		scorpionRotationY -= XMConvertToRadians(100 * dt);
-		scorpionRotation = XMVectorSet(0.0f, scorpionRotationY, 0.0f, 0.0f);;
+	this->getMoveCompPtr()->rotation = XMVectorSet(0.0f, currentRotationY, 0.0f, 0.0f);
 
-	
-		this->setRotation(scorpionRotation);
-	}
+
+
 	}
 	
 
-	
-
-	
-
-	
-    
-	
-
-	////////////////////////
-	//float rotationDifference = scorpionRotationY - targetRotation;
-
-
-
-	//if (rotationDifference > XM_PI)
-	//{
-	//	rotationDifference -= (float)XM_PI * 2;
-	//}
-
-	//if (rotationDifference < -XM_PI)
-	//{
-
-	//	rotationDifference += (float)XM_PI * 2;
-	//}
-
-	//int rotationsDegree = (int)(XMConvertToDegrees(rotationDifference));
-
-	//if (rotationsDegree < 0)
-	//{
-	//	scorpionRotationY += XMConvertToRadians(100 * dt);
-	//	scorpionRotation = XMVectorSet(0.0f, scorpionRotationY, 0.0f, 0.0f);
-
-
-	//	this->setRotation(scorpionRotation);
-	//}
-
-	//else if (rotationsDegree > 0)
-	//{
-	//	scorpionRotationY -= XMConvertToRadians(100 * dt);
-	//	scorpionRotation = XMVectorSet(0.0f, scorpionRotationY, 0.0f, 0.0f);;
-
-
-	//	this->setRotation(scorpionRotation);
-	//}
-
-	///////////////////////////////////////////////////////////////////////
-
-	/*float rotationDifference = scorpionRotationY -targetRotation;
-
-	
-
-	if (rotationDifference > XM_PI)
-	{
-		rotationDifference -= (float)XM_PI * 2;
-	}
-
-	if (rotationDifference < -XM_PI)
-	{
-		
-		rotationDifference += (float)XM_PI * 2;	
-	}
-
-	int rotationsDegree = (int)(XMConvertToDegrees(rotationDifference));
-	
-	if (rotationsDegree < 0)
-	{
-		scorpionRotationY += XMConvertToRadians(100 * dt);
-		scorpionRotation = XMVectorSet(0.0f, scorpionRotationY, 0.0f, 0.0f);
-
-		
-		this->setRotation(scorpionRotation);
-	}
-
-	else if (rotationsDegree > 0)
-	{
-		scorpionRotationY -= XMConvertToRadians(100 * dt);
-		scorpionRotation = XMVectorSet(0.0f, scorpionRotationY, 0.0f, 0.0f);;
-
-		
-		this->setRotation(scorpionRotation);
-	}*/
-	
-	/////////////
-
-	
-		  
-	//playerRotation = this->thePlayer->getMoveCompPtr()->rotation;
-	//SÅ SKORPIONEN TITTAR PÅ SPELAREN????
-	//playerRotation = XMMatrixLookAtLH(this->getMoveCompPtr()->position, this->thePlayer->getMoveCompPtr()->position, upDir);
-
-	
-
- 
-	//playerRotation = XMVectorSet(0.0f, XMVectorGetY(walkDirection), 0.0f, 0.0f);
-	//this->setRotation(playerRotation);
-
-	
-	
 	
 
 	
