@@ -174,8 +174,6 @@ ID3D11DeviceContext* ViewLayer::getContextDevice()
 	return this->m_deviceContext.Get();
 }
 
-
-
 void ViewLayer::setViewMatrix(DirectX::XMMATRIX* newViewMatrix)
 {
 	this->m_viewMatrix = newViewMatrix;
@@ -322,7 +320,7 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 	assert(SUCCEEDED(hr) && "Error, failed to create input layout for primitives!");
 
 	// FPS counter
-	this->m_spriteFont = std::make_unique<DirectX::SpriteFont>(this->m_device.Get(), L"Fonts\\product_sans_16.spritefont");
+	this->m_spriteFont = std::make_unique<DirectX::SpriteFont>(this->m_device.Get(), L"Fonts\\jost_16_bold.spritefont");
 	this->m_fpsString = "FPS: NULL";
 
 }
@@ -450,13 +448,18 @@ void ViewLayer::render()
 	}
 
 	m_timerString = "Time: ";
+	std::string statusTextStr = "aedkjgfbkadusjhgbadolijrfkgb!";
+	float statusTextWidth = statusTextStr.length() * 16;
+	XMVECTOR fontDimensions = this->m_spriteFont->MeasureString(statusTextStr.c_str(), false);
+	XMFLOAT2 position = { ((float)this->m_options->width / 2.f) - (XMVectorGetX(fontDimensions) / 2.f), 200.f - (XMVectorGetY(fontDimensions) / 2.f) };
 
 	// Draw Sprites
 	this->m_spriteBatch->Begin();
 	this->m_spriteBatch->Draw(this->m_crossHairSRV, this->m_crosshairPosition);
-	this->m_spriteFont->DrawString(this->m_spriteBatch.get(), this->m_fpsString.c_str(), DirectX::XMFLOAT2((float)this->m_options->width - 100.f, 0), DirectX::Colors::White, 0.f, DirectX::XMFLOAT2(0.f, 0.f));
-	this->m_spriteFont->DrawString(this->m_spriteBatch.get(), this->m_timerString.c_str(), DirectX::XMFLOAT2(10.f, 0.f), this->m_gameTimePtr->isActive() ? DirectX::Colors::White : DirectX::Colors::Green, 0.f, DirectX::XMFLOAT2(0.f, 0.f));
-	this->m_spriteFont->DrawString(this->m_spriteBatch.get(), std::to_string(this->m_gameTimePtr->timeElapsed()).c_str(), DirectX::XMFLOAT2(65.f, 0.f), DirectX::Colors::Green, 0.f, DirectX::XMFLOAT2(0.f, 0.f));
+	this->m_spriteFont->DrawString(this->m_spriteBatch.get(), this->m_fpsString.c_str(), DirectX::XMFLOAT2((float)this->m_options->width - 110.f, 10.f), DirectX::Colors::White, 0.f, DirectX::XMFLOAT2(0.f, 0.f));
+	this->m_spriteFont->DrawString(this->m_spriteBatch.get(), this->m_timerString.c_str(), DirectX::XMFLOAT2(10.f, 10.f), this->m_gameTimePtr->isActive() ? DirectX::Colors::White : DirectX::Colors::Green, 0.f, DirectX::XMFLOAT2(0.f, 0.f));
+	this->m_spriteFont->DrawString(this->m_spriteBatch.get(), std::to_string(this->m_gameTimePtr->timeElapsed()).c_str(), DirectX::XMFLOAT2(70.f, 10.f), DirectX::Colors::Green, 0.f, DirectX::XMFLOAT2(0.f, 0.f));
+	this->m_spriteFont->DrawString(this->m_spriteBatch.get(), statusTextStr.c_str(), position, DirectX::Colors::DarkRed, 0.f, DirectX::XMFLOAT2(0.f, 0.f));
 	this->m_spriteBatch->End();
 	
 	// Swap Frames
