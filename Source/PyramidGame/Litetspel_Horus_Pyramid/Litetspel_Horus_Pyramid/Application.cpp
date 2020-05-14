@@ -206,7 +206,7 @@ void Application::applicationLoop()
 
 			this->GameStateChecks();
 			// Update Layers
-			this->m_gameState.update(this->m_input.getKeyboard(), this->m_input.getMouseEvent(), this->m_input.getMouse(), this->m_deltaTime);
+			this->m_gameState.update(this->m_input.getKeyboard(), MouseEvent(), this->m_input.getMouse(), this->m_deltaTime);
 			
 			this->m_input.readBuffers();
 			this->audioUpdate();
