@@ -30,9 +30,15 @@ void KevinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 		}
 	}
 
+	//Scorpion walking bounds
 	if (triggerBB[2].Intersects(this->scorpion->getAABB()))
 	{
 		this->scorpion->setReachedEdge(true);
+	}
+
+	else
+	{
+		//sthis->scorpion->setReachedEdge(false);
 	}
 
 	for (int i = 0; i < deathTrapBB.size(); i++)
@@ -189,6 +195,17 @@ void KevinsRoom::createSceneObjects()
 	//Puzzle Room (Kevins Lever room)
 	vec = DirectX::XMVectorSet(-10.f, 2, -100 + 140.f, 1.f);
 	this->addGameObjectToRoom(false, false, 2, 6, &m_models->at(6), vec, DirectX::XMVectorSet(1, 1, 1, 1), DirectX::XMFLOAT3(1.f, 1.f, 1.f));
+	
+	//platform
+	vec = DirectX::XMVectorSet(-27.f, 25.f, -88.f + 140.f, 1.f);
+	this->addPlatformToRoom(3, &m_models->at(3), vec, DirectX::XMFLOAT3(4.f, 0.5f, 2.5f));
+	this->m_gameObjects.back()->setScale({ 0.0f,0.0f,0.0f, 0.0f });
+	
+
+	//platform
+	vec = DirectX::XMVectorSet(4.f, 25.f, -88.f + 140.f, 1.f);
+	this->addPlatformToRoom(3, &m_models->at(3), vec, DirectX::XMFLOAT3(4.f, 0.5f, 2.5f));
+	this->m_gameObjects.back()->setScale({ 0.0f,0.0f,0.0f, 0.0f });
 
 	//Lever
 	vec = DirectX::XMVectorSet(-15.f, 5.f, -88.f + 140.f, 1.f);

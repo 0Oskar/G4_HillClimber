@@ -17,9 +17,10 @@ private:
 
 	float delayForMove = 1.0f;
 
+	bool startCountDown = false;
+	float countDown = 0.5f;
 
 
-	//std::vector<float> currentPosition;
 
 
 public:

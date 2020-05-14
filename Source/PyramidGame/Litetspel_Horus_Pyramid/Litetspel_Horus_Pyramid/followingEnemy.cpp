@@ -62,8 +62,12 @@ void followingEnemy::followPlayer(float dt)
 	walkDirection = playerPosition -scorpionPos;
 	walkDirection = XMVector3NormalizeEst(walkDirection);
 
-	this->getMoveCompPtr()->position += (walkDirection * dt * 5);
-	walkDirection = XMVectorSetX(walkDirection, 0.0f);
+	if (this-> reachedEdge == false)
+	{
+		this->getMoveCompPtr()->position += (walkDirection * dt * 5);
+		walkDirection = XMVectorSetX(walkDirection, 0.0f);
+	}
+	
 
 	//XMMATRIX lookAt = XMMatrixLookAtLH(this->getMoveCompPtr()->position, this->thePlayer->getMoveCompPtr()->position, upDir);
 
@@ -139,7 +143,6 @@ void followingEnemy::followPlayer(float dt)
 
 	//float rotationDifference = scorpionRotationY -targetRotation;
 
-	//
 
 	//if (rotationDifference > XM_PI)
 	//{
@@ -148,7 +151,6 @@ void followingEnemy::followPlayer(float dt)
 
 	//if (rotationDifference < -XM_PI)
 	//{
-	//	
 	//	rotationDifference += (float)XM_PI * 2;	
 	//}
 
@@ -195,16 +197,98 @@ void followingEnemy::followPlayer(float dt)
 
 	//Närmst till lösning
 
-	float targetRotation = (float)atan2((double)(scorpionPositionX - playerPositionX), (double)(scorpionPositionZ - playerPositionZ));
+	//COUNTDOWN FÖRSÖK
+
+	/*countDown -= 100 * dt;
+
+	if (startCountDown == false)
+	{
+		float targetRotation = (float)atan2((double)(scorpionPositionX - playerPositionX), (double)(scorpionPositionZ - playerPositionZ));
 
 
-	targetRotation *= (180 / XM_PI);
+		float rotationDifference = scorpionRotationY - targetRotation;
 
 
-	float finalRotation = XMConvertToRadians(targetRotation);
+		float finalRotation1 = XMConvertToRadians(rotationDifference);
+
+		
+
+		if (countDown <= 0.0f)
+		{
+			float targetRotation2 = (float)atan2((double)(scorpionPositionX - playerPositionX), (double)(scorpionPositionZ - playerPositionZ));
+
+			float rotationDifference2 = scorpionRotationY - targetRotation2;
+
+
+			float finalRotation2 = XMConvertToRadians(rotationDifference2);
+
+
+			if (rotationDifference > rotationDifference2)
+			{
+				scorpionRotationY -= XMConvertToRadians(100 * dt);
+				scorpionRotation = XMVectorSet(0.0f, scorpionRotationY, 0.0f, 0.0f);
+
+				this->setRotation(XMVectorSet(0.0f, scorpionRotationY, 0.0f, 0.0f));
+				countDown = 0.5f;
+			}
+
+			else if (rotationDifference < rotationDifference2)
+			{
+				this->setRotation(XMVectorSet(0.0f, scorpionRotationY, 0.0f, 0.0f));
+
+				scorpionRotationY += XMConvertToRadians(100 * dt);
+				scorpionRotation = XMVectorSet(0.0f, scorpionRotationY, 0.0f, 0.0f);
+				countDown = 0.5f;
+			}
+		}*/
+	////////////////////////
+
+float targetRotation = (float)atan2((double)(playerPositionY - scorpionPositionY), (double)(playerPositionX - scorpionPositionX));
+
+	float rotationDifference = scorpionRotationY -targetRotation;
+
+
+	if (rotationDifference > XM_PI)
+	{
+		rotationDifference -= (float)XM_PI * 2;
+	}
+
+	if (rotationDifference < -XM_PI)
+	{
+		rotationDifference += (float)XM_PI * 2;	
+	}
+
+	int rotationsDegree = (int)(XMConvertToDegrees(rotationDifference));
+
+	if (rotationsDegree < 0)
+	{
+		scorpionRotationY += XMConvertToRadians(100 * dt);
+		scorpionRotation = XMVectorSet(0.0f, scorpionRotationY, 0.0f, 0.0f);
+
+	
+		this->setRotation(scorpionRotation);
+	}
+
+	else if (rotationsDegree > 0)
+	{
+		scorpionRotationY -= XMConvertToRadians(100 * dt);
+		scorpionRotation = XMVectorSet(0.0f, scorpionRotationY, 0.0f, 0.0f);;
+
+	
+		this->setRotation(scorpionRotation);
+	}
+	}
+	
+
+	
+
+	
+
+	
     
-	this->setRotation(XMVectorSet(0.0f, finalRotation, 0.0f, 0.0f));
+	
 
+	////////////////////////
 	//float rotationDifference = scorpionRotationY - targetRotation;
 
 
@@ -296,5 +380,5 @@ void followingEnemy::followPlayer(float dt)
 	
 
 	
-}
+
 
