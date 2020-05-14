@@ -6,7 +6,6 @@
 #include "Platform.h"
 #include "Shaders.h"
 
-
 class ViewLayer
 {
 private:
