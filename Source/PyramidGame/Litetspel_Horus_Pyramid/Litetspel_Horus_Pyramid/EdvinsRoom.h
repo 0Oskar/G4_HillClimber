@@ -8,7 +8,8 @@ class EdvinsRoom : public Room
 private:
 	void createBoundingBoxes();
 	void createSceneObjects();
-	void onCompleted();
+	void onWin();
+	void onFail();
 	bool CorrectOrder(int arr1[], int arr2[]);
 	//void spinButton(GameObject* button);
 
@@ -26,7 +27,6 @@ private:
 	std::vector<Lever*> buttons;
 	Timer timer;
 	bool moveButtons = false;
-	bool rotateButton1 = false;
 	int guessPos;
 	int guessOrder[5];
 	int spinButtonIndex = -1;
@@ -40,14 +40,17 @@ private:
 	//Lever
 	std::vector<DirectX::BoundingBox*> leverBB;
 	Lever* lever;
+	GameObject* leverHandle;
 	Timer leverTimer;
 	bool canPullLever = true;
+	bool moveLever = false;
 	bool tempLever = false;
 	
 	//Other
 	int nrOfFails;
 	bool wonThePuzzle = false;
 	bool lifeTaken = false;
+	Portal* roomPortal;
 public:
 	EdvinsRoom();
 	~EdvinsRoom();

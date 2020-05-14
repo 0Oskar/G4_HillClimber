@@ -2,20 +2,16 @@
 #include "EdvinsRoom.h"
 
 //TODO:
-// 1) Teleport player back on fail and hide buttons
-// 2) Add time on fail
-// 3) Activate door on win
+//Oriented bounding box
+//Particalas
 
 void EdvinsRoom::createBoundingBoxes()
 {
-	DirectX::XMVECTOR NormalScale = DirectX::XMVectorSet(1, 1, 1, 1);
-	DirectX::XMVECTOR pos = DirectX::XMVectorSet(0.f, -10.f, 0.f, 1.f);
-	DirectX::XMVECTOR rot = DirectX::XMVectorSet(0.f, 0.f, 0.f, 1.f);
-
 	this->addBoundingBox({ 0, 6, 0, 1 }, DirectX::XMFLOAT3(1, 12, 20)); //Back Wall
-	this->addBoundingBox({ -70, 6, 0, 1 }, DirectX::XMFLOAT3(1, 12, 6)); //Front Wall
+	this->addBoundingBox({ -70, 6, 0, 1 }, DirectX::XMFLOAT3(1, 12, 6)); //Behind portal
 	this->addBoundingBox({ -40, 6, -20, 1 }, DirectX::XMFLOAT3(30, 12, 1)); //Right Wall
 	this->addBoundingBox({ -40, 6, 20, 1 }, DirectX::XMFLOAT3(30, 12, 1)); //Left Wall
+	this->addBoundingBox({ -45, 0, 0, 1 }, DirectX::XMFLOAT3(1.5, 2, 1.5)); //Pedistal
 }
 
 void EdvinsRoom::createSceneObjects()
@@ -103,17 +99,49 @@ void EdvinsRoom::createSceneObjects()
 	this->addGameObjectToRoom(true, false, 1, 15, &m_models->at(15), pos, scale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
 	this->bricks.emplace_back(this->m_gameObjects.back());
 
-	// Leaver
+	// Leaver Base
 	pos = DirectX::XMVectorSet(-45, 2, 0, 1); //world pos
 	rot = DirectX::XMVectorSet(0.f, pMath::convertDegreesToRadians(90), 0, 1);
 	this->addLeverToRoom(16, &m_models->at(16), pos, rot, DirectX::XMFLOAT3(5, 10, 5));
 	this->m_gameObjects.back()->getMoveCompPtr()->rotation = rot;
 	lever = dynamic_cast<Lever*>(m_gameObjects.back());
-	
+
+	// Leaver Handle
+	pos = DirectX::XMVectorSet(-45, 2, 0, 1); //world pos
+	rot = DirectX::XMVectorSet(0.f, pMath::convertDegreesToRadians(90), 0, 1);
+	this->addGameObjectToRoom(true, false, 1, 20, &m_models->at(20), pos, scale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
+	this->m_gameObjects.back()->getMoveCompPtr()->rotation = rot;
+	this->leverHandle = this->m_gameObjects.back();
 }
 
-void EdvinsRoom::onCompleted()
+void EdvinsRoom::onWin()
 {
+	OutputDebugStringA("\nYou won!\n");
+	//Activate portal
+	this->roomPortal->setPosition(XMVectorSet(-70, -5, -100, 1));
+
+	//Activate particalas
+
+}
+
+void EdvinsRoom::onFail()
+{
+	OutputDebugStringA("\nYou lost!\n");
+	//Reset Pos
+	this->m_player->getMoveCompPtr()->position = { -58, 5, -100, 1 };
+
+	//Reset lever
+	this->canPullLever = true;
+	this->leverHandle->getMoveCompPtr()->rotation = XMVectorSet(0.f, pMath::convertDegreesToRadians(90), 0, 1);
+	
+	//Reset Buttons
+	for (int i = 0; i < 5; i++)
+	{
+		buttons[i]->getMoveCompPtr()->position = buttons[i]->getMoveCompPtr()->position + DirectX::XMVectorSet(0, -10, 0, 10);
+	}
+	this->buttonsPosY = -6;
+
+	//Add Time
 }
 
 bool EdvinsRoom::CorrectOrder(int arr1[], int arr2[])
@@ -129,22 +157,6 @@ bool EdvinsRoom::CorrectOrder(int arr1[], int arr2[])
 	return true;
 }
 
-//void EdvinsRoom::animateButton(GameObject* button, float dt)
-//{
-//	this->rotateButton = true;
-//
-//	while (XMVectorGetY(this->buttonRot) <= 360 && this->rotateButton == true)
-//	{
-//		button->getMoveCompPtr()->rotation = button->getMoveCompPtr()->rotation + DirectX::XMVectorSet(0, 360 * this->timer.timeElapsed(), 0, 10);
-//		this->buttonRot += XMVectorSetY(this->coverPos, 360 * this->timer.timeElapsed());
-//	}
-//
-//	if (XMVectorGetY(this->buttonRot) >= 360)
-//	{
-//		button->getMoveCompPtr()->rotation = DirectX::XMVectorSet(0, 0, 0, 10);
-//		this->rotateButton = false;
-//	}
-//}
 
 //Public:
 
@@ -191,6 +203,15 @@ void EdvinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 			this->timer.restart();
 			this->leverTimer.restart();
 			this->canPullLever = false;
+			this->moveLever = true;
+		}
+	}
+
+	if (this->leverTimer.timeElapsed() < 1)
+	{
+		if (this->moveLever == true)
+		{
+			this->leverHandle->getMoveCompPtr()->rotation += DirectX::XMVectorSet(0, 0, pMath::convertDegreesToRadians(90) * dt, 10);
 		}
 	}
 
@@ -198,6 +219,7 @@ void EdvinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 	{
 		this->moveCoverUp = true; //Call moveCover
 		this->canMoveCover = false;
+		this->moveLever = false;
 	}
 	
 	// -------- Cover Stuff -------- //
@@ -234,12 +256,13 @@ void EdvinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 		}
 	}
 
+	// -------- Button Stuff -------- //
 
 	if (this->moveButtons == true)
 	{
 		for (int i = 0; i < 5; i++) //Move all buttons
 		{
-			if (this->buttonsPosY <= 45) //Move while below 5 units in Y (25 = nrOfButtons * desiredMoveYAmount = 5 * 9)
+			if (this->buttonsPosY <= 45) //Move while below 5 units in Y (45 = nrOfButtons * desiredMoveYAmount = 5 * 9)
 			{
 				buttons[i]->getMoveCompPtr()->position = buttons[i]->getMoveCompPtr()->position + DirectX::XMVectorSet(0, 30 * dt, 0, 10); //Move one frame
 				this->buttonsPosY += 30 * dt;
@@ -252,8 +275,6 @@ void EdvinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 
 		}
 	}
-
-	// -------- Button Stuff -------- //
 
 	if (timer.timeElapsed() >= 1)
 	{
@@ -272,19 +293,9 @@ void EdvinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 				this->guessPos++;
 				this->tempLever = true;
 				timer.restart();
-				OutputDebugStringA("Button0");
-				this->rotateButton1 = true;
 				this->spinButtonIndex = 0;
 			}
 		}
-		//if (this->rotateButton1 == true)
-		//{
-		//	if (timer.timeElapsed() < 1)
-		//	{
-		//		this->buttons[0]->getMoveCompPtr()->rotation = this->buttons[0]->getMoveCompPtr()->rotation + DirectX::XMVectorSet(0, pMath::convertDegreesToRadians(360 * dt), 0, 10);
-		//		this->buttonRot += XMVectorSetY(this->buttonRot, pMath::convertDegreesToRadians(360 * dt)); //FIX HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		//	}
-		//}
 
 		this->buttons[1]->collidesWithPlayer();			//Press button 1 ----------------------------------
 		if (this->buttons[1]->getCanUseLever() == true)
@@ -295,7 +306,6 @@ void EdvinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 				this->guessPos++;
 				this->tempLever = true;
 				timer.restart();
-				OutputDebugStringA("Button1");
 				this->spinButtonIndex = 1;
 			}
 		}
@@ -309,7 +319,6 @@ void EdvinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 				this->guessPos++;
 				this->tempLever = true;
 				timer.restart();
-				OutputDebugStringA("Button2");
 				this->spinButtonIndex = 2;
 			}
 		}
@@ -323,7 +332,6 @@ void EdvinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 				this->guessPos++;
 				this->tempLever = true;
 				timer.restart();
-				OutputDebugStringA("Button3");
 				this->spinButtonIndex = 3;
 			}
 		}
@@ -337,7 +345,6 @@ void EdvinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 				this->guessPos++;
 				this->tempLever = true;
 				timer.restart();
-				OutputDebugStringA("Button4");
 				this->spinButtonIndex = 4;
 			}
 		}
@@ -348,49 +355,32 @@ void EdvinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 		this->buttons[this->spinButtonIndex]->getMoveCompPtr()->rotation += DirectX::XMVectorSet(0, pMath::convertDegreesToRadians(180) * dt, 0, 10);
 	}
 	
-	// -------- Other Stuff -------- //
+	// -------- Finish Stuff -------- //
 
 	if (this->guessPos == 5)
 	{
 		if (CorrectOrder(guessOrder, hyroglajfArr))
 		{
-			OutputDebugStringA("\nYou won!\n");
-			//Activate portal
+			onWin();
 		}
 		else
 		{
-			OutputDebugStringA("\nYou lost!\n");
-			//Add x time * nrOfFails
-			//Reset puzzle
+			onFail();
 		}
 
 		
-
-		//OutputDebugStringA("\nGuessOrder: ");
-		//for (int i = 0; i < 5; i++)
-		//{
-		//	std::string temp = std::to_string(guessOrder[i]);
-		//	OutputDebugStringA(temp.c_str());
-		//}
-
-		//OutputDebugStringA("\nGoal: ");
 		this->guessPos = 0;
 		for (int i = 0; i < 5; i++)
 		{
 			//Reset player guess array
 			this->guessOrder[i] = -1;
-
-
-			//std::string temp = std::to_string(hyroglajfArr[i]);
-			//OutputDebugStringA(temp.c_str());
 		}
-		//OutputDebugStringA("\n");
 	}
-	
 }
 
 void EdvinsRoom::onEntrance()
 {
+	
 }
 
 void EdvinsRoom::init()
@@ -412,4 +402,10 @@ void EdvinsRoom::init()
 
 void EdvinsRoom::portals()
 {
+	this->addPortalToRoom(XMVectorSet(0, 0, 0, 1), 9, &m_models->at(9),
+		XMVectorSet(-100, -5, 0, 1), //Pos
+		XMVectorSet(1, 1, 1, 1),    //Scale
+		DirectX::XMFLOAT3(3, 20, 5), //BBSize
+		0, false);
+	this->roomPortal = dynamic_cast<Portal*>(m_gameObjects.back());
 }

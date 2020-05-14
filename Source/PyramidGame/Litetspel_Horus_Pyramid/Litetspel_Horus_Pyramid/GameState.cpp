@@ -212,7 +212,7 @@ void GameState::loadModels()
 	//10 - Portal
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
-	this->m_models[10].loadVertexFromOBJ(m_device, m_dContext, L"Models/PuzzleRoomGate.obj", mat, L"Textures/PuzzleDoor_Texture2.png");
+	this->m_models[10].loadVertexFromOBJ(m_device, m_dContext, L"Models/PuzzleRoomGate.obj", mat, L"Textures/ColorTexture.png");
 
 	//11. Brick_1 (Edvin)
 	this->m_models.emplace_back(); //add empty model
@@ -242,7 +242,7 @@ void GameState::loadModels()
 	//16. Leaver (Edvin)
 	this->m_models.emplace_back(); //add empty model
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); //reset material
-	this->m_models[16].initializeModelBff(m_device, m_dContext, "Leaver.bff", mat, L"Textures/ColorTexture.png"); //load model
+	this->m_models[16].initializeModelBff(m_device, m_dContext, "LeverBase.bff", mat, L"Textures/ColorTexture.png"); //load model
 
 	//17. Pedistal (Edvin)
 	this->m_models.emplace_back(); //add empty model
@@ -258,7 +258,11 @@ void GameState::loadModels()
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
 	this->m_models[19].loadVertexFromOBJ(m_device, m_dContext, L"Models/checkpoint.obj", mat, L"Textures/ColorTexture.png");
-	
+
+	//20. Leaver (Edvin)
+	this->m_models.emplace_back(); //add empty model
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); //reset material
+	this->m_models[20].initializeModelBff(m_device, m_dContext, "LeverHandle.bff", mat, L"Textures/ColorTexture.png"); //load model
 }
 
 
