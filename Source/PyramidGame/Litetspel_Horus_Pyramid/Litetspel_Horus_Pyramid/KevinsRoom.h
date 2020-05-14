@@ -12,14 +12,17 @@ private:
 	std::vector<DirectX::BoundingBox> pussels;
 	std::vector<DirectX::BoundingBox*> trapBB;
 	std::vector<DirectX::BoundingBox*> leverBB;
+	std::vector<DirectX::BoundingBox*> bridgeBB;
     
 	followingEnemy *scorpion;
 	followingEnemy *scorpion2;
 
+	std::vector<GameObject*> expandingBridge;
 	std::vector<GameObject*> dartTrap;
 	std::vector<GameObject*> dartTrapWall;
 	std::vector<Lever*> lever;
 	std::vector<Lever*> wonPuzzleObject;
+	
 
 	//Trigger things
 	std::vector<DirectX::BoundingBox> triggerBB;
@@ -30,10 +33,14 @@ private:
 	float dartPosition1 = 40.f;
 	float dartPosition2 = 40.f;
 
+	float bridgeStop = 10;
+
 	bool trapActive1 = true;
 	bool trapActive2 = true;
 	bool wonThePuzzle = false;
 	bool lifeTaken = false;
+
+	
 
 public:
 	KevinsRoom();

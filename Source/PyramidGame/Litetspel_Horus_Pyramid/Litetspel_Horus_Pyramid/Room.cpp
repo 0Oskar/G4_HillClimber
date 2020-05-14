@@ -69,7 +69,7 @@ void Room::update(float dt, Camera* camera, Room* &activeRoom, bool &activeRoomC
 			wvpData.worldMatrix = this->m_gameObjects[i]->getWorldMatrix();
 			
 			this->m_wvpCBuffers->at(this->m_gameObjects.at(i)->getWvpCBufferIndex()).upd(&wvpData);
-
+			
 		}
 	}
 }
