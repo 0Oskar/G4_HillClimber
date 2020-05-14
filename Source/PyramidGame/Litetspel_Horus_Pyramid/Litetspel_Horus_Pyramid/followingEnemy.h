@@ -32,6 +32,8 @@ public:
 	void onPlayerColide();
 	void setReachedEdge(bool aValue);
 
+	bool getReachedEdge();
+
 	void followPlayer(float dt);
 	
 

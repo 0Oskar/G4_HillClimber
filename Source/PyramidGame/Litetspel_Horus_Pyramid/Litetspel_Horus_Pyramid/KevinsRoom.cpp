@@ -13,7 +13,14 @@ KevinsRoom::~KevinsRoom()
 void KevinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activeRoomChanged)
 {
 	Room::update(dt, camera, activeRoom, activeRoomChanged);
+	float scorpionX = XMVectorGetX(this->scorpion->getPosition());
+	float scorpionY = XMVectorGetY(this->scorpion->getPosition());
+	float scorpionZ = XMVectorGetZ(this->scorpion->getPosition());
 
+	XMFLOAT3 scorpionPos = XMFLOAT3(scorpionX, scorpionY, scorpionZ);
+
+	this->scorpionBB[0]->Center = scorpionPos;
+	    
 
 	if (triggerBB[0].Intersects(this->m_player->getAABB()))
 	{
@@ -46,7 +53,7 @@ void KevinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 
 	else
 	{
-		this->scorpion->setReachedEdge(false);
+		//this->scorpion->setReachedEdge(false);
 	}
 
 	for (int i = 0; i < deathTrapBB.size(); i++)
@@ -125,6 +132,7 @@ void KevinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 				this->onCompleted();
 		}
 	}
+	
 }
 
 void KevinsRoom::init()
@@ -252,7 +260,7 @@ void KevinsRoom::createSceneObjects()
 	this->dartTrap.emplace_back(this->m_gameObjects.back());
 
 	vec = DirectX::XMVectorSet(10.f, 27, -50 + 140.f, 1.f);
-	this->addGameObjectToRoom(true, false, 2, 18, &m_models->at(18), vec, DirectX::XMVectorSet(1.f, 1.f, 1.f, 1), DirectX::XMFLOAT3(2.f, 5.f, 5.5f));
+	this->addGameObjectToRoom(true, false, 2, 18, &m_models->at(18), vec, DirectX::XMVectorSet(1.f, 1.f, 1.f, 1.f), DirectX::XMFLOAT3(2.f, 5.f, 5.5f));
 	this->m_gameObjects.back()->setDrawBB(true);
 	this->trapBB.emplace_back(this->m_gameObjects.back()->getAABBPtr());
 
@@ -275,6 +283,10 @@ void KevinsRoom::createSceneObjects()
 	this->scorpion->getMoveCompPtr()->position = XMVectorSet(-11.f, 2.9f, -100.f + 140.f, 1.f) + this->m_worldPosition;
 
 	this->m_gameObjects.emplace_back(this->scorpion);
+	this->m_gameObjects.back()->setBoundingBox(DirectX::XMFLOAT3(2.f, 2.f, 2.f));
+	this->scorpionBB.emplace_back(this->m_gameObjects.back()->getAABBPtr());
+
+	this->scorpionObject.emplace_back(this->m_gameObjects.back());
 
 	////SCORPION
 

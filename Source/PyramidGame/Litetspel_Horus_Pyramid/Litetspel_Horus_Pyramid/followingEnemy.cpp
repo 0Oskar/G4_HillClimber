@@ -11,6 +11,7 @@ void followingEnemy::init(bool colidable, int modelIndex, int wvpCBufferIndex, M
 {
 	this->initializeDynamic(colidable, false, modelIndex, wvpCBufferIndex, 16, DirectX::XMFLOAT3(1, 1, 1), DirectX::XMFLOAT3(0, 0, 0), mdl);
 	this->thePlayer = player;
+	
 }
 
 void followingEnemy::update(float dt)
@@ -41,6 +42,11 @@ void followingEnemy::onPlayerColide()
 void followingEnemy::setReachedEdge(bool aValue)
 {
 	this->reachedEdge = aValue;
+}
+
+bool followingEnemy::getReachedEdge()
+{
+	return this->reachedEdge;
 }
 
 void followingEnemy::followPlayer(float dt)

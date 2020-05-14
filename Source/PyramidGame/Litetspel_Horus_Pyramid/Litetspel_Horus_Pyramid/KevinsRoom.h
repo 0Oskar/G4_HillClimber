@@ -18,6 +18,7 @@ private:
 	followingEnemy *scorpion2;
 
 	std::vector<GameObject*> expandingBridge;
+	std::vector<GameObject*> scorpionObject;
 	std::vector<GameObject*> dartTrap;
 	std::vector<GameObject*> dartTrapWall;
 	std::vector<Lever*> lever;
@@ -27,7 +28,8 @@ private:
 	//Trigger things
 	std::vector<DirectX::BoundingBox> triggerBB;
 	std::vector<DirectX::BoundingBox> deathTrapBB;
-
+	std::vector<DirectX::BoundingBox*> scorpionBB;
+	
 	bool dartFly1 = false;
 	bool dartFly2 = false;
 	float dartPosition1 = 40.f;
@@ -39,6 +41,8 @@ private:
 	bool trapActive2 = true;
 	bool wonThePuzzle = false;
 	bool lifeTaken = false;
+
+	XMVECTOR scorpionBBPosition;
 
 	
 
