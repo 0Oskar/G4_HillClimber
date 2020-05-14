@@ -159,6 +159,7 @@
     <ClCompile Include="CheckpointHandler.cpp" />
     <ClCompile Include="DebugDraw.cpp" />
     <ClCompile Include="EdvinsRoom.cpp" />
+    <ClCompile Include="FindGemsRoom.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameState.cpp" />
     <ClCompile Include="HookHand.cpp" />
@@ -241,6 +242,7 @@
     <ClInclude Include="Timer.h" />
     <ClInclude Include="VertexBuffer.h" />
     <ClInclude Include="ViewLayer.h" />
+    <ClInclude Include="FindGemsRoom.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Importer\Importer.vcxproj">

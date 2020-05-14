@@ -11,6 +11,7 @@
 #include"PyramidRoom.h"
 #include"KevinsRoom.h"
 #include"EdvinsRoom.h"
+#include "FindGemsRoom.h"
 
 using namespace std;
 
