@@ -258,6 +258,7 @@ void EdvinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 	if (timer.timeElapsed() >= 1)
 	{
 		this->tempLever = false;
+		this->spinButtonIndex = -1;
 	}
 
 	if (guessPos <= 4)
@@ -273,16 +274,17 @@ void EdvinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 				timer.restart();
 				OutputDebugStringA("Button0");
 				this->rotateButton1 = true;
+				this->spinButtonIndex = 0;
 			}
 		}
-		if (this->rotateButton1 == true)
-		{
-			if (timer.timeElapsed() < 1)
-			{
-				this->buttons[0]->getMoveCompPtr()->rotation = this->buttons[0]->getMoveCompPtr()->rotation + DirectX::XMVectorSet(0, pMath::convertDegreesToRadians(10 * this->timer.timeElapsed()), 0, 10);
-				this->buttonRot += XMVectorSetY(this->buttonRot, pMath::convertDegreesToRadians(10 * this->timer.timeElapsed())); //FIX HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-			}
-		}
+		//if (this->rotateButton1 == true)
+		//{
+		//	if (timer.timeElapsed() < 1)
+		//	{
+		//		this->buttons[0]->getMoveCompPtr()->rotation = this->buttons[0]->getMoveCompPtr()->rotation + DirectX::XMVectorSet(0, pMath::convertDegreesToRadians(360 * dt), 0, 10);
+		//		this->buttonRot += XMVectorSetY(this->buttonRot, pMath::convertDegreesToRadians(360 * dt)); //FIX HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		//	}
+		//}
 
 		this->buttons[1]->collidesWithPlayer();			//Press button 1 ----------------------------------
 		if (this->buttons[1]->getCanUseLever() == true)
@@ -294,6 +296,7 @@ void EdvinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 				this->tempLever = true;
 				timer.restart();
 				OutputDebugStringA("Button1");
+				this->spinButtonIndex = 1;
 			}
 		}
 
@@ -307,6 +310,7 @@ void EdvinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 				this->tempLever = true;
 				timer.restart();
 				OutputDebugStringA("Button2");
+				this->spinButtonIndex = 2;
 			}
 		}
 
@@ -320,6 +324,7 @@ void EdvinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 				this->tempLever = true;
 				timer.restart();
 				OutputDebugStringA("Button3");
+				this->spinButtonIndex = 3;
 			}
 		}
 
@@ -333,8 +338,14 @@ void EdvinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 				this->tempLever = true;
 				timer.restart();
 				OutputDebugStringA("Button4");
+				this->spinButtonIndex = 4;
 			}
 		}
+	}
+
+	if (this->spinButtonIndex != -1)
+	{
+		this->buttons[this->spinButtonIndex]->getMoveCompPtr()->rotation += DirectX::XMVectorSet(0, pMath::convertDegreesToRadians(180) * dt, 0, 10);
 	}
 	
 	// -------- Other Stuff -------- //

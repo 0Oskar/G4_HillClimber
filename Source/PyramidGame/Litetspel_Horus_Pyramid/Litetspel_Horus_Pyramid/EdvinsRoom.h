@@ -10,7 +10,7 @@ private:
 	void createSceneObjects();
 	void onCompleted();
 	bool CorrectOrder(int arr1[], int arr2[]);
-
+	//void spinButton(GameObject* button);
 
 	std::vector<Lever*> wonPuzzleObject;
 
@@ -29,6 +29,7 @@ private:
 	bool rotateButton1 = false;
 	int guessPos;
 	int guessOrder[5];
+	int spinButtonIndex = -1;
 	float buttonsPosY = -6;
 	DirectX::XMVECTOR buttonRot = DirectX::XMVectorSet(0.f, pMath::convertDegreesToRadians(0), 0, 1);
 
@@ -47,9 +48,6 @@ private:
 	int nrOfFails;
 	bool wonThePuzzle = false;
 	bool lifeTaken = false;
-
-
-	float someVar;
 public:
 	EdvinsRoom();
 	~EdvinsRoom();
