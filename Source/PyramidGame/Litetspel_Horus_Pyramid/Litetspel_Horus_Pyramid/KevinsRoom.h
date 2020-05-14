@@ -14,6 +14,7 @@ private:
 	std::vector<DirectX::BoundingBox*> leverBB;
     
 	followingEnemy *scorpion;
+	followingEnemy *scorpion2;
 
 	std::vector<GameObject*> dartTrap;
 	std::vector<GameObject*> dartTrapWall;

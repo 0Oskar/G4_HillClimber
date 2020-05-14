@@ -208,14 +208,14 @@ void KevinsRoom::createSceneObjects()
 	this->m_gameObjects.back()->setScale({ 0.0f,0.0f,0.0f, 0.0f });
 
 	//Lever
-	vec = DirectX::XMVectorSet(-15.f, 5.f, -88.f + 140.f, 1.f);
+	vec = DirectX::XMVectorSet(-15.f, 5.f, -87.5f + 140.f, 1.f);
 	rotation = DirectX::XMVectorSet(0.f, pMath::convertDegreesToRadians(-90), pMath::convertDegreesToRadians(-270), 1.f);
 	this->addLeverToRoom(7, &m_models->at(7), vec, rotation, DirectX::XMFLOAT3(2.f, 2.f, 2.f));
 
 	lever.emplace_back(dynamic_cast<Lever*>(this->m_gameObjects.back()));
 
 	//Lever
-	vec = DirectX::XMVectorSet(7.5f, 5.f, -138.f + 140.f, 1.f);
+	vec = DirectX::XMVectorSet(7.5f, 4.f, -89.f + 140.f, 1.f);
 	rotation = DirectX::XMVectorSet(0.f, 0.f, pMath::convertDegreesToRadians(-270), 1.f);
 	this->addLeverToRoom(7, &m_models->at(7), vec, rotation, DirectX::XMFLOAT3(2.f, 2.f, 2.f));
 
@@ -261,6 +261,14 @@ void KevinsRoom::createSceneObjects()
 	this->scorpion->getMoveCompPtr()->position = XMVectorSet(-11.f, 2.9f, -100.f + 140.f, 1.f) + this->m_worldPosition;
 
 	this->m_gameObjects.emplace_back(this->scorpion);
+
+	////SCORPION
+
+	//this->scorpion2 = new followingEnemy();
+	//this->scorpion2->init(true, 16, this->m_wvpCBuffers->size() - 1, &m_models->at(16), m_player);
+	//this->scorpion2->getMoveCompPtr()->position = XMVectorSet(4.f, 2.9f, -100.f + 140.f, 1.f) + this->m_worldPosition;
+
+	//this->m_gameObjects.emplace_back(this->scorpion2);
 
 	//dartTrapWall
 	vec = DirectX::XMVectorSet(7.f, 30, -80 + 140.f, 1.f);

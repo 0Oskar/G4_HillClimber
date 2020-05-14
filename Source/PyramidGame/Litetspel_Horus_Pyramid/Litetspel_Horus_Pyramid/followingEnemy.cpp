@@ -62,11 +62,11 @@ void followingEnemy::followPlayer(float dt)
 	walkDirection = playerPosition -scorpionPos;
 	walkDirection = XMVector3Normalize(walkDirection);
 
-	//if (this-> reachedEdge == false)
-	//{
-		this->getMoveCompPtr()->position += (walkDirection * dt * 5);
+	if (this-> reachedEdge == false)
+	{
+		this->getMoveCompPtr()->position += (walkDirection * dt * 13);
 		//walkDirection = XMVectorSetX(walkDirection, 0.0f);
-	//}
+	}
 	
 
 	XMVECTOR newPlayerPosition = this->thePlayer->getMoveCompPtr()->position;
