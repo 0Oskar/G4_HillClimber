@@ -175,7 +175,7 @@ void GameState::loadModels()
 	//6- Lever Room aka Kevins room
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
-	this->m_models[6].loadVertexFromOBJ(m_device, m_dContext, L"Models/LeverRoom.obj", mat, L"Textures/sandTexture.png");
+	this->m_models[6].loadVertexFromOBJ(m_device, m_dContext, L"Models/LeverRoom.obj", mat, L"Textures/ColorTexture.png");
 
 	//7 - Lever
 	this->m_models.emplace_back();
@@ -226,7 +226,17 @@ void GameState::loadModels()
 	//16. Scorpion
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
-	this->m_models[16].loadVertexFromOBJ(m_device, m_dContext, L"Models/scorpionDone.obj", mat, L"Textures/platformTextureCracks1.png");
+	this->m_models[16].loadVertexFromOBJ(m_device, m_dContext, L"Models/scorpionDone.obj", mat, L"Textures/ColorTexture.png");
+
+	//17. dartWallObj
+	this->m_models.emplace_back();
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
+	this->m_models[17].loadVertexFromOBJ(m_device, m_dContext, L"Models/dartTrapWall.obj", mat, L"Textures/ColorTexture.png");
+
+	//18. dartWalldarts
+	this->m_models.emplace_back();
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
+	this->m_models[18].loadVertexFromOBJ(m_device, m_dContext, L"Models/dartTrapWallDart.obj", mat, L"Textures/ColorTexture.png");
 
 	}
 

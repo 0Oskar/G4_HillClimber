@@ -16,6 +16,7 @@ private:
 	followingEnemy *scorpion;
 
 	std::vector<GameObject*> dartTrap;
+	std::vector<GameObject*> dartTrapWall;
 	std::vector<Lever*> lever;
 	std::vector<Lever*> wonPuzzleObject;
 

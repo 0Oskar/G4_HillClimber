@@ -69,7 +69,6 @@ void followingEnemy::followPlayer(float dt)
 	//}
 	
 
-
 	XMVECTOR newPlayerPosition = this->thePlayer->getMoveCompPtr()->position;
 	XMVECTOR scorpionPosition = this->getMoveCompPtr()->position;
 
@@ -91,7 +90,6 @@ void followingEnemy::followPlayer(float dt)
 	currentRotationY += (rotationDifference) * dt * 5;
 
 	this->getMoveCompPtr()->rotation = XMVectorSet(0.0f, currentRotationY, 0.0f, 0.0f);
-
 
 
 	}

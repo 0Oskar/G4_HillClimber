@@ -38,7 +38,7 @@ void KevinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 
 	else
 	{
-		//sthis->scorpion->setReachedEdge(false);
+		this->scorpion->setReachedEdge(false);
 	}
 
 	for (int i = 0; i < deathTrapBB.size(); i++)
@@ -62,14 +62,14 @@ void KevinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 	{
 		if (dartPosition1 <= 0)
 		{
-			dartPosition1 = 40.f;
+			dartPosition1 = 80.f;
 			dartTrap[0]->getMoveCompPtr()->position = this->getRelativePosition(DirectX::XMVectorSet(10.f, 27, -80 + 140.f, 0.f));
 			dartFly1 = false;
 		}
 		else
 		{
-			dartTrap[0]->getMoveCompPtr()->position = dartTrap[0]->getMoveCompPtr()->position + DirectX::XMVectorSet(-40.f * dt, 0, 0, 0.f);
-			dartPosition1 -= 40.f * dt;
+			dartTrap[0]->getMoveCompPtr()->position = dartTrap[0]->getMoveCompPtr()->position + DirectX::XMVectorSet(-80.f * dt, 0, 0, 0.f);
+			dartPosition1 -= 80.f * dt;
 		}
 	}
 
@@ -77,14 +77,14 @@ void KevinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 	{
 		if (dartPosition2 <= 0)
 		{
-			dartPosition2 = 40.f;
-			dartTrap[1]->getMoveCompPtr()->position = this->getRelativePosition(DirectX::XMVectorSet(10.f, 27.f, -60.f + 140.f, 0.f));
+			dartPosition2 = 80.f;
+			dartTrap[1]->getMoveCompPtr()->position = this->getRelativePosition(DirectX::XMVectorSet(10.f, 27.f, -50.f + 140.f, 0.f));
 			dartFly2 = false;
 		}
 		else
 		{
-			dartTrap[1]->getMoveCompPtr()->position = dartTrap[1]->getMoveCompPtr()->position + DirectX::XMVectorSet(-40.f * dt, 0, 0, 0.f);
-			dartPosition2 -= 40.f * dt;
+			dartTrap[1]->getMoveCompPtr()->position = dartTrap[1]->getMoveCompPtr()->position + DirectX::XMVectorSet(-80.f * dt, 0, 0, 0.f);
+			dartPosition2 -= 80.f * dt;
 		}
 	}
 
@@ -165,7 +165,7 @@ void KevinsRoom::createBoundingBoxes()
 	triggerBB.back() = this->m_triggerBoundingBoxes.back();
 
 	triggerBB.emplace_back();
-	this->addTriggerBB({ -10.f, 27.f, -60.f + 140.f }, DirectX::XMFLOAT3(20.f, 10.f, 2.5f));
+	this->addTriggerBB({ -10.f, 27.f, -50.f + 140.f }, DirectX::XMFLOAT3(20.f, 10.f, 2.5f));
 	triggerBB.back() = this->m_triggerBoundingBoxes.back();
 
 	//scorpionEdge
@@ -231,14 +231,14 @@ void KevinsRoom::createSceneObjects()
 	wonPuzzleObject[0]->setScale(DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f));
 
 	vec = DirectX::XMVectorSet(10.f, 27, -80 + 140.f, 1.f);
-	this->addGameObjectToRoom(true, false, 2, 3, &m_models->at(3), vec, DirectX::XMVectorSet(.1f, .1f, .1f, 1), DirectX::XMFLOAT3(1.f, 1.f, 1.f));
+	this->addGameObjectToRoom(true, false, 2, 18, &m_models->at(18), vec, DirectX::XMVectorSet(1.f, 1.f, 1.f, 1), DirectX::XMFLOAT3(2.f, 5.f, 5.f));
 	this->m_gameObjects.back()->setDrawBB(true);
 	this->trapBB.emplace_back(this->m_gameObjects.back()->getAABBPtr());
 
 	this->dartTrap.emplace_back(this->m_gameObjects.back());
 
-	vec = DirectX::XMVectorSet(10.f, 27, -60 + 140.f, 1.f);
-	this->addGameObjectToRoom(true, false, 2, 3, &m_models->at(3), vec, DirectX::XMVectorSet(0.1f, 0.1f, 0.1f, 1), DirectX::XMFLOAT3(1.f, 1.f, 1.f));
+	vec = DirectX::XMVectorSet(10.f, 27, -50 + 140.f, 1.f);
+	this->addGameObjectToRoom(true, false, 2, 18, &m_models->at(18), vec, DirectX::XMVectorSet(1.f, 1.f, 1.f, 1), DirectX::XMFLOAT3(2.f, 5.f, 5.f));
 	this->m_gameObjects.back()->setDrawBB(true);
 	this->trapBB.emplace_back(this->m_gameObjects.back()->getAABBPtr());
 
@@ -261,6 +261,21 @@ void KevinsRoom::createSceneObjects()
 	this->scorpion->getMoveCompPtr()->position = XMVectorSet(-11.f, 2.9f, -100.f + 140.f, 1.f) + this->m_worldPosition;
 
 	this->m_gameObjects.emplace_back(this->scorpion);
+
+	//dartTrapWall
+	vec = DirectX::XMVectorSet(7.f, 30, -80 + 140.f, 1.f);
+	this->addGameObjectToRoom(false, false, 2, 17, &m_models->at(17), vec, DirectX::XMVectorSet(1, 1, 1, 1), DirectX::XMFLOAT3(1.f, 1.f, 1.f));
+
+	this->dartTrapWall.emplace_back(this->m_gameObjects.back());
+	this->m_gameObjects.back()->setRotation(XMVectorSet(0.0f, XMConvertToRadians(180.0f), 0.0f, 0.0f));
+
+	//dartTrapWall2
+
+	vec = DirectX::XMVectorSet(7.f, 30, -50 + 140.f, 1.f);
+	this->addGameObjectToRoom(false, false, 2, 17, &m_models->at(17), vec, DirectX::XMVectorSet(1, 1, 1, 1), DirectX::XMFLOAT3(1.f, 1.f, 1.f));
+
+	this->dartTrapWall.emplace_back(this->m_gameObjects.back());
+	this->m_gameObjects.back()->setRotation(XMVectorSet(0.0f, XMConvertToRadians(180.0f), 0.0f, 0.0f));
 
 }
 void KevinsRoom::onCompleted()
