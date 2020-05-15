@@ -24,6 +24,7 @@ void Platform::update(float dt)
 	{
 		if (m_shouldDestroy)
 		{
+			this->m_physicsComp->addForceDir(Direction::DOWN, dt);
 			this->m_physicsComp->updatePosition(dt);
 
 			if(this->m_pyramidBoundingBox != nullptr)
@@ -42,7 +43,7 @@ void Platform::update(float dt)
 				this->m_physicsComp->addGravity(dt);
 			}
 		}
-		int time = (int)this->m_destructionTimer.timeElapsed();
+		int time = (int)(this->m_destructionTimer.timeElapsed() * 2);
 		if (currentTime != time)
 		{
 			if (time < m_nrOfTextures)
@@ -88,6 +89,15 @@ void Platform::initAudioComponent(std::shared_ptr<DirectX::AudioEngine> audioEng
 	{
 		this->m_audioComponent->loadSound(m_crackSounds[i]);
 	}
+}
+
+void Platform::pushToLocation(XMVECTOR position)
+{
+	XMFLOAT3 pos;
+	XMStoreFloat3(&pos, position);
+	this->setPosition(position);
+	this->platformTriggerBox = this->getAABB();
+	this->platformTriggerBox.Center.y += 3;
 }
 
 void Platform::colidesWithPlayer()
