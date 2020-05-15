@@ -47,4 +47,5 @@ public:
 	void destroy();
 	void setPlayerBoundingBox(DirectX::BoundingBox* boundingBox);
 	void initAudioComponent(std::shared_ptr<DirectX::AudioEngine> audioEngine, MovementComponent* playerMovementComponent);
+	void pushToLocation(XMVECTOR position);
 };

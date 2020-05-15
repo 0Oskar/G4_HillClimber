@@ -84,7 +84,7 @@ void PyramidRoom::onEntrance()
 			yValue = XMVectorGetY(platformPtr->getPosition());
 			if (yValue > XMVectorGetY(currentPos) && yValue < XMVectorGetY(nextPos))
 			{
-				platformPtr->setPosition(platformPtr->getPosition() + platformPush);
+				platformPtr->pushToLocation(platformPtr->getPosition() + platformPush);
 			}
 		}
 	}
@@ -196,7 +196,7 @@ void PyramidRoom::createSceneObjects()
 			castToPlatform->setPlayerBoundingBox(this->m_player->getAABBPtr());
 			castToPlatform->initAudioComponent(audioEngine, m_player->getMoveCompPtr());
 			if (XMVectorGetY(castToPlatform->getPosition()) >= XMVectorGetY(this->m_checkpointHandler.getIndexPosAt(0).second))
-				castToPlatform->setPosition(castToPlatform->getPosition() - this->platformPush);
+				castToPlatform->pushToLocation(castToPlatform->getPosition() - this->platformPush);
 		}
 	}
 }
