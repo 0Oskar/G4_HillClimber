@@ -20,8 +20,8 @@ private:
 	const DirectX::XMVECTOR gunPosOffset = DirectX::XMVectorSet(1.5f, -0.7f, 2.3f, 0.f);
 	const DirectX::XMVECTOR hookPosOffsetConst = DirectX::XMVectorSet(0.f, 0.5f, 1.4f, 0.0f);
 	//const DirectX::XMVECTOR hookRotOffsetConst = DirectX::XMVectorSet(0.3f, 160.0f, 0.f, 0.f);
-	const DirectX::XMVECTOR hookRotOffsetConst = DirectX::XMVectorSet(pMath::convertDegreesToRadians(0), pMath::convertDegreesToRadians(167), 0.f, 0.f);
-	const DirectX::XMVECTOR gunRotOffset = DirectX::XMVectorSet(0.f, pMath::convertDegreesToRadians(167.3f), 0.f, 0.f);
+	const DirectX::XMVECTOR hookRotOffsetConst = DirectX::XMVectorSet(pMath::convertDegreesToRadians(0), 0.f, 0.f, 0.f);
+	const DirectX::XMVECTOR gunRotOffset = DirectX::XMVectorSet(0.f, 0.f, 0.f, 0.f);
 	DirectX::XMVECTOR hookPosOffset = DirectX::XMVectorSet(0.f, 0.f, 5.f, 0.f);
 
 

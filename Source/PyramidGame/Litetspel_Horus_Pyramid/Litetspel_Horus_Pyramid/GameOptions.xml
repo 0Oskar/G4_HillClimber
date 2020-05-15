@@ -5,5 +5,5 @@
   <Width>1200</Width>
   <Height>800</Height>
   <FOV>75</FOV>
-  <mouseSensitivity>0.06</mouseSensitivity>
+  <mouseSensitivity>0.02</mouseSensitivity>
 </GameOptions>

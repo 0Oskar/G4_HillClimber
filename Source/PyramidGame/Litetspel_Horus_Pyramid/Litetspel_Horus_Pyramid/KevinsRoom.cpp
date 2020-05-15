@@ -125,7 +125,7 @@ void KevinsRoom::portals()
 	DirectX::XMVECTOR rotation = DirectX::XMVectorSet(0.f, 0.f, 0.f, 1.f);
 
 	//Add portals here
-	vec = DirectX::XMVectorSet(-13.f, 3.f, -25.f, 1.f);
+	vec = DirectX::XMVectorSet(-13.f, 8.f, -30.f, 1.f);
 	XMVECTOR vecScale = DirectX::XMVectorSet(1.3f, 1.3f, -1.3f, 1.f);
 	this->addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 10, &m_models->at(10), vec, NormalScale, DirectX::XMFLOAT3(3.f, 8.f, 0.6f), 0, false);
 }

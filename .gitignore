@@ -338,3 +338,7 @@ ASALocalRun/
 # BeatPulse healthcheck temp database
 healthchecksdb
 /Assets/Skybox.ai
+/Lib/pugixml/out/build/x64-Debug/.cmake/api/v1/reply
+/Lib/pugixml/out/build/x64-Debug/CMakeFiles
+/Lib/pugixml/out/build/x64-Debug/.cmake/api/v1/query/client-MicrosoftVS
+/Lib/pugixml/out/build/x64-Debug

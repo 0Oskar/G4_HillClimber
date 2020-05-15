@@ -15,6 +15,13 @@ namespace ImporterBFF
 		model.vertexArr = new VertexBFF[model.mesh.nrOfVertex];
 
 		MeshFile.read((char*)model.vertexArr, model.mesh.nrOfVertex * sizeof(VertexBFF));
+		// Flippa X axeln och V flr uv
+		for (size_t i = 0; i < model.mesh.nrOfVertex; i++)
+		{
+			model.vertexArr[i].pos[2] *= -1;
+			model.vertexArr[i].norm[2] *= -1;
+			model.vertexArr[i].uv[1] *= -1;
+		}
 		MeshFile.read((char*)&model.material, sizeof(MaterialBFF));
 		MeshFile.read((char*)&model.camera, sizeof(CameraBFF));
 

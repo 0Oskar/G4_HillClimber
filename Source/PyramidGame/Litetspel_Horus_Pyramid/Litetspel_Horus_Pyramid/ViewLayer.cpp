@@ -266,21 +266,23 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 	// Ambient Light buffer
 	PS_LIGHT_BUFFER lightBuffer;
 	lightBuffer.lightColor = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
-	lightBuffer.strength = 0.2f;
+	lightBuffer.strength = 0.5f;
 	this->m_lightBuffer.m_data = lightBuffer;
 	this->m_lightBuffer.upd();
 
 	// Directional Light buffer
 	PS_DIR_BUFFER dirBuffer;
-	dirBuffer.lightColor = DirectX::XMFLOAT4(.8f, 0.8f, 0.8f, 1.f);
-	dirBuffer.lightDirection = DirectX::XMFLOAT4(0.0f, 1.0f, -0.7f, 0.0f);
+	dirBuffer.lightColor = DirectX::XMFLOAT4(.8f, .8f, .8f, 1.f);
+	dirBuffer.lightDirection = DirectX::XMFLOAT4(-0.8f, 1.0f, -0.7f, 0.0f);
 	this->m_dirLightBuffer.m_data = dirBuffer;
 	this->m_dirLightBuffer.upd();
 
 	// Pyramid Frustum for drawing only(Seperate from)
-	DirectX::XMFLOAT3 center(0.f, 52.f, 80.f);
-	DirectX::XMFLOAT3 extents(80.f, 105.f, 1.f);
-	DirectX::XMVECTOR quaternion = DirectX::XMQuaternionRotationRollPitchYaw(0.9f, 0.f, 0.f);
+	DirectX::XMFLOAT3 center(0.f, 62.f, 80.f);
+	DirectX::XMFLOAT3 extents(200.f, 205.f, 1.f);
+	float rotationX = XMConvertToRadians(45.f);
+	LPCWSTR test = std::to_wstring(rotationX).c_str();
+	DirectX::XMVECTOR quaternion = DirectX::XMQuaternionRotationRollPitchYaw(rotationX, 0.f, 0.f);
 	DirectX::XMFLOAT4 orientation;
 	DirectX::XMStoreFloat4(&orientation, quaternion);
 	this->m_pyramidOBB = DirectX::BoundingOrientedBox(
@@ -347,7 +349,7 @@ void ViewLayer::render()
 	this->m_deviceContext->OMSetRenderTargets(1, this->m_outputRTV.GetAddressOf(), this->m_depthStencilView.Get());
 	//this->m_deviceContext->OMSetBlendState(m_states->Opaque(), nullptr, 0xFFFFFFFF);
 	this->m_deviceContext->OMSetDepthStencilState(m_states->DepthDefault(), 0);
-	this->m_deviceContext->RSSetState(this->m_states->CullCounterClockwise());
+	this->m_deviceContext->RSSetState(this->m_states->CullClockwise());
 
 	// Set Shaders
 	this->m_shaders.setShaders();

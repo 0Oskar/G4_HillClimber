@@ -32,11 +32,11 @@ SamplerState samplerState : SAMPLER : register(s0);
 float4 main(PS_IN input) : SV_TARGET
 {
     float4 pixelColorFromTexture = objTexture.Sample(samplerState, input.inTextureCord);
-    float3 color = lightColor * strength;
+    float3 lightDiffuse = lightColor * strength;
     float diffBright = saturate(dot(input.normal, dirLightDirection.xyz));
     
-    color += dirLightColor.xyz * diffBright;
-    float3 fColor = diffuse.xyz * pixelColorFromTexture.xyz * color.xyz;
+    lightDiffuse += dirLightColor.xyz * diffBright;
+    float3 fColor = saturate(diffuse.xyz * pixelColorFromTexture.xyz * lightDiffuse.xyz);
     
     return float4(fColor.xyz, 1);
 }
