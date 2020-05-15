@@ -64,20 +64,15 @@ void KevinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 
 	if (scorpionBB->Intersects(this->m_player->getAABB()))
 	{
-
-		this->m_player->getMoveCompPtr()->position = this->getRelativePosition(DirectX::XMVectorSet(-20.f, 20.f, -165.f + 140.f, 1.f));
+		this->m_player->getMoveCompPtr()->position = this->getRelativePosition(DirectX::XMVectorSet(-12.f, 15.f, -155.f + 140.f, 1.f));
 	}
-	//else
-	//{
-	//	//this->scorpion->setReachedEdge(false);
-	//}
-
+	
 	for (int i = 0; i < deathTrapBB.size(); i++)
 	{
 		if (deathTrapBB[i].Intersects(this->m_player->getAABB()))
 		{
 			void looseLife();
-			this->m_player->getMoveCompPtr()->position = this->getRelativePosition(DirectX::XMVectorSet(-20.f, 20.f, -165.f + 140.f, 1.f));
+			this->m_player->getMoveCompPtr()->position = this->getRelativePosition(DirectX::XMVectorSet(-12.f, 20.f, -155.f + 140.f, 1.f));
 		}
 	}
 
@@ -86,7 +81,7 @@ void KevinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 		if (dartTrap[i]->getAABB().Intersects(this->m_player->getAABB()))
 		{
 			void looseLife();
-			this->m_player->getMoveCompPtr()->position = this->getRelativePosition(DirectX::XMVectorSet(-20.f, -50.f, -165.f + 140.f, 1.f));
+			this->m_player->getMoveCompPtr()->position = this->getRelativePosition(DirectX::XMVectorSet(-12.f, -20.f, -155.f + 140.f, 1.f));
 		}
 	}
 
@@ -355,7 +350,7 @@ void KevinsRoom::createSceneObjects()
 	this->m_gameObjects.back()->setRotation(XMVectorSet(0.0f, XMConvertToRadians(180.0f), 0.0f, 0.0f));
 
 	//ExpandingBridge
-	vec = DirectX::XMVectorSet(-14.f, 23.2f, -76.f + 140.f, 1.f);
+	vec = DirectX::XMVectorSet(-14.f, 24.2f, -76.f + 140.f, 1.f);
 	this->addGameObjectToRoom(true, true, 2, 19, &m_models->at(19), vec, DirectX::XMVectorSet(1, 1, 1, 1), DirectX::XMFLOAT3(5.f, 1.f, 10.f));
 	
 	this->expandingBridge.emplace_back(this->m_gameObjects.back());
