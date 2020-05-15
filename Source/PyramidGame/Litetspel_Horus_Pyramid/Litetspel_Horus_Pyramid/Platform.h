@@ -6,7 +6,7 @@
 class Platform : public GameObject
 {
 private:
-	const float m_destroyTime = 5.0f;
+	const float m_destroyTime = 2.5f;
 	const float m_removeTime = 2.0f;
 	int m_nrOfTextures = 5; 
 	std::wstring m_textures[5] = {
@@ -19,8 +19,8 @@ private:
 	int nrOfCracKSounds = 3;
 	std::wstring m_crackSounds[3] = {
 		L"Sounds/Cracks1.wav",
-		L"Sounds/Cracks1.wav",
-		L"Sounds/Cracks1.wav"
+		L"Sounds/Cracks2.wav",
+		L"Sounds/Cracks3.wav"
 	};
 
 	Timer m_destructionTimer;

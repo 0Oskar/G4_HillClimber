@@ -43,7 +43,7 @@ void Platform::update(float dt)
 				this->m_physicsComp->addGravity(dt);
 			}
 		}
-		int time = (int)this->m_destructionTimer.timeElapsed();
+		int time = (int)(this->m_destructionTimer.timeElapsed() * 2);
 		if (currentTime != time)
 		{
 			if (time < m_nrOfTextures)
