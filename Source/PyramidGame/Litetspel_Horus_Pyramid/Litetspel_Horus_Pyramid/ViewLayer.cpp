@@ -155,6 +155,8 @@ ViewLayer::ViewLayer()
 	this->m_viewMatrix = nullptr;
 	this->m_projectionMatrix = nullptr;
 	this->m_fps = 0;
+	this->m_gameTimePtr = nullptr;
+	this->m_timerString = "";
 }
 
 ViewLayer::~ViewLayer()
@@ -199,6 +201,16 @@ void ViewLayer::setBoundingBoxesFromActiveRoom(std::vector<BoundingBox>* bbFromR
 	this->m_boundingBoxesFromActiveRoom = bbFromRoom;
 }
 
+void ViewLayer::setOrientedBoundingBoxesFromActiveRoom(std::vector<BoundingOrientedBox>* bbFromRoom)
+{
+	this->m_orientedBoundingBoxesFromActiveRoom = bbFromRoom;
+}
+
+void ViewLayer::setTriggerBoxFromActiveRoom(std::vector<BoundingBox>* bbFromRoom)
+{
+	this->m_triggerBoxes = bbFromRoom;
+}
+
 void ViewLayer::setModelsFromState(std::vector<Model>* models)
 {
 	this->m_modelsFromState = models;
@@ -207,6 +219,11 @@ void ViewLayer::setModelsFromState(std::vector<Model>* models)
 void ViewLayer::setWvpCBufferFromState(std::vector< ConstBuffer<VS_CONSTANT_BUFFER> >* buffers)
 {
 	this->m_wvpCBufferFromState = buffers;
+}
+
+void ViewLayer::setGameTimePtr(Timer* gameTimer)
+{
+	this->m_gameTimePtr = gameTimer;
 }
 
 void ViewLayer::initConstantBuffer()
@@ -249,24 +266,25 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 	// Ambient Light buffer
 	PS_LIGHT_BUFFER lightBuffer;
 	lightBuffer.lightColor = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
-	lightBuffer.strength = 0.2f;
+	lightBuffer.strength = 0.5f;
 	this->m_lightBuffer.m_data = lightBuffer;
 	this->m_lightBuffer.upd();
 
 	// Directional Light buffer
 	PS_DIR_BUFFER dirBuffer;
-	dirBuffer.lightColor = DirectX::XMFLOAT4(.8f, 0.8f, 0.8f, 1.f);
-	dirBuffer.lightDirection = DirectX::XMFLOAT4(0.0f, 1.0f, -0.7f, 0.0f);
+	dirBuffer.lightColor = DirectX::XMFLOAT4(.8f, .8f, .8f, 1.f);
+	dirBuffer.lightDirection = DirectX::XMFLOAT4(-0.8f, 1.0f, -0.7f, 0.0f);
 	this->m_dirLightBuffer.m_data = dirBuffer;
 	this->m_dirLightBuffer.upd();
 
 	// Pyramid Frustum for drawing only(Seperate from)
-	DirectX::XMFLOAT3 center(0.f, 52.f, 80.f);
-	DirectX::XMFLOAT3 extents(80.f, 105.f, 1.f);
-	DirectX::XMVECTOR quaternion = DirectX::XMQuaternionRotationRollPitchYaw(0.9f, 0.f, 0.f);
+	DirectX::XMFLOAT3 center(0.f, 62.f, 80.f);
+	DirectX::XMFLOAT3 extents(200.f, 205.f, 1.f);
+	float rotationX = XMConvertToRadians(45.f);
+	LPCWSTR test = std::to_wstring(rotationX).c_str();
+	DirectX::XMVECTOR quaternion = DirectX::XMQuaternionRotationRollPitchYaw(rotationX, 0.f, 0.f);
 	DirectX::XMFLOAT4 orientation;
 	DirectX::XMStoreFloat4(&orientation, quaternion);
-
 	this->m_pyramidOBB = DirectX::BoundingOrientedBox(
 		center,
 		extents,
@@ -331,7 +349,7 @@ void ViewLayer::render()
 	this->m_deviceContext->OMSetRenderTargets(1, this->m_outputRTV.GetAddressOf(), this->m_depthStencilView.Get());
 	//this->m_deviceContext->OMSetBlendState(m_states->Opaque(), nullptr, 0xFFFFFFFF);
 	this->m_deviceContext->OMSetDepthStencilState(m_states->DepthDefault(), 0);
-	this->m_deviceContext->RSSetState(this->m_states->CullCounterClockwise());
+	this->m_deviceContext->RSSetState(this->m_states->CullClockwise());
 
 	// Set Shaders
 	this->m_shaders.setShaders();
@@ -411,11 +429,25 @@ void ViewLayer::render()
 				}
 			}
 		}
+		if (this->m_orientedBoundingBoxesFromActiveRoom != nullptr)
+		{
+			for (size_t i = 0; i < this->m_orientedBoundingBoxesFromActiveRoom->size(); i++)
+			{
+				DX::Draw(m_batch.get(), this->m_orientedBoundingBoxesFromActiveRoom->at(i), DirectX::Colors::Red);
+			}
+		}
 		if (this->m_boundingBoxesFromActiveRoom != nullptr)
 		{
 			for (size_t i = 0; i < this->m_boundingBoxesFromActiveRoom->size(); i++)
 			{
 				DX::Draw(m_batch.get(), this->m_boundingBoxesFromActiveRoom->at(i), DirectX::Colors::Red);
+			}
+		}
+		if (this->m_triggerBoxes != nullptr)
+		{
+			for (size_t i = 0; i < this->m_triggerBoxes->size(); i++)
+			{
+				DX::Draw(m_batch.get(), this->m_triggerBoxes->at(i), DirectX::Colors::DarkTurquoise);
 			}
 		}
 		DX::Draw(m_batch.get(), this->m_pyramidOBB, DirectX::Colors::Blue);
@@ -433,10 +465,14 @@ void ViewLayer::render()
 		this->m_fps = 0;
 	}
 
+	m_timerString = "Time: ";
+
 	// Draw Sprites
 	this->m_spriteBatch->Begin();
 	this->m_spriteBatch->Draw(this->m_crossHairSRV, this->m_crosshairPosition);
-	this->m_spriteFont->DrawString(this->m_spriteBatch.get(), this->m_fpsString.c_str(), DirectX::XMFLOAT2(0, 0), DirectX::Colors::White, 0.f, DirectX::XMFLOAT2(0.f, 0.f));
+	this->m_spriteFont->DrawString(this->m_spriteBatch.get(), this->m_fpsString.c_str(), DirectX::XMFLOAT2((float)this->m_options->width - 100.f, 0), DirectX::Colors::White, 0.f, DirectX::XMFLOAT2(0.f, 0.f));
+	this->m_spriteFont->DrawString(this->m_spriteBatch.get(), this->m_timerString.c_str(), DirectX::XMFLOAT2(10.f, 0.f), this->m_gameTimePtr->isActive() ? DirectX::Colors::White : DirectX::Colors::Green, 0.f, DirectX::XMFLOAT2(0.f, 0.f));
+	this->m_spriteFont->DrawString(this->m_spriteBatch.get(), std::to_string((int)this->m_gameTimePtr->timeElapsed()).c_str(), DirectX::XMFLOAT2(65.f, 0.f), DirectX::Colors::Green, 0.f, DirectX::XMFLOAT2(0.f, 0.f));
 	this->m_spriteBatch->End();
 	
 	// Swap Frames

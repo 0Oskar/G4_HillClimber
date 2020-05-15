@@ -57,6 +57,8 @@ private:
 	std::vector<GameObject*>* m_gameObjectsFromState;
 	std::vector<GameObject*>* m_gameObjectsFromActiveRoom;
 	std::vector<BoundingBox>* m_boundingBoxesFromActiveRoom;
+	std::vector<BoundingBox>* m_triggerBoxes;
+	std::vector<BoundingOrientedBox>* m_orientedBoundingBoxesFromActiveRoom;
 	std::vector<Model>* m_modelsFromState;
 	std::vector< ConstBuffer<VS_CONSTANT_BUFFER> >* m_wvpCBufferFromState;
 	DirectX::BoundingOrientedBox m_pyramidOBB;
@@ -71,7 +73,9 @@ private:
 	Timer m_timer;
 	std::unique_ptr<DirectX::SpriteFont> m_spriteFont;
 	std::string m_fpsString;
+	std::string m_timerString;
 	int m_fps;
+	Timer* m_gameTimePtr;
 
 	// Initialization Functions
 	void initDeviceAndSwapChain();
@@ -97,9 +101,11 @@ public:
 	void setgameObjectsFromState(std::vector<GameObject*>* gameObjectsFromState);
 	void setgameObjectsFromActiveRoom(std::vector<GameObject*>* gameObjectsFromState);
 	void setBoundingBoxesFromActiveRoom(std::vector<BoundingBox>* bbFromRoom);
+	void setOrientedBoundingBoxesFromActiveRoom(std::vector<BoundingOrientedBox>* bbFromRoom);
+	void setTriggerBoxFromActiveRoom(std::vector<BoundingBox>* bbFromRoom);
 	void setModelsFromState(std::vector<Model>* models);
 	void setWvpCBufferFromState(std::vector< ConstBuffer<VS_CONSTANT_BUFFER> >* models);
-
+	void setGameTimePtr(Timer* gameTimer);
 	// Initialization
 	void initialize(HWND window, GameOptions* options);
 

@@ -156,6 +156,7 @@
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Chain.cpp" />
+    <ClCompile Include="CheckpointHandler.cpp" />
     <ClCompile Include="DebugDraw.cpp" />
     <ClCompile Include="EdvinsRoom.cpp" />
     <ClCompile Include="followingEnemy.cpp" />
@@ -190,6 +191,7 @@
     <ClCompile Include="TemplateRoom.cpp" />
     <ClCompile Include="Shaders.cpp" />
     <ClCompile Include="Timer.cpp" />
+    <ClCompile Include="TristansRoom.cpp" />
     <ClCompile Include="ViewLayer.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -211,6 +213,7 @@
     <ClInclude Include="BoundingPrim.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Chain.h" />
+    <ClInclude Include="CheckpointHandler.h" />
     <ClInclude Include="ConstantBuffer.h" />
     <ClInclude Include="DebugDraw.h" />
     <ClInclude Include="followingEnemy.h" />
@@ -239,6 +242,7 @@
     <ClInclude Include="Shaders.h" />
     <ClInclude Include="TemplateRoom.h" />
     <ClInclude Include="Timer.h" />
+    <ClInclude Include="TristansRoom.h" />
     <ClInclude Include="VertexBuffer.h" />
     <ClInclude Include="ViewLayer.h" />
   </ItemGroup>

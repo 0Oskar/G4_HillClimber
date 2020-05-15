@@ -120,18 +120,21 @@ void Model::loadVertexFromOBJ(ID3D11Device* device, ID3D11DeviceContext* dContex
 		else if (prefix == "v")
 		{
 			sStream >> tempF3.x >> tempF3.y >> tempF3.z;
+			tempF3.z *= -1;
 			vertexPositions.push_back(tempF3);
 		}
 		else if (prefix == "vt")
 		{
 			hasTexcoords = true;
 			sStream >> tempF2.x >> tempF2.y;
+			tempF2.y *= -1;
 			vertexTexcoords.push_back(tempF2);
 		}
 		else if (prefix == "vn")
 		{
 			hasNormals = true;
 			sStream >> tempF3.x >> tempF3.y >> tempF3.z;
+			tempF3.z *= -1;
 			vertexNormals.push_back(tempF3);
 		}
 		else if (prefix == "f")

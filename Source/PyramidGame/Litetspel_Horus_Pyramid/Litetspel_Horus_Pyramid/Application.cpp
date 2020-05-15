@@ -61,6 +61,9 @@ bool Application::initApplication(HINSTANCE hInstance, LPWSTR lpCmdLine, HWND hW
 	this->m_viewLayerPtr->setgameObjectsFromState(this->m_gameState.getGameObjectsPtr());
 	this->m_viewLayerPtr->setgameObjectsFromActiveRoom(this->m_gameState.getActiveRoomGameObjectsPtr());
 	this->m_viewLayerPtr->setBoundingBoxesFromActiveRoom(this->m_gameState.getActiveRoomBoundingBoxsPtr());
+	this->m_viewLayerPtr->setOrientedBoundingBoxesFromActiveRoom(this->m_gameState.getActiveRoomOrientedBoundingBoxPtr());
+	this->m_viewLayerPtr->setTriggerBoxFromActiveRoom(this->m_gameState.getActiveRoomTriggerBox());
+	this->m_viewLayerPtr->setGameTimePtr(this->m_gameState.getGameTimerPtr());
 	this->m_viewLayerPtr->setWvpCBufferFromState(this->m_gameState.getWvpCBuffersPtr());
 	this->m_timer.start();
 
@@ -204,7 +207,7 @@ void Application::applicationLoop()
 
 			this->GameStateChecks();
 			// Update Layers
-			this->m_gameState.update(this->m_input.getKeyboard(), this->m_input.getMouseEvent(), this->m_input.getMouse(), this->m_deltaTime);
+			this->m_gameState.update(this->m_input.getKeyboard(), MouseEvent(), this->m_input.getMouse(), this->m_deltaTime);
 			
 			this->m_input.readBuffers();
 			this->audioUpdate();
@@ -222,6 +225,8 @@ void Application::GameStateChecks()
 	{
 		this->m_viewLayerPtr->setgameObjectsFromActiveRoom(this->m_gameState.getActiveRoomGameObjectsPtr());
 		this->m_viewLayerPtr->setBoundingBoxesFromActiveRoom(this->m_gameState.getActiveRoomBoundingBoxsPtr());
+		this->m_viewLayerPtr->setOrientedBoundingBoxesFromActiveRoom(this->m_gameState.getActiveRoomOrientedBoundingBoxPtr());
+		this->m_viewLayerPtr->setTriggerBoxFromActiveRoom(this->m_gameState.getActiveRoomTriggerBox());
 		this->m_gameState.m_activeRoomChanged = false;
 		this->m_gameState.roomChangeInit();
 	}

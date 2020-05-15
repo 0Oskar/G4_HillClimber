@@ -45,6 +45,7 @@ public:
 	DirectX::XMMATRIX getTranslationMatrix() const;
 	int getModelIndex() const;
 	int getWvpCBufferIndex() const;
+	void setWvpCBufferIndex(int index);
 	MovementComponent* getMoveCompPtr();
 	PhysicsComponent* getphysicsCompPtr();
 	DirectX::BoundingBox getAABB();
@@ -57,6 +58,7 @@ public:
 	// Setters
 	void setDrawBB(bool drawable);
 	void setVisibility(bool visible);
+	void setIfCollidable(bool collidable);
 	void setRotation(DirectX::XMVECTOR newRotation);
 	void setScale(DirectX::XMVECTOR newScale);
 	void setPosition(DirectX::XMVECTOR newPosition);

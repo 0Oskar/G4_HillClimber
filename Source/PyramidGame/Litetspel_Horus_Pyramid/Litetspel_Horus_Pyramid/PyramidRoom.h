@@ -1,5 +1,6 @@
 #pragma once
 #include"Room.h"
+#include"CheckpointHandler.h"
 
 class PyramidRoom : public Room
 {
@@ -9,6 +10,10 @@ private:
 	void onCompleted();
 
 	DirectX::BoundingOrientedBox m_pyramidOOB;
+	CheckpointHandler m_checkpointHandler;
+	const XMVECTOR platformPush = XMVectorSet(0, 0, -10, 0 );
+	std::vector<DirectX::BoundingBox*> platformBB;
+	int completedRooms;
 public:
 	PyramidRoom();
 	~PyramidRoom();
@@ -16,4 +21,5 @@ public:
 	void onEntrance();
 	void init(DirectX::BoundingOrientedBox* pyramidBB);
 	void portals();
+	std::vector<DirectX::BoundingBox*> getBBForHook();
 };

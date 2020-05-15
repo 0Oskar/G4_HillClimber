@@ -3,6 +3,7 @@
 #include "Camera.h"
 #include "Model.h"
 #include "Platform.h"
+#include "CheckpointHandler.h"
 #include "ViewLayer.h"
 #include "Lever.h"
 #include "Portal.h"
@@ -10,6 +11,7 @@
 #include"PyramidRoom.h"
 #include"KevinsRoom.h"
 #include"EdvinsRoom.h"
+#include "TristansRoom.h"
 
 using namespace std;
 
@@ -18,17 +20,18 @@ class GameState
 private:
 	Player m_player;
 	Camera m_camera;
+	Timer m_gameTime;
 	DirectX::BoundingOrientedBox m_pyramidOBB;
 	
 	ID3D11Device* m_device;
 	ID3D11DeviceContext* m_dContext;
 	Room* m_activeRoom;
-
-
+  
 	std::vector<Model> m_models;
 	std::vector<GameObject*> m_gameObjects;
 	std::vector<ConstBuffer<VS_CONSTANT_BUFFER>> m_wvpCBuffers;
 	std::vector<Room*> m_rooms;
+
 	std::vector<DirectX::BoundingBox*> platformBB;
 	std::vector<GameObject*>* m_chainGObjects;
 	
@@ -44,6 +47,8 @@ public:
 	std::vector<GameObject*>* getGameObjectsPtr();
 	std::vector<GameObject*>* getActiveRoomGameObjectsPtr();
 	std::vector<BoundingBox>* getActiveRoomBoundingBoxsPtr();
+	std::vector<BoundingOrientedBox>* getActiveRoomOrientedBoundingBoxPtr();
+	std::vector<BoundingBox>* getActiveRoomTriggerBox();
 	std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* getWvpCBuffersPtr();
 	void addGameObjectToWorld(bool dynamic, bool colide, float weight, int mdlIndx, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR scale3D, DirectX::XMFLOAT3 boundingBoxSize, DirectX::XMFLOAT3 acceleration, DirectX::XMFLOAT3 deceleration);
 	void addPlatformToWorld(int mdlIndex, DirectX::BoundingOrientedBox* pyramid, Model* mdl, DirectX::XMVECTOR position, DirectX::XMFLOAT3 platformBoundingBox);
@@ -57,4 +62,5 @@ public:
 
 	bool m_activeRoomChanged;
 	void roomChangeInit();
+	Timer* getGameTimerPtr();
 };

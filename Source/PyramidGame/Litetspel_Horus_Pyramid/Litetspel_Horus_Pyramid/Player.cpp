@@ -6,7 +6,7 @@ Player::Player() : GameObject()
 	this->m_lastFly = false;
 	this->m_QAmode = true;
 	this->m_lastOnGroundYPos = -1.f;
-	this->m_failThreshold = 11.f;
+	this->m_failThreshold = 10.f;
 }
 
 Player::~Player() {}
@@ -21,13 +21,13 @@ void Player::initialize(int modelIndex, int wvpCBufferIndex, float mass, DirectX
 	this->m_modelIndex = modelIndex;
 	this->m_wvpCBufferIndex = wvpCBufferIndex;
 
+	XMFLOAT3 boundingbox(1.f, 4.f, 1.f);
 	this->m_movementComp = new MovementComponent();
+	this->m_spawnPosition = XMVectorSet(0.f, boundingbox.y, 0.f, 1.f);
 	this->m_physicsComp = new PhysicsComponent();
 	this->m_physicsComp->initialize(this->m_movementComp, mass, acceleration, deceleration);
-	this->m_physicsComp->setBoundingBox(this->m_movementComp->getPositionF3(), DirectX::XMFLOAT3(1.f, 4.f, 1.f));
-
+	this->m_physicsComp->setBoundingBox(this->m_movementComp->getPositionF3(), boundingbox);
 	this->m_hookHand.init(gObj, m_movementComp, &m_collidableAABBoxes, hookGun, chainGObjects, audioEngine, platformBB);
-
 }
 
 void Player::updateHookHandBB(std::vector<DirectX::BoundingBox*> platformBB)
@@ -47,10 +47,33 @@ void Player::addAABBFromVector(std::vector<DirectX::BoundingBox>* aabb)
 	}
 }
 
+void Player::addOrientedBBFromVector(std::vector<DirectX::BoundingOrientedBox>* obb)
+{
+	for (int i = 0; i < obb->size(); i++)
+	{
+		this->m_collidableOrientedBoxes.push_back(&obb->at(i));
+	}
+}
 
 void Player::addPyramidOBB(DirectX::BoundingOrientedBox* obb)
 {
 	this->m_pyramidOBB = *obb;
+}
+
+void Player::setSpawnPosition(XMVECTOR position)
+{
+	this->m_spawnPosition = position + XMVectorSet(0.f, this->getAABB().Extents.y, 0.f, 0.f);
+}
+
+void Player::respawn()
+{
+	this->m_movementComp->position = this->m_spawnPosition;
+	this->m_lastOnGroundYPos = XMVectorGetY(this->m_spawnPosition);
+	this->m_movementComp->rotation = { 0.f, 0.f, 0.f, 1.f };
+	this->m_physicsComp->setVelocity({ 0.f, 0.f, 0.f });
+	this->m_physicsComp->setIsJumping(false);
+	this->m_physicsComp->setIsFalling(true);
+	this->m_lastFly = false;
 }
 
 bool Player::getinUse()
@@ -78,11 +101,6 @@ void Player::update(Keyboard* keyboard, Mouse* mouse, float dt)
 		normalziedAndDT = DirectX::XMVectorScale(normalziedAndDT, 100);
 		this->m_movementComp->position = (DirectX::XMVectorAdd(this->m_movementComp->position, normalziedAndDT));
 	}
-	//else if (lastFly)
-	//{
-	//	this->m_physicsComp->setVelocity(DirectX::XMFLOAT3(0, 0, 0));
-	//	this->lastFly = false;
-	//}
 	else
 	{
 		// Gravity
@@ -101,76 +119,32 @@ void Player::update(Keyboard* keyboard, Mouse* mouse, float dt)
 		if (keyboard->isKeyPressed('D'))
 			this->m_physicsComp->addForceDir(Direction::RIGHT, dt);
 
-
-		if (keyboard->isKeyPressed(' '))
-
-		{
-			this->m_physicsComp->jump(20.f, dt);
-			/*ImporterBFF::Manager* myManager = &ImporterBFF::Manager::GetInstance();
-			ModelBFF myModel = myManager->LoadModel("biFile.bff");
-
-			//std::string myString = "\n vtx:" + std::to_string(myModel.mesh.nrOfVertex) + "\n";
-			for (int i = 0; i < myModel.mesh.nrOfVertex; i++)
-			{
-				std::string vtxNr = "\nvtx:		" + std::to_string(i) + "\n";
-
-				std:: string vtxPos = "Pos:		" + (std::to_string(myModel.vertexArr[i].pos[0]) + " " +
-					(std::to_string(myModel.vertexArr[i].pos[1])) + " " +
-						(std::to_string(myModel.vertexArr[i].pos[2]))) + "\n";
-
-				std::string uv = "uv:			" + (std::to_string(myModel.vertexArr[i].uv[0]) + " " +
-					(std::to_string(myModel.vertexArr[i].uv[1]))) + "\n";
-
-				std::string normal = "Normal:		" + (std::to_string(myModel.vertexArr[i].norm[0]) + " " +
-					(std::to_string(myModel.vertexArr[i].norm[1])) + " " +
-					(std::to_string(myModel.vertexArr[i].norm[2]))) + "\n";
-
-				std::string biNormal = "Binormal:	" + (std::to_string(myModel.vertexArr[i].biNorm[0]) + " " +
-					(std::to_string(myModel.vertexArr[i].biNorm[1])) + " " +
-					(std::to_string(myModel.vertexArr[i].biNorm[2]))) + "\n";
-
-				std::string tangent = "Tan:		" + (std::to_string(myModel.vertexArr[i].tan[0]) + " " +
-					(std::to_string(myModel.vertexArr[i].tan[1])) + " " +
-					(std::to_string(myModel.vertexArr[i].tan[2]))) + "\n";
-
-				OutputDebugStringA((vtxNr + vtxPos + uv + normal + biNormal + tangent).c_str());
-			}
-			OutputDebugStringA(std::to_string(myModel.material.Diffuse[1]).c_str());*/ // <----------------------------------------------------------------------------
-		}
-
+		if (keyboard->isKeyPressed(' ')) // Space
+			this->m_physicsComp->jump(3.f, dt);
 
 		if (keyboard->isKeyPressed((unsigned char)16)) // Shift
 			flyDown(dt);
-
 
 		if (keyboard->isKeyPressed('E'))
 		{
 			this->inUse = true;
 		}
-
 		else
 		{
 			this->inUse = false;
 		}
-			
 
 		// Update lastGroundPos
-		if (this->m_lastFly || !this->m_physicsComp->getIsJumping())
+		if (this->m_lastFly || !this->m_physicsComp->getIsFalling())
 		{
 			this->m_lastOnGroundYPos = XMVectorGetY(this->m_movementComp->position);
+			//OutputDebugString(L"lastOnGroundYPos updated!\n");
 		}
 		this->m_lastFly = false;
 
 		// Fail State
 		if (!this->m_QAmode && this->m_lastOnGroundYPos != -1 && this->m_lastOnGroundYPos > XMVectorGetY(this->m_movementComp->position) + this->m_failThreshold)
-		{
-			this->m_movementComp->position = {0.f, 5.f, 0.f, 1.f};
-			this->m_movementComp->rotation = {0.f, 0.f, 0.f, 1.f};
-			this->m_physicsComp->setVelocity({ 0.f, 0.f, 0.f });
-			this->m_physicsComp->setIsJumping(false);
-			this->m_lastFly = false;
-			OutputDebugString(L"fail state triggered!\n");
-		}
+			this->respawn();
 
 
 		// For Debugging purposes
@@ -181,7 +155,7 @@ void Player::update(Keyboard* keyboard, Mouse* mouse, float dt)
 		}
 
 		// Handle Collisions
-		this->m_physicsComp->handleCollision(this->m_collidableAABBoxes, this->m_pyramidOBB, dt);
+		this->m_physicsComp->handleCollision(this->m_collidableAABBoxes, this->m_pyramidOBB, dt, this->m_collidableOrientedBoxes);
 	}
 
 	if (keyboard->isKeyPressed('Q') || mouse->isRDown())

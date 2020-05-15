@@ -87,8 +87,7 @@ void HookHand::updateHandModel()
 	rot.x = -rot.x;
 
 	DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationRollPitchYawFromVector(this->m_playerMovement->rotation);
-	DirectX::XMVECTOR rotOff;
-	rotOff = this->invertX(this->m_playerMovement->rotation);
+	DirectX::XMVECTOR rotOff = this->m_playerMovement->rotation;
 
 	DirectX::XMVECTOR gunPosOffsetRotated = XMVector3TransformCoord(this->gunPosOffset, rotationMatrix);
 	this->m_gunGameObject->getMoveCompPtr()->rotation = DirectX::XMVectorAdd(rotOff, gunRotOffset);
@@ -175,7 +174,7 @@ void HookHand::update(float dt)
 				this->m_hookState = hookState::idle;
 			}
 		}
-		this->m_hookGameObject->getMoveCompPtr()->rotation = DirectX::XMVectorAdd(this->invertX(this->m_playerMovement->rotation), this->hookRotOffsetConst);;
+		this->m_hookGameObject->getMoveCompPtr()->rotation = this->m_playerMovement->rotation + this->hookRotOffsetConst;
 		this->m_hookGameObject->getMoveCompPtr()->position = DirectX::XMVectorAdd(this->m_gunGameObject->getMoveCompPtr()->position, hookPosOffset);
 	}
 

@@ -60,7 +60,7 @@ int main(int argc, char** argv)
 {
     //myFile.writeToFile("test line from main");
 
-    BiReader myFile("../biFile.bff");
+    BiReader myFile("../TristanPuzzleRoom.fbx");
     myFile.printToConsole();
 
     FbxManager* lSdkManager = NULL;
@@ -82,7 +82,7 @@ int main(int argc, char** argv)
 	if( lFilePath.IsEmpty() )
 	{
 
-        lFilePath = "../Brick_05.fbx";
+        lFilePath = "../TristansRoom.fbx";
 		lResult = LoadScene(lSdkManager, lScene, lFilePath.Buffer());
 	}
 	else
