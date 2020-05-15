@@ -8,9 +8,10 @@ class EdvinsRoom : public Room
 private:
 	void createBoundingBoxes();
 	void createSceneObjects();
-	void onCompleted();
+	void onWin();
+	void onFail();
 	bool CorrectOrder(int arr1[], int arr2[]);
-
+	//void spinButton(GameObject* button);
 
 	std::vector<Lever*> wonPuzzleObject;
 
@@ -26,9 +27,9 @@ private:
 	std::vector<Lever*> buttons;
 	Timer timer;
 	bool moveButtons = false;
-	bool rotateButton1 = false;
 	int guessPos;
 	int guessOrder[5];
+	int spinButtonIndex = -1;
 	float buttonsPosY = -6;
 	DirectX::XMVECTOR buttonRot = DirectX::XMVectorSet(0.f, pMath::convertDegreesToRadians(0), 0, 1);
 
@@ -39,17 +40,17 @@ private:
 	//Lever
 	std::vector<DirectX::BoundingBox*> leverBB;
 	Lever* lever;
+	GameObject* leverHandle;
 	Timer leverTimer;
 	bool canPullLever = true;
+	bool moveLever = false;
 	bool tempLever = false;
 	
 	//Other
 	int nrOfFails;
 	bool wonThePuzzle = false;
 	bool lifeTaken = false;
-
-
-	float someVar;
+	Portal* roomPortal;
 public:
 	EdvinsRoom();
 	~EdvinsRoom();
