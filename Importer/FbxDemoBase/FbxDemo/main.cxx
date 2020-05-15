@@ -82,7 +82,7 @@ int main(int argc, char** argv)
 	if( lFilePath.IsEmpty() )
 	{
 
-        lFilePath = "../TristansRoom.fbx";
+        lFilePath = "../CamLightAnim.fbx";
 		lResult = LoadScene(lSdkManager, lScene, lFilePath.Buffer());
 	}
 	else

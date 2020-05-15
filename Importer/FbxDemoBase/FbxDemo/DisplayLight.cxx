@@ -80,6 +80,7 @@ void DisplayDefaultAnimationValues(FbxLight* pLight)
     DisplayDouble("        Default Intensity: ", pLight->Intensity.Get());
     lightData.intencity = pLight->Intensity.Get();
     DisplayDouble("        Default Outer Angle: ", pLight->OuterAngle.Get());
+    lightData.dir = pLight->OuterAngle.Get();
     DisplayDouble("        Default Fog: ", pLight->Fog.Get());
 }
 
