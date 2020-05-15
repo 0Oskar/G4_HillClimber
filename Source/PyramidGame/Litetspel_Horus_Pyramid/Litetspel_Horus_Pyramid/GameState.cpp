@@ -192,12 +192,12 @@ void GameState::loadModels()
 	//6- Lever Room aka Kevins room
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
-	this->m_models[6].loadVertexFromOBJ(m_device, m_dContext, L"Models/LeverRoom.obj", mat, L"Textures/sandTexture.png");
+	this->m_models[6].loadVertexFromOBJ(m_device, m_dContext, L"Models/LeverRoom2.obj", mat, L"Textures/ColorTexture.png");
 
 	//7 - Lever
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
-	this->m_models[7].loadVertexFromOBJ(m_device, m_dContext, L"Models/Lever.obj", mat, L"Textures/platformTextureCracks1.png");
+	this->m_models[7].loadVertexFromOBJ(m_device, m_dContext, L"Models/Lever.obj", mat, L"Textures/ColorTexture.png");
 
 	//8. PuzzleRoom (Edvin)
 	this->m_models.emplace_back(); //add empty model
@@ -237,8 +237,8 @@ void GameState::loadModels()
 	//15. Brick_5 (Edvin)
 	this->m_models.emplace_back(); //add empty model
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); //reset material
-	this->m_models[15].initializeModelBff(m_device, m_dContext, "Brick_5.bff", mat, L"Textures/Hyroglajf_4.png"); //load model
-
+	this->m_models[15].initializeModelBff(m_device, m_dContext, "Brick_5.bff", mat, L"Textures/BirdHyroglajf.png"); //load model
+  
 	//16. Leaver Base (Edvin)
 	this->m_models.emplace_back(); //add empty model
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); //reset material
@@ -273,7 +273,29 @@ void GameState::loadModels()
 	this->m_models.emplace_back(); //add empty model
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); //reset material
 	this->m_models[22].initializeModelBff(m_device, m_dContext, "PuzzleRoomGateExtended.bff", mat, L"Textures/ColorTexture.png"); //load model
+  
+  //23. Scorpion
+	this->m_models.emplace_back();
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
+	this->m_models[23].loadVertexFromOBJ(m_device, m_dContext, L"Models/scorpionDone.obj", mat, L"Textures/ColorTexture.png");
+
+	//24. dartWallObj
+	this->m_models.emplace_back();
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
+	this->m_models[24].loadVertexFromOBJ(m_device, m_dContext, L"Models/dartTrapWall.obj", mat, L"Textures/ColorTexture.png");
+
+	//25. dartWalldarts
+	this->m_models.emplace_back();
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
+	this->m_models[25].loadVertexFromOBJ(m_device, m_dContext, L"Models/dartTrapWallDart.obj", mat, L"Textures/ColorTexture.png");
+
+	//26. expandingBridge
+	this->m_models.emplace_back();
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
+	this->m_models[26].loadVertexFromOBJ(m_device, m_dContext, L"Models/expandingBridge.obj", mat, L"Textures/ColorTexture.png");
+
 }
+
 
 void GameState::roomChangeInit()
 {
@@ -388,7 +410,9 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	//Kevin Room [2]
 	this->m_rooms.emplace_back(new KevinsRoom());
 	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(100, 2, 100, 1), audioEngine, &this->m_gameTime);
+
 	dynamic_cast<KevinsRoom*>(this->m_rooms.back())->init();
+	m_activeRoom = m_rooms.back();
 
 	//Edvin Room [3]
 	this->m_rooms.emplace_back(new EdvinsRoom());

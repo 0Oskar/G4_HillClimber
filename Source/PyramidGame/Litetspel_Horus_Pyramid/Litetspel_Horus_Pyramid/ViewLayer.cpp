@@ -451,6 +451,8 @@ void ViewLayer::render()
 			}
 		}
 		DX::Draw(m_batch.get(), this->m_pyramidOBB, DirectX::Colors::Blue);
+
+
 		m_batch->End();
 	}
 
