@@ -263,7 +263,7 @@ void GameState::loadModels()
 	int nrOfCurrentLModels = 19;
 	this->m_models.emplace_back(); //add empty model
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); //reset material
-	this->m_models[++nrOfCurrentLModels].initializeModelBff(m_device, m_dContext, "vRoom.bff", mat, L"Textures/ColorTexture.png"); //load model
+	this->m_models[++nrOfCurrentLModels].initializeModelBff(m_device, m_dContext, "vGem1.bff", mat, L"Textures/ColorTexture.png"); //load model
 }
 
 

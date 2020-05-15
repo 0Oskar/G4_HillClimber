@@ -73,7 +73,7 @@
       <Filter>Source\Game Logic</Filter>
     </ClCompile>
     <ClCompile Include="TemplateRoom.cpp">
-      <Filter>Source\Game Logic\Rooms</Filter>
+      <Filter>Source\Game Logic\GameObjects\Rooms</Filter>
     </ClCompile>
     <ClCompile Include="Portal.cpp">
       <Filter>Source\Game Logic\GameObjects</Filter>
@@ -82,16 +82,16 @@
       <Filter>Source\Game Logic</Filter>
     </ClCompile>
     <ClCompile Include="PyramidRoom.cpp">
-      <Filter>Source\Game Logic\Rooms</Filter>
+      <Filter>Source\Game Logic\GameObjects\Rooms</Filter>
     </ClCompile>
     <ClCompile Include="KevinsRoom.cpp">
-      <Filter>Source\Game Logic\Rooms</Filter>
+      <Filter>Source\Game Logic\GameObjects\Rooms</Filter>
     </ClCompile>
     <ClCompile Include="EdvinsRoom.cpp">
-      <Filter>Source\Game Logic\Rooms</Filter>
+      <Filter>Source\Game Logic\GameObjects\Rooms</Filter>
     </ClCompile>
     <ClCompile Include="FindGemsRoom.cpp">
-      <Filter>Source\Game Logic\Rooms</Filter>
+      <Filter>Source\Game Logic\GameObjects\Rooms</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -250,11 +250,11 @@
     <Filter Include="Source\Game Logic\GameObjects">
       <UniqueIdentifier>{2a608483-c701-4962-8eac-d4af998bd525}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Game Logic\Rooms">
-      <UniqueIdentifier>{86a151c3-0c31-4e96-9dd7-aae14e610154}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header\Game Logic\Rooms">
       <UniqueIdentifier>{62ba70f7-e626-4e2a-95af-a1c201023870}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Game Logic\GameObjects\Rooms">
+      <UniqueIdentifier>{86a151c3-0c31-4e96-9dd7-aae14e610154}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
