@@ -17,10 +17,17 @@ private:
 
 	float delayForMove = 1.0f;
 
+	XMVECTOR scorpionSpawnPos;
+
+	bool doOnce = false;
+	bool getSpawnPosOnce = false;
+
 	bool startCountDown = false;
 	float countDown = 0.5f;
-
+	float walkingBackCountDown = 5;
 	float currentRotationY = 0.0f;
+
+	DirectX::BoundingOrientedBox scorpionBB;
 
 
 public:
@@ -32,6 +39,7 @@ public:
 	void onPlayerColide();
 	void setReachedEdge(bool aValue);
 
+	BoundingOrientedBox getBB();
 	bool getReachedEdge();
 
 	void followPlayer(float dt);

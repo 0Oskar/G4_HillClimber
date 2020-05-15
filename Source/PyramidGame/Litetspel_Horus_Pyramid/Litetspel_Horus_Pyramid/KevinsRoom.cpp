@@ -13,14 +13,20 @@ KevinsRoom::~KevinsRoom()
 void KevinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activeRoomChanged)
 {
 	Room::update(dt, camera, activeRoom, activeRoomChanged);
+	//Så boundingBoxen följer skorpionen.w
+
 	float scorpionX = XMVectorGetX(this->scorpion->getPosition());
 	float scorpionY = XMVectorGetY(this->scorpion->getPosition());
 	float scorpionZ = XMVectorGetZ(this->scorpion->getPosition());
+	scorpionZ -= 0.6f;
 
 	XMFLOAT3 scorpionPos = XMFLOAT3(scorpionX, scorpionY, scorpionZ);
 
 	this->scorpionBB[0]->Center = scorpionPos;
-	    
+
+	///////////////    
+
+	//if(scorpionBB[0])
 
 	if (triggerBB[0].Intersects(this->m_player->getAABB()))
 	{
@@ -43,6 +49,11 @@ void KevinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 		bridgeStop -= (3 * dt);
 		this->expandingBridge[0]->getMoveCompPtr()->position = this->expandingBridge[0]->getMoveCompPtr()->position + (XMVectorSet(0.0f, 0.f, 3 * dt, 0.f));
 	}
+
+	if (triggerBB[4].Intersects(this->m_player->getAABB()))
+	{
+		this->scorpion->setReachedEdge(false);
+	}
 	
 
 	//Scorpion walking bounds
@@ -51,10 +62,10 @@ void KevinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 		this->scorpion->setReachedEdge(true);
 	}
 
-	else
-	{
-		//this->scorpion->setReachedEdge(false);
-	}
+	//else
+	//{
+	//	//this->scorpion->setReachedEdge(false);
+	//}
 
 	for (int i = 0; i < deathTrapBB.size(); i++)
 	{
@@ -107,17 +118,19 @@ void KevinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 
 	if (this->lever[0]->getCanUseLever() == true)
 	{
-		if (this->m_player->getinUse() == true)
+		if (this->m_player->getinUse() == true && this->trapActive1 == true)
 		{
+			this->lever[0]->getMoveCompPtr()->rotation -= DirectX::XMVectorSet(XMConvertToRadians(180.f), 0.f, 0.f, 0.f);
 			trapActive1 = false;
 		}
 	}
 
 	this->lever[1]->collidesWithPlayer();
-	if (this->lever[1]->getCanUseLever() == true)
+	if (this->lever[1]->getCanUseLever() == true && this->trapActive2 == true)
 	{
 		if (this->m_player->getinUse() == true)
 		{
+			this->lever[1]->getMoveCompPtr()->rotation -= DirectX::XMVectorSet(XMConvertToRadians(180.f), 0.f, 0.f, 0.f);
 			trapActive2 = false;			
 		}
 	}
@@ -170,7 +183,7 @@ void KevinsRoom::createBoundingBoxes()
 	this->addBoundingBox({ -10.f, 23.f, -45.4f + 140.f, 1}, DirectX::XMFLOAT3(20.f, 2.5f, 11.8f));
 	this->addBoundingBox({ 9.5f, 2.f, -120.f + 140.f, 1 }, DirectX::XMFLOAT3(2.f, 40.f, 85.f));
 	this->addBoundingBox({ -31.f, 2.f, -120.f + 140.f, 1 }, DirectX::XMFLOAT3(2.f, 40.f, 85.f));
-	//this->addBoundingBox({ -10.f, 27.f, -80.f + 140.f }, DirectX::XMFLOAT3(20.f, 10.f, 4.5f));
+	//this->addBoundingBox({ -11.6f, 2.f, -105.3f + 140.f, 1.f }, DirectX::XMFLOAT3(19.f, 3.f, 19.f));
 	
 
 	//this->addBoundingBox({ 3.6f, 5.f, -93.3f + 140.f, 1.f }, DirectX::XMFLOAT3(2.7f, 2.7f, 2.7f));
@@ -194,6 +207,11 @@ void KevinsRoom::createBoundingBoxes()
 
 	triggerBB.emplace_back();
 	this->addTriggerBB({ 3.6f, 5.f, -93.3f + 140.f, 1.f }, DirectX::XMFLOAT3(2.7f, 2.7f, 2.7f));
+	triggerBB.back() = this->m_triggerBoundingBoxes.back();
+
+	//Player activate Scorpion trigger
+	triggerBB.emplace_back();
+	this->addTriggerBB({ -11.6f, 2.f, -105.3f + 140.f, 1.f }, DirectX::XMFLOAT3(19.f, 3.f, 19.f));
 	triggerBB.back() = this->m_triggerBoundingBoxes.back();
 
 	deathTrapBB.emplace_back();
@@ -283,8 +301,8 @@ void KevinsRoom::createSceneObjects()
 	this->scorpion->getMoveCompPtr()->position = XMVectorSet(-11.f, 2.9f, -100.f + 140.f, 1.f) + this->m_worldPosition;
 
 	this->m_gameObjects.emplace_back(this->scorpion);
-	this->m_gameObjects.back()->setBoundingBox(DirectX::XMFLOAT3(2.f, 2.f, 2.f));
-	this->scorpionBB.emplace_back(this->m_gameObjects.back()->getAABBPtr());
+	
+	this->scorpionBB.emplace_back(this->scorpion->getAABBPtr());
 
 	this->scorpionObject.emplace_back(this->m_gameObjects.back());
 
