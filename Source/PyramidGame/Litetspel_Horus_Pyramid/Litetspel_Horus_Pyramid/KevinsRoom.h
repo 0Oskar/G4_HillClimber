@@ -28,18 +28,23 @@ private:
 	//Trigger things
 	std::vector<DirectX::BoundingBox> triggerBB;
 	std::vector<DirectX::BoundingBox> deathTrapBB;
-	std::vector<DirectX::BoundingBox*> scorpionBB;
+
+
+	DirectX::BoundingOrientedBox* scorpionBB;
 	
 	bool dartFly1 = false;
 	bool dartFly2 = false;
 	float dartPosition1 = 40.f;
 	float dartPosition2 = 40.f;
 
+	int lives = 3;
+
 	float bridgeStop = 10;
 
 	bool trapActive1 = true;
 	bool trapActive2 = true;
 	bool wonThePuzzle = false;
+	bool lostThePuzzle = false;
 	bool lifeTaken = false;
 
 	XMVECTOR scorpionBBPosition;
@@ -50,6 +55,8 @@ public:
 	KevinsRoom();
 	~KevinsRoom();
 	void update(float dt, Camera* camera, Room*& activeRoom, bool& activeRoomChanged);
+	void looseLife();
+	void checkNrOfLives();
 	void onEntrance();
 	void init();
 	void portals();

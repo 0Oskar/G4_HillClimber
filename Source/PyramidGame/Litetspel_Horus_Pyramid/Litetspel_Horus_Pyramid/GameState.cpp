@@ -175,12 +175,12 @@ void GameState::loadModels()
 	//6- Lever Room aka Kevins room
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
-	this->m_models[6].loadVertexFromOBJ(m_device, m_dContext, L"Models/LeverRoom.obj", mat, L"Textures/ColorTexture.png");
+	this->m_models[6].loadVertexFromOBJ(m_device, m_dContext, L"Models/LeverRoom2.obj", mat, L"Textures/ColorTexture.png");
 
 	//7 - Lever
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
-	this->m_models[7].loadVertexFromOBJ(m_device, m_dContext, L"Models/Lever.obj", mat, L"Textures/platformTextureCracks1.png");
+	this->m_models[7].loadVertexFromOBJ(m_device, m_dContext, L"Models/Lever.obj", mat, L"Textures/ColorTexture.png");
 
 	//8. PuzzleRoom (Edvin)
 	this->m_models.emplace_back(); //add empty model

@@ -39,7 +39,7 @@ public:
 	void onPlayerColide();
 	void setReachedEdge(bool aValue);
 
-	BoundingOrientedBox getBB();
+	BoundingOrientedBox* getBB();
 	bool getReachedEdge();
 
 	void followPlayer(float dt);
