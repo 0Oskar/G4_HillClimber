@@ -65,6 +65,7 @@ private:
 
 	ConstBuffer<PS_LIGHT_BUFFER> m_lightBuffer;
 	ConstBuffer<PS_DIR_BUFFER> m_dirLightBuffer;
+	PS_DIR_BUFFER m_dirLight;
 
 	DirectX::XMMATRIX* m_viewMatrix;
 	DirectX::XMMATRIX* m_projectionMatrix;
@@ -104,6 +105,7 @@ public:
 	void setOrientedBoundingBoxesFromActiveRoom(std::vector<BoundingOrientedBox>* bbFromRoom);
 	void setTriggerBoxFromActiveRoom(std::vector<BoundingBox>* bbFromRoom);
 	void setModelsFromState(std::vector<Model>* models);
+	void setDirLightFromActiveRoom(PS_DIR_BUFFER dirLight);
 	void setWvpCBufferFromState(std::vector< ConstBuffer<VS_CONSTANT_BUFFER> >* models);
 	void setGameTimePtr(Timer* gameTimer);
 	// Initialization
