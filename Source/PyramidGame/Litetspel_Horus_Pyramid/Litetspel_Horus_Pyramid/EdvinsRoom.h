@@ -21,7 +21,7 @@ private:
 	bool canMoveCover = false;
 	bool moveCoverUp = false;
 	bool moveCoverDown = false;
-	DirectX::XMVECTOR coverPos = DirectX::XMVectorSet(-6, 9.5, 0, 1);
+	DirectX::XMVECTOR coverPos = DirectX::XMVectorSet(-7, 13, 0, 1); 
 
 	//Buttons
 	std::vector<Lever*> buttons;

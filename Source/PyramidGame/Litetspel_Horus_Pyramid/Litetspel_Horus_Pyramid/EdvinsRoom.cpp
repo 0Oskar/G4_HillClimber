@@ -8,9 +8,16 @@
 void EdvinsRoom::createBoundingBoxes()
 {
 	this->addBoundingBox({ 0, 6, 0, 1 }, DirectX::XMFLOAT3(1, 12, 20)); //Back Wall
-	this->addBoundingBox({ -70, 6, 0, 1 }, DirectX::XMFLOAT3(1, 12, 6)); //Behind portal
-	this->addBoundingBox({ -40, 6, -20, 1 }, DirectX::XMFLOAT3(30, 12, 1)); //Right Wall
-	this->addBoundingBox({ -40, 6, 20, 1 }, DirectX::XMFLOAT3(30, 12, 1)); //Left Wall
+	this->addBoundingBox({ -69, 6, 0, 1 }, DirectX::XMFLOAT3(1, 12, 6)); //Portal Wall
+
+	this->addOrientedBoundingBox({ -64, 6, -13, 1 }, XMFLOAT3(8, 12, 1), { 0, pMath::convertDegreesToRadians(60), 0, 1 }); //Portal right wall
+	this->addOrientedBoundingBox({ -35, 6, -25, 1 }, XMFLOAT3(25, 12, 1), { 0, pMath::convertDegreesToRadians(11), 0, 1 }); //Right wall
+	this->addOrientedBoundingBox({ -5, 6, -25, 1 }, XMFLOAT3(7, 12, 1), { 0, pMath::convertDegreesToRadians(-42), 0, 1 }); //Right corner
+
+	this->addOrientedBoundingBox({ -64, 6, 13, 1 }, XMFLOAT3(8, 12, 1), { 0, pMath::convertDegreesToRadians(-60), 0, 1 }); //Portal left wall
+	this->addOrientedBoundingBox({ -35, 6, 25, 1 }, XMFLOAT3(25, 12, 1), { 0, pMath::convertDegreesToRadians(-11), 0, 1 }); //Left wall
+	this->addOrientedBoundingBox({ -5, 6, 25, 1 }, XMFLOAT3(7, 12, 1), { 0, pMath::convertDegreesToRadians(42), 0, 1 }); //Left corner
+
 	this->addBoundingBox({ -45, 0, 0, 1 }, DirectX::XMFLOAT3(1.5, 2, 1.5)); //Pedistal
 }
 
@@ -75,27 +82,27 @@ void EdvinsRoom::createSceneObjects()
 	// Bricks:
 
 	// Brick 1
-	pos = DirectX::XMVectorSet(-5, 10, 15, 1); //world pos
+	pos = DirectX::XMVectorSet(-6, 14, 15, 1); //world pos
 	this->addGameObjectToRoom(true, false, 1, 11, &m_models->at(11), pos, scale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
 	this->bricks.emplace_back(this->m_gameObjects.back());
 
 	// Brick 2
-	pos = DirectX::XMVectorSet(-5, 10, 8, 1); //world pos
+	pos = DirectX::XMVectorSet(-6, 14, 8, 1); //world pos
 	this->addGameObjectToRoom(true, false, 1, 12, &m_models->at(12), pos, scale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
 	this->bricks.emplace_back(this->m_gameObjects.back());
 
 	// Brick 3
-	pos = DirectX::XMVectorSet(-5, 10, 1, 1); //world pos
+	pos = DirectX::XMVectorSet(-6, 14, 1, 1); //world pos
 	this->addGameObjectToRoom(true, false, 1, 13, &m_models->at(13), pos, scale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
 	this->bricks.emplace_back(this->m_gameObjects.back());
 
 	// Brick 4
-	pos = DirectX::XMVectorSet(-5, 10, -6, 1); //world pos
+	pos = DirectX::XMVectorSet(-6, 14, -6, 1); //world pos
 	this->addGameObjectToRoom(true, false, 1, 14, &m_models->at(14), pos, scale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
 	this->bricks.emplace_back(this->m_gameObjects.back());
 
 	// Brick 5
-	pos = DirectX::XMVectorSet(-5, 10, -13, 1); //world pos
+	pos = DirectX::XMVectorSet(-6, 14, -13, 1); //world pos
 	this->addGameObjectToRoom(true, false, 1, 15, &m_models->at(15), pos, scale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
 	this->bricks.emplace_back(this->m_gameObjects.back());
 
@@ -117,8 +124,9 @@ void EdvinsRoom::createSceneObjects()
 void EdvinsRoom::onWin()
 {
 	OutputDebugStringA("\nYou won!\n");
+	this->guessPos = 6;
 	//Activate portal
-	this->roomPortal->setPosition(XMVectorSet(-70, -5, -100, 1));
+	this->roomPortal->setPosition(XMVectorSet(-270, 0, 200, 1));
 
 	//Activate particalas
 
@@ -128,19 +136,21 @@ void EdvinsRoom::onFail()
 {
 	OutputDebugStringA("\nYou lost!\n");
 	//Reset Pos
-	this->m_player->getMoveCompPtr()->position = { -58, 5, -100, 1 };
+	this->m_player->getMoveCompPtr()->position = { -260, 0, 199, 1 };
 
 	//Reset lever
 	this->canPullLever = true;
 	this->leverHandle->getMoveCompPtr()->rotation = XMVectorSet(0.f, pMath::convertDegreesToRadians(90), 0, 1);
 	
 	//Reset Buttons
+	this->guessPos = 0;
+	this->buttonsPosY = -6;
 	for (int i = 0; i < 5; i++)
 	{
-		buttons[i]->getMoveCompPtr()->position = buttons[i]->getMoveCompPtr()->position + DirectX::XMVectorSet(0, -10, 0, 10);
+		buttons[i]->getMoveCompPtr()->position = buttons[i]->getMoveCompPtr()->position + DirectX::XMVectorSet(0, -9.15, 0, 10);
+		//Reset player guess array
+		this->guessOrder[i] = -1;
 	}
-	this->buttonsPosY = -6;
-
 	//Add Time
 }
 
@@ -163,7 +173,7 @@ bool EdvinsRoom::CorrectOrder(int arr1[], int arr2[])
 EdvinsRoom::EdvinsRoom()
 {
 	Room::initParent();
-	this->m_entrencePosition = { -60, 5, 0, 1 };
+	this->m_entrencePosition = { -60, 100, -1, 1 };
 }
 
 EdvinsRoom::~EdvinsRoom()
@@ -243,7 +253,7 @@ void EdvinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 
 	if (this->coverTimer.timeElapsed() >= 5 && this->moveCoverDown == true) //Move cover down
 	{
-		if (XMVectorGetX(this->coverPos) <= -6) //Move X
+		if (XMVectorGetX(this->coverPos) <= -7) //Move X
 		{
 			this->cover->getMoveCompPtr()->position = this->cover->getMoveCompPtr()->position + DirectX::XMVectorSet(5 * dt, 0, 0, 10);
 			this->cover->getMoveCompPtr()->position = this->cover->getMoveCompPtr()->position + DirectX::XMVectorSet(0, -8 * dt, 0, 10);
@@ -262,7 +272,7 @@ void EdvinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 	{
 		for (int i = 0; i < 5; i++) //Move all buttons
 		{
-			if (this->buttonsPosY <= 45) //Move while below 5 units in Y (45 = nrOfButtons * desiredMoveYAmount = 5 * 9)
+			if (this->buttonsPosY <= 40) //Move while below 5 units in Y (45 = nrOfButtons * desiredMoveYAmount = 5 * 9)
 			{
 				buttons[i]->getMoveCompPtr()->position = buttons[i]->getMoveCompPtr()->position + DirectX::XMVectorSet(0, 30 * dt, 0, 10); //Move one frame
 				this->buttonsPosY += 30 * dt;
@@ -366,14 +376,6 @@ void EdvinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 		else
 		{
 			onFail();
-		}
-
-		
-		this->guessPos = 0;
-		for (int i = 0; i < 5; i++)
-		{
-			//Reset player guess array
-			this->guessOrder[i] = -1;
 		}
 	}
 }
