@@ -13,6 +13,14 @@ Platform::Platform()
 
 }
 
+Platform::~Platform()
+{
+	if (this->m_audioComponent)
+	{
+		delete m_audioComponent;
+	}
+}
+
 void Platform::init(bool colidable, int modelIndex, int wvpCBufferIndex, DirectX::BoundingOrientedBox* pyramidBoundingBox, Model* mdl)
 {
 	this->initializeDynamic(colidable, false, modelIndex, wvpCBufferIndex, 3, DirectX::XMFLOAT3(1, 1, 1), DirectX::XMFLOAT3(0, 0, 0), mdl);

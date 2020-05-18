@@ -40,6 +40,7 @@ private:
 	void colidesWithPlayer();
 public:
 	Platform();
+	~Platform();
 	void init(bool colidable, int modelIndex, int wvpCBufferIndex, DirectX::BoundingOrientedBox* pyramid, Model* mdl);
 	void update(float dt);
 	void onPlayerColide();
