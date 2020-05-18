@@ -2,6 +2,7 @@
 #include "VertexBuffer.h"
 #include "ParticleSystem.h"
 #include "ConstantBuffer.h"
+#include "Shaders.h"
 
 class ParticleRenderer
 {
@@ -14,6 +15,9 @@ private:
 	ID3D11DeviceContext* m_dContext;
 
 	ConstBuffer<GS_PARTICLE_BUFFER> m_particleBuffer;
+
+	Shaders m_particleShader;
+
 	ParticleSystem* m_particleSystem;
 
 	VertexBuffer<Particle> m_initVB; 
@@ -28,9 +32,9 @@ public:
 	void setNoCullPR();
 	void setAlphaToCoveragePR();
 	void setTransparentPR();
-
-	void setParticleSystem(ParticleSystem* m_particleSystem);
-	void render();
+	
+	void setParticleSystem(ParticleSystem* particleSystem);
+	void render(XMMATRIX vpMatrix);
 	
 
 

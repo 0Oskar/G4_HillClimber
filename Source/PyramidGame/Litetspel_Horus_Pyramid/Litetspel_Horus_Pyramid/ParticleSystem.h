@@ -50,30 +50,32 @@ public:
 	ParticleSystem(int numParts, DirectX::XMVECTOR startOrigin);
 	virtual ~ParticleSystem();
 
+	void setVPMatrix(XMMATRIX VPMatrix);
+	GS_PARTICLE_BUFFER* getParticleBuffer();
+
 	void initialize(ID3D11Device* device, ID3D11ShaderResourceView* texArray, ID3D11ShaderResourceView* randomTex, UINT maxParticles);
 	void setToDefault(int i);
 	void update(float deltaTime, float gameTime, XMVECTOR camPos, XMFLOAT3 emitPos, XMFLOAT3 emitDir);
-	void render(ID3D11DeviceContext* device, XMMATRIX vpMatrix);
 
 
 };
 
-//---------------------------------------------------------------------------
-//                          ParticleFlame
-//----------------------------------------------------------------------------
-
-class ParticleFlame : public ParticleSystem
-{
-protected:
-	char TextureFile[MAX_PATH];
-
-public:
-	ParticleFlame(ID3D11Device* device, int numparts, DirectX::XMVECTOR startOrigin, float height, char* texturefile);
-	virtual ~ParticleFlame();
-
-	float Height;
-
-	virtual void SetToDefault(int i);
-	virtual void Update(UINT deltatime);
-	virtual HRESULT Render(ID3D11Device* device);
-};
+////---------------------------------------------------------------------------
+////                          ParticleFlame
+////----------------------------------------------------------------------------
+//
+//class ParticleFlame : public ParticleSystem
+//{
+//protected:
+//	char TextureFile[MAX_PATH];
+//
+//public:
+//	ParticleFlame(ID3D11Device* device, int numparts, DirectX::XMVECTOR startOrigin, float height, char* texturefile);
+//	virtual ~ParticleFlame();
+//
+//	float Height;
+//
+//	virtual void SetToDefault(int i);
+//	virtual void Update(UINT deltatime);
+//	virtual HRESULT Render(ID3D11Device* device);
+//};

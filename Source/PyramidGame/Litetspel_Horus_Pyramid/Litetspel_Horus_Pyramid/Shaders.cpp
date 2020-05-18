@@ -19,7 +19,7 @@ Shaders::Shaders()
 Shaders::~Shaders() {}
 
 
-void Shaders::initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, ShaderFiles names, D3D_PRIMITIVE_TOPOLOGY topology)
+void Shaders::initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, ShaderFiles names, LayoutType layoutType, D3D_PRIMITIVE_TOPOLOGY topology)
 {
 	// Device
 	this->m_device = device;
@@ -75,45 +75,29 @@ void Shaders::initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContex
 
 		assert(SUCCEEDED(hr) && "Error, Vertex shaders could not be created!");
 
-		const D3D11_INPUT_ELEMENT_DESC vertexLayoutDesc[] = {
-			{
-				"POSITION",
-				0,
-				DXGI_FORMAT_R32G32B32_FLOAT,
-				0,
-				0,
-				D3D11_INPUT_PER_VERTEX_DATA,
-				0
-			},
-			{
-				"NORMAL",
-				0,
-				DXGI_FORMAT_R32G32B32_FLOAT,
-				0,
-				12,
-				D3D11_INPUT_PER_VERTEX_DATA,
-				0
-			},
-			{
-				"TEXCOORD",
-				0,
-				DXGI_FORMAT_R32G32_FLOAT,
-				0,
-				24,
-				D3D11_INPUT_PER_VERTEX_DATA,
-				0
-			}
-		};
+		if (layoutType == LayoutType::POS_NOR_TEX) {
+			// Vertex Layout
+			hr = device->CreateInputLayout(
+				PosNorTexDesc,
+				3,
+				vsBlob->GetBufferPointer(),
+				vsBlob->GetBufferSize(),
+				&this->m_layout
+			);
+			assert(SUCCEEDED(hr) && "Error, Input layout could not be created!");
+		}
+		else if(layoutType == LayoutType::PARTICLE)
+		{
+			hr = device->CreateInputLayout(
+				ParticleDesc,
+				5,
+				vsBlob->GetBufferPointer(),
+				vsBlob->GetBufferSize(),
+				&this->m_layout
+			);
+			assert(SUCCEEDED(hr) && "Error, Particle Input layout could not be created!");
+		}
 
-		// Vertex Layout
-		hr = device->CreateInputLayout(
-			vertexLayoutDesc,
-			3,
-			vsBlob->GetBufferPointer(),
-			vsBlob->GetBufferSize(),
-			&this->m_layout
-		);
-		assert(SUCCEEDED(hr) && "Error, Input layout could not be created!");
 	}
 
 

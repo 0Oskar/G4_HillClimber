@@ -6,7 +6,7 @@ struct Particle
     float3 Position        : POSITION;
     float3 Velocity        : VELOCITY;
     float Size             : SIZE;
-    float ParticleLifetime : AGE;
+    float ParticleLifetime : LIFETIME;
     uint Type              : TYPE;
 };
 

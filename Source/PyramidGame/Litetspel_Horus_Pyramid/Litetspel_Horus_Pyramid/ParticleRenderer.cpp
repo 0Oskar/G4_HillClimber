@@ -11,6 +11,15 @@ ParticleRenderer::~ParticleRenderer()
 
 void ParticleRenderer::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext)
 {
+	this->m_device = device;
+	this->m_dContext = dContext;
+
+	//
+	ShaderFiles shaders;
+	shaders.vs = L"Shader Files\\StreamOutParticleVS.hlsl";
+	shaders.gs = L"Shader Files\\StreamOutParticleGS.hlsl";
+	this->m_particleShader.initialize(device, dContext, shaders, LayoutType::PARTICLE, D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+
 	// No Cull
 	D3D11_RASTERIZER_DESC NoCullDesc;
 	ZeroMemory(&NoCullDesc, sizeof(D3D11_RASTERIZER_DESC));
@@ -74,11 +83,79 @@ void ParticleRenderer::setTransparentPR()
 	this->m_dContext->OMSetBlendState(TransparentPR.Get(), nullptr, 0xFFFFFFFF);
 }
 
-void ParticleRenderer::setParticleSystem(ParticleSystem* m_particleSystem)
+void ParticleRenderer::setParticleSystem(ParticleSystem* particleSystem)
 {
-
+	this->m_particleSystem = particleSystem;
 }
 
-void ParticleRenderer::render()
+void ParticleRenderer::render(XMMATRIX vpMatrix)
 {
+	//
+	// Set constants.
+	//
+	this->m_particleSystem->setVPMatrix(vpMatrix);
+
+	this->m_particleBuffer.upd(this->m_particleSystem->getParticleBuffer());
+
+	//
+	// Set IA stage.
+	//
+	this->m_dContext->IASetInputLayout(InputLayouts::Particle);
+	this->m_dContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+
+	dc->IASetInputLayout(InputLayouts::Particle);
+	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+
+	UINT stride = sizeof(Vertex::Particle);
+	UINT offset = 0;
+
+	// On the first pass, use the initialization VB.  Otherwise, use
+	// the VB that contains the current particle list.
+	if (mFirstRun)
+		dc->IASetVertexBuffers(0, 1, &mInitVB, &stride, &offset);
+	else
+		dc->IASetVertexBuffers(0, 1, &mDrawVB, &stride, &offset);
+
+	//
+	// Draw the current particle list using stream-out only to update them.  
+	// The updated vertices are streamed-out to the target VB. 
+	//
+	dc->SOSetTargets(1, &mStreamOutVB, &offset);
+
+	D3DX11_TECHNIQUE_DESC techDesc;
+	mFX->StreamOutTech->GetDesc(&techDesc);
+	for (UINT p = 0; p < techDesc.Passes; ++p)
+	{
+		mFX->StreamOutTech->GetPassByIndex(p)->Apply(0, dc);
+
+		if (mFirstRun)
+		{
+			dc->Draw(1, 0);
+			mFirstRun = false;
+		}
+		else
+		{
+			dc->DrawAuto();
+		}
+	}
+
+	// done streaming-out--unbind the vertex buffer
+	ID3D11Buffer* bufferArray[1] = { 0 };
+	dc->SOSetTargets(1, bufferArray, &offset);
+
+	// ping-pong the vertex buffers
+	std::swap(mDrawVB, mStreamOutVB);
+
+	//
+	// Draw the updated particle system we just streamed-out. 
+	//
+	dc->IASetVertexBuffers(0, 1, &mDrawVB, &stride, &offset);
+
+	mFX->DrawTech->GetDesc(&techDesc);
+	for (UINT p = 0; p < techDesc.Passes; ++p)
+	{
+		mFX->DrawTech->GetPassByIndex(p)->Apply(0, dc);
+
+		dc->DrawAuto();
+	}
 }
