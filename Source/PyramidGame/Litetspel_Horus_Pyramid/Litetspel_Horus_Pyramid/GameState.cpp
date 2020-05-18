@@ -71,6 +71,16 @@ std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* GameState::getWvpCBuffersPtr()
 	return &this->m_wvpCBuffers;
 }
 
+PS_DIR_BUFFER GameState::getActiveRoomDirectionalLight()
+{
+	if (this->m_activeRoom != nullptr)
+	{
+		return this->m_activeRoom->getDirectionalLight();
+	}
+	else
+		return PS_DIR_BUFFER();
+}
+
 void GameState::addGameObjectToWorld(bool dynamic, bool colide, float weight, int mdlIndx, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR scale3D, DirectX::XMFLOAT3 boundingBoxSize = DirectX::XMFLOAT3(0, 0, 0), DirectX::XMFLOAT3 acceleration = DirectX::XMFLOAT3(1, 1, 1), DirectX::XMFLOAT3 deceleration = DirectX::XMFLOAT3(1, 1, 1))
 {
 	this->m_gameObjects.emplace_back(new GameObject());

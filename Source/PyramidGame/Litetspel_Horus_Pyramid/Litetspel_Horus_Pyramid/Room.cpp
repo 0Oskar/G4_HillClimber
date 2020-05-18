@@ -3,14 +3,7 @@
 
 Room::Room()
 {
-	this->m_dContext = nullptr;
-	this->m_device = nullptr;
-	this->m_player = nullptr;
-	this->m_models = nullptr;
-	this->m_wvpCBuffers = nullptr;
-	this->m_gameTimerPointer = nullptr;
-	this->m_entrencePosition = DirectX::XMVectorZero();
-	this->m_worldPosition = DirectX::XMVectorZero();
+	this->initParent();
 }
 
 Room::~Room()
@@ -38,6 +31,8 @@ void Room::initParent()
 	this->m_wvpCBuffers = nullptr;
 	this->m_entrencePosition = DirectX::XMVectorZero();
 	this->m_worldPosition = DirectX::XMVectorZero();
+	this->m_dirLight.lightColor = { .8f, .8f, .8f, 1.f };
+	this->m_dirLight.lightDirection = {-0.8f, 1.0f, -0.7f, 0.0f };
 }
 void Room::update(float dt, Camera* camera, Room* &activeRoom, bool &activeRoomChanged)
 {
@@ -219,4 +214,9 @@ DirectX::XMVECTOR Room::getRelativePosition(DirectX::XMVECTOR pos)
 {
 	XMVECTOR temp = this->m_worldPosition + pos;
 	return temp;
+}
+
+PS_DIR_BUFFER Room::getDirectionalLight()
+{
+	return this->m_dirLight;
 }

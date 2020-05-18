@@ -216,6 +216,14 @@ void ViewLayer::setModelsFromState(std::vector<Model>* models)
 	this->m_modelsFromState = models;
 }
 
+void ViewLayer::setDirLightFromActiveRoom(PS_DIR_BUFFER dirLight)
+{
+	this->m_dirLight = dirLight;
+	this->m_dirLightBuffer.m_data = this->m_dirLight;
+	this->m_dirLightBuffer.upd();
+	
+}
+
 void ViewLayer::setWvpCBufferFromState(std::vector< ConstBuffer<VS_CONSTANT_BUFFER> >* buffers)
 {
 	this->m_wvpCBufferFromState = buffers;
