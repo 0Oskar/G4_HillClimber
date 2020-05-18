@@ -237,7 +237,7 @@ void GameState::loadModels()
 	//15. Brick_5 (Edvin)
 	this->m_models.emplace_back(); //add empty model
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); //reset material
-	this->m_models[15].initializeModelBff(m_device, m_dContext, "Brick_5.bff", mat, L"Textures/BirdHyroglajf.png"); //load model
+	this->m_models[15].initializeModelBff(m_device, m_dContext, "Brick_5.bff", mat, L"Textures/Hyroglajf_4.png"); //load model
   
 	//16. Leaver Base (Edvin)
 	this->m_models.emplace_back(); //add empty model

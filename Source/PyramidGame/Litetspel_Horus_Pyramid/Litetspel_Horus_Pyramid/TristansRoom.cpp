@@ -7,14 +7,14 @@ void TristansRoom::createBoundingBoxes()
 	DirectX::XMVECTOR pos = DirectX::XMVectorSet(0.f, -10.f, 0.f, 1.f);
 	DirectX::XMVECTOR rot = DirectX::XMVectorSet(0.f, 0.f, 0.f, 1.f);
 
-	this->addBoundingBox({ 60, 15, 0 }, DirectX::XMFLOAT3(1, 75, 150)); //Right Wall
-	this->addBoundingBox({ -60, 15, 0 }, DirectX::XMFLOAT3(1, 75, 150)); //Left Wall
-	this->addBoundingBox({ 0, 4.5f, -110 }, DirectX::XMFLOAT3(100, 75, 1)); //Back Wall
-	this->addBoundingBox({ 0, 4.5f, 90 }, DirectX::XMFLOAT3(100, 75, 1)); //Front Wall
+	this->addBoundingBox({ 70, 15, 0 }, DirectX::XMFLOAT3(1, 75, 150)); //Left Wall
+	this->addBoundingBox({ -70, 15, 0 }, DirectX::XMFLOAT3(1, 75, 150)); //Right Wall
+	this->addBoundingBox({ 0, 4.5f, 107 }, DirectX::XMFLOAT3(100, 75, 1)); //Back Wall
+	this->addBoundingBox({ 0, 4.5f, -100 }, DirectX::XMFLOAT3(100, 75, 1)); //Front Wall
 
-	this->addBoundingBox({ 0, 45, -100 }, DirectX::XMFLOAT3(100, 1, 40)); //Floor 1
-	this->addBoundingBox({ 0, 45, 45 }, DirectX::XMFLOAT3(100, 1, 45)); //Floor 2
-	//this->addBoundingBox({ 0, 45, -30 }, DirectX::XMFLOAT3(50, 1, 40)); //Floor TEMP
+	this->addBoundingBox({ 0, 45, 90 }, DirectX::XMFLOAT3(100, 1, 30)); //Floor 1
+	this->addBoundingBox({ 0, 45, -52 }, DirectX::XMFLOAT3(100, 1, 50)); //Floor 2
+	this->addBoundingBox({ 0, 45, 0 }, DirectX::XMFLOAT3(50, 1, 100)); //Floor TEMP
 
 }
 
@@ -37,7 +37,7 @@ void TristansRoom::onCompleted()
 TristansRoom::TristansRoom()
 {
 	Room::initParent();
-	this->m_entrencePosition = { -2, 45 , -105, 1 };
+	this->m_entrencePosition = { -2, 42 , 90, 1 };
 }
 
 TristansRoom::~TristansRoom()
