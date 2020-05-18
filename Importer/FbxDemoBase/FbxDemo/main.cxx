@@ -60,7 +60,7 @@ int main(int argc, char** argv)
 {
     //myFile.writeToFile("test line from main");
 
-    BiReader myFile("../biFile.fbx");
+    BiReader myFile("../biFile.bff");
     myFile.printToConsole();
 
     FbxManager* lSdkManager = NULL;

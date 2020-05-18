@@ -259,11 +259,6 @@ void GameState::loadModels()
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
 	this->m_models[19].loadVertexFromOBJ(m_device, m_dContext, L"Models/checkpoint.obj", mat, L"Textures/ColorTexture.png");
 	
-	//LastNumber. Room (Viktor)
-	int nrOfCurrentLModels = 19;
-	this->m_models.emplace_back(); //add empty model
-	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); //reset material
-	this->m_models[++nrOfCurrentLModels].initializeModelBff(m_device, m_dContext, "vGem1.bff", mat, L"Textures/ColorTexture.png"); //load model
 }
 
 
@@ -368,10 +363,10 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	dynamic_cast<PyramidRoom*>(this->m_rooms.back())->init(&m_pyramidOBB);
 	m_activeRoom = m_rooms.back();
 
-	//Template Room [1] //Up for grabs
-	this->m_rooms.emplace_back(new TemplateRoom());
-	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, 0, 1), audioEngine, &this->m_gameTime);
-	dynamic_cast<TemplateRoom*>(this->m_rooms.back())->init();
+	////Viktors Room [1]
+	this->m_rooms.emplace_back(new FindGemsRoom());
+	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, 300, 1), audioEngine, &this->m_gameTime);
+	dynamic_cast<FindGemsRoom*>(this->m_rooms.back())->init();
 
 	//Kevin Room [2]
 	this->m_rooms.emplace_back(new KevinsRoom());
@@ -382,11 +377,6 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_rooms.emplace_back(new EdvinsRoom());
 	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, -100, 1), audioEngine, &this->m_gameTime);
 	dynamic_cast<EdvinsRoom*>(this->m_rooms.back())->init();
-
-	//Viktors Room [4]
-	this->m_rooms.emplace_back(new FindGemsRoom());
-	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(-30, 0, 0, 1), audioEngine, &this->m_gameTime);
-	dynamic_cast<FindGemsRoom*>(this->m_rooms.back())->init();
 
 	//Otaget rum [4] -
 	/*this->m_rooms.emplace_back(new NamnRoom());
