@@ -12,6 +12,7 @@
 #include"KevinsRoom.h"
 #include"EdvinsRoom.h"
 #include "TristansRoom.h"
+#include "FindGemsRoom.h"
 
 using namespace std;
 

@@ -89,12 +89,15 @@
     </ClCompile>
     <ClCompile Include="EdvinsRoom.cpp" />
     <ClCompile Include="followingEnemy.cpp">
-      <Filter>Source\Game Logic\GameObjects</Filter>     
+      <Filter>Source\Game Logic\GameObjects</Filter>
     </ClCompile>
     <ClCompile Include="EdvinsRoom.cpp">
       <Filter>Source\Game Logic\Rooms</Filter>
     </ClCompile>
     <ClCompile Include="TristansRoom.cpp">
+      <Filter>Source\Game Logic\Rooms</Filter>
+    </ClCompile>
+    <ClCompile Include="FindGemsRoom.cpp">
       <Filter>Source\Game Logic\Rooms</Filter>
     </ClCompile>
   </ItemGroup>
@@ -206,8 +209,11 @@
     </ClInclude>
     <ClInclude Include="followingEnemy.h">
       <Filter>Header\Game Logic\GameObjects</Filter>
-    </ClCompile>
+    </ClInclude>
     <ClInclude Include="TristansRoom.h">
+      <Filter>Header\Game Logic\Rooms</Filter>
+    </ClInclude>
+    <ClInclude Include="FindGemsRoom.h">
       <Filter>Header\Game Logic\Rooms</Filter>
     </ClInclude>
   </ItemGroup>

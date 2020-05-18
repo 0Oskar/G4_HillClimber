@@ -294,6 +294,44 @@ void GameState::loadModels()
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
 	this->m_models[26].loadVertexFromOBJ(m_device, m_dContext, L"Models/expandingBridge.obj", mat, L"Textures/ColorTexture.png");
 
+	//LastNumber. Room (Viktor)
+	int nrOfCurrentLModels = 26;
+
+	this->m_models.emplace_back(); 
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); 
+	this->m_models[++nrOfCurrentLModels].initializeModelBff(m_device, m_dContext, "vRoom.bff", mat, L"Textures/ColorTexture.png"); 
+
+	this->m_models.emplace_back(); 
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); 
+	this->m_models[++nrOfCurrentLModels].initializeModelBff(m_device, m_dContext, "vGate.bff", mat, L"Textures/ColorTexture.png"); 
+
+	this->m_models.emplace_back(); 
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); 
+	this->m_models[++nrOfCurrentLModels].initializeModelBff(m_device, m_dContext, "vPedistal.bff", mat, L"Textures/ColorTexture.png"); 
+
+	this->m_models.emplace_back(); 
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); 
+	this->m_models[++nrOfCurrentLModels].initializeModelBff(m_device, m_dContext, "vLeaver.bff", mat, L"Textures/ColorTexture.png"); 
+
+	this->m_models.emplace_back(); 
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); 
+	this->m_models[++nrOfCurrentLModels].initializeModelBff(m_device, m_dContext, "vGem1.bff", mat, L"Textures/ColorTexture.png");
+
+	this->m_models.emplace_back(); 
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); 
+	this->m_models[++nrOfCurrentLModels].initializeModelBff(m_device, m_dContext, "vGem2.bff", mat, L"Textures/ColorTexture.png"); 
+
+	this->m_models.emplace_back(); 
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); 
+	this->m_models[++nrOfCurrentLModels].initializeModelBff(m_device, m_dContext, "vGem3.bff", mat, L"Textures/ColorTexture.png"); 
+
+	this->m_models.emplace_back(); 
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); 
+	this->m_models[++nrOfCurrentLModels].initializeModelBff(m_device, m_dContext, "vGem4.bff", mat, L"Textures/ColorTexture.png"); 
+
+	this->m_models.emplace_back(); 
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); 
+	this->m_models[++nrOfCurrentLModels].initializeModelBff(m_device, m_dContext, "vGem5.bff", mat, L"Textures/ColorTexture.png");
 }
 
 
@@ -403,9 +441,9 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	m_activeRoom = m_rooms.back();
 
 	//Template Room [1] //Up for grabs
-	this->m_rooms.emplace_back(new TemplateRoom());
+	this->m_rooms.emplace_back(new FindGemsRoom());
 	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, 0, 1), audioEngine, &this->m_gameTime);
-	dynamic_cast<TemplateRoom*>(this->m_rooms.back())->init();
+	dynamic_cast<FindGemsRoom*>(this->m_rooms.back())->init();
 
 	//Kevin Room [2]
 	this->m_rooms.emplace_back(new KevinsRoom());
@@ -479,7 +517,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	}
 
 	this->addPortalToWorld({ 0, 0, 0, 0 }, 10, &m_models[10], { -40, 4, -5, 1 }, { 1, 1, 1, 1 }, { 2, 2, 1 }, 0); //Pyramid "Room"
-	this->addPortalToWorld({ 0, 0, 0, 0 }, 10, &m_models[10], { -30, 4, -5, 1 }, { 1, 1, 1, 1 }, { 2, 2, 1 }, 1); //Up for grabs - currently template room
+	this->addPortalToWorld({ 0, 0, 0, 0 }, 10, &m_models[10], { -30, 4, -5, 1 }, { 1, 1, 1, 1 }, { 2, 2, 1 }, 1); // FindGemsRoom "Viktor"
 	this->addPortalToWorld({ 0, 0, 0, 0 }, 10, &m_models[10], { -20, 4, -5, 1 }, { 1, 1, 1, 1 }, { 2, 2, 1 }, 2); // Kevins room
 	this->addPortalToWorld({ 0, 0, 0, 0 }, 10, & m_models[10], { -10, 4, -5, 1 }, { 1, 1, 1, 1 }, { 2, 2, 1 }, 3); //Edvins room
 	this->addPortalToWorld({ 0, 0, 0, 0 }, 10, &m_models[10], { 30, 4, -5, 1 }, { 1, 1, 1, 1 }, { 2, 2, 1 }, 4); //Tristans Room
