@@ -331,7 +331,7 @@ void GameState::loadModels()
 
 	this->m_models.emplace_back(); 
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); 
-	this->m_models[++nrOfCurrentLModels].initializeModelBff(m_device, m_dContext, "vGem5.bff", mat, L"Textures/ColorTexture.png");
+	this->m_models[35].initializeModelBff(m_device, m_dContext, "vGem5.bff", mat, L"Textures/ColorTexture.png");
 }
 
 
@@ -440,9 +440,9 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	dynamic_cast<PyramidRoom*>(this->m_rooms.back())->init(&m_pyramidOBB);
 	m_activeRoom = m_rooms.back();
 
-	//Template Room [1] //Up for grabs
+	//Template Room [1] Viktor
 	this->m_rooms.emplace_back(new FindGemsRoom());
-	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, 0, 1), audioEngine, &this->m_gameTime);
+	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, 300, 1), audioEngine, &this->m_gameTime);
 	dynamic_cast<FindGemsRoom*>(this->m_rooms.back())->init();
 
 	//Kevin Room [2]
