@@ -13,6 +13,20 @@ KevinsRoom::~KevinsRoom()
 void KevinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activeRoomChanged)
 {
 	Room::update(dt, camera, activeRoom, activeRoomChanged);
+	//Så boundingBoxen följer skorpionen.w
+
+	float scorpionX = XMVectorGetX(this->scorpion->getPosition());
+	float scorpionY = XMVectorGetY(this->scorpion->getPosition());
+	float scorpionZ = XMVectorGetZ(this->scorpion->getPosition());
+	scorpionZ -= 0.6f;
+
+	XMFLOAT3 scorpionPos = XMFLOAT3(scorpionX, scorpionY, scorpionZ);
+
+	//this->scorpionBB[0]->Center = scorpionPos;
+
+	///////////////    
+
+	//if(scorpionBB[0])
 
 	if (triggerBB[0].Intersects(this->m_player->getAABB()))
 	{
@@ -30,20 +44,44 @@ void KevinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 		}
 	}
 
+	if (triggerBB[3].Intersects(this->m_player->getAABB()) && bridgeStop > 0)
+	{
+		bridgeStop -= (3 * dt);
+		this->expandingBridge[0]->getMoveCompPtr()->position = this->expandingBridge[0]->getMoveCompPtr()->position + (XMVectorSet(0.0f, 0.f, 3 * dt, 0.f));
+	}
+
+	if (triggerBB[4].Intersects(this->m_player->getAABB()))
+	{
+		this->scorpion->setReachedEdge(false);
+	}
+	
+
+	//Scorpion walking bounds
+	if (triggerBB[2].Intersects(*scorpionBB) || triggerBB[5].Intersects(*scorpionBB))
+	{
+		this->scorpion->setReachedEdge(true);
+	}
+
+	if (scorpionBB->Intersects(this->m_player->getAABB()))
+	{
+		this->m_player->getMoveCompPtr()->position = this->getRelativePosition(DirectX::XMVectorSet(-12.f, 15.f, -155.f + 140.f, 1.f));
+	}
+	
 	for (int i = 0; i < deathTrapBB.size(); i++)
 	{
 		if (deathTrapBB[i].Intersects(this->m_player->getAABB()))
 		{
-			this->m_player->getMoveCompPtr()->position =  this->getRelativePosition(DirectX::XMVectorSet(-20.f, 20.f, -165.f + 140.f, 1.f));
+			void looseLife();
+			this->m_player->getMoveCompPtr()->position = this->getRelativePosition(DirectX::XMVectorSet(-12.f, 20.f, -155.f + 140.f, 1.f));
 		}
 	}
-
 
 	for (int i = 0; i < dartTrap.size(); i++)
 	{
 		if (dartTrap[i]->getAABB().Intersects(this->m_player->getAABB()))
 		{
-			this->m_player->getMoveCompPtr()->position = this->getRelativePosition(DirectX::XMVectorSet(-20.f, -50.f, -165.f + 140.f, 1.f));
+			void looseLife();
+			this->m_player->getMoveCompPtr()->position = this->getRelativePosition(DirectX::XMVectorSet(-12.f, -20.f, -155.f + 140.f, 1.f));
 		}
 	}
 
@@ -51,14 +89,14 @@ void KevinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 	{
 		if (dartPosition1 <= 0)
 		{
-			dartPosition1 = 40.f;
+			dartPosition1 = 110.f;
 			dartTrap[0]->getMoveCompPtr()->position = this->getRelativePosition(DirectX::XMVectorSet(10.f, 27, -80 + 140.f, 0.f));
 			dartFly1 = false;
 		}
 		else
 		{
-			dartTrap[0]->getMoveCompPtr()->position = dartTrap[0]->getMoveCompPtr()->position + DirectX::XMVectorSet(-40.f * dt, 0, 0, 0.f);
-			dartPosition1 -= 40.f * dt;
+			dartTrap[0]->getMoveCompPtr()->position = dartTrap[0]->getMoveCompPtr()->position + DirectX::XMVectorSet(-110.f * dt, 0, 0, 0.f);
+			dartPosition1 -= 110.f * dt;
 		}
 	}
 
@@ -66,14 +104,14 @@ void KevinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 	{
 		if (dartPosition2 <= 0)
 		{
-			dartPosition2 = 40.f;
-			dartTrap[1]->getMoveCompPtr()->position = this->getRelativePosition(DirectX::XMVectorSet(10.f, 27.f, -60.f + 140.f, 0.f));
+			dartPosition2 = 110.f;
+			dartTrap[1]->getMoveCompPtr()->position = this->getRelativePosition(DirectX::XMVectorSet(10.f, 27.f, -50.f + 140.f, 0.f));
 			dartFly2 = false;
 		}
 		else
 		{
-			dartTrap[1]->getMoveCompPtr()->position = dartTrap[1]->getMoveCompPtr()->position + DirectX::XMVectorSet(-40.f * dt, 0, 0, 0.f);
-			dartPosition2 -= 40.f * dt;
+			dartTrap[1]->getMoveCompPtr()->position = dartTrap[1]->getMoveCompPtr()->position + DirectX::XMVectorSet(-110.f * dt, 0, 0, 0.f);
+			dartPosition2 -= 110.f * dt;
 		}
 	}
 
@@ -82,18 +120,20 @@ void KevinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 
 	if (this->lever[0]->getCanUseLever() == true)
 	{
-		if (this->m_player->getinUse() == true)
+		if (this->m_player->getinUse() == true && this->trapActive1 == true)
 		{
+			this->lever[0]->getMoveCompPtr()->rotation -= DirectX::XMVectorSet(XMConvertToRadians(180.f), 0.f, 0.f, 0.f);
 			trapActive1 = false;
 		}
 	}
 
 	this->lever[1]->collidesWithPlayer();
-	if (this->lever[1]->getCanUseLever() == true)
+	if (this->lever[1]->getCanUseLever() == true && this->trapActive2 == true)
 	{
 		if (this->m_player->getinUse() == true)
 		{
-			trapActive2 = false;
+			this->lever[1]->getMoveCompPtr()->rotation -= DirectX::XMVectorSet(XMConvertToRadians(180.f), 0.f, 0.f, 0.f);
+			trapActive2 = false;			
 		}
 	}
 
@@ -106,6 +146,20 @@ void KevinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 			if(!m_completed)
 				this->onCompleted();
 		}
+	}
+	
+}
+
+void KevinsRoom::looseLife()
+{
+	this->lives--;
+}
+
+void KevinsRoom::checkNrOfLives()
+{
+	if (this->lives <= 0)
+	{
+		this->lostThePuzzle = true;
 	}
 }
 
@@ -125,7 +179,7 @@ void KevinsRoom::portals()
 	DirectX::XMVECTOR rotation = DirectX::XMVectorSet(0.f, 0.f, 0.f, 1.f);
 
 	//Add portals here
-	vec = DirectX::XMVectorSet(-13.f, 3.f, -25.f, 1.f);
+	vec = DirectX::XMVectorSet(-13.f, 8.f, -30.f, 1.f);
 	XMVECTOR vecScale = DirectX::XMVectorSet(1.3f, 1.3f, -1.3f, 1.f);
 	this->addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 10, &m_models->at(10), vec, NormalScale, DirectX::XMFLOAT3(3.f, 8.f, 0.6f), 0, false);
 }
@@ -145,12 +199,40 @@ void KevinsRoom::createBoundingBoxes()
 	this->addBoundingBox({ 9.5f, 2.f, -120.f + 140.f, 1 }, DirectX::XMFLOAT3(2.f, 40.f, 85.f));
 	this->addBoundingBox({ -31.f, 2.f, -120.f + 140.f, 1 }, DirectX::XMFLOAT3(2.f, 40.f, 85.f));
 
+	//this->addBoundingBox({ -15.f, 10.f, -78.f + 140.f }, DirectX::XMFLOAT3(20.f, 10.f, 2.5f));
+	
+
+	//this->addBoundingBox({ 3.6f, 5.f, -93.3f + 140.f, 1.f }, DirectX::XMFLOAT3(2.7f, 2.7f, 2.7f));
+	
+	//scorpionEDGE ONLY FOR VISUAL
+	//this->addBoundingBox({ -15.f, 10.f, -126.f + 140.f, 1}, DirectX::XMFLOAT3(20.f, 10.f, 2.5f));
+
+
 	triggerBB.emplace_back();
-	this->addTriggerBB({ -10.f, 27.f, -80.f + 140.f }, DirectX::XMFLOAT3(20.f, 10.f, 2.5f));
+	this->addTriggerBB({ -10.f, 27.f, -80.f + 140.f }, DirectX::XMFLOAT3(20.f, 10.f, 4.5f));
 	triggerBB.back() = this->m_triggerBoundingBoxes.back();
 
 	triggerBB.emplace_back();
-	this->addTriggerBB({ -10.f, 27.f, -60.f + 140.f }, DirectX::XMFLOAT3(20.f, 10.f, 2.5f));
+	this->addTriggerBB({ -10.f, 27.f, -50.f + 140.f }, DirectX::XMFLOAT3(20.f, 10.f, 4.5f));
+	triggerBB.back() = this->m_triggerBoundingBoxes.back();
+
+	//scorpionEdge
+	triggerBB.emplace_back();
+	this->addTriggerBB({ -15.f, 10.f, -126.f + 140.f }, DirectX::XMFLOAT3(20.f, 10.f, 2.5f));
+	triggerBB.back() = this->m_triggerBoundingBoxes.back();
+
+	triggerBB.emplace_back();
+	this->addTriggerBB({ 3.6f, 5.f, -93.3f + 140.f, 1.f }, DirectX::XMFLOAT3(2.7f, 2.7f, 2.7f));
+	triggerBB.back() = this->m_triggerBoundingBoxes.back();
+
+	//Player activate Scorpion trigger
+	triggerBB.emplace_back();
+	this->addTriggerBB({ -11.6f, 2.f, -105.3f + 140.f, 1.f }, DirectX::XMFLOAT3(19.f, 3.f, 19.f));
+	triggerBB.back() = this->m_triggerBoundingBoxes.back();
+
+	//scorpionEdge2
+	triggerBB.emplace_back();
+	this->addTriggerBB({ -15.f, 10.f, -78.f + 140.f }, DirectX::XMFLOAT3(20.f, 10.f, 2.5f));
 	triggerBB.back() = this->m_triggerBoundingBoxes.back();
 
 	deathTrapBB.emplace_back();
@@ -160,7 +242,6 @@ void KevinsRoom::createBoundingBoxes()
 	deathTrapBB.emplace_back();
 	this->addTriggerBB({ -10.f, -0.5f, -63.f + 140.f }, DirectX::XMFLOAT3(27.f, 3.f, 5.f));
 	deathTrapBB.back() = this->m_triggerBoundingBoxes.back();
-
 }
 void KevinsRoom::createSceneObjects()
 {
@@ -169,22 +250,33 @@ void KevinsRoom::createSceneObjects()
 	DirectX::XMVECTOR rotation = DirectX::XMVectorSet(0.f, 0.f, 0.f, 1.f);
 
 	//Kevin room platform
-	vec = DirectX::XMVectorSet(5.f, 25.f, -85.f + 140.f, 1.f);
-	this->addPlatformToRoom(3, &m_models->at(3), vec, DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f));
+	//vec = DirectX::XMVectorSet(5.f, 25.f, -85.f + 140.f, 1.f);
+	//this->addPlatformToRoom(3, &m_models->at(3), vec, DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f));
 
 	//Puzzle Room (Kevins Lever room)
 	vec = DirectX::XMVectorSet(-10.f, 2, -100 + 140.f, 1.f);
 	this->addGameObjectToRoom(false, false, 2, 6, &m_models->at(6), vec, DirectX::XMVectorSet(1, 1, 1, 1), DirectX::XMFLOAT3(1.f, 1.f, 1.f));
+	
+	//platform
+	vec = DirectX::XMVectorSet(-27.f, 25.f, -88.f + 140.f, 1.f);
+	this->addPlatformToRoom(3, &m_models->at(3), vec, DirectX::XMFLOAT3(4.f, 0.5f, 2.5f));
+	this->m_gameObjects.back()->setScale({ 0.0f,0.0f,0.0f, 0.0f });
+	
+
+	//platform
+	vec = DirectX::XMVectorSet(4.f, 25.f, -88.f + 140.f, 1.f);
+	this->addPlatformToRoom(3, &m_models->at(3), vec, DirectX::XMFLOAT3(4.f, 0.5f, 2.5f));
+	this->m_gameObjects.back()->setScale({ 0.0f,0.0f,0.0f, 0.0f });
 
 	//Lever
-	vec = DirectX::XMVectorSet(-15.f, 5.f, -88.f + 140.f, 1.f);
+	vec = DirectX::XMVectorSet(-15.f, 5.f, -87.5f + 140.f, 1.f);
 	rotation = DirectX::XMVectorSet(0.f, pMath::convertDegreesToRadians(-90), pMath::convertDegreesToRadians(-270), 1.f);
 	this->addLeverToRoom(7, &m_models->at(7), vec, rotation, DirectX::XMFLOAT3(2.f, 2.f, 2.f));
 
 	lever.emplace_back(dynamic_cast<Lever*>(this->m_gameObjects.back()));
 
 	//Lever
-	vec = DirectX::XMVectorSet(7.5f, 5.f, -138.f + 140.f, 1.f);
+	vec = DirectX::XMVectorSet(7.5f, 4.f, -89.f + 140.f, 1.f);
 	rotation = DirectX::XMVectorSet(0.f, 0.f, pMath::convertDegreesToRadians(-270), 1.f);
 	this->addLeverToRoom(7, &m_models->at(7), vec, rotation, DirectX::XMFLOAT3(2.f, 2.f, 2.f));
 
@@ -200,14 +292,14 @@ void KevinsRoom::createSceneObjects()
 	wonPuzzleObject[0]->setScale(DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f));
 
 	vec = DirectX::XMVectorSet(10.f, 27, -80 + 140.f, 1.f);
-	this->addGameObjectToRoom(true, false, 2, 3, &m_models->at(3), vec, DirectX::XMVectorSet(.1f, .1f, .1f, 1), DirectX::XMFLOAT3(1.f, 1.f, 1.f));
+	this->addGameObjectToRoom(true, false, 2, 18, &m_models->at(18), vec, DirectX::XMVectorSet(1.f, 1.f, 1.f, 1), DirectX::XMFLOAT3(2.f, 5.f, 5.5f));
 	this->m_gameObjects.back()->setDrawBB(true);
 	this->trapBB.emplace_back(this->m_gameObjects.back()->getAABBPtr());
 
 	this->dartTrap.emplace_back(this->m_gameObjects.back());
 
-	vec = DirectX::XMVectorSet(10.f, 27, -60 + 140.f, 1.f);
-	this->addGameObjectToRoom(true, false, 2, 3, &m_models->at(3), vec, DirectX::XMVectorSet(0.1f, 0.1f, 0.1f, 1), DirectX::XMFLOAT3(1.f, 1.f, 1.f));
+	vec = DirectX::XMVectorSet(10.f, 27, -50 + 140.f, 1.f);
+	this->addGameObjectToRoom(true, false, 2, 18, &m_models->at(18), vec, DirectX::XMVectorSet(1.f, 1.f, 1.f, 1.f), DirectX::XMFLOAT3(2.f, 5.f, 5.5f));
 	this->m_gameObjects.back()->setDrawBB(true);
 	this->trapBB.emplace_back(this->m_gameObjects.back()->getAABBPtr());
 
@@ -217,6 +309,51 @@ void KevinsRoom::createSceneObjects()
 	this->lever[0]->setPlayerBoundingBox(this->m_player->getAABBPtr());
 	this->lever[1]->setPlayerBoundingBox(this->m_player->getAABBPtr());
 	this->wonPuzzleObject[0]->setPlayerBoundingBox(this->m_player->getAABBPtr());
+
+	this->m_wvpCBuffers->emplace_back();
+
+	this->m_wvpCBuffers->back().init(this->m_device, this->m_dContext);
+
+
+	//SCORPION
+
+	this->scorpion = new followingEnemy();
+	this->scorpion->init(true, 16, this->m_wvpCBuffers->size() - 1, &m_models->at(16), m_player);
+	this->scorpion->getMoveCompPtr()->position = XMVectorSet(-11.f, 2.9f, -100.f + 140.f, 1.f) + this->m_worldPosition;
+
+	this->m_gameObjects.emplace_back(this->scorpion);
+	
+	this->scorpionBB = this->scorpion->getBB();
+
+	this->scorpionObject.emplace_back(this->m_gameObjects.back());
+
+	////SCORPION
+
+	//this->scorpion2 = new followingEnemy();
+	//this->scorpion2->init(true, 16, this->m_wvpCBuffers->size() - 1, &m_models->at(16), m_player);
+	//this->scorpion2->getMoveCompPtr()->position = XMVectorSet(4.f, 2.9f, -100.f + 140.f, 1.f) + this->m_worldPosition;
+
+	//this->m_gameObjects.emplace_back(this->scorpion2);
+
+	//dartTrapWall
+	vec = DirectX::XMVectorSet(7.f, 30.f, -80.f + 140.f, 1.f);
+	this->addGameObjectToRoom(false, false, 2, 17, &m_models->at(17), vec, DirectX::XMVectorSet(1, 1, 1, 1), DirectX::XMFLOAT3(1.f, 1.f, 1.f));
+
+	this->dartTrapWall.emplace_back(this->m_gameObjects.back());
+	this->m_gameObjects.back()->setRotation(XMVectorSet(0.0f, XMConvertToRadians(180.0f), 0.0f, 0.0f));
+
+	//dartTrapWall2
+	vec = DirectX::XMVectorSet(7.f, 30.f, -50.f + 140.f, 1.f);
+	this->addGameObjectToRoom(false, false, 2, 17, &m_models->at(17), vec, DirectX::XMVectorSet(1, 1, 1, 1), DirectX::XMFLOAT3(1.f, 1.f, 1.f));
+
+	this->dartTrapWall.emplace_back(this->m_gameObjects.back());
+	this->m_gameObjects.back()->setRotation(XMVectorSet(0.0f, XMConvertToRadians(180.0f), 0.0f, 0.0f));
+
+	//ExpandingBridge
+	vec = DirectX::XMVectorSet(-14.f, 24.2f, -76.f + 140.f, 1.f);
+	this->addGameObjectToRoom(true, true, 2, 19, &m_models->at(19), vec, DirectX::XMVectorSet(1, 1, 1, 1), DirectX::XMFLOAT3(5.f, 1.f, 10.f));
+	
+	this->expandingBridge.emplace_back(this->m_gameObjects.back());
 
 }
 void KevinsRoom::onCompleted()

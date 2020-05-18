@@ -167,6 +167,7 @@ DirectX::XMMATRIX GameObject::getWorldMatrix() const
 		DirectX::XMMatrixTranslationFromVector(this->m_movementComp->position));
 }
 
+
 DirectX::XMMATRIX GameObject::getTranslationMatrix() const
 {
 	return DirectX::XMMatrixTranslationFromVector(this->m_movementComp->position);

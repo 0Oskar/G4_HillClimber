@@ -153,7 +153,7 @@ void DisplayViewingAreaControls(FbxCamera* pCamera)
     DisplayDouble("        Near Plane: ", pCamera->NearPlane.Get());
     cameraData.nearPlane = float(pCamera->NearPlane.Get());
     DisplayDouble("        Far Plane: ", pCamera->FarPlane.Get());
-    cameraData.farPlane = float(pCamera->LockMode.Get());
+    cameraData.farPlane = float(pCamera->FarPlane.Get());
     DisplayBool("        Mouse Lock: ", pCamera->LockMode.Get());
 }
 

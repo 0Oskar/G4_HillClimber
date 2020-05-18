@@ -40,3 +40,11 @@ struct CameraBFF
 	float farPlane;
 	float FOV;
 };
+
+struct KeyFrameBff
+{
+	int time;
+	float pos[3];
+	float rot[3];
+	float scale[3];
+};

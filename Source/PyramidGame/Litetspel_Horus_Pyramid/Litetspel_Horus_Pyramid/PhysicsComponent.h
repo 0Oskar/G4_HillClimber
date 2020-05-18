@@ -220,7 +220,7 @@ public:
 		// Pyramid Intersection
 		if (AABBNextFrame.Intersects(pyramidOBB))
 		{
-			this->m_velocity.z = -25.f;
+			this->m_velocity.z = -20.f;
 			this->m_velocity.y = -20.f;
 			this->m_isFalling = true;
 			//if (xAABB.Intersects(pyramidOBB))

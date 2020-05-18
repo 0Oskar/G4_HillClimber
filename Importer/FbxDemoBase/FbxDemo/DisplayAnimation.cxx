@@ -18,6 +18,12 @@
 #pragma GCC diagnostic ignored "-Wformat-security"
 #endif
 
+FileWrite myFile4("../biFile.bff");
+FileWrite myStringFile4("../stringFile.bff");
+std::vector<KeyFrameBff> keyFrameData;
+int currentFrame = -1;
+int someVar = -1;
+
 void DisplayAnimation(FbxAnimStack* pAnimStack, FbxNode* pNode, bool isSwitcher = false);
 void DisplayAnimation(FbxAnimLayer* pAnimLayer, FbxNode* pNode, bool isSwitcher = false);
 void DisplayAnimation(FbxAudioLayer* pAudioLayer, bool isSwitcher = false);
@@ -38,7 +44,10 @@ void DisplayAnimation(FbxScene* pScene)
         lOutputString += "\n";
         FBXSDK_printf(lOutputString);
 
-        DisplayAnimation(lAnimStack, pScene->GetRootNode());
+        DisplayAnimation(lAnimStack, pScene->GetRootNode()); ////--------------------------------------------------------------------
+
+        //myStringFile4.writeToStringFile(
+        //"Hej\n");
     }
 }
 
@@ -74,9 +83,9 @@ void DisplayAnimation(FbxAnimStack* pAnimStack, FbxNode* pNode, bool isSwitcher)
 	lOutputString += "\n\n";
     FBXSDK_printf(lOutputString);
 
-    for (l = 0; l < nbAnimLayers; l++)
+    for (l = 0; l < nbAnimLayers; l++) 
     {
-        FbxAnimLayer* lAnimLayer = pAnimStack->GetMember<FbxAnimLayer>(l);
+        FbxAnimLayer* lAnimLayer = pAnimStack->GetMember<FbxAnimLayer>(l); ////--------------------------------------------------------------------
 
         lOutputString = "AnimLayer ";
         lOutputString += l;
@@ -84,6 +93,8 @@ void DisplayAnimation(FbxAnimStack* pAnimStack, FbxNode* pNode, bool isSwitcher)
         FBXSDK_printf(lOutputString);
 
         DisplayAnimation(lAnimLayer, pNode, isSwitcher);
+        //myStringFile4.writeToStringFile(
+        //"Hej\n");
     }
 
 	for (l = 0; l < nbAudioLayers; l++)
@@ -97,6 +108,8 @@ void DisplayAnimation(FbxAnimStack* pAnimStack, FbxNode* pNode, bool isSwitcher)
 
 		DisplayAnimation(lAudioLayer, isSwitcher);
 		FBXSDK_printf("\n");
+        //myStringFile4.writeToStringFile(
+        //"Hej\n");
 	}
 }
 
@@ -124,6 +137,8 @@ void DisplayAnimation(FbxAudioLayer* pAudioLayer, bool )
 		lOutputString += lClip->GetName();
 		lOutputString += "\n";
 		FBXSDK_printf(lOutputString);
+        //myStringFile4.writeToStringFile(
+        //"Hej\n");
 	}
 }
 
@@ -159,18 +174,21 @@ void DisplayChannels(FbxNode* pNode, FbxAnimLayer* pAnimLayer, void (*DisplayCur
         {
             FBXSDK_printf("        TX\n");
             DisplayCurve(lAnimCurve);
+            //keyFrameData[currentFrame].pos[0] = DisplayCurve(lAnimCurve);
         }
         lAnimCurve = pNode->LclTranslation.GetCurve(pAnimLayer, FBXSDK_CURVENODE_COMPONENT_Y);
         if (lAnimCurve)
         {
             FBXSDK_printf("        TY\n");
             DisplayCurve(lAnimCurve);
+            keyFrameData[currentFrame].pos[1];
         }
         lAnimCurve = pNode->LclTranslation.GetCurve(pAnimLayer, FBXSDK_CURVENODE_COMPONENT_Z);
         if (lAnimCurve)
         {
             FBXSDK_printf("        TZ\n");
             DisplayCurve(lAnimCurve);
+            keyFrameData[currentFrame].pos[2];
         }
 
         lAnimCurve = pNode->LclRotation.GetCurve(pAnimLayer, FBXSDK_CURVENODE_COMPONENT_X);
@@ -178,18 +196,21 @@ void DisplayChannels(FbxNode* pNode, FbxAnimLayer* pAnimLayer, void (*DisplayCur
         {
             FBXSDK_printf("        RX\n");
             DisplayCurve(lAnimCurve);
+            keyFrameData[currentFrame].rot[0];
         }
         lAnimCurve = pNode->LclRotation.GetCurve(pAnimLayer, FBXSDK_CURVENODE_COMPONENT_Y);
         if (lAnimCurve)
         {
             FBXSDK_printf("        RY\n");
             DisplayCurve(lAnimCurve);
+            keyFrameData[currentFrame].rot[1];
         }
         lAnimCurve = pNode->LclRotation.GetCurve(pAnimLayer, FBXSDK_CURVENODE_COMPONENT_Z);
         if (lAnimCurve)
         {
             FBXSDK_printf("        RZ\n");
             DisplayCurve(lAnimCurve);
+            keyFrameData[currentFrame].rot[2];
         }
 
         lAnimCurve = pNode->LclScaling.GetCurve(pAnimLayer, FBXSDK_CURVENODE_COMPONENT_X);
@@ -197,18 +218,21 @@ void DisplayChannels(FbxNode* pNode, FbxAnimLayer* pAnimLayer, void (*DisplayCur
         {
             FBXSDK_printf("        SX\n");
             DisplayCurve(lAnimCurve);
+            keyFrameData[currentFrame].scale[0];
         }    
         lAnimCurve = pNode->LclScaling.GetCurve(pAnimLayer, FBXSDK_CURVENODE_COMPONENT_Y);
         if (lAnimCurve)
         {
             FBXSDK_printf("        SY\n");
             DisplayCurve(lAnimCurve);
+            keyFrameData[currentFrame].scale[1];
         }
         lAnimCurve = pNode->LclScaling.GetCurve(pAnimLayer, FBXSDK_CURVENODE_COMPONENT_Z);
         if (lAnimCurve)
         {
             FBXSDK_printf("        SZ\n");
             DisplayCurve(lAnimCurve);
+            keyFrameData[currentFrame].scale[2];
         }
     }
 
@@ -319,7 +343,7 @@ void DisplayChannels(FbxNode* pNode, FbxAnimLayer* pAnimLayer, void (*DisplayCur
 			int lBlendShapeDeformerCount = lGeometry->GetDeformerCount(FbxDeformer::eBlendShape);
 			for(int lBlendShapeIndex = 0; lBlendShapeIndex<lBlendShapeDeformerCount; ++lBlendShapeIndex)
 			{
-				FbxBlendShape* lBlendShape = (FbxBlendShape*)lGeometry->GetDeformer(lBlendShapeIndex, FbxDeformer::eBlendShape);
+				FbxBlendShape* lBlendShape = (FbxBlendShape*)lGeometry->GetDeformer(lBlendShapeIndex, FbxDeformer::eBlendShape); //---------------------------------------
 
 				int lBlendShapeChannelCount = lBlendShape->GetBlendShapeChannelCount();
 				for(int lChannelIndex = 0; lChannelIndex<lBlendShapeChannelCount; ++lChannelIndex)
@@ -370,6 +394,8 @@ void DisplayChannels(FbxNode* pNode, FbxAnimLayer* pAnimLayer, void (*DisplayCur
 
                 for( int c = 0; c < lCurveNode->GetCurveCount(0U); c++ )
                 {
+                    //myStringFile4.writeToStringFile(
+                    //"Hej\n");
                     lAnimCurve = lCurveNode->GetCurve(0U, c);
                     if (lAnimCurve)
                         DisplayCurve(lAnimCurve);
@@ -394,6 +420,8 @@ void DisplayChannels(FbxNode* pNode, FbxAnimLayer* pAnimLayer, void (*DisplayCur
 
                 for( int c = 0; c < lCurveNode->GetCurveCount(0U); c++ )
                 {
+                    //myStringFile4.writeToStringFile(
+                    //"Hej\n");
                     lAnimCurve = lCurveNode->GetCurve(0U, c);
                     if (lAnimCurve)
                     {
@@ -404,6 +432,8 @@ void DisplayChannels(FbxNode* pNode, FbxAnimLayer* pAnimLayer, void (*DisplayCur
 
                 for( int c = 0; c < lCurveNode->GetCurveCount(1U); c++ )
                 {
+                    //myStringFile4.writeToStringFile(
+                    //"Hej\n");
                     lAnimCurve = lCurveNode->GetCurve(1U, c);
                     if (lAnimCurve)
                     {
@@ -414,6 +444,8 @@ void DisplayChannels(FbxNode* pNode, FbxAnimLayer* pAnimLayer, void (*DisplayCur
 
                 for( int c = 0; c < lCurveNode->GetCurveCount(2U); c++ )
                 {
+                    //myStringFile4.writeToStringFile(
+                    //"Hej\n");
                     lAnimCurve = lCurveNode->GetCurve(2U, c);
                     if (lAnimCurve)
                     {
@@ -438,6 +470,8 @@ void DisplayChannels(FbxNode* pNode, FbxAnimLayer* pAnimLayer, void (*DisplayCur
 
                 for( int c = 0; c < lCurveNode->GetCurveCount(0U); c++ )
                 {
+                    //myStringFile4.writeToStringFile(
+                    //"Hej\n");
                     lAnimCurve = lCurveNode->GetCurve(0U, c);
                     if (lAnimCurve)
                         DisplayListCurve(lAnimCurve, &lProperty);
@@ -506,17 +540,49 @@ void DisplayCurveKeys(FbxAnimCurve* pCurve)
     FbxString lOutputString;
     int     lCount;
 
+
     int lKeyCount = pCurve->KeyGetCount();
+    keyFrameData.resize(lKeyCount);
+    someVar++;
 
     for(lCount = 0; lCount < lKeyCount; lCount++)
     {
+        currentFrame = lCount;
         lKeyValue = static_cast<float>(pCurve->KeyGetValue(lCount));
         lKeyTime  = pCurve->KeyGetTime(lCount);
 
         lOutputString = "            Key Time: ";
         lOutputString += lKeyTime.GetTimeString(lTimeString, FbxUShort(256));
+        
+        std::string temp = lKeyTime.GetTimeString(lTimeString, FbxUShort(256));
+        if (temp[temp.size() - 1] == '*') // kolla om sissta är *
+        {
+            temp.pop_back(); // ta bort den sissta *
+        }
+        keyFrameData[currentFrame].time = std::atoi(temp.c_str());
+
         lOutputString += ".... Key Value: ";
         lOutputString += lKeyValue;
+        
+        if (someVar == 0)
+            keyFrameData[currentFrame].pos[0] = lKeyValue;
+        if (someVar == 1)
+            keyFrameData[currentFrame].pos[1] = lKeyValue;
+        if (someVar == 2)
+            keyFrameData[currentFrame].pos[2] = lKeyValue;
+        if (someVar == 3)
+            keyFrameData[currentFrame].rot[0] = lKeyValue;
+        if (someVar == 4)
+            keyFrameData[currentFrame].rot[1] = lKeyValue;
+        if (someVar == 5)
+            keyFrameData[currentFrame].rot[2] = lKeyValue;
+        if (someVar == 6)
+            keyFrameData[currentFrame].scale[0] = lKeyValue;
+        if (someVar == 7)
+            keyFrameData[currentFrame].scale[1] = lKeyValue;
+        if (someVar == 8)
+            keyFrameData[currentFrame].scale[2] = lKeyValue;
+
         lOutputString += " [ ";
         lOutputString += interpolation[ InterpolationFlagToIndex(pCurve->KeyGetInterpolation(lCount)) ];
         if ((pCurve->KeyGetInterpolation(lCount)&FbxAnimCurveDef::eInterpolationConstant) == FbxAnimCurveDef::eInterpolationConstant)
@@ -536,6 +602,42 @@ void DisplayCurveKeys(FbxAnimCurve* pCurve)
         lOutputString += " ]";
         lOutputString += "\n";
         FBXSDK_printf (lOutputString);
+    }
+
+    
+    if (someVar == 8)
+    {
+        
+
+
+        keyFrameData.resize(lKeyCount);
+        myStringFile4.writeToStringFile("\n\n\n-------------  Vertex Animations: \n\n");
+
+        for (int i = 0; i < lKeyCount; i++)
+        {
+
+            myStringFile4.writeToStringFile(
+                "Frame: " + std::to_string(keyFrameData[i].time) +
+                "\n" +
+                "PosX: " + std::to_string(keyFrameData[i].pos[0]) +
+                "\n" +
+                "PosY: " + std::to_string(keyFrameData[i].pos[1]) +
+                "\n" +
+                "PosZ: " + std::to_string(keyFrameData[i].pos[2]) +
+                "\n" +
+                "RotX: " + std::to_string(keyFrameData[i].rot[0]) +
+                "\n" +
+                "RotY: " + std::to_string(keyFrameData[i].rot[1]) +
+                "\n" +
+                "RotZ: " + std::to_string(keyFrameData[i].rot[2]) +
+                "\n" +
+                "ScaleX: " + std::to_string(keyFrameData[i].scale[0]) +
+                "\n" +
+                "ScaleY: " + std::to_string(keyFrameData[i].scale[1]) +
+                "\n" +
+                "ScaleZ: " + std::to_string(keyFrameData[i].scale[2]) +
+                "\n\n");
+        }
     }
 }
 
@@ -565,5 +667,7 @@ void DisplayListCurveKeys(FbxAnimCurve* pCurve, FbxProperty* pProperty)
 
         lOutputString += "\n";
         FBXSDK_printf (lOutputString);
+        myStringFile4.writeToStringFile(
+        "Hej\n");
     }
 }
