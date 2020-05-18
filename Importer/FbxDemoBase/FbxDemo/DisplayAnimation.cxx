@@ -607,11 +607,8 @@ void DisplayCurveKeys(FbxAnimCurve* pCurve)
     
     if (someVar == 8)
     {
-        
-
-
         keyFrameData.resize(lKeyCount);
-        myStringFile4.writeToStringFile("\n\n\n-------------  Vertex Animations: \n\n");
+        myStringFile4.writeToStringFile("\n\n\n-------------  Vertex Animation: \n\n");
 
         for (int i = 0; i < lKeyCount; i++)
         {

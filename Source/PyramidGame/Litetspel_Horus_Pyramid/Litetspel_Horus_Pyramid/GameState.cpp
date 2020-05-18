@@ -274,7 +274,7 @@ void GameState::loadModels()
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); //reset material
 	this->m_models[22].initializeModelBff(m_device, m_dContext, "PuzzleRoomGateExtended.bff", mat, L"Textures/ColorTexture.png"); //load model
   
-  //23. Scorpion
+    //23. Scorpion
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
 	this->m_models[23].loadVertexFromOBJ(m_device, m_dContext, L"Models/scorpionDone.obj", mat, L"Textures/ColorTexture.png");
@@ -412,11 +412,11 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(100, 2, 100, 1), audioEngine, &this->m_gameTime);
 
 	dynamic_cast<KevinsRoom*>(this->m_rooms.back())->init();
-	m_activeRoom = m_rooms.back();
+	//m_activeRoom = m_rooms.back();
 
 	//Edvin Room [3]
 	this->m_rooms.emplace_back(new EdvinsRoom());
-	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, -100, 1), audioEngine, &this->m_gameTime);
+	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(-200, 0, 200, 1), audioEngine, &this->m_gameTime);
 	dynamic_cast<EdvinsRoom*>(this->m_rooms.back())->init();
 
 	// Tristan Room [4]
