@@ -240,6 +240,7 @@
     <ClInclude Include="ResourceHandler.h" />
     <ClInclude Include="Room.h" />
     <ClInclude Include="Shaders.h" />
+    <ClInclude Include="StatusTextHandler.h" />
     <ClInclude Include="TemplateRoom.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="TristansRoom.h" />

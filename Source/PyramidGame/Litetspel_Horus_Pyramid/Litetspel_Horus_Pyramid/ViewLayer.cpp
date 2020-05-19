@@ -138,6 +138,22 @@ void ViewLayer::initShaders()
 	shaders.vs = L"Shader Files\\VertexShader.hlsl";
 	shaders.ps = L"Shader Files\\PixelShader.hlsl";
 	this->m_shaders.initialize(this->m_device.Get(), this->m_deviceContext.Get(), shaders);
+
+	CD3D11_RASTERIZER_DESC rastDesc(
+		D3D11_FILL_SOLID, 
+		D3D11_CULL_NONE, 
+		FALSE,
+		D3D11_DEFAULT_DEPTH_BIAS, 
+		D3D11_DEFAULT_DEPTH_BIAS_CLAMP,
+		D3D11_DEFAULT_SLOPE_SCALED_DEPTH_BIAS, 
+		TRUE, 
+		FALSE, 
+		TRUE, 
+		TRUE
+	);
+
+	HRESULT hr = this->m_device->CreateRasterizerState(&rastDesc, this->m_spriteRasterizerState.ReleaseAndGetAddressOf());
+	assert(SUCCEEDED(hr) && "Error, failed to create sprite rasterizer state!");
 }
 
 ViewLayer::ViewLayer()
@@ -214,6 +230,14 @@ void ViewLayer::setTriggerBoxFromActiveRoom(std::vector<BoundingBox>* bbFromRoom
 void ViewLayer::setModelsFromState(std::vector<Model>* models)
 {
 	this->m_modelsFromState = models;
+}
+
+void ViewLayer::setDirLightFromActiveRoom(PS_DIR_BUFFER dirLight)
+{
+	this->m_dirLight = dirLight;
+	this->m_dirLightBuffer.m_data = this->m_dirLight;
+	this->m_dirLightBuffer.upd();
+	
 }
 
 void ViewLayer::setWvpCBufferFromState(std::vector< ConstBuffer<VS_CONSTANT_BUFFER> >* buffers)
@@ -308,7 +332,7 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 	this->m_crosshairPosition = DirectX::XMFLOAT2((float)crosshairX, (float)crosshairY);
 
 	// Primitive Batch
-	this->m_states = std::make_unique<DirectX::CommonStates >(this->m_device.Get());
+	this->m_states = std::make_unique< DirectX::CommonStates >(this->m_device.Get());
 	this->m_batch = std::make_unique< DirectX::PrimitiveBatch<DirectX::VertexPositionColor> >(this->m_deviceContext.Get());
 
 	this->m_effect = std::make_unique< DirectX::BasicEffect >(this->m_device.Get());
@@ -329,14 +353,30 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 	assert(SUCCEEDED(hr) && "Error, failed to create input layout for primitives!");
 
 	// FPS counter
-	this->m_spriteFont = std::make_unique<DirectX::SpriteFont>(this->m_device.Get(), L"Fonts\\product_sans_16.spritefont");
+	this->m_spriteFont16 = std::make_unique<DirectX::SpriteFont>(this->m_device.Get(), L"Fonts\\jost_16_bold.spritefont");
+	this->m_spriteFont32 = std::make_unique<DirectX::SpriteFont>(this->m_device.Get(), L"Fonts\\jost_32_bold.spritefont");
 	this->m_fpsString = "FPS: NULL";
 
+	// Timer
+	this->m_timerString = "Time: ";
+
+	// Status Text Handler
+	this->m_statusTextHandler = &StatusTextHandler::get();
+	this->m_statusTextHandler->setWindowDimensions(this->m_options->width, this->m_options->height);
 }
 
 void ViewLayer::update(float dt)
 {
+	//FPS Counter
+	this->m_fps++;
+	if (1.0 < m_timer.timeElapsed())
+	{
+		this->m_fpsString = "FPS: " + std::to_string(this->m_fps);
+		m_timer.restart();
+		this->m_fps = 0;
+	}
 
+	this->m_statusTextHandler->update(dt);
 }
 
 void ViewLayer::render()
@@ -366,15 +406,15 @@ void ViewLayer::render()
 	{
 		// Get indexes
 		GameObject* gObject = this->m_gameObjectsFromState->at(i);
-    if (gObject->visible())
+		if (gObject->visible())
 		{
-      int wvpIndex = gObject->getWvpCBufferIndex();
-      int mIndex = gObject->getModelIndex();
-      // Set Constant buffer
-      this->m_deviceContext->VSSetConstantBuffers(0, 1, this->m_wvpCBufferFromState->at(wvpIndex).GetAdressOf());
-      // Draw Model
-      this->m_modelsFromState->at(mIndex).m_material.setTexture(gObject->getTexturePath().c_str());
-      this->m_modelsFromState->at(mIndex).draw(viewPMtrx);
+			int wvpIndex = gObject->getWvpCBufferIndex();
+			int mIndex = gObject->getModelIndex();
+			// Set Constant buffer
+			this->m_deviceContext->VSSetConstantBuffers(0, 1, this->m_wvpCBufferFromState->at(wvpIndex).GetAdressOf());
+			// Draw Model
+			this->m_modelsFromState->at(mIndex).m_material.setTexture(gObject->getTexturePath().c_str());
+			this->m_modelsFromState->at(mIndex).draw(viewPMtrx);
 		}
 	}
 	//Active room draw
@@ -455,24 +495,16 @@ void ViewLayer::render()
 
 		m_batch->End();
 	}
-
-	//FPS Counter
-	this->m_fps++;
-	if (1.0 < m_timer.timeElapsed())
-	{
-		this->m_fpsString = "FPS: " + std::to_string(this->m_fps);
-		m_timer.restart();
-		this->m_fps = 0;
-	}
-
-	m_timerString = "Time: ";
-
+	
 	// Draw Sprites
-	this->m_spriteBatch->Begin();
+	this->m_deviceContext->RSSetState(this->m_spriteRasterizerState.Get());
+
+	this->m_spriteBatch->Begin(SpriteSortMode_Deferred, this->m_states->NonPremultiplied());
 	this->m_spriteBatch->Draw(this->m_crossHairSRV, this->m_crosshairPosition);
-	this->m_spriteFont->DrawString(this->m_spriteBatch.get(), this->m_fpsString.c_str(), DirectX::XMFLOAT2((float)this->m_options->width - 100.f, 0), DirectX::Colors::White, 0.f, DirectX::XMFLOAT2(0.f, 0.f));
-	this->m_spriteFont->DrawString(this->m_spriteBatch.get(), this->m_timerString.c_str(), DirectX::XMFLOAT2(10.f, 0.f), this->m_gameTimePtr->isActive() ? DirectX::Colors::White : DirectX::Colors::Green, 0.f, DirectX::XMFLOAT2(0.f, 0.f));
-	this->m_spriteFont->DrawString(this->m_spriteBatch.get(), std::to_string((int)this->m_gameTimePtr->timeElapsed()).c_str(), DirectX::XMFLOAT2(65.f, 0.f), DirectX::Colors::Green, 0.f, DirectX::XMFLOAT2(0.f, 0.f));
+	this->m_spriteFont16->DrawString(this->m_spriteBatch.get(), this->m_fpsString.c_str(), DirectX::XMFLOAT2((float)this->m_options->width - 110.f, 10.f), DirectX::Colors::White, 0.f, DirectX::XMFLOAT2(0.f, 0.f));
+	this->m_spriteFont16->DrawString(this->m_spriteBatch.get(), this->m_timerString.c_str(), DirectX::XMFLOAT2(10.f, 10.f), this->m_gameTimePtr->isActive() ? DirectX::Colors::White : DirectX::Colors::Green, 0.f, DirectX::XMFLOAT2(0.f, 0.f));
+	this->m_spriteFont16->DrawString(this->m_spriteBatch.get(), std::to_string(this->m_gameTimePtr->timeElapsed()).c_str(), DirectX::XMFLOAT2(70.f, 10.f), DirectX::Colors::Green, 0.f, DirectX::XMFLOAT2(0.f, 0.f));
+	this->m_statusTextHandler->render(this->m_spriteFont32.get(), this->m_spriteBatch.get());
 	this->m_spriteBatch->End();
 	
 	// Swap Frames
@@ -481,6 +513,5 @@ void ViewLayer::render()
 
 void ViewLayer::toggleDrawPrimitives(bool toggle)
 {
-	//this->m_drawPrimitives = !this->m_drawPrimitives;
 	this->m_drawPrimitives = toggle;
 }

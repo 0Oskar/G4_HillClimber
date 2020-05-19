@@ -7,14 +7,25 @@ void TristansRoom::createBoundingBoxes()
 	DirectX::XMVECTOR pos = DirectX::XMVectorSet(0.f, -10.f, 0.f, 1.f);
 	DirectX::XMVECTOR rot = DirectX::XMVectorSet(0.f, 0.f, 0.f, 1.f);
 
-	this->addBoundingBox({ 60, 15, 0 }, DirectX::XMFLOAT3(1, 75, 150)); //Right Wall
-	this->addBoundingBox({ -60, 15, 0 }, DirectX::XMFLOAT3(1, 75, 150)); //Left Wall
-	this->addBoundingBox({ 0, 4.5f, -110 }, DirectX::XMFLOAT3(100, 75, 1)); //Back Wall
-	this->addBoundingBox({ 0, 4.5f, 90 }, DirectX::XMFLOAT3(100, 75, 1)); //Front Wall
+	this->addBoundingBox({ 70, 15, 0 }, DirectX::XMFLOAT3(1, 75, 150)); //Left Wall
+	this->addBoundingBox({ -70, 15, 0 }, DirectX::XMFLOAT3(1, 75, 150)); //Right Wall
+	this->addBoundingBox({ 0, 4.5f, 110 }, DirectX::XMFLOAT3(100, 75, 1)); //Back Wall
+	this->addBoundingBox({ 0, 4.5f, -100 }, DirectX::XMFLOAT3(100, 75, 1)); //Front Wall
 
-	this->addBoundingBox({ 0, 45, -100 }, DirectX::XMFLOAT3(100, 1, 40)); //Floor 1
-	this->addBoundingBox({ 0, 45, 45 }, DirectX::XMFLOAT3(100, 1, 45)); //Floor 2
-	//this->addBoundingBox({ 0, 45, -30 }, DirectX::XMFLOAT3(50, 1, 40)); //Floor TEMP
+	this->addBoundingBox({ 0, 45, 90 }, DirectX::XMFLOAT3(100, 1, 30)); //Floor 1
+	this->addBoundingBox({ 0, 45, -52 }, DirectX::XMFLOAT3(100, 1, 50)); //Floor 2
+	//this->addBoundingBox({ 0, 45, 0 }, DirectX::XMFLOAT3(50, 1, 100)); //Floor TEMP
+
+	this->addBoundingBox({ 0, 46, 89 }, DirectX::XMFLOAT3(1, 4, 1)); //Front Lever
+	//Back Levers
+	this->addBoundingBox({ 15, 46, 73 }, DirectX::XMFLOAT3(1, 4, 1)); //Lever 1
+	this->addBoundingBox({ 0, 46, 73 }, DirectX::XMFLOAT3(1, 4, 1)); //Lever 2
+	this->addBoundingBox({ -15, 46, 73 }, DirectX::XMFLOAT3(1, 4, 1)); //Lever 3
+
+	//Spikes
+	SpikesBB.emplace_back();
+	this->addTriggerBB({ 0, 20, 0 }, DirectX::XMFLOAT3(100, 1, 200));
+	SpikesBB.back() = this->m_triggerBoundingBoxes.back();
 
 }
 
@@ -25,8 +36,13 @@ void TristansRoom::createSceneObjects()
 	DirectX::XMVECTOR rot = DirectX::XMVectorSet(0.f, 0.f, 0.f, 1.f);
 
 	// PuzzleRoom
-	pos = DirectX::XMVectorSet(0, 4.5f + 45, 0, 1); // World pos
+	pos = DirectX::XMVectorSet(0, 45, 110, 1); // World pos
 	this->addGameObjectToRoom(true, false, 1, 21, &m_models->at(21), pos, scale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(1.f, 1.f, 1.f));
+
+	//Bells
+	//pos = DirectX::XMVectorSet(0, 4.5f + 45, 0, 1); // World pos
+	pos = DirectX::XMVectorSet(0, 45, 100, 1); // World pos
+	this->addGameObjectToRoom(true, false, 1, 27, &m_models->at(27), pos, scale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(1.f, 1.f, 1.f));
 }
 
 void TristansRoom::onCompleted()
@@ -37,7 +53,7 @@ void TristansRoom::onCompleted()
 TristansRoom::TristansRoom()
 {
 	Room::initParent();
-	this->m_entrencePosition = { -2, 45 , -105, 1 };
+	this->m_entrencePosition = { 0, 42 , 100, 1 };
 }
 
 TristansRoom::~TristansRoom()
@@ -48,6 +64,14 @@ TristansRoom::~TristansRoom()
 void TristansRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activeRoomChanged)
 {
 	Room::update(dt, camera, activeRoom, activeRoomChanged);
+
+	for (int i = 0; i < SpikesBB.size(); i++)
+	{
+		if (SpikesBB[i].Intersects(this->m_player->getAABB()))
+		{
+			this->m_player->getMoveCompPtr()->position = this->getRelativePosition(DirectX::XMVectorSet(0, 55, 95, 1));
+		}
+	}
 }
 
 void TristansRoom::onEntrance()

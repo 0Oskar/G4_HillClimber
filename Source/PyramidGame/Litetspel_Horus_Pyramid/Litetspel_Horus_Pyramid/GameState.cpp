@@ -71,6 +71,16 @@ std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* GameState::getWvpCBuffersPtr()
 	return &this->m_wvpCBuffers;
 }
 
+PS_DIR_BUFFER GameState::getActiveRoomDirectionalLight()
+{
+	if (this->m_activeRoom != nullptr)
+	{
+		return this->m_activeRoom->getDirectionalLight();
+	}
+	else
+		return PS_DIR_BUFFER();
+}
+
 void GameState::addGameObjectToWorld(bool dynamic, bool colide, float weight, int mdlIndx, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR scale3D, DirectX::XMFLOAT3 boundingBoxSize = DirectX::XMFLOAT3(0, 0, 0), DirectX::XMFLOAT3 acceleration = DirectX::XMFLOAT3(1, 1, 1), DirectX::XMFLOAT3 deceleration = DirectX::XMFLOAT3(1, 1, 1))
 {
 	this->m_gameObjects.emplace_back(new GameObject());
@@ -267,7 +277,7 @@ void GameState::loadModels()
 	//21. PuzzleRoom(Tristan)
 	this->m_models.emplace_back(); //add empty model
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); //reset material
-	this->m_models[21].initializeModelBff(m_device, m_dContext, "TristansPuzzleRoom.bff", mat, L"Textures/ColorTexture.png"); //load model
+	this->m_models[21].initializeModelBff(m_device, m_dContext, "TristansNewPuzzleRoom.bff", mat, L"Textures/ColorTexture.png"); //load model
 
 	//22. Pyramid Portal
 	this->m_models.emplace_back(); //add empty model
@@ -294,6 +304,10 @@ void GameState::loadModels()
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
 	this->m_models[26].loadVertexFromOBJ(m_device, m_dContext, L"Models/expandingBridge.obj", mat, L"Textures/ColorTexture.png");
 
+	//27. Bells
+	this->m_models.emplace_back();
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
+	this->m_models[27].initializeModelBff(m_device, m_dContext, "Bells.bff", mat, L"Textures/ColorTexture.png"); //load model
 }
 
 

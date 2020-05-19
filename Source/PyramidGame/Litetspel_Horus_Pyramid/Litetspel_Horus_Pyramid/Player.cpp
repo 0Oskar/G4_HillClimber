@@ -11,10 +11,7 @@ Player::Player() : GameObject()
 
 Player::~Player() {}
 
-
-
 void Player::initialize(int modelIndex, int wvpCBufferIndex, float mass, DirectX::XMFLOAT3 acceleration, DirectX::XMFLOAT3 deceleration, GameObject* gObj, GameObject* hookGun, std::vector<GameObject*>* chainGObjects, std::shared_ptr<DirectX::AudioEngine> audioEngine, std::vector<DirectX::BoundingBox*> platformBB)
-
 {
 	this->m_isStatic = true;
 	this->m_collidable = true;
@@ -171,12 +168,12 @@ void Player::update(Keyboard* keyboard, Mouse* mouse, float dt)
 	if (keyboard->isKeyPressed('P'))
 	{
 		this->m_QAmode = false;
-		OutputDebugString(L"QA Mode Off!\n");
+		StatusTextHandler::get().sendText("QA Mode OFF!", 0.5);
 	}
 	if (keyboard->isKeyPressed('O'))
 	{
 		this->m_QAmode = true;
-		OutputDebugString(L"QA Mode ON!\n");
+		StatusTextHandler::get().sendText("QA Mode ON!", 0.5);
 	}
 
 	this->m_physicsComp->updatePosition(dt);
