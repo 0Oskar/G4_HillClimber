@@ -44,6 +44,11 @@ void Player::addAABBFromVector(std::vector<DirectX::BoundingBox>* aabb)
 	}
 }
 
+void Player::clearAABB()
+{
+	this->m_collidableAABBoxes.clear();
+}
+
 void Player::addOrientedBBFromVector(std::vector<DirectX::BoundingOrientedBox>* obb)
 {
 	for (int i = 0; i < obb->size(); i++)

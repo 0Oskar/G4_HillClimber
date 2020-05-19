@@ -38,8 +38,7 @@ void PyramidRoom::init(DirectX::BoundingOrientedBox* pyramidBB)
 	this->m_pyramidOOB = *pyramidBB; //DirectX::BoundingOrientedBox(*pyramidBB);
 	this->createSceneObjects();
 	this->createBoundingBoxes();
-	this->m_player->addAABBFromVector(&m_boundingBoxes);
-	this->m_player->addOrientedBBFromVector(&m_orientedBoundingBoxes);
+
 
 	this->m_entrencePosition = { -25, 0, -20 };
 }
@@ -83,7 +82,7 @@ void PyramidRoom::onEntrance()
 			yValue = XMVectorGetY(platformPtr->getPosition());
 			if (yValue > XMVectorGetY(currentPos) && yValue < XMVectorGetY(nextPos))
 			{
-				platformPtr->setPosition(platformPtr->getPosition() + platformPush);
+				platformPtr->pushToLocation(platformPtr->getPosition() + platformPush);
 			}
 		}
 	}
@@ -177,7 +176,7 @@ void PyramidRoom::createSceneObjects()
 			castToPlatform->setPlayerBoundingBox(this->m_player->getAABBPtr());
 			castToPlatform->initAudioComponent(audioEngine, m_player->getMoveCompPtr());
 			/*if (XMVectorGetY(castToPlatform->getPosition()) >= XMVectorGetY(this->m_checkpointHandler.getIndexPosAt(0).second))
-				castToPlatform->setPosition(castToPlatform->getPosition() - this->platformPush);*/
+				castToPlatform->pushToLocation(castToPlatform->getPosition() - this->platformPush);*/
 		}
 	}
 }

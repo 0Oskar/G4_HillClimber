@@ -167,7 +167,6 @@ void KevinsRoom::init()
 {
 	this->createSceneObjects();
 	this->createBoundingBoxes();
-	this->m_player->addAABBFromVector(&m_boundingBoxes);
 
 	this->m_entrencePosition = XMVectorSet(-13, 4, -20, 0);
 }
