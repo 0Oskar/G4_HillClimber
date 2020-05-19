@@ -179,9 +179,10 @@ void KevinsRoom::portals()
 	DirectX::XMVECTOR rotation = DirectX::XMVectorSet(0.f, 0.f, 0.f, 1.f);
 
 	//Add portals here
-	vec = DirectX::XMVectorSet(-13.f, 8.f, 10.f, 1.f);
+	vec = DirectX::XMVectorSet(-13.f, 8.f, -29.f, 1.f);
 	XMVECTOR vecScale = DirectX::XMVectorSet(1.3f, 1.3f, -1.3f, 1.f);
 	this->addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 10, &m_models->at(10), vec, NormalScale, DirectX::XMFLOAT3(3.f, 8.f, 0.6f), 0, false);
+	m_gameObjects.back()->setRotation(XMVectorSet(0.0f, XMConvertToRadians(180), 0.0f, 0.0f));
 }
 
 void KevinsRoom::onEntrance()
@@ -194,10 +195,14 @@ void KevinsRoom::createBoundingBoxes()
 	this->addBoundingBox({ -10.f, 1.0f, -104.0f + 140.f, 1 }, DirectX::XMFLOAT3(20.f, 2.5f, 20.f));
 	this->addBoundingBox({ -10.f, 1.0f, -154.0f + 140.f, 1}, DirectX::XMFLOAT3(20.f, 2.5f, 20.8f));
 	this->addBoundingBox({ -10.f, 11.f, -86.f + 140.f, 1 }, DirectX::XMFLOAT3(20.f, 13.f, 1.5f));
-	this->addBoundingBox({ -10.f, 23.f, -77.f + 140.f, 1 }, DirectX::XMFLOAT3(20.f, 2.5f, 10.8f));
-	this->addBoundingBox({ -10.f, 23.f, -45.4f + 140.f, 1}, DirectX::XMFLOAT3(20.f, 2.5f, 11.8f));
+	this->addBoundingBox({ -10.f, 21.5f, -77.f + 140.f, 1 }, DirectX::XMFLOAT3(20.f, 2.5f, 10.8f));
+	this->addBoundingBox({ -10.f, 21.5f, -45.4f + 140.f, 1}, DirectX::XMFLOAT3(20.f, 2.5f, 11.8f));
 	this->addBoundingBox({ 9.5f, 2.f, -120.f + 140.f, 1 }, DirectX::XMFLOAT3(2.f, 40.f, 85.f));
-	this->addBoundingBox({ -31.f, 2.f, -120.f + 140.f, 1 }, DirectX::XMFLOAT3(2.f, 40.f, 85.f));
+	this->addBoundingBox({ -28.f, 2.f, -120.f + 140.f, 1 }, DirectX::XMFLOAT3(2.f, 40.f, 85.f));
+
+
+	this->addBoundingBox({ -10.f, 4.0f, -170.0f + 140.f, 1 }, DirectX::XMFLOAT3(20.f, 20.5f, 0.8f));
+	this->addBoundingBox({ -10.f, 27.0f, -36.0f + 140.f, 1 }, DirectX::XMFLOAT3(20.f, 20.5f, 0.8f));
 
 	//this->addBoundingBox({ -15.f, 10.f, -78.f + 140.f }, DirectX::XMFLOAT3(20.f, 10.f, 2.5f));
 	
@@ -222,7 +227,7 @@ void KevinsRoom::createBoundingBoxes()
 	triggerBB.back() = this->m_triggerBoundingBoxes.back();
 
 	triggerBB.emplace_back();
-	this->addTriggerBB({ 3.6f, 5.f, -93.3f + 140.f, 1.f }, DirectX::XMFLOAT3(2.7f, 2.7f, 2.7f));
+	this->addTriggerBB({ -23.5f, 5.f, -93.3f + 140.f, 1.f }, DirectX::XMFLOAT3(2.7f, 2.7f, 2.7f));
 	triggerBB.back() = this->m_triggerBoundingBoxes.back();
 
 	//Player activate Scorpion trigger
@@ -259,13 +264,7 @@ void KevinsRoom::createSceneObjects()
 	this->m_gameObjects.back()->setRotation({ 0.0f, XMConvertToRadians(180), 0.0f, 0.f });
 	
 	//platform
-	vec = DirectX::XMVectorSet(-27.f, 25.f, -88.f + 140.f, 1.f);
-	this->addPlatformToRoom(3, &m_models->at(3), vec, DirectX::XMFLOAT3(4.f, 0.5f, 2.5f));
-	this->m_gameObjects.back()->setScale({ 0.0f,0.0f,0.0f, 0.0f });
-	
-
-	//platform
-	vec = DirectX::XMVectorSet(4.f, 25.f, -88.f + 140.f, 1.f);
+	vec = DirectX::XMVectorSet(-9.f, 23.5f, -88.5f + 140.f, 1.f);
 	this->addPlatformToRoom(3, &m_models->at(3), vec, DirectX::XMFLOAT3(4.f, 0.5f, 2.5f));
 	this->m_gameObjects.back()->setScale({ 0.0f,0.0f,0.0f, 0.0f });
 
@@ -277,20 +276,21 @@ void KevinsRoom::createSceneObjects()
 	lever.emplace_back(dynamic_cast<Lever*>(this->m_gameObjects.back()));
 
 	//Lever
-	vec = DirectX::XMVectorSet(7.5f, 4.f, -89.f + 140.f, 1.f);
+	vec = DirectX::XMVectorSet(8.8f, 4.f, -110.f + 140.f, 1.f);
 	rotation = DirectX::XMVectorSet(0.f, 0.f, pMath::convertDegreesToRadians(-270), 1.f);
 	this->addLeverToRoom(7, &m_models->at(7), vec, rotation, DirectX::XMFLOAT3(2.f, 2.f, 2.f));
 
 	lever.emplace_back(dynamic_cast<Lever*>(this->m_gameObjects.back()));
 
 	//Lever
-	vec = DirectX::XMVectorSet(-11.f, 30.f, -39.8f + 140.f, 1.f);
+	vec = DirectX::XMVectorSet(-8.f, 30.f, -39.8f + 140.f, 1.f);
 	rotation = DirectX::XMVectorSet(0.f, 0.f, pMath::convertDegreesToRadians(-270), 1.f);
 	this->addLeverToRoom(7, &m_models->at(7), vec, rotation, DirectX::XMFLOAT3(2.f, 2.f, 2.f));
 
 	//Win object
 	wonPuzzleObject.emplace_back(dynamic_cast<Lever*>(this->m_gameObjects.back()));
 	wonPuzzleObject[0]->setScale(DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f));
+	//this->m_gameObjects.back()->setPosition(XMVectorSet(-6.f, 25.f, -70 + 140.f, 1.f));
 
 	//DARTS
 	vec = DirectX::XMVectorSet(10.f, 27, -80 + 140.f, 1.f);
@@ -344,7 +344,7 @@ void KevinsRoom::createSceneObjects()
 	this->m_gameObjects.back()->setRotation(XMVectorSet(0.0f, XMConvertToRadians(180.0f), 0.0f, 0.0f));
 
 	//ExpandingBridge
-	vec = DirectX::XMVectorSet(-14.f, 24.2f, -76.f + 140.f, 1.f);
+	vec = DirectX::XMVectorSet(-14.f, 22.5f, -76.f + 140.f, 1.f);
 	this->addGameObjectToRoom(true, true, 2, 26, &m_models->at(26), vec, DirectX::XMVectorSet(1, 1, 1, 1), DirectX::XMFLOAT3(5.f, 1.f, 10.f));
 	
 	this->expandingBridge.emplace_back(this->m_gameObjects.back());
