@@ -5,7 +5,7 @@
 #include "Timer.h"
 #include "Platform.h"
 #include "Shaders.h"
-
+#include "StatusTextHandler.h"
 
 class ViewLayer
 {
@@ -13,7 +13,6 @@ private:
 	// Window
 	HWND m_window;
 	GameOptions* m_options;
-
 
 	// Device
 	Microsoft::WRL::ComPtr< ID3D11Device > m_device;
@@ -41,11 +40,6 @@ private:
 	// Texture Handler
 	ResourceHandler* resourceHandler;
 
-	// Crosshair SpriteBatch
-	std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
-	ID3D11ShaderResourceView* m_crossHairSRV;
-	DirectX::XMFLOAT2 m_crosshairPosition;
-
 	// Primitive Batch
 	std::unique_ptr< DirectX::CommonStates > m_states;
 	std::unique_ptr< DirectX::BasicEffect > m_effect;
@@ -70,13 +64,25 @@ private:
 	DirectX::XMMATRIX* m_viewMatrix;
 	DirectX::XMMATRIX* m_projectionMatrix;
 
+	// Sprite and Font Rendering
+	std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
+	std::unique_ptr<DirectX::SpriteFont> m_spriteFont16;
+	std::unique_ptr<DirectX::SpriteFont> m_spriteFont32;
+	Microsoft::WRL::ComPtr<ID3D11RasterizerState> m_spriteRasterizerState;
+
+	// Crosshair SpriteBatch
+	ID3D11ShaderResourceView* m_crossHairSRV;
+	DirectX::XMFLOAT2 m_crosshairPosition;
+
 	// FPS Counter
 	Timer m_timer;
-	std::unique_ptr<DirectX::SpriteFont> m_spriteFont;
 	std::string m_fpsString;
 	std::string m_timerString;
 	int m_fps;
 	Timer* m_gameTimePtr;
+
+	// Status Text
+	StatusTextHandler* m_statusTextHandler;
 
 	// Initialization Functions
 	void initDeviceAndSwapChain();
