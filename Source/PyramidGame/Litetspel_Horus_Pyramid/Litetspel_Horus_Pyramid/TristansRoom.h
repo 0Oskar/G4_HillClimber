@@ -10,6 +10,24 @@ private:
 
 	std::vector<DirectX::BoundingBox> SpikesBB;
 
+	std::vector<DirectX::BoundingBox*> LeverBB;
+	std::vector<Lever*> leverGrip;
+	//GameObject* leverGrip;
+	Timer leverTimer[4];
+	bool canPullLever0 = true;
+	bool canPullLever1 = true;
+	bool canPullLever2 = true;
+	bool canPullLever3 = true;
+
+	bool moveLever0 = false;
+	bool moveLever1 = false;
+	bool moveLever2 = false;
+	bool moveLever3 = false;
+
+	bool tempLever0 = false;
+	bool tempLever1 = false;
+	bool tempLever2 = false;
+	bool tempLever3 = false;
 
 public:
 
