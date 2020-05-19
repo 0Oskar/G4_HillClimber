@@ -14,7 +14,7 @@ void TristansRoom::createBoundingBoxes()
 
 	this->addBoundingBox({ 0, 45, 90 }, DirectX::XMFLOAT3(100, 1, 30)); //Floor 1
 	this->addBoundingBox({ 0, 45, -52 }, DirectX::XMFLOAT3(100, 1, 50)); //Floor 2
-	//this->addBoundingBox({ 0, 45, 0 }, DirectX::XMFLOAT3(50, 1, 100)); //Floor TEMP
+	this->addBoundingBox({ 0, 45, 0 }, DirectX::XMFLOAT3(50, 1, 100)); //Floor TEMP
 
 	this->addBoundingBox({ 0, 46, 89 }, DirectX::XMFLOAT3(1, 4, 1)); //Front Lever
 	//Back Levers
