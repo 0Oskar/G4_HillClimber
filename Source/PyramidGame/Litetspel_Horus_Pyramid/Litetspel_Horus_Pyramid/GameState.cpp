@@ -500,6 +500,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->addPortalToWorld({ 0, 0, 0, 0 }, 10, & m_models[10], { -10, 4, -5, 1 }, { 1, 1, 1, 1 }, { 2, 2, 1 }, 3); //Edvins room
 	this->addPortalToWorld({ 0, 0, 0, 0 }, 10, &m_models[10], { 30, 4, -5, 1 }, { 1, 1, 1, 1 }, { 2, 2, 1 }, 4); //Tristans Room
 
+	this->m_activeRoom->updatePlayerBB();
 	this->m_gameTime.start();
 }
 

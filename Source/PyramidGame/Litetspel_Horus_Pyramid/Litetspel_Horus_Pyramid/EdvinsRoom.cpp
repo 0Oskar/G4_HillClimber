@@ -7,6 +7,8 @@
 
 void EdvinsRoom::createBoundingBoxes()
 {
+	this->addBoundingBox({ -35, -1, 0, 1 }, DirectX::XMFLOAT3(35, 2, 30)); //Floor Wall
+
 	this->addBoundingBox({ 0, 6, 0, 1 }, DirectX::XMFLOAT3(1, 12, 20)); //Back Wall
 	this->addBoundingBox({ -69, 6, 0, 1 }, DirectX::XMFLOAT3(1, 12, 6)); //Portal Wall
 
@@ -389,7 +391,6 @@ void EdvinsRoom::init()
 {
 	this->createSceneObjects();
 	this->createBoundingBoxes();
-	this->m_player->addAABBFromVector(&m_boundingBoxes);
 	this->lever->setPlayerBoundingBox(this->m_player->getAABBPtr());
 	
 	srand(time(0));
