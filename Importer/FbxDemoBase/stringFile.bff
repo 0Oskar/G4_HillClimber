@@ -1,4 +1,4 @@
-Triangle3
+MasterTri3
 ------------- Index 0)
 
 PosX: -0.500000
@@ -98,38 +98,6 @@ Intencity: 100.000000
 
 
 
-------------- Light
-
-Name: spotLight1
-
-Type: Spot
-
-ColorR: 1.000000
-ColorG: 1.000000
-ColorB: 1.000000
-
-Dir: 40.000000
-
-Intencity: 100.000000
-
-
-
-------------- Light
-
-Name: pointLight1
-
-Type: Point
-
-ColorR: 1.000000
-ColorG: 1.000000
-ColorB: 1.000000
-
-Dir: 45.000000
-
-Intencity: 100.000000
-
-
-
 ------------- Camera:
 
 PosX: 0.000000
@@ -149,40 +117,3 @@ nearPlane: 0.100000
 farPlane: 10000.000000
 
 FOV: 25.115000 (degrees)
-
-
--------------  Vertex Animations: 
-
-Frame: 1
-PosX: 0.000000
-PosY: 0.000000
-PosZ: 0.000000
-RotX: 0.000000
-RotY: 0.000000
-RotZ: 0.000000
-ScaleX: 1.000000
-ScaleY: 1.000000
-ScaleZ: 1.000000
-
-Frame: 60
-PosX: 5.000000
-PosY: 5.000000
-PosZ: 5.000000
-RotX: 90.000000
-RotY: 90.000000
-RotZ: 90.000000
-ScaleX: 1.000000
-ScaleY: 1.000000
-ScaleZ: 1.000000
-
-Frame: 125
-PosX: 10.000000
-PosY: 10.000000
-PosZ: 10.000000
-RotX: 0.000000
-RotY: 0.000000
-RotZ: 0.000000
-ScaleX: 1.000000
-ScaleY: 1.000000
-ScaleZ: 1.000000
-

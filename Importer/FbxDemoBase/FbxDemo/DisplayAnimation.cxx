@@ -20,7 +20,7 @@
 
 FileWrite myFile4("../biFile.bff");
 FileWrite myStringFile4("../stringFile.bff");
-std::vector<KeyFrameBff> keyFrameData;
+std::vector<VertexAnimBFF> keyFrameData;
 int currentFrame = -1;
 int someVar = -1;
 
@@ -181,14 +181,14 @@ void DisplayChannels(FbxNode* pNode, FbxAnimLayer* pAnimLayer, void (*DisplayCur
         {
             FBXSDK_printf("        TY\n");
             DisplayCurve(lAnimCurve);
-            keyFrameData[currentFrame].pos[1];
+            //keyFrameData[currentFrame].pos[1];
         }
         lAnimCurve = pNode->LclTranslation.GetCurve(pAnimLayer, FBXSDK_CURVENODE_COMPONENT_Z);
         if (lAnimCurve)
         {
             FBXSDK_printf("        TZ\n");
             DisplayCurve(lAnimCurve);
-            keyFrameData[currentFrame].pos[2];
+            //keyFrameData[currentFrame].pos[2];
         }
 
         lAnimCurve = pNode->LclRotation.GetCurve(pAnimLayer, FBXSDK_CURVENODE_COMPONENT_X);
@@ -196,21 +196,21 @@ void DisplayChannels(FbxNode* pNode, FbxAnimLayer* pAnimLayer, void (*DisplayCur
         {
             FBXSDK_printf("        RX\n");
             DisplayCurve(lAnimCurve);
-            keyFrameData[currentFrame].rot[0];
+            //keyFrameData[currentFrame].rot[0];
         }
         lAnimCurve = pNode->LclRotation.GetCurve(pAnimLayer, FBXSDK_CURVENODE_COMPONENT_Y);
         if (lAnimCurve)
         {
             FBXSDK_printf("        RY\n");
             DisplayCurve(lAnimCurve);
-            keyFrameData[currentFrame].rot[1];
+            //keyFrameData[currentFrame].rot[1];
         }
         lAnimCurve = pNode->LclRotation.GetCurve(pAnimLayer, FBXSDK_CURVENODE_COMPONENT_Z);
         if (lAnimCurve)
         {
             FBXSDK_printf("        RZ\n");
             DisplayCurve(lAnimCurve);
-            keyFrameData[currentFrame].rot[2];
+            //keyFrameData[currentFrame].rot[2];
         }
 
         lAnimCurve = pNode->LclScaling.GetCurve(pAnimLayer, FBXSDK_CURVENODE_COMPONENT_X);
@@ -218,21 +218,21 @@ void DisplayChannels(FbxNode* pNode, FbxAnimLayer* pAnimLayer, void (*DisplayCur
         {
             FBXSDK_printf("        SX\n");
             DisplayCurve(lAnimCurve);
-            keyFrameData[currentFrame].scale[0];
+            //keyFrameData[currentFrame].scale[0];
         }    
         lAnimCurve = pNode->LclScaling.GetCurve(pAnimLayer, FBXSDK_CURVENODE_COMPONENT_Y);
         if (lAnimCurve)
         {
             FBXSDK_printf("        SY\n");
             DisplayCurve(lAnimCurve);
-            keyFrameData[currentFrame].scale[1];
+            //keyFrameData[currentFrame].scale[1];
         }
         lAnimCurve = pNode->LclScaling.GetCurve(pAnimLayer, FBXSDK_CURVENODE_COMPONENT_Z);
         if (lAnimCurve)
         {
             FBXSDK_printf("        SZ\n");
             DisplayCurve(lAnimCurve);
-            keyFrameData[currentFrame].scale[2];
+            //keyFrameData[currentFrame].scale[2];
         }
     }
 
@@ -605,37 +605,37 @@ void DisplayCurveKeys(FbxAnimCurve* pCurve)
     }
 
     
-    if (someVar == 8)
-    {
-        keyFrameData.resize(lKeyCount);
-        myStringFile4.writeToStringFile("\n\n\n-------------  Vertex Animation: \n\n");
+    //if (someVar == 8)
+    //{
+    //    keyFrameData.resize(lKeyCount);
+    //    myStringFile4.writeToStringFile("\n\n\n-------------  Vertex Animation: \n\n");
 
-        for (int i = 0; i < lKeyCount; i++)
-        {
+    //    for (int i = 0; i < lKeyCount; i++)
+    //    {
 
-            myStringFile4.writeToStringFile(
-                "Frame: " + std::to_string(keyFrameData[i].time) +
-                "\n" +
-                "PosX: " + std::to_string(keyFrameData[i].pos[0]) +
-                "\n" +
-                "PosY: " + std::to_string(keyFrameData[i].pos[1]) +
-                "\n" +
-                "PosZ: " + std::to_string(keyFrameData[i].pos[2]) +
-                "\n" +
-                "RotX: " + std::to_string(keyFrameData[i].rot[0]) +
-                "\n" +
-                "RotY: " + std::to_string(keyFrameData[i].rot[1]) +
-                "\n" +
-                "RotZ: " + std::to_string(keyFrameData[i].rot[2]) +
-                "\n" +
-                "ScaleX: " + std::to_string(keyFrameData[i].scale[0]) +
-                "\n" +
-                "ScaleY: " + std::to_string(keyFrameData[i].scale[1]) +
-                "\n" +
-                "ScaleZ: " + std::to_string(keyFrameData[i].scale[2]) +
-                "\n\n");
-        }
-    }
+    //        myStringFile4.writeToStringFile(
+    //            "Frame: " + std::to_string(keyFrameData[i].time) +
+    //            "\n" +
+    //            "PosX: " + std::to_string(keyFrameData[i].pos[0]) +
+    //            "\n" +
+    //            "PosY: " + std::to_string(keyFrameData[i].pos[1]) +
+    //            "\n" +
+    //            "PosZ: " + std::to_string(keyFrameData[i].pos[2]) +
+    //            "\n" +
+    //            "RotX: " + std::to_string(keyFrameData[i].rot[0]) +
+    //            "\n" +
+    //            "RotY: " + std::to_string(keyFrameData[i].rot[1]) +
+    //            "\n" +
+    //            "RotZ: " + std::to_string(keyFrameData[i].rot[2]) +
+    //            "\n" +
+    //            "ScaleX: " + std::to_string(keyFrameData[i].scale[0]) +
+    //            "\n" +
+    //            "ScaleY: " + std::to_string(keyFrameData[i].scale[1]) +
+    //            "\n" +
+    //            "ScaleZ: " + std::to_string(keyFrameData[i].scale[2]) +
+    //            "\n\n");
+    //    }
+    //}
 }
 
 void DisplayListCurveKeys(FbxAnimCurve* pCurve, FbxProperty* pProperty)
