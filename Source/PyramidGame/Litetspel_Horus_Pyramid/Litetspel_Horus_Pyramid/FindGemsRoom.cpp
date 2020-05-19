@@ -58,44 +58,44 @@ void FindGemsRoom::createSceneObjects()
 	++nrOfCurrentLModels;
 	this->addLeverToRoom(nrOfCurrentLModels, &m_models->at(nrOfCurrentLModels), pos, rot, XMFLOAT3(5, 10, 2)); // fix bounding box so it match my lever
 	this->m_gameObjects.back()->getMoveCompPtr()->rotation = rot;
-	lever = dynamic_cast<Lever*>(m_gameObjects.back());
+	m_Lever = dynamic_cast<Lever*>(m_gameObjects.back());
 
 	// -- 5 gems --
 
 	// Gem 1
-	pos = DirectX::XMVectorSet(0, 0, 50, 1);
+	pos = DirectX::XMVectorSet(-28, -2, 26, 1);
 	++nrOfCurrentLModels;
 	this->addLeverToRoom(nrOfCurrentLModels, &m_models->at(nrOfCurrentLModels), pos, rot, XMFLOAT3(2, 2, 2)); // fix bounding box so it match the gems
-	this->gems.emplace_back(dynamic_cast<Lever*>(this->m_gameObjects.back())); //Add to buttons array
-	this->gems.at(0)->setPlayerBoundingBox(this->m_player->getAABBPtr()); //Create BB
+	this->m_Gems.emplace_back(dynamic_cast<Lever*>(this->m_gameObjects.back())); //Add to buttons array
+	this->m_Gems.at(0)->setPlayerBoundingBox(this->m_player->getAABBPtr()); //Create BB
 
 	// Gem 2
 	pos = DirectX::XMVectorSet(0, 1, 50, 1);
 	++nrOfCurrentLModels;
 	this->addLeverToRoom(nrOfCurrentLModels, &m_models->at(nrOfCurrentLModels), pos, rot, XMFLOAT3(2, 2, 2)); // fix bounding box so it match the gems
-	this->gems.emplace_back(dynamic_cast<Lever*>(this->m_gameObjects.back())); //Add to buttons array
-	this->gems.at(0)->setPlayerBoundingBox(this->m_player->getAABBPtr()); //Create BB
+	this->m_Gems.emplace_back(dynamic_cast<Lever*>(this->m_gameObjects.back())); //Add to buttons array
+	this->m_Gems.at(0)->setPlayerBoundingBox(this->m_player->getAABBPtr()); //Create BB
 
 	// Gem 3
 	pos = DirectX::XMVectorSet(0, 2, 50, 1);
 	++nrOfCurrentLModels;
 	this->addLeverToRoom(nrOfCurrentLModels, &m_models->at(nrOfCurrentLModels), pos, rot, XMFLOAT3(2, 2, 2)); // fix bounding box so it match the gems
-	this->gems.emplace_back(dynamic_cast<Lever*>(this->m_gameObjects.back())); //Add to buttons array
-	this->gems.at(0)->setPlayerBoundingBox(this->m_player->getAABBPtr()); //Create BB
+	this->m_Gems.emplace_back(dynamic_cast<Lever*>(this->m_gameObjects.back())); //Add to buttons array
+	this->m_Gems.at(0)->setPlayerBoundingBox(this->m_player->getAABBPtr()); //Create BB
 
 	// Gem 4
 	pos = DirectX::XMVectorSet(0, 3, 50, 1);
 	++nrOfCurrentLModels;
 	this->addLeverToRoom(nrOfCurrentLModels, &m_models->at(nrOfCurrentLModels), pos, rot, XMFLOAT3(2, 2, 2)); // fix bounding box so it match the gems
-	this->gems.emplace_back(dynamic_cast<Lever*>(this->m_gameObjects.back())); //Add to buttons array
-	this->gems.at(0)->setPlayerBoundingBox(this->m_player->getAABBPtr()); //Create BB
+	this->m_Gems.emplace_back(dynamic_cast<Lever*>(this->m_gameObjects.back())); //Add to buttons array
+	this->m_Gems.at(0)->setPlayerBoundingBox(this->m_player->getAABBPtr()); //Create BB
 
 	// Gem 5
 	pos = DirectX::XMVectorSet(0, 4, 50, 1);
 	++nrOfCurrentLModels;
 	this->addLeverToRoom(nrOfCurrentLModels, &m_models->at(nrOfCurrentLModels), pos, rot, XMFLOAT3(2, 2, 2)); // fix bounding box so it match the gems
-	this->gems.emplace_back(dynamic_cast<Lever*>(this->m_gameObjects.back())); //Add to buttons array
-	this->gems.at(0)->setPlayerBoundingBox(this->m_player->getAABBPtr()); //Create BB
+	this->m_Gems.emplace_back(dynamic_cast<Lever*>(this->m_gameObjects.back())); //Add to buttons array
+	this->m_Gems.at(0)->setPlayerBoundingBox(this->m_player->getAABBPtr()); //Create BB
 }
 
 
@@ -129,6 +129,17 @@ void FindGemsRoom::init()
 	this->m_player->addAABBFromVector(&m_boundingBoxes);
 	
 	this->m_entrencePosition = { 0, 0, -26.5, 1 }; //
+
+
+	// Init Gems spawns, 8
+	m_PreFixedSpawnpoints.push_back(DirectX::XMVectorSet(18.5, -0.5, -23.5, 1));  // Chest
+	m_PreFixedSpawnpoints.push_back(DirectX::XMVectorSet(17.5, -0.5, 22.5, 1));   // Front Right Pillar
+	m_PreFixedSpawnpoints.push_back(DirectX::XMVectorSet(-13, -0.9, 19.6, 1));    // Front Left Pillar
+	m_PreFixedSpawnpoints.push_back(DirectX::XMVectorSet(-17.5, -0.8, -3, 1));    // Left Sarcophagus
+	m_PreFixedSpawnpoints.push_back(DirectX::XMVectorSet(-4.2, -0.8, -26.9, 1));  // Next to portal
+	m_PreFixedSpawnpoints.push_back(DirectX::XMVectorSet(28, -2, -25, 1));        // Bottom right moat
+	m_PreFixedSpawnpoints.push_back(DirectX::XMVectorSet(25, -2, 28.5, 1));		  // Front right moat
+	m_PreFixedSpawnpoints.push_back(DirectX::XMVectorSet(-28, -2, 26, 1));        // Front left moat
 }
 
 void FindGemsRoom::portals()

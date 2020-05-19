@@ -12,11 +12,18 @@ private:
 
 
 	//Lever
-	std::vector<DirectX::BoundingBox*> leverBB;
-	Lever* lever;
+	std::vector<DirectX::BoundingBox*> m_LeverBB;
+	Lever* m_Lever;
 
 	// Gems
-	std::vector<Lever*> gems;
+	std::vector<Lever*> m_Gems;
+	unsigned int m_SpawnIndex;
+	bool m_HasPedistal;
+	bool m_CanBePickedUp;
+	std::vector<XMVECTOR> m_PreFixedSpawnpoints;
+	
+
+	
 
 public:
 	FindGemsRoom();
