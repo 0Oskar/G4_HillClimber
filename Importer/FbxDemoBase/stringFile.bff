@@ -1,4 +1,5 @@
-MasterTri3
+Mesh Name: MasterTri
+NrOfVertex: 3
 ------------- Index 0)
 
 PosX: -0.500000
@@ -84,8 +85,6 @@ Opacity: 0.000000
 
 ------------- Light
 
-Name: directionalLight1
-
 Type: Directional
 
 ColorR: 1.000000
@@ -95,6 +94,27 @@ ColorB: 1.000000
 Dir: 45.000000
 
 Intencity: 100.000000
+
+Type: Point
+
+ColorR: 1.000000
+ColorG: 1.000000
+ColorB: 1.000000
+
+Dir: 45.000000
+
+Intencity: 100.000000
+
+Type: Spot
+
+ColorR: 1.000000
+ColorG: 1.000000
+ColorB: 1.000000
+
+Dir: 40.000000
+
+Intencity: 100.000000
+
 
 
 
@@ -117,3 +137,28 @@ nearPlane: 0.100000
 farPlane: 10000.000000
 
 FOV: 25.115000 (degrees)
+
+
+------------- BlendShapes:
+
+PosX: -0.500000
+PosY: 0.000000
+PosZ: 0.472664
+NormX: -0.014615
+NormY: 0.844959
+NormZ: 0.534631
+
+PosX: 0.500000
+PosY: 0.000000
+PosZ: 0.500000
+NormX: -0.014615
+NormY: 0.844959
+NormZ: 0.534631
+
+PosX: 0.500000
+PosY: 0.632729
+PosZ: -0.500000
+NormX: -0.014615
+NormY: 0.844959
+NormZ: 0.534631
+

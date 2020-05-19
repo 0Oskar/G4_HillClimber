@@ -14,18 +14,20 @@
 FileWrite myFile3("../biFile.bff");
 FileWrite myStringFile3("../stringFile.bff");
 LightBFF lightData;
+int nrOfLigths = 0;
+std::vector<LightBFF> lightDataArr;
 
 void DisplayDefaultAnimationValues(FbxLight* pLight);
 
 void DisplayLight(FbxNode* pNode)
 {
+    nrOfLigths++;
+    
+
     FbxLight* lLight = (FbxLight*) pNode->GetNodeAttribute();
 
     DisplayString("Light Name: ", (char *) pNode->GetName());
     char temp[64];
-    strcpy_s(temp, _countof(temp), pNode->GetName());
-    for (int i = 0; i < sizeof(temp); i++)
-        lightData.name[i] = temp[i];
     DisplayMetaDataConnections(lLight);
 
     const char* lLightTypes[] = { "Point", "Directional", "Spot", "Area", "Volume" };
@@ -50,21 +52,34 @@ void DisplayLight(FbxNode* pNode)
 
     DisplayDefaultAnimationValues(lLight);
 
-    myStringFile3.writeToStringFile("\n\n\n------------- Light\n\n");
-    myStringFile3.writeToStringFile(
-        "Name: " + (std::string)lightData.name + "\n" +
-        "\n" +
-        "Type: " + (std::string)lightData.type + "\n" +
-        "\n" +
-        "ColorR: " + std::to_string(lightData.color[0]) + "\n" +
-        "ColorG: " + std::to_string(lightData.color[1]) + "\n" +
-        "ColorB: " + std::to_string(lightData.color[2]) + "\n" +
-        "\n" +
-        "Dir: " + std::to_string(lightData.dir) + "\n" +
-        "\n" +
-        "Intencity: " + std::to_string(lightData.intencity) + "\n");
+    lightDataArr.emplace_back(lightData);
+    //myStringFile3.writeToStringFile("\n\n\n------------- Light\n\n");
+    //myStringFile3.writeToStringFile(
+    //    "Name: " + (std::string)lightData.name + "\n" +
+    //    "\n" +
+    //    "Type: " + (std::string)lightData.type + "\n" +
+    //    "\n" +
+    //    "ColorR: " + std::to_string(lightData.color[0]) + "\n" +
+    //    "ColorG: " + std::to_string(lightData.color[1]) + "\n" +
+    //    "ColorB: " + std::to_string(lightData.color[2]) + "\n" +
+    //    "\n" +
+    //    "Dir: " + std::to_string(lightData.dir) + "\n" +
+    //    "\n" +
+    //    "Intencity: " + std::to_string(lightData.intencity) + "\n");
         
 }
+
+int getNrOfLights()
+{
+    return nrOfLigths;
+}
+
+std::vector<LightBFF> GetLightData()
+{
+    return lightDataArr;
+}
+
+
 
 
 void DisplayDefaultAnimationValues(FbxLight* pLight)

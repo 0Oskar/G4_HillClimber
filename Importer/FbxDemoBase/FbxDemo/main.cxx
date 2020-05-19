@@ -53,6 +53,16 @@ void DisplayGeometricTransform(FbxNode* pNode);
 void DisplayMetaData(FbxScene* pScene);
 
 static bool gVerbose = true;
+FileWrite myFile5("../biFile.bff");
+FileWrite myStringFile5("../stringFile.bff");
+
+MeshBFF meshData2;
+std::vector<VertexBFF> vertexData2;
+MaterialBFF materialData3;
+std::vector<LightBFF> lightData2;
+CameraBFF cameraData2;
+
+std::vector<BlendShapesBFF> blendShapeData3;
 
 //Make a file
 
@@ -62,7 +72,8 @@ int main(int argc, char** argv)
 
     BiReader myFile("../biFile.bff");
     myFile.printToConsole();
-
+    
+    
     FbxManager* lSdkManager = NULL;
     FbxScene* lScene = NULL;
     bool lResult;
@@ -82,7 +93,7 @@ int main(int argc, char** argv)
 	if( lFilePath.IsEmpty() )
 	{
 
-        lFilePath = "../TriLightCamBlend.fbx";
+        lFilePath = "../3Lights.fbx";
 		lResult = LoadScene(lSdkManager, lScene, lFilePath.Buffer());
 	}
 	else
@@ -134,8 +145,127 @@ int main(int argc, char** argv)
         if( gVerbose ) DisplayGenericInfo(lScene);
     }
 
+
+
     // Destroy all objects created by the FBX SDK.
     DestroySdkObjects(lSdkManager, lResult);
+
+    // ****************** Mesh ****************** //
+    meshData2 = GetMeshData();
+    myStringFile5.writeToStringFile(
+        "Mesh Name: " + (std::string)meshData2.name +
+        "\n" + 
+        "NrOfVertex: " + std::to_string(meshData2.nrOfVertex));
+
+    myFile5.writeToFile((const char*)&meshData2, sizeof(MeshBFF)); //Add to biFile
+
+    // ****************** Vertex ****************** //
+    vertexData2 = GetVertxData();
+    for (int i = 0; i < meshData2.nrOfVertex; i++)
+    {
+        myStringFile5.writeToStringFile(
+            "\n------------- Index " + std::to_string(i) + ")\n\n" +
+            "PosX: " + std::to_string(vertexData2[i].pos[0]) + "\n" +
+            "PosY: " + std::to_string(vertexData2[i].pos[1]) + "\n" +
+            "PosZ: " + std::to_string(vertexData2[i].pos[2]) + "\n" +
+            "\n" +
+            "U: " + std::to_string(vertexData2[i].uv[0]) + "\n" +
+            "V: " + std::to_string(vertexData2[i].uv[1]) + "\n" +
+            "\n" +
+            "NormX: " + std::to_string(vertexData2[i].norm[0]) + "\n" +
+            "NormY: " + std::to_string(vertexData2[i].norm[1]) + "\n" +
+            "NormZ: " + std::to_string(vertexData2[i].norm[2]) + "\n" +
+            "\n" +
+            "biNormX: " + std::to_string(vertexData2[i].biNorm[0]) + "\n" +
+            "biNormY: " + std::to_string(vertexData2[i].biNorm[1]) + "\n" +
+            "biNormZ: " + std::to_string(vertexData2[i].biNorm[2]) + "\n" +
+            "\n" +
+            "TanX: " + std::to_string(vertexData2[i].tan[0]) + "\n" +
+            "TanY: " + std::to_string(vertexData2[i].tan[1]) + "\n" +
+            "TanZ: " + std::to_string(vertexData2[i].tan[2]) + "\n" + "\n" + "\n");
+
+        myFile5.writeToFile((const char*)&vertexData2[i], sizeof(VertexBFF)); //Add to biFile
+    }
+
+    // ****************** Material ****************** //
+    materialData3 = GetMaterialData2();
+    myStringFile5.writeToStringFile(
+        "\n------------- Material: \n\n"
+        "DiffuseR: " + std::to_string(materialData3.Diffuse[0]) + "\n" +
+        "DiffuseG: " + std::to_string(materialData3.Diffuse[1]) + "\n" +
+        "DiffuseB: " + std::to_string(materialData3.Diffuse[2]) + "\n" +
+        "\n" +
+        "AmbientR: " + std::to_string(materialData3.Ambient[0]) + "\n" +
+        "AmbientG: " + std::to_string(materialData3.Ambient[1]) + "\n" +
+        "AmbientB: " + std::to_string(materialData3.Ambient[2]) + "\n" +
+        "\n" +
+        "Opacity: " + std::to_string(materialData3.Opacity) + "\n ");
+
+    myFile5.writeToFile((const char*)&materialData3, sizeof(MaterialBFF)); //Add to biFile
+
+    // ****************** Light ****************** //
+    lightData2 = GetLightData();
+    myStringFile5.writeToStringFile("\n\n\n------------- Light\n\n");
+
+    for (int i = 0; i < getNrOfLights(); i++)
+    {
+        myStringFile5.writeToStringFile(
+            "Type: " + (std::string)lightData2[i].type + "\n" +
+            "\n" +
+            "ColorR: " + std::to_string(lightData2[i].color[0]) + "\n" +
+            "ColorG: " + std::to_string(lightData2[i].color[1]) + "\n" +
+            "ColorB: " + std::to_string(lightData2[i].color[2]) + "\n" +
+            "\n" +
+            "Dir: " + std::to_string(lightData2[i].dir) + "\n" +
+            "\n" +
+            "Intencity: " + std::to_string(lightData2[i].intencity) + "\n\n");
+
+        myFile5.writeToFile((const char*)&lightData2[i], sizeof(LightBFF)); //Add to biFile
+    }
+
+    // ****************** Camera ****************** //
+    cameraData2 = GetCameraData();
+    myStringFile5.writeToStringFile("\n\n\n------------- Camera:\n\n");
+    myStringFile5.writeToStringFile(
+        "PosX: " + std::to_string(cameraData2.pos[0]) + "\n" +
+        "PosY: " + std::to_string(cameraData2.pos[1]) + "\n" +
+        "PosZ: " + std::to_string(cameraData2.pos[2]) + "\n" +
+        "\n" +
+        "upVecX: " + std::to_string(cameraData2.upVec[0]) + "\n" +
+        "upVecY: " + std::to_string(cameraData2.upVec[1]) + "\n" +
+        "upVecZ: " + std::to_string(cameraData2.upVec[2]) + "\n" +
+        "\n" +
+        "forwardVecX: " + std::to_string(cameraData2.forwardVec[0]) + "\n" +
+        "forwardVecY: " + std::to_string(cameraData2.forwardVec[1]) + "\n" +
+        "forwardVecZ: " + std::to_string(cameraData2.forwardVec[2]) + "\n" +
+        "\n" +
+        "nearPlane: " + std::to_string(cameraData2.nearPlane) + "\n" +
+        "\n" +
+        "farPlane: " + std::to_string(cameraData2.farPlane) + "\n" +
+        "\n" +
+        "FOV: " + std::to_string(cameraData2.FOV) + " (degrees)");
+
+    myFile5.writeToFile((const char*)&cameraData2, sizeof(CameraBFF)); //Add to biFile
+
+    // ****************** Shapes ****************** //
+    myStringFile5.writeToStringFile("\n\n\n------------- BlendShapes:\n\n");
+    blendShapeData3 = GetBlendShapeData2();
+    for (int i = 0; i < blendShapeData3.size(); i++)
+    {
+        myStringFile5.writeToStringFile(
+        "PosX: " + std::to_string(blendShapeData3[i].pos[0]) +
+        "\n" +
+        "PosY: " + std::to_string(blendShapeData3[i].pos[1]) +
+        "\n" +
+        "PosZ: " + std::to_string(blendShapeData3[i].pos[2]) +
+        "\n" +
+        "NormX: " + std::to_string(blendShapeData3[i].norm[0]) +
+        "\n" +
+        "NormY: " + std::to_string(blendShapeData3[i].norm[1]) +
+        "\n" +
+        "NormZ: " + std::to_string(blendShapeData3[i].norm[2]) +
+        "\n\n");
+    }
 
     return 0;
 }
@@ -203,7 +333,8 @@ void DisplayContent(FbxNode* pNode)
         case FbxNodeAttribute::eLODGroup:
             DisplayLodGroup(pNode);
             break;
-        }   
+        }
+
     }
 
     DisplayUserProperties(pNode);
@@ -216,6 +347,7 @@ void DisplayContent(FbxNode* pNode)
     {
         DisplayContent(pNode->GetChild(i));
     }
+
 }
 
 

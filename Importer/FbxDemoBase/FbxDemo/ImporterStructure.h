@@ -24,7 +24,6 @@ struct MaterialBFF
 
 struct LightBFF
 {
-	char name[64];
 	char type[64];
 	float color[3];
 	float dir;

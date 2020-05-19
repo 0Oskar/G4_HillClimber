@@ -48,7 +48,7 @@ MeshBFF meshData;
 int currentVertex = 0;
 
 MaterialBFF materialData;
-
+std::vector<BlendShapesBFF> blendShapeData2;
 
 void DisplayMesh(FbxNode* pNode)
 {
@@ -86,49 +86,72 @@ void DisplayMesh(FbxNode* pNode)
 	DisplayShape(lMesh);
 
 
-	myFile.writeToFile((const char*)&meshData, sizeof(MeshBFF)); //Add mesh data to output <------------------------------------------
-	myStringFile.writeToStringFile(meshData.name + std::to_string(meshData.nrOfVertex));
-	for (int i = 0; i < vertexCount; i++)
-	{
-		myFile.writeToFile((const char*)&vertexData[i], sizeof(VertexBFF)); //Add vertex data to output <------------------------------------------ 
+	//myFile.writeToFile((const char*)&meshData, sizeof(MeshBFF)); //Add mesh data to output <------------------------------------------
+	//myStringFile.writeToStringFile(meshData.name + std::to_string(meshData.nrOfVertex));
+	//for (int i = 0; i < vertexCount; i++)
+	//{
+	//	myFile.writeToFile((const char*)&vertexData[i], sizeof(VertexBFF)); //Add vertex data to output <------------------------------------------ 
 
-		myStringFile.writeToStringFile(
-			"\n------------- Index " + std::to_string(i) + ")\n\n" +
-			"PosX: " + std::to_string(vertexData[i].pos[0]) + "\n" +
-			"PosY: " + std::to_string(vertexData[i].pos[1]) + "\n" +
-			"PosZ: " + std::to_string(vertexData[i].pos[2]) + "\n" +
-			"\n" +
-			"U: " + std::to_string(vertexData[i].uv[0]) + "\n" +
-			"V: " + std::to_string(vertexData[i].uv[1]) + "\n" +
-			"\n" +
-			"NormX: " + std::to_string(vertexData[i].norm[0]) + "\n" +
-			"NormY: " + std::to_string(vertexData[i].norm[1]) + "\n" +
-			"NormZ: " + std::to_string(vertexData[i].norm[2]) + "\n" +
-			"\n" +
-			"biNormX: " + std::to_string(vertexData[i].biNorm[0]) + "\n" +
-			"biNormY: " + std::to_string(vertexData[i].biNorm[1]) + "\n" +
-			"biNormZ: " + std::to_string(vertexData[i].biNorm[2]) + "\n" +
-			"\n" +
-			"TanX: " + std::to_string(vertexData[i].tan[0]) + "\n" +
-			"TanY: " + std::to_string(vertexData[i].tan[1]) + "\n" +
-			"TanZ: " + std::to_string(vertexData[i].tan[2]) + "\n" + "\n" + "\n");
+	//	myStringFile.writeToStringFile(
+	//		"\n------------- Index " + std::to_string(i) + ")\n\n" +
+	//		"PosX: " + std::to_string(vertexData[i].pos[0]) + "\n" +
+	//		"PosY: " + std::to_string(vertexData[i].pos[1]) + "\n" +
+	//		"PosZ: " + std::to_string(vertexData[i].pos[2]) + "\n" +
+	//		"\n" +
+	//		"U: " + std::to_string(vertexData[i].uv[0]) + "\n" +
+	//		"V: " + std::to_string(vertexData[i].uv[1]) + "\n" +
+	//		"\n" +
+	//		"NormX: " + std::to_string(vertexData[i].norm[0]) + "\n" +
+	//		"NormY: " + std::to_string(vertexData[i].norm[1]) + "\n" +
+	//		"NormZ: " + std::to_string(vertexData[i].norm[2]) + "\n" +
+	//		"\n" +
+	//		"biNormX: " + std::to_string(vertexData[i].biNorm[0]) + "\n" +
+	//		"biNormY: " + std::to_string(vertexData[i].biNorm[1]) + "\n" +
+	//		"biNormZ: " + std::to_string(vertexData[i].biNorm[2]) + "\n" +
+	//		"\n" +
+	//		"TanX: " + std::to_string(vertexData[i].tan[0]) + "\n" +
+	//		"TanY: " + std::to_string(vertexData[i].tan[1]) + "\n" +
+	//		"TanZ: " + std::to_string(vertexData[i].tan[2]) + "\n" + "\n" + "\n");
 
-	}
-	myFile.writeToFile((const char*)&materialData, sizeof(MaterialBFF)); //Add material data to output <------------------------------------------
+	//}
+	//myFile.writeToFile((const char*)&materialData, sizeof(MaterialBFF)); //Add material data to output <------------------------------------------
 
-	myStringFile.writeToStringFile(
-		"\n------------- Material: \n\n"
-		"DiffuseR: " + std::to_string(materialData.Diffuse[0]) + "\n" +
-		"DiffuseG: " + std::to_string(materialData.Diffuse[1]) + "\n" +
-		"DiffuseB: " + std::to_string(materialData.Diffuse[2]) + "\n" +
-		"\n" +
-		"AmbientR: " + std::to_string(materialData.Ambient[0]) + "\n" +
-		"AmbientG: " + std::to_string(materialData.Ambient[1]) + "\n" +
-		"AmbientB: " + std::to_string(materialData.Ambient[2]) + "\n" +
-		"\n" + 
-		"Opacity: " + std::to_string(materialData.Opacity) + "\n ");
+	//myStringFile.writeToStringFile(
+	//	"\n------------- Material: \n\n"
+	//	"DiffuseR: " + std::to_string(materialData.Diffuse[0]) + "\n" +
+	//	"DiffuseG: " + std::to_string(materialData.Diffuse[1]) + "\n" +
+	//	"DiffuseB: " + std::to_string(materialData.Diffuse[2]) + "\n" +
+	//	"\n" +
+	//	"AmbientR: " + std::to_string(materialData.Ambient[0]) + "\n" +
+	//	"AmbientG: " + std::to_string(materialData.Ambient[1]) + "\n" +
+	//	"AmbientB: " + std::to_string(materialData.Ambient[2]) + "\n" +
+	//	"\n" + 
+	//	"Opacity: " + std::to_string(materialData.Opacity) + "\n ");
 	DisplayCache(lMesh);
 }
+
+std::vector<BlendShapesBFF> GetBlendShapeData2()
+{
+	blendShapeData2 = GetBlendShapeData();
+	return blendShapeData2;
+}
+
+MeshBFF GetMeshData()
+{
+	return meshData;
+}
+
+std::vector<VertexBFF> GetVertxData()
+{
+	return vertexData;
+}
+
+MaterialBFF GetMaterialData2()
+{
+	return materialData;
+}
+
+
 
 
 void DisplayControlsPoints(FbxMesh* pMesh)

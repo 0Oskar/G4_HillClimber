@@ -15,6 +15,10 @@
 #include "DisplayCommon.h"
 
 void DisplayMesh(FbxNode* pNode);
+std::vector<BlendShapesBFF> GetBlendShapeData2();
+MeshBFF GetMeshData();
+std::vector<VertexBFF> GetVertxData();
+MaterialBFF GetMaterialData2();
 
 #endif // #ifndef _DISPLAY_MESH_H
 
