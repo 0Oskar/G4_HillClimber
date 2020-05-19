@@ -310,6 +310,7 @@ void GameState::loadModels()
 void GameState::roomChangeInit()
 {
 	platformBB.clear();
+	this->m_player.clearAABB();
 	//Gedddwt active room platforms to send to hookHand.
 	for (size_t i = 0; this->m_activeRoom && i < this->m_activeRoom->getGameObjectsPtr()->size(); i++)
 	{
@@ -319,14 +320,15 @@ void GameState::roomChangeInit()
 		{
 			platformBB.emplace_back(castToPlatform->getAABBPtr());
 		}
+
 	}
 	PyramidRoom* pyramidRoomPtr = dynamic_cast<PyramidRoom*>(this->m_rooms[0]);
 	for (size_t i = 0; pyramidRoomPtr && i < pyramidRoomPtr->getBBForHook().size(); i++)
 	{
 		this->platformBB.emplace_back(pyramidRoomPtr->getBBForHook().at(i));
 	}
-
 	this->m_player.updateHookHandBB(platformBB);
+	this->m_activeRoom->updatePlayerBB();
 
 }
 

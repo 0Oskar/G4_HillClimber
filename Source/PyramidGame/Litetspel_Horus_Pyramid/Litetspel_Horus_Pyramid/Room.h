@@ -51,6 +51,7 @@ public:
 	void addLeverToRoom(int mdlIndex, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation, DirectX::XMFLOAT3 leverBB);
 	void addObjectToRoom(GameObject* object);
 	void addRooms(std::vector<Room*>* rooms);
+	void updatePlayerBB();
 
 	std::vector<GameObject*>* getGameObjectsPtr();
 	std::vector<BoundingBox>* getBoundingBoxPtr();

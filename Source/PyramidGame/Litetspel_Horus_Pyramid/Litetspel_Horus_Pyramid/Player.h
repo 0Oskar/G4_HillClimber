@@ -38,6 +38,7 @@ public:
 	// Collidable Bounding Boxes
 	void addAABB(DirectX::BoundingBox* aabb);
 	void addAABBFromVector(std::vector<DirectX::BoundingBox>* aabb);
+	void clearAABB();
 	void addOrientedBBFromVector(std::vector<DirectX::BoundingOrientedBox>* obb);
 	void addPyramidOBB(DirectX::BoundingOrientedBox* obb);
 	bool getinUse();

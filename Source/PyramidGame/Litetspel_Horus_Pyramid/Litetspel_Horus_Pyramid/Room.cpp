@@ -210,6 +210,17 @@ void Room::addRooms(std::vector<Room*>* rooms)
 	}
 }
 
+void Room::updatePlayerBB()
+{
+	for (size_t i = 0; i < this->m_gameObjects.size(); i++)
+	{
+		if(this->m_gameObjects.at(i)->collidable())
+			this->m_player->addAABB(this->m_gameObjects.at(i)->getAABBPtr());
+	}
+	this->m_player->addAABBFromVector(&m_boundingBoxes);
+	this->m_player->addOrientedBBFromVector(&m_orientedBoundingBoxes);
+}
+
 DirectX::XMVECTOR Room::getRelativePosition(DirectX::XMVECTOR pos)
 {
 	XMVECTOR temp = this->m_worldPosition + pos;
