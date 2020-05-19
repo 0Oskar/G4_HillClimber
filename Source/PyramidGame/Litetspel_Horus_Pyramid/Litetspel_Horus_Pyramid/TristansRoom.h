@@ -8,6 +8,9 @@ private:
 	void createSceneObjects();
 	void onCompleted();
 
+	std::vector<DirectX::BoundingBox> SpikesBB;
+
+
 public:
 
 	TristansRoom();
