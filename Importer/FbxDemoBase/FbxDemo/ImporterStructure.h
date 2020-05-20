@@ -40,6 +40,7 @@ struct CameraBFF
 	float FOV;
 };
 
+// Tristans
 struct VertexAnimBFF
 {
 	int time;

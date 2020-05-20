@@ -93,7 +93,7 @@ int main(int argc, char** argv)
 	if( lFilePath.IsEmpty() )
 	{
 
-        lFilePath = "../3Lights.fbx";
+        lFilePath = "../TriBlend.fbx";
 		lResult = LoadScene(lSdkManager, lScene, lFilePath.Buffer());
 	}
 	else
@@ -250,22 +250,24 @@ int main(int argc, char** argv)
     // ****************** Shapes ****************** //
     myStringFile5.writeToStringFile("\n\n\n------------- BlendShapes:\n\n");
     blendShapeData3 = GetBlendShapeData2();
-    for (int i = 0; i < blendShapeData3.size(); i++)
-    {
-        myStringFile5.writeToStringFile(
-        "PosX: " + std::to_string(blendShapeData3[i].pos[0]) +
-        "\n" +
-        "PosY: " + std::to_string(blendShapeData3[i].pos[1]) +
-        "\n" +
-        "PosZ: " + std::to_string(blendShapeData3[i].pos[2]) +
-        "\n" +
-        "NormX: " + std::to_string(blendShapeData3[i].norm[0]) +
-        "\n" +
-        "NormY: " + std::to_string(blendShapeData3[i].norm[1]) +
-        "\n" +
-        "NormZ: " + std::to_string(blendShapeData3[i].norm[2]) +
-        "\n\n");
-    }
+    //for (int i = 0; i < blendShapeData3.size(); i++)
+    //{
+    //    myStringFile5.writeToStringFile(
+    //    "PosX: " + std::to_string(blendShapeData3[i].pos[0]) +
+    //    "\n" +
+    //    "PosY: " + std::to_string(blendShapeData3[i].pos[1]) +
+    //    "\n" +
+    //    "PosZ: " + std::to_string(blendShapeData3[i].pos[2]) +
+    //    "\n" +
+    //    "NormX: " + std::to_string(blendShapeData3[i].norm[0]) +
+    //    "\n" +
+    //    "NormY: " + std::to_string(blendShapeData3[i].norm[1]) +
+    //    "\n" +
+    //    "NormZ: " + std::to_string(blendShapeData3[i].norm[2]) +
+    //    "\n\n");
+
+    //    myFile5.writeToFile((const char*)&blendShapeData3[i], sizeof(BlendShapesBFF)); //Add to biFile
+    //}
 
     return 0;
 }
