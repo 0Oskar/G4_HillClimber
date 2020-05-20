@@ -21,6 +21,9 @@
 //#include <ctgmath>
 #include <math.h>
 #include <fstream>
+#include <random>
+#include <algorithm>
+#include <iterator>
 
 // Utilities
 #include "pugixml.hpp"

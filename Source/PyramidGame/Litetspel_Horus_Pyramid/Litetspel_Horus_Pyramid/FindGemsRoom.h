@@ -11,9 +11,15 @@ private:
 	void onCompleted();
 
 
-	//Lever
+	// Lever
 	std::vector<DirectX::BoundingBox*> m_LeverBB;
 	Lever* m_Lever;
+
+	// Gate
+	GameObject* gate;
+	bool m_MoveGateUp;
+	DirectX::XMVECTOR gatePos = DirectX::XMVectorSet(0, 5, 34, 1);
+
 
 	// Gems
 	std::vector<Lever*> m_Gems;
