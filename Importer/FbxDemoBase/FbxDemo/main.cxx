@@ -60,7 +60,7 @@ MeshBFF meshData2;
 std::vector<VertexBFF> vertexData2;
 MaterialBFF materialData3;
 std::vector<LightBFF> lightData2;
-CameraBFF cameraData2;
+std::vector<CameraBFF> cameraData2;
 
 std::vector<std::vector<BlendShapesBFF>> blendShapeDataArr3;
 
@@ -226,26 +226,31 @@ int main(int argc, char** argv)
     // ****************** Camera ****************** //
     cameraData2 = GetCameraData();
     myStringFile5.writeToStringFile("\n\n\n------------- Camera:\n\n");
-    myStringFile5.writeToStringFile(
-        "PosX: " + std::to_string(cameraData2.pos[0]) + "\n" +
-        "PosY: " + std::to_string(cameraData2.pos[1]) + "\n" +
-        "PosZ: " + std::to_string(cameraData2.pos[2]) + "\n" +
-        "\n" +
-        "upVecX: " + std::to_string(cameraData2.upVec[0]) + "\n" +
-        "upVecY: " + std::to_string(cameraData2.upVec[1]) + "\n" +
-        "upVecZ: " + std::to_string(cameraData2.upVec[2]) + "\n" +
-        "\n" +
-        "forwardVecX: " + std::to_string(cameraData2.forwardVec[0]) + "\n" +
-        "forwardVecY: " + std::to_string(cameraData2.forwardVec[1]) + "\n" +
-        "forwardVecZ: " + std::to_string(cameraData2.forwardVec[2]) + "\n" +
-        "\n" +
-        "nearPlane: " + std::to_string(cameraData2.nearPlane) + "\n" +
-        "\n" +
-        "farPlane: " + std::to_string(cameraData2.farPlane) + "\n" +
-        "\n" +
-        "FOV: " + std::to_string(cameraData2.FOV) + " (degrees)");
+    
+    for (int i = 0; i < getNrOfCameras(); i++)
+    {
 
-    myFile5.writeToFile((const char*)&cameraData2, sizeof(CameraBFF)); //Add to biFile
+        myStringFile5.writeToStringFile(
+            "PosX: " + std::to_string(cameraData2[i].pos[0]) + "\n" +
+            "PosY: " + std::to_string(cameraData2[i].pos[1]) + "\n" +
+            "PosZ: " + std::to_string(cameraData2[i].pos[2]) + "\n" +
+            "\n" +
+            "upVecX: " + std::to_string(cameraData2[i].upVec[0]) + "\n" +
+            "upVecY: " + std::to_string(cameraData2[i].upVec[1]) + "\n" +
+            "upVecZ: " + std::to_string(cameraData2[i].upVec[2]) + "\n" +
+            "\n" +
+            "forwardVecX: " + std::to_string(cameraData2[i].forwardVec[0]) + "\n" +
+            "forwardVecY: " + std::to_string(cameraData2[i].forwardVec[1]) + "\n" +
+            "forwardVecZ: " + std::to_string(cameraData2[i].forwardVec[2]) + "\n" +
+            "\n" +
+            "nearPlane: " + std::to_string(cameraData2[i].nearPlane) + "\n" +
+            "\n" +
+            "farPlane: " + std::to_string(cameraData2[i].farPlane) + "\n" +
+            "\n" +
+            "FOV: " + std::to_string(cameraData2[i].FOV) + " (degrees)" + "\n" + "\n" + "\n");
+        myFile5.writeToFile((const char*)&cameraData2, sizeof(CameraBFF)); //Add to biFile
+
+    }
 
     // ****************** Shapes ****************** //
     blendShapeDataArr3 = GetBlendShapeDataArr2();

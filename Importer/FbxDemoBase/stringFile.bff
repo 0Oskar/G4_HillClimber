@@ -90,23 +90,45 @@ Opacity: 0.000000
 
 ------------- Camera:
 
-PosX: 0.000000
-PosY: 0.000000
-PosZ: 0.000000
+PosX: 1.000000
+PosY: 1.000000
+PosZ: 1.000000
 
 upVecX: 0.000000
-upVecY: 0.000000
+upVecY: 1.000000
 upVecZ: 0.000000
 
 forwardVecX: 0.000000
 forwardVecY: 0.000000
-forwardVecZ: 0.000000
+forwardVecZ: 1.000000
 
-nearPlane: 0.000000
+nearPlane: 0.100000
 
-farPlane: 0.000000
+farPlane: 10000.000000
 
-FOV: 0.000000 (degrees)
+FOV: 25.115000 (degrees)
+
+
+PosX: 2.000000
+PosY: 2.000000
+PosZ: 2.000000
+
+upVecX: 0.000000
+upVecY: 1.000000
+upVecZ: 0.000000
+
+forwardVecX: 0.000000
+forwardVecY: 0.000000
+forwardVecZ: 1.000000
+
+nearPlane: 0.100000
+
+farPlane: 10000.000000
+
+FOV: 25.115000 (degrees)
+
+
+
 
 
 ------------- BlendShape:

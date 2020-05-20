@@ -12,10 +12,11 @@
 #include <fbxsdk.h>
 
 #include "DisplayCommon.h"
+#include "DisplayCamera.h"
 //#include "DisplayCamera.h"
 //#include "DisplayCamera.h"
 
-void DisplayCamera(FbxCamera* pCamera, char* pName, FbxNode* pTargetNode = NULL, FbxNode* pTargetUpNode = NULL);
+void DisplayCamera(FbxCamera* pCamera, char* pName, FbxNode* pTargetNode, FbxNode* pTargetUpNode);
 void DisplayDefaultAnimationValues(FbxCamera* pCamera);
 void DisplayRenderOptions(FbxCamera* pCamera);
 void DisplayCameraViewOptions(FbxCamera* pCamera);
@@ -26,9 +27,9 @@ void DisplayCameraPositionAndOrientation(FbxCamera* pCamera, FbxNode* pTargetNod
 
 FileWrite myFile2("../biFile.bff");
 FileWrite myStringFile2("../stringFile.bff");
-CameraBFF cameraData;
+std::vector<CameraBFF> cameraData;
 
-
+int nrOfCameras = 0;
 
 void DisplayCamera(FbxNode* pNode)
 {
@@ -37,6 +38,8 @@ void DisplayCamera(FbxNode* pNode)
 
 void DisplayCamera(FbxCamera* pCamera, char* pName, FbxNode* pTargetNode, FbxNode* pTargetUpNode)
 {
+
+
     DisplayString("Camera Name: ", pName);
     if (!pCamera)
     {
@@ -93,9 +96,10 @@ void DisplayCameraPositionAndOrientation(FbxCamera* pCamera, FbxNode* pTargetNod
 {
     DisplayString("    Camera Position and Orientation");
     Display3DVector("        Position: ", pCamera->Position.Get());
-    cameraData.pos[0] = float(pCamera->Position.Get()[0]);
-    cameraData.pos[1] = float(pCamera->Position.Get()[1]);
-    cameraData.pos[2] = float(pCamera->Position.Get()[2]);
+    cameraData.push_back(CameraBFF());
+    cameraData.back().pos[0] = float(pCamera->Position.Get()[0]);
+    cameraData.back().pos[1] = float(pCamera->Position.Get()[1]);
+    cameraData.back().pos[2] = float(pCamera->Position.Get()[2]);
 
     if (pTargetNode)
     {
@@ -109,9 +113,9 @@ void DisplayCameraPositionAndOrientation(FbxCamera* pCamera, FbxNode* pTargetNod
         FbxVector4 temp = tempPos - tempLoc;
         temp[3] = 0;
         temp.Normalize();
-        cameraData.forwardVec[0] = temp[0];
-        cameraData.forwardVec[1] = temp[1];
-        cameraData.forwardVec[2] = temp[2];
+        cameraData.back().forwardVec[0] = temp[0];
+        cameraData.back().forwardVec[1] = temp[1];
+        cameraData.back().forwardVec[2] = temp[2];
     }
 
 
@@ -122,17 +126,25 @@ void DisplayCameraPositionAndOrientation(FbxCamera* pCamera, FbxNode* pTargetNod
     else
     {
         Display3DVector("        Up Vector: ", pCamera->UpVector.Get());
-        cameraData.upVec[0] = float(pCamera->UpVector.Get()[0]);
-        cameraData.upVec[1] = float(pCamera->UpVector.Get()[1]);
-        cameraData.upVec[2] = float(pCamera->UpVector.Get()[2]);
+        cameraData.back().upVec[0] = float(pCamera->UpVector.Get()[0]);
+        cameraData.back().upVec[1] = float(pCamera->UpVector.Get()[1]);
+        cameraData.back().upVec[2] = float(pCamera->UpVector.Get()[2]);
     }
 
     DisplayDouble("        Roll: ", pCamera->Roll.Get());
+
+    nrOfCameras++;
 }
 
-CameraBFF GetCameraData()
+std::vector<CameraBFF> GetCameraData()
 {
     return cameraData;
+}
+
+int getNrOfCameras()
+{
+    return cameraData.size();
+    //return nrOfCameras;
 }
 
 
@@ -160,9 +172,9 @@ void DisplayViewingAreaControls(FbxCamera* pCamera)
 
     DisplayDouble("        Pixel Ratio: ", pCamera->PixelAspectRatio.Get());
     DisplayDouble("        Near Plane: ", pCamera->NearPlane.Get());
-    cameraData.nearPlane = float(pCamera->NearPlane.Get());
+    cameraData.back().nearPlane = float(pCamera->NearPlane.Get());
     DisplayDouble("        Far Plane: ", pCamera->FarPlane.Get());
-    cameraData.farPlane = float(pCamera->FarPlane.Get());
+    cameraData.back().farPlane = float(pCamera->FarPlane.Get());
     DisplayBool("        Mouse Lock: ", pCamera->LockMode.Get());
 }
 
@@ -195,7 +207,7 @@ void DisplayApertureAndFilmControls(FbxCamera* pCamera)
     DisplayDouble("        Squeeze Ratio: ", pCamera->GetSqueezeRatio());
     DisplayDouble("        Focal Length: ", pCamera->FocalLength.Get(), "mm");
     DisplayDouble("        Field of View: ", pCamera->FieldOfView.Get(), " degrees");
-    cameraData.FOV = float(pCamera->FieldOfView.Get());
+    cameraData.back().FOV = float(pCamera->FieldOfView.Get());
 }
 
 
