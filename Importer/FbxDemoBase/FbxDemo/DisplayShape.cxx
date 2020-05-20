@@ -13,9 +13,10 @@
 
 #include "DisplayCommon.h"
 #include "DisplayShape.h"
-
-std::vector<BlendShapesBFF> blendShapeData;
-//std::atoi
+std::vector<std::vector<BlendShapesBFF>> blendShapeDataArr;
+int currentShape = 0;
+int nrOfShapes;
+int nrOfVertexInShape;
 
 void DisplayShape(FbxGeometry* pGeometry)
 {
@@ -25,13 +26,15 @@ void DisplayShape(FbxGeometry* pGeometry)
 	FbxShape* lShape;
 
     lBlendShapeCount = pGeometry->GetDeformerCount(FbxDeformer::eBlendShape);
-	//myStringFile5.writeToStringFile("\n\n\n------------- BlendShapes:\n\n");
+	nrOfShapes = lBlendShapeCount;
+	blendShapeDataArr.resize(lBlendShapeCount);
 
     for (int lBlendShapeIndex = 0; lBlendShapeIndex < lBlendShapeCount; ++lBlendShapeIndex)
     {
 		lBlendShape = (FbxBlendShape*) pGeometry->GetDeformer(lBlendShapeIndex, FbxDeformer::eBlendShape);   
         DisplayString("    BlendShape ", (char *) lBlendShape->GetName());
-        
+		
+
 		lBlendShapeChannelCount = lBlendShape->GetBlendShapeChannelCount();
 		for(int lBlendShapeChannelIndex = 0;  lBlendShapeChannelIndex < lBlendShapeChannelCount; ++lBlendShapeChannelIndex)
 		{
@@ -49,46 +52,49 @@ void DisplayShape(FbxGeometry* pGeometry)
 				FbxVector4* lControlPoints = lShape->GetControlPoints();
 				FbxLayerElementArrayTemplate<FbxVector4>* lNormals = NULL;    
 				bool lStatus = lShape->GetNormals(&lNormals); 
-				blendShapeData.resize(lShape->GetControlPointsCount());
+
+				blendShapeDataArr[currentShape].resize(lShape->GetControlPointsCount());
+				nrOfVertexInShape = lShape->GetControlPointsCount();
 
 				for(j = 0; j < lControlPointsCount; j++)
 				{
 					DisplayInt("        Control Point ", j);
 					Display3DVector("            Coordinates: ", lControlPoints[j]);
-					blendShapeData[j].pos[0] = lControlPoints[j][0];
-					blendShapeData[j].pos[1] = lControlPoints[j][1];
-					blendShapeData[j].pos[2] = lControlPoints[j][2];
+
+					blendShapeDataArr[currentShape][j].pos[0] = lControlPoints[j][0];
+					blendShapeDataArr[currentShape][j].pos[1] = lControlPoints[j][1];
+					blendShapeDataArr[currentShape][j].pos[2] = lControlPoints[j][2];
 					if (lStatus && lNormals && lNormals->GetCount() == lControlPointsCount)
 					{
 						Display3DVector("            Normal Vector: ", lNormals->GetAt(j));
-						blendShapeData[j].norm[0] = lNormals->GetAt(j)[0];
-						blendShapeData[j].norm[1] = lNormals->GetAt(j)[1];
-						blendShapeData[j].norm[2] = lNormals->GetAt(j)[2];
+
+						blendShapeDataArr[currentShape][j].norm[0] = lNormals->GetAt(j)[0];
+						blendShapeDataArr[currentShape][j].norm[1] = lNormals->GetAt(j)[1];
+						blendShapeDataArr[currentShape][j].norm[2] = lNormals->GetAt(j)[2];
 					}
-							//myStringFile5.writeToStringFile(
-				   //         "PosX: " + std::to_string(blendShapeData[j].pos[0]) +
-				   //         "\n" +
-				   //         "PosY: " + std::to_string(blendShapeData[j].pos[1]) +
-				   //         "\n" +
-				   //         "PosZ: " + std::to_string(blendShapeData[j].pos[2]) +
-				   //         "\n" +
-				   //         "NormX: " + std::to_string(blendShapeData[j].norm[0]) +
-				   //         "\n" +
-				   //         "NormY: " + std::to_string(blendShapeData[j].norm[1]) +
-				   //         "\n" +
-				   //         "NormZ: " + std::to_string(blendShapeData[j].norm[2]) +
-				   //         "\n\n");
 				}
 
 				DisplayString("");
 			}
 		}
+		currentShape++;
     }
 }
 
-std::vector<BlendShapesBFF> GetBlendShapeData()
+
+std::vector<std::vector<BlendShapesBFF>> GetBlendShapeDataArr()
 {
-	return blendShapeData;
+	return blendShapeDataArr;
+}
+
+int GetNrOfVertexInBlendShape()
+{
+	return nrOfVertexInShape;
+}
+
+int GetNrOfBlendShapes()
+{
+	return nrOfShapes;
 }
 
 

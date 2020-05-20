@@ -62,7 +62,7 @@ MaterialBFF materialData3;
 std::vector<LightBFF> lightData2;
 CameraBFF cameraData2;
 
-std::vector<BlendShapesBFF> blendShapeData3;
+std::vector<std::vector<BlendShapesBFF>> blendShapeDataArr3;
 
 //Make a file
 
@@ -93,7 +93,7 @@ int main(int argc, char** argv)
 	if( lFilePath.IsEmpty() )
 	{
 
-        lFilePath = "../TriBlend.fbx";
+        lFilePath = "../2Camera.fbx";
 		lResult = LoadScene(lSdkManager, lScene, lFilePath.Buffer());
 	}
 	else
@@ -164,7 +164,7 @@ int main(int argc, char** argv)
     for (int i = 0; i < meshData2.nrOfVertex; i++)
     {
         myStringFile5.writeToStringFile(
-            "\n------------- Index " + std::to_string(i) + ")\n\n" +
+            "\n------ Index " + std::to_string(i) + ")\n\n" +
             "PosX: " + std::to_string(vertexData2[i].pos[0]) + "\n" +
             "PosY: " + std::to_string(vertexData2[i].pos[1]) + "\n" +
             "PosZ: " + std::to_string(vertexData2[i].pos[2]) + "\n" +
@@ -248,26 +248,28 @@ int main(int argc, char** argv)
     myFile5.writeToFile((const char*)&cameraData2, sizeof(CameraBFF)); //Add to biFile
 
     // ****************** Shapes ****************** //
-    myStringFile5.writeToStringFile("\n\n\n------------- BlendShapes:\n\n");
-    blendShapeData3 = GetBlendShapeData2();
-    //for (int i = 0; i < blendShapeData3.size(); i++)
-    //{
-    //    myStringFile5.writeToStringFile(
-    //    "PosX: " + std::to_string(blendShapeData3[i].pos[0]) +
-    //    "\n" +
-    //    "PosY: " + std::to_string(blendShapeData3[i].pos[1]) +
-    //    "\n" +
-    //    "PosZ: " + std::to_string(blendShapeData3[i].pos[2]) +
-    //    "\n" +
-    //    "NormX: " + std::to_string(blendShapeData3[i].norm[0]) +
-    //    "\n" +
-    //    "NormY: " + std::to_string(blendShapeData3[i].norm[1]) +
-    //    "\n" +
-    //    "NormZ: " + std::to_string(blendShapeData3[i].norm[2]) +
-    //    "\n\n");
-
-    //    myFile5.writeToFile((const char*)&blendShapeData3[i], sizeof(BlendShapesBFF)); //Add to biFile
-    //}
+    blendShapeDataArr3 = GetBlendShapeDataArr2();
+    for (int i = 0; i < GetNrOfBlendShapes2(); i++)
+    {
+        myStringFile5.writeToStringFile("\n\n\n------------- BlendShape:\n\n");
+        for (int v = 0; v < GetNrOfVertexInBlendShape2(); v++)
+        {
+            myStringFile5.writeToStringFile(
+            "\n------ Index " + std::to_string(v) + ")\n\n" +
+            "PosX: " + std::to_string(blendShapeDataArr3[i][v].pos[0]) +
+            "\n" +
+            "PosY: " + std::to_string(blendShapeDataArr3[i][v].pos[1]) +
+            "\n" +
+            "PosZ: " + std::to_string(blendShapeDataArr3[i][v].pos[2]) +
+            "\n" +
+            "NormX: " + std::to_string(blendShapeDataArr3[i][v].norm[0]) +
+            "\n" +
+            "NormY: " + std::to_string(blendShapeDataArr3[i][v].norm[1]) +
+            "\n" +
+            "NormZ: " + std::to_string(blendShapeDataArr3[i][v].norm[2]) +
+            "\n\n");
+        }
+    }
 
     return 0;
 }

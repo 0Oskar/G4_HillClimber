@@ -15,7 +15,9 @@
 #include "DisplayCommon.h"
 
 void DisplayShape(FbxGeometry* pGeometry);
-std::vector<BlendShapesBFF> GetBlendShapeData();
+std::vector<std::vector<BlendShapesBFF>> GetBlendShapeDataArr();
+int GetNrOfVertexInBlendShape();
+int GetNrOfBlendShapes();
 
 #endif // #ifndef _DISPLAY_SHAPE_H
 

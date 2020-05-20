@@ -1,6 +1,6 @@
 Mesh Name: MasterTri
 NrOfVertex: 3
-------------- Index 0)
+------ Index 0)
 
 PosX: -0.500000
 PosY: 0.000000
@@ -23,7 +23,7 @@ TanZ: 0.000000
 
 
 
-------------- Index 1)
+------ Index 1)
 
 PosX: 0.500000
 PosY: 0.000000
@@ -46,7 +46,7 @@ TanZ: 0.000000
 
 
 
-------------- Index 2)
+------ Index 2)
 
 PosX: 0.500000
 PosY: 0.000000
@@ -85,36 +85,6 @@ Opacity: 0.000000
 
 ------------- Light
 
-Type: Directional
-
-ColorR: 1.000000
-ColorG: 1.000000
-ColorB: 1.000000
-
-Dir: 45.000000
-
-Intencity: 100.000000
-
-Type: Point
-
-ColorR: 1.000000
-ColorG: 1.000000
-ColorB: 1.000000
-
-Dir: 45.000000
-
-Intencity: 100.000000
-
-Type: Spot
-
-ColorR: 1.000000
-ColorG: 1.000000
-ColorB: 1.000000
-
-Dir: 40.000000
-
-Intencity: 100.000000
-
 
 
 
@@ -122,24 +92,62 @@ Intencity: 100.000000
 
 PosX: 0.000000
 PosY: 0.000000
-PosZ: 3.000000
+PosZ: 0.000000
 
 upVecX: 0.000000
-upVecY: 1.000000
+upVecY: 0.000000
 upVecZ: 0.000000
 
 forwardVecX: 0.000000
 forwardVecY: 0.000000
-forwardVecZ: 1.000000
+forwardVecZ: 0.000000
 
-nearPlane: 0.100000
+nearPlane: 0.000000
 
-farPlane: 10000.000000
+farPlane: 0.000000
 
-FOV: 25.115000 (degrees)
+FOV: 0.000000 (degrees)
 
 
-------------- BlendShapes:
+------------- BlendShape:
+
+
+------ Index 0)
+
+PosX: -0.500000
+PosY: -1.606066
+PosZ: 0.000000
+NormX: -0.400490
+NormY: 0.490342
+NormZ: -0.774062
+
+
+------ Index 1)
+
+PosX: 0.500000
+PosY: 0.000000
+PosZ: 0.500000
+NormX: -0.400490
+NormY: 0.490342
+NormZ: -0.774062
+
+
+------ Index 2)
+
+PosX: 2.432788
+PosY: 0.000000
+PosZ: -0.500000
+NormX: -0.400490
+NormY: 0.490342
+NormZ: -0.774062
+
+
+
+
+------------- BlendShape:
+
+
+------ Index 0)
 
 PosX: -0.500000
 PosY: 0.000000
@@ -148,12 +156,18 @@ NormX: -0.014615
 NormY: 0.844959
 NormZ: 0.534631
 
+
+------ Index 1)
+
 PosX: 0.500000
 PosY: 0.000000
 PosZ: 0.500000
 NormX: -0.014615
 NormY: 0.844959
 NormZ: 0.534631
+
+
+------ Index 2)
 
 PosX: 0.500000
 PosY: 0.632729
@@ -161,456 +175,4 @@ PosZ: -0.500000
 NormX: -0.014615
 NormY: 0.844959
 NormZ: 0.534631
-
-Mesh Name: MasterTri
-NrOfVertex: 3
-------------- Index 0)
-
-PosX: -0.500000
-PosY: 0.000000
-PosZ: 0.000000
-
-U: 0.000000
-V: 0.500000
-
-NormX: 0.000000
-NormY: 0.000000
-NormZ: 0.000000
-
-biNormX: 0.000000
-biNormY: 0.000000
-biNormZ: 0.000000
-
-TanX: 0.000000
-TanY: 0.000000
-TanZ: 0.000000
-
-
-
-------------- Index 1)
-
-PosX: 0.500000
-PosY: 0.000000
-PosZ: 0.500000
-
-U: 1.000000
-V: 0.000000
-
-NormX: 0.000000
-NormY: 0.000000
-NormZ: 0.000000
-
-biNormX: 0.000000
-biNormY: 0.000000
-biNormZ: 0.000000
-
-TanX: 0.000000
-TanY: 0.000000
-TanZ: 0.000000
-
-
-
-------------- Index 2)
-
-PosX: 0.500000
-PosY: 0.000000
-PosZ: -0.500000
-
-U: 1.000000
-V: 1.000000
-
-NormX: 0.000000
-NormY: 0.000000
-NormZ: 0.000000
-
-biNormX: 0.000000
-biNormY: 0.000000
-biNormZ: 0.000000
-
-TanX: 0.000000
-TanY: 0.000000
-TanZ: 0.000000
-
-
-
-------------- Material: 
-
-DiffuseR: 0.500000
-DiffuseG: 0.500000
-DiffuseB: 0.500000
-
-AmbientR: 0.000000
-AmbientG: 0.000000
-AmbientB: 0.000000
-
-Opacity: 0.000000
- 
-
-
-------------- Light
-
-
-
-
-------------- Camera:
-
-PosX: 0.000000
-PosY: 0.000000
-PosZ: 0.000000
-
-upVecX: 0.000000
-upVecY: 0.000000
-upVecZ: 0.000000
-
-forwardVecX: 0.000000
-forwardVecY: 0.000000
-forwardVecZ: 0.000000
-
-nearPlane: 0.000000
-
-farPlane: 0.000000
-
-FOV: 0.000000 (degrees)
-
-
-------------- BlendShapes:
-
-Mesh Name: MasterTri
-NrOfVertex: 3
-------------- Index 0)
-
-PosX: -0.500000
-PosY: 0.000000
-PosZ: 0.000000
-
-U: 0.000000
-V: 0.500000
-
-NormX: 0.000000
-NormY: 0.000000
-NormZ: 0.000000
-
-biNormX: 0.000000
-biNormY: 0.000000
-biNormZ: 0.000000
-
-TanX: 0.000000
-TanY: 0.000000
-TanZ: 0.000000
-
-
-
-------------- Index 1)
-
-PosX: 0.500000
-PosY: 0.000000
-PosZ: 0.500000
-
-U: 1.000000
-V: 0.000000
-
-NormX: 0.000000
-NormY: 0.000000
-NormZ: 0.000000
-
-biNormX: 0.000000
-biNormY: 0.000000
-biNormZ: 0.000000
-
-TanX: 0.000000
-TanY: 0.000000
-TanZ: 0.000000
-
-
-
-------------- Index 2)
-
-PosX: 0.500000
-PosY: 0.000000
-PosZ: -0.500000
-
-U: 1.000000
-V: 1.000000
-
-NormX: 0.000000
-NormY: 0.000000
-NormZ: 0.000000
-
-biNormX: 0.000000
-biNormY: 0.000000
-biNormZ: 0.000000
-
-TanX: 0.000000
-TanY: 0.000000
-TanZ: 0.000000
-
-
-
-------------- Material: 
-
-DiffuseR: 0.500000
-DiffuseG: 0.500000
-DiffuseB: 0.500000
-
-AmbientR: 0.000000
-AmbientG: 0.000000
-AmbientB: 0.000000
-
-Opacity: 0.000000
- 
-
-
-------------- Light
-
-
-
-
-------------- Camera:
-
-PosX: 0.000000
-PosY: 0.000000
-PosZ: 0.000000
-
-upVecX: 0.000000
-upVecY: 0.000000
-upVecZ: 0.000000
-
-forwardVecX: 0.000000
-forwardVecY: 0.000000
-forwardVecZ: 0.000000
-
-nearPlane: 0.000000
-
-farPlane: 0.000000
-
-FOV: 0.000000 (degrees)
-
-
-------------- BlendShapes:
-
-Mesh Name: MasterTri
-NrOfVertex: 3
-------------- Index 0)
-
-PosX: -0.500000
-PosY: 0.000000
-PosZ: 0.000000
-
-U: 0.000000
-V: 0.500000
-
-NormX: 0.000000
-NormY: 0.000000
-NormZ: 0.000000
-
-biNormX: 0.000000
-biNormY: 0.000000
-biNormZ: 0.000000
-
-TanX: 0.000000
-TanY: 0.000000
-TanZ: 0.000000
-
-
-
-------------- Index 1)
-
-PosX: 0.500000
-PosY: 0.000000
-PosZ: 0.500000
-
-U: 1.000000
-V: 0.000000
-
-NormX: 0.000000
-NormY: 0.000000
-NormZ: 0.000000
-
-biNormX: 0.000000
-biNormY: 0.000000
-biNormZ: 0.000000
-
-TanX: 0.000000
-TanY: 0.000000
-TanZ: 0.000000
-
-
-
-------------- Index 2)
-
-PosX: 0.500000
-PosY: 0.000000
-PosZ: -0.500000
-
-U: 1.000000
-V: 1.000000
-
-NormX: 0.000000
-NormY: 0.000000
-NormZ: 0.000000
-
-biNormX: 0.000000
-biNormY: 0.000000
-biNormZ: 0.000000
-
-TanX: 0.000000
-TanY: 0.000000
-TanZ: 0.000000
-
-
-
-------------- Material: 
-
-DiffuseR: 0.500000
-DiffuseG: 0.500000
-DiffuseB: 0.500000
-
-AmbientR: 0.000000
-AmbientG: 0.000000
-AmbientB: 0.000000
-
-Opacity: 0.000000
- 
-
-
-------------- Light
-
-
-
-
-------------- Camera:
-
-PosX: 0.000000
-PosY: 0.000000
-PosZ: 0.000000
-
-upVecX: 0.000000
-upVecY: 0.000000
-upVecZ: 0.000000
-
-forwardVecX: 0.000000
-forwardVecY: 0.000000
-forwardVecZ: 0.000000
-
-nearPlane: 0.000000
-
-farPlane: 0.000000
-
-FOV: 0.000000 (degrees)
-
-
-------------- BlendShapes:
-
-Mesh Name: MasterTri
-NrOfVertex: 3
-------------- Index 0)
-
-PosX: -0.500000
-PosY: 0.000000
-PosZ: 0.000000
-
-U: 0.000000
-V: 0.500000
-
-NormX: 0.000000
-NormY: 0.000000
-NormZ: 0.000000
-
-biNormX: 0.000000
-biNormY: 0.000000
-biNormZ: 0.000000
-
-TanX: 0.000000
-TanY: 0.000000
-TanZ: 0.000000
-
-
-
-------------- Index 1)
-
-PosX: 0.500000
-PosY: 0.000000
-PosZ: 0.500000
-
-U: 1.000000
-V: 0.000000
-
-NormX: 0.000000
-NormY: 0.000000
-NormZ: 0.000000
-
-biNormX: 0.000000
-biNormY: 0.000000
-biNormZ: 0.000000
-
-TanX: 0.000000
-TanY: 0.000000
-TanZ: 0.000000
-
-
-
-------------- Index 2)
-
-PosX: 0.500000
-PosY: 0.000000
-PosZ: -0.500000
-
-U: 1.000000
-V: 1.000000
-
-NormX: 0.000000
-NormY: 0.000000
-NormZ: 0.000000
-
-biNormX: 0.000000
-biNormY: 0.000000
-biNormZ: 0.000000
-
-TanX: 0.000000
-TanY: 0.000000
-TanZ: 0.000000
-
-
-
-------------- Material: 
-
-DiffuseR: 0.500000
-DiffuseG: 0.500000
-DiffuseB: 0.500000
-
-AmbientR: 0.000000
-AmbientG: 0.000000
-AmbientB: 0.000000
-
-Opacity: 0.000000
- 
-
-
-------------- Light
-
-
-
-
-------------- Camera:
-
-PosX: 0.000000
-PosY: 0.000000
-PosZ: 0.000000
-
-upVecX: 0.000000
-upVecY: 0.000000
-upVecZ: 0.000000
-
-forwardVecX: 0.000000
-forwardVecY: 0.000000
-forwardVecZ: 0.000000
-
-nearPlane: 0.000000
-
-farPlane: 0.000000
-
-FOV: 0.000000 (degrees)
-
-
-------------- BlendShapes:
 
