@@ -1,5 +1,7 @@
 #pragma once
 #include"Room.h"
+#include <string>
+
 
 class finalRoom : public Room
 {
@@ -15,6 +17,19 @@ private:
 	int doOnceAtStart = 0;
 
 	float swingingSpeed = 80.0f;
+
+	std::vector<DirectX::BoundingOrientedBox> axeBB;
+	DirectX::BoundingOrientedBox axeTestBB;
+
+	int timesHit = 0;
+	std::string timesHitString;
+
+	bool respawn = false;
+
+	XMFLOAT3 axePos;
+
+	XMVECTOR aRotation;
+	XMFLOAT4 rot;
 
 	bool flipDirection = false;
 
