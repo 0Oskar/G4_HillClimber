@@ -12,7 +12,6 @@ private:
 
 	std::vector<DirectX::BoundingBox*> LeverBB;
 	std::vector<Lever*> leverGrip;
-	//GameObject* leverGrip;
 	Timer leverTimer[4];
 	bool canPullLever0 = true;
 	bool canPullLever1 = true;
