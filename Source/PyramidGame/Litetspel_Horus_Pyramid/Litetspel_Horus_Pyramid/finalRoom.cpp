@@ -118,11 +118,13 @@ void finalRoom::createBoundingBoxes()
 	DirectX::XMVECTOR vec = DirectX::XMVectorSet(0.f, -10.f, 0.f, 1.f);
 	DirectX::XMVECTOR rotation = DirectX::XMVectorSet(0.f, 0.f, 0.f, 1.f);
 	//Add all boundingboxes that are not part of a gameobject(Walls and ground for rooms etc)
+	//Floor
 	this->addBoundingBox({ -10.f, -1.0f, -104.0f + 140.f, 1 }, DirectX::XMFLOAT3(40.f, 1.f, 120.f));
 	this->addBoundingBox({ 18.f, 5.0f, -104.0f + 140.f, 1 }, DirectX::XMFLOAT3(2.f, 20.f, 50.f));
 	this->addBoundingBox({ -43.f, 5.0f, -104.0f + 140.f, 1 }, DirectX::XMFLOAT3(2.f, 20.f, 50.f));
-	this->addBoundingBox({ -43.f, 5.0f, -104.0f + 140.f, 1 }, DirectX::XMFLOAT3(2.f, 20.f, 50.f));
 	this->addBoundingBox({ -13.f, 5.0f, -61.0f + 140.f, 1 }, DirectX::XMFLOAT3(50.f, 20.f, 2.f));
+	this->addBoundingBox({ -10.f, 25.0f, -135.0f + 140.f, 1 }, DirectX::XMFLOAT3(40.f, 1.f, 85.f));
+	this->addBoundingBox({ -13.f, 5.0f, -215.0f + 140.f, 1 }, DirectX::XMFLOAT3(50.f, 20.f, 2.f));
 
 }
 void finalRoom::createSceneObjects()
