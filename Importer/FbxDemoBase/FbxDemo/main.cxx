@@ -93,7 +93,7 @@ int main(int argc, char** argv)
 	if( lFilePath.IsEmpty() )
 	{
 
-        lFilePath = "../2Camera.fbx";
+        lFilePath = "../testTriangle(Tristan).fbx";
 		lResult = LoadScene(lSdkManager, lScene, lFilePath.Buffer());
 	}
 	else
@@ -275,6 +275,10 @@ int main(int argc, char** argv)
             "\n\n");
         }
     }
+    // ****************** Vertex Animation ****************** //
+
+
+
 
     return 0;
 }

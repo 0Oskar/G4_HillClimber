@@ -1,13 +1,13 @@
-Mesh Name: MasterTri
+Mesh Name: pPlane1
 NrOfVertex: 3
 ------ Index 0)
 
 PosX: -0.500000
 PosY: 0.000000
-PosZ: 0.000000
+PosZ: -0.500000
 
 U: 0.000000
-V: 0.500000
+V: 1.000000
 
 NormX: 0.000000
 NormY: 0.000000
@@ -90,111 +90,52 @@ Opacity: 0.000000
 
 ------------- Camera:
 
-PosX: 1.000000
-PosY: 1.000000
-PosZ: 1.000000
-
-upVecX: 0.000000
-upVecY: 1.000000
-upVecZ: 0.000000
-
-forwardVecX: 0.000000
-forwardVecY: 0.000000
-forwardVecZ: 1.000000
-
-nearPlane: 0.100000
-
-farPlane: 10000.000000
-
-FOV: 25.115000 (degrees)
-
-
-PosX: 2.000000
-PosY: 2.000000
-PosZ: 2.000000
-
-upVecX: 0.000000
-upVecY: 1.000000
-upVecZ: 0.000000
-
-forwardVecX: 0.000000
-forwardVecY: 0.000000
-forwardVecZ: 1.000000
-
-nearPlane: 0.100000
-
-farPlane: 10000.000000
-
-FOV: 25.115000 (degrees)
 
 
 
+-------------  Vertex Animation: 
 
-
-------------- BlendShape:
-
-
------- Index 0)
-
-PosX: -0.500000
-PosY: -1.606066
+Frame: 1
+PosX: 0.000000
+PosY: 0.000000
 PosZ: 0.000000
-NormX: -0.400490
-NormY: 0.490342
-NormZ: -0.774062
+RotX: 0.000000
+RotY: 0.000000
+RotZ: 0.000000
+ScaleX: 1.000000
+ScaleY: 1.000000
+ScaleZ: 1.000000
 
-
------- Index 1)
-
-PosX: 0.500000
+Frame: 10
+PosX: 5.000000
 PosY: 0.000000
-PosZ: 0.500000
-NormX: -0.400490
-NormY: 0.490342
-NormZ: -0.774062
+PosZ: 0.000000
+RotX: 0.000000
+RotY: 0.000000
+RotZ: 0.000000
+ScaleX: 1.000000
+ScaleY: 1.000000
+ScaleZ: 1.000000
 
-
------- Index 2)
-
-PosX: 2.432788
+Frame: 20
+PosX: 5.000000
 PosY: 0.000000
-PosZ: -0.500000
-NormX: -0.400490
-NormY: 0.490342
-NormZ: -0.774062
+PosZ: 5.000000
+RotX: 0.000000
+RotY: 0.000000
+RotZ: 0.000000
+ScaleX: 1.000000
+ScaleY: 1.000000
+ScaleZ: 1.000000
 
-
-
-
-------------- BlendShape:
-
-
------- Index 0)
-
-PosX: -0.500000
-PosY: 0.000000
-PosZ: 0.472664
-NormX: -0.014615
-NormY: 0.844959
-NormZ: 0.534631
-
-
------- Index 1)
-
-PosX: 0.500000
-PosY: 0.000000
-PosZ: 0.500000
-NormX: -0.014615
-NormY: 0.844959
-NormZ: 0.534631
-
-
------- Index 2)
-
-PosX: 0.500000
-PosY: 0.632729
-PosZ: -0.500000
-NormX: -0.014615
-NormY: 0.844959
-NormZ: 0.534631
+Frame: 30
+PosX: 5.000000
+PosY: 5.000000
+PosZ: 5.000000
+RotX: 0.000000
+RotY: 0.000000
+RotZ: 0.000000
+ScaleX: 1.000000
+ScaleY: 1.000000
+ScaleZ: 1.000000
 
