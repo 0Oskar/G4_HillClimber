@@ -8,6 +8,14 @@ struct VS_CONSTANT_BUFFER
 	DirectX::XMMATRIX worldMatrix;
 };
 
+struct PS_FOG_BUFFER
+{
+	XMFLOAT3 cameraPos;
+	float fogStart;
+	XMFLOAT3 fogColor;
+	float fogEnd;
+};
+
 struct PS_LIGHT_BUFFER
 {
 	DirectX::XMFLOAT3 lightColor;

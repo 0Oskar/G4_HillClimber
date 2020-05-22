@@ -21,7 +21,7 @@ private:
 	// Render Target
 	Microsoft::WRL::ComPtr< IDXGISwapChain > m_swapChain;
 	Microsoft::WRL::ComPtr< ID3D11RenderTargetView > m_outputRTV;
-	float clearColor[4] = { 0.f, 0.f, 0.f, 1.f };
+	float clearColor[4] = { 0.5f, 0.5f, 0.5f, 1.f };
 
 	// Depth Buffer
 	Microsoft::WRL::ComPtr< ID3D11DepthStencilView > m_depthStencilView;
@@ -58,6 +58,7 @@ private:
 	DirectX::BoundingOrientedBox m_pyramidOBB;
 
 	ConstBuffer<PS_LIGHT_BUFFER> m_lightBuffer;
+	ConstBuffer<PS_FOG_BUFFER> m_fogBuffer;
 	ConstBuffer<PS_DIR_BUFFER> m_dirLightBuffer;
 	PS_DIR_BUFFER m_dirLight;
 
@@ -112,13 +113,14 @@ public:
 	void setTriggerBoxFromActiveRoom(std::vector<BoundingBox>* bbFromRoom);
 	void setModelsFromState(std::vector<Model>* models);
 	void setDirLightFromActiveRoom(PS_DIR_BUFFER dirLight);
+	void setFogDataFromActiveRoom(PS_FOG_BUFFER fogData);
 	void setWvpCBufferFromState(std::vector< ConstBuffer<VS_CONSTANT_BUFFER> >* models);
 	void setGameTimePtr(Timer* gameTimer);
 	// Initialization
 	void initialize(HWND window, GameOptions* options);
 
 	// Update
-	void update(float dt);
+	void update(float dt, XMFLOAT3 cameraPos);
 
 	// Render
 	void render();

@@ -81,6 +81,16 @@ PS_DIR_BUFFER GameState::getActiveRoomDirectionalLight()
 		return PS_DIR_BUFFER();
 }
 
+PS_FOG_BUFFER GameState::getActiveRoomFogData()
+{
+	if (this->m_activeRoom != nullptr)
+	{
+		return this->m_activeRoom->getFogData();
+	}
+	else
+		return PS_FOG_BUFFER();
+}
+
 void GameState::addGameObjectToWorld(bool dynamic, bool colide, float weight, int mdlIndx, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR scale3D, DirectX::XMFLOAT3 boundingBoxSize = DirectX::XMFLOAT3(0, 0, 0), DirectX::XMFLOAT3 acceleration = DirectX::XMFLOAT3(1, 1, 1), DirectX::XMFLOAT3 deceleration = DirectX::XMFLOAT3(1, 1, 1))
 {
 	this->m_gameObjects.emplace_back(new GameObject());
@@ -555,4 +565,9 @@ void GameState::update(Keyboard* keyboard, MouseEvent mouseEvent, Mouse* mousePt
 	if(m_activeRoom != nullptr)
 		this->m_activeRoom->update(dt, &m_camera, this->m_activeRoom, m_activeRoomChanged);
 
+}
+
+XMFLOAT3 GameState::getCameraPos()
+{
+	return this->m_player.getMoveCompPtr()->getPositionF3();
 }

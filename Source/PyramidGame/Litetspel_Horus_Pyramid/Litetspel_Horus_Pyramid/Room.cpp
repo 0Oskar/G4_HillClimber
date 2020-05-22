@@ -33,6 +33,10 @@ void Room::initParent()
 	this->m_worldPosition = DirectX::XMVectorZero();
 	this->m_dirLight.lightColor = { .8f, .8f, .8f, 1.f };
 	this->m_dirLight.lightDirection = {-0.8f, 1.0f, -0.7f, 0.0f };
+	this->m_fogData.cameraPos = XMFLOAT3(0, 0, 0);
+	this->m_fogData.fogEnd = 0;
+	this->m_fogData.fogStart = 0;
+	this->m_fogData.fogColor = { 0.5f, 0.5f, 0.5f };
 }
 void Room::update(float dt, Camera* camera, Room* &activeRoom, bool &activeRoomChanged)
 {
@@ -60,7 +64,7 @@ void Room::update(float dt, Camera* camera, Room* &activeRoom, bool &activeRoomC
 		DirectX::XMMATRIX viewPMtrx = camera->getViewMatrix() * camera->getProjectionMatrix();
 		wvpData.wvp = this->m_gameObjects[i]->getWorldMatrix() * viewPMtrx;
 		wvpData.worldMatrix = this->m_gameObjects[i]->getWorldMatrix();
-			
+
 		this->m_wvpCBuffers->at(this->m_gameObjects.at(i)->getWvpCBufferIndex()).upd(&wvpData);
 	}
 }
@@ -230,4 +234,9 @@ DirectX::XMVECTOR Room::getRelativePosition(DirectX::XMVECTOR pos)
 PS_DIR_BUFFER Room::getDirectionalLight()
 {
 	return this->m_dirLight;
+}
+
+PS_FOG_BUFFER Room::getFogData()
+{
+	return this->m_fogData;
 }

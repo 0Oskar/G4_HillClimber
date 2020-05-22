@@ -5,6 +5,9 @@ PyramidRoom::PyramidRoom()
 {
 	Room::initParent();
 	this->completedRooms = 0;
+	this->m_fogData.fogEnd = 600.0f;
+	this->m_fogData.fogStart = 300.0f;
+	this->m_fogData.fogColor = { 0.79f, 0.67f, 0.42f };
 }
 PyramidRoom::~PyramidRoom()
 {

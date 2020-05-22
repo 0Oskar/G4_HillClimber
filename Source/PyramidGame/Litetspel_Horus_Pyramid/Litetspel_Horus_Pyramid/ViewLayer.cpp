@@ -240,6 +240,11 @@ void ViewLayer::setDirLightFromActiveRoom(PS_DIR_BUFFER dirLight)
 	
 }
 
+void ViewLayer::setFogDataFromActiveRoom(PS_FOG_BUFFER fogData)
+{
+	this->m_fogBuffer.m_data = fogData;
+}
+
 void ViewLayer::setWvpCBufferFromState(std::vector< ConstBuffer<VS_CONSTANT_BUFFER> >* buffers)
 {
 	this->m_wvpCBufferFromState = buffers;
@@ -254,6 +259,7 @@ void ViewLayer::initConstantBuffer()
 {
 	this->m_lightBuffer.init(this->m_device.Get(), this->m_deviceContext.Get());
 	this->m_dirLightBuffer.init(this->m_device.Get(), this->m_deviceContext.Get());
+	this->m_fogBuffer.init(this->m_device.Get(), this->m_deviceContext.Get());
 }
 
 void ViewLayer::initSamplerState()
@@ -293,6 +299,15 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 	lightBuffer.strength = 0.5f;
 	this->m_lightBuffer.m_data = lightBuffer;
 	this->m_lightBuffer.upd();
+
+	PS_FOG_BUFFER fogBuffer; //Just set for init, change in room with m_fogData member variable.
+	fogBuffer.fogEnd = 100.0f;
+	fogBuffer.fogStart = 50.0f;
+	fogBuffer.fogColor = XMFLOAT3(0.5f, 0.5f, 0.5f);
+
+
+	this->m_fogBuffer.m_data = fogBuffer;
+	this->m_fogBuffer.upd();
 
 	// Directional Light buffer
 	PS_DIR_BUFFER dirBuffer;
@@ -365,7 +380,7 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 	this->m_statusTextHandler->setWindowDimensions(this->m_options->width, this->m_options->height);
 }
 
-void ViewLayer::update(float dt)
+void ViewLayer::update(float dt, XMFLOAT3 cameraPos)
 {
 	//FPS Counter
 	this->m_fps++;
@@ -375,6 +390,12 @@ void ViewLayer::update(float dt)
 		m_timer.restart();
 		this->m_fps = 0;
 	}
+
+	this->m_fogBuffer.m_data.cameraPos = cameraPos;
+	this->m_fogBuffer.upd();
+	this->clearColor[0] = this->m_fogBuffer.m_data.fogColor.x;
+	this->clearColor[1] = this->m_fogBuffer.m_data.fogColor.y;
+	this->clearColor[2] = this->m_fogBuffer.m_data.fogColor.z;
 
 	this->m_statusTextHandler->update(dt);
 }
@@ -399,6 +420,8 @@ void ViewLayer::render()
 	// Set Constant Buffer
 	this->m_deviceContext->PSSetConstantBuffers(1, 1, this->m_lightBuffer.GetAdressOf());
 	this->m_deviceContext->PSSetConstantBuffers(2, 1, this->m_dirLightBuffer.GetAdressOf());
+
+	this->m_deviceContext->PSSetConstantBuffers(3, 1, this->m_fogBuffer.GetAdressOf());
 
 	// Draw
 	DirectX::XMMATRIX viewPMtrx = (*m_viewMatrix) * (*m_projectionMatrix);

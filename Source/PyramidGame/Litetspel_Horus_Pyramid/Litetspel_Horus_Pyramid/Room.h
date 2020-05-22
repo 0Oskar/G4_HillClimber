@@ -22,6 +22,7 @@ protected:
 	std::vector<DirectX::BoundingBox> m_triggerBoundingBoxes;
 	std::vector<Room*> m_rooms;
 	PS_DIR_BUFFER m_dirLight;
+	PS_FOG_BUFFER m_fogData;
 	
 	Player* m_player;
 	std::shared_ptr<DirectX::AudioEngine> audioEngine;
@@ -60,6 +61,7 @@ public:
 	DirectX::XMVECTOR getEntrancePosition();
 	DirectX::XMVECTOR getRelativePosition(DirectX::XMVECTOR pos);
 	PS_DIR_BUFFER getDirectionalLight();
+	PS_FOG_BUFFER getFogData();
 
 	bool m_completed;
 

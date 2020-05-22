@@ -36,7 +36,7 @@ void EdvinsRoom::createSceneObjects()
 	
 	// Pedistal
 	scale = DirectX::XMVectorSet(2, 2, 2, 1);
-	pos = DirectX::XMVectorSet(-45, -1.3, 0, 1); //world pos
+	pos = DirectX::XMVectorSet(-45.f, -1.3f, 0.f, 1.f); //world pos
 	this->addGameObjectToRoom(true, false, 1, 17, &m_models->at(17), pos, scale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
 
 	// Cover
@@ -149,7 +149,7 @@ void EdvinsRoom::onFail()
 	this->buttonsPosY = -6;
 	for (int i = 0; i < 5; i++)
 	{
-		buttons[i]->getMoveCompPtr()->position = buttons[i]->getMoveCompPtr()->position + DirectX::XMVectorSet(0, -9.15, 0, 10);
+		buttons[i]->getMoveCompPtr()->position = buttons[i]->getMoveCompPtr()->position + DirectX::XMVectorSet(0.f, -9.15f, 0.f, 10.f);
 		//Reset player guess array
 		this->guessOrder[i] = -1;
 	}
@@ -393,7 +393,7 @@ void EdvinsRoom::init()
 	this->createBoundingBoxes();
 	this->lever->setPlayerBoundingBox(this->m_player->getAABBPtr());
 	
-	srand(time(0));
+	srand((unsigned int)time(0));
 	this->guessPos = 0;
 	for (int i = 0; i < 5; i++)
 	{
