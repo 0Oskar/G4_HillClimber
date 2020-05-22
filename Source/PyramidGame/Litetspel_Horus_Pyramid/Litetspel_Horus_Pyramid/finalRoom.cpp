@@ -136,7 +136,7 @@ void finalRoom::createBoundingBoxes()
 	this->addBoundingBox({ -10.f, -1.0f, -104.0f + 140.f, 1 }, DirectX::XMFLOAT3(40.f, 1.f, 120.f));
 	this->addBoundingBox({ 18.f, 5.0f, -104.0f + 140.f, 1 }, DirectX::XMFLOAT3(2.f, 20.f, 50.f));
 	this->addBoundingBox({ -43.f, 5.0f, -104.0f + 140.f, 1 }, DirectX::XMFLOAT3(2.f, 20.f, 50.f));
-	this->addBoundingBox({ -13.f, 5.0f, -58.0f + 140.f, 1 }, DirectX::XMFLOAT3(50.f, 20.f, 2.f));
+	this->addBoundingBox({ -13.f, 5.0f, -59.7f + 140.f, 1 }, DirectX::XMFLOAT3(50.f, 20.f, 2.f));
 	this->addBoundingBox({ -10.f, 25.0f, -135.0f + 140.f, 1 }, DirectX::XMFLOAT3(40.f, 1.f, 85.f));
 	this->addBoundingBox({ -13.f, 5.0f, -215.0f + 140.f, 1 }, DirectX::XMFLOAT3(50.f, 20.f, 2.f));
 	this->addBoundingBox({ 5.f, 5.0f, -150.0f + 140.f, 1 }, DirectX::XMFLOAT3(11.5f, 20.f, 2.f));
@@ -177,7 +177,7 @@ void finalRoom::createSceneObjects()
 	this->m_gameObjects.back()->setRotation({ 0.0f, XMConvertToRadians(180), 0.0f, 0.f });
 
 	//Platform hookable hawk
-	vec = DirectX::XMVectorSet(-11.f, 12.f, -70.5f + 140.f, 1.f);
+	vec = DirectX::XMVectorSet(-11.f, 13.2f, -64.f + 140.f, 1.f);
 	this->addPlatformToRoom(3, &m_models->at(3), vec, DirectX::XMFLOAT3(4.f, 0.5f, 2.5f));
 	this->m_gameObjects.back()->setScale({ 0.0f,0.0f,0.0f, 0.0f });
 
