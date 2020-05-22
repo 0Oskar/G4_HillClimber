@@ -442,6 +442,10 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	dynamic_cast<finalRoom*>(this->m_rooms.back())->init();
 	m_activeRoom = m_rooms.back();
 
+	//IF ACTIVE ROOM IS FINAL ROOM
+	this->m_activeRoom->setEntrancePosition(XMVectorSet(-14.9f, 10.f, -66.f, 0.0f));
+
+
 	//Otaget rum [4] -
 	/*this->m_rooms.emplace_back(new NamnRoom());
 	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, -100, 1), audioEngine, &this->m_gameTime);

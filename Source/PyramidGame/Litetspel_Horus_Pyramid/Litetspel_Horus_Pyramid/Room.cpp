@@ -176,6 +176,11 @@ std::vector<BoundingBox>* Room::getTriggerBoxes()
 	return &this->m_triggerBoundingBoxes;
 }
 
+void Room::setEntrancePosition(XMVECTOR spawnPos)
+{
+	this->m_entrencePosition = spawnPos;
+}
+
 
 void Room::addBoundingBox(XMVECTOR position, XMFLOAT3 extends)
 {

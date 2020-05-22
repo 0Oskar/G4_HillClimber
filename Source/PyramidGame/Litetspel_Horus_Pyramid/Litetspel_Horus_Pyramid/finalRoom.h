@@ -32,6 +32,8 @@ private:
 	XMVECTOR aRotation;
 	XMFLOAT4 rot;
 
+	XMVECTOR spawnRotation;
+
 	bool flipDirection = false;
 
 	bool wonGame = false;
