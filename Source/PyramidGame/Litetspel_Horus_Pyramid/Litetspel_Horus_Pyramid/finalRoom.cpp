@@ -4,6 +4,7 @@
 finalRoom::finalRoom()
 {
 	Room::initParent();
+	this->m_entrencePosition = XMVectorSet(-14.9f, 10.f, -66.f, 0.0f);
 }
 finalRoom::~finalRoom()
 {
@@ -24,7 +25,6 @@ void finalRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& active
 		respawn = false;
 		this->m_player->getMoveCompPtr()->rotation = this->spawnRotation;
 	}
-
 
 	timesHitString = std::to_string(timesHit);
 
@@ -131,7 +131,7 @@ void finalRoom::portals()
 	DirectX::XMVECTOR rotation = DirectX::XMVectorSet(0.f, 0.f, 0.f, 1.f);
 
 	//Add portals here
-	vec = DirectX::XMVectorSet(-13.f, 5.f, -73.f, 1.f);
+	vec = DirectX::XMVectorSet(-13.7f, 5.f, -73.f, 1.f);
 	XMVECTOR vecScale = DirectX::XMVectorSet(1.3f, 1.3f, -1.3f, 1.f);
 	this->addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 10, &m_models->at(10), vec, NormalScale, DirectX::XMFLOAT3(3.f, 8.f, 0.6f), 0, false);
 	m_gameObjects.back()->setRotation(XMVectorSet(0.0f, XMConvertToRadians(180), 0.0f, 0.0f));
@@ -151,7 +151,7 @@ void finalRoom::createBoundingBoxes()
 	this->addBoundingBox({ -10.f, -1.0f, -104.0f + 140.f, 1 }, DirectX::XMFLOAT3(40.f, 1.f, 120.f));
 	this->addBoundingBox({ 18.f, 5.0f, -104.0f + 140.f, 1 }, DirectX::XMFLOAT3(2.f, 20.f, 50.f));
 	this->addBoundingBox({ -43.f, 5.0f, -104.0f + 140.f, 1 }, DirectX::XMFLOAT3(2.f, 20.f, 50.f));
-	this->addBoundingBox({ -13.f, 5.0f, -59.7f + 140.f, 1 }, DirectX::XMFLOAT3(50.f, 20.f, 2.f));
+	this->addBoundingBox({ -13.f, 5.0f, -59.9f + 140.f, 1 }, DirectX::XMFLOAT3(50.f, 20.f, 2.f));
 	this->addBoundingBox({ -10.f, 26.0f, -135.0f + 140.f, 1 }, DirectX::XMFLOAT3(40.f, 1.f, 85.f));
 	this->addBoundingBox({ -13.f, 5.0f, -213.0f + 140.f, 1 }, DirectX::XMFLOAT3(50.f, 20.f, 2.f));
 	this->addBoundingBox({ 5.f, 5.0f, -150.0f + 140.f, 1 }, DirectX::XMFLOAT3(11.5f, 20.f, 2.f));
@@ -193,8 +193,8 @@ void finalRoom::createSceneObjects()
 	this->m_gameObjects.back()->setRotation({ 0.0f, XMConvertToRadians(180), 0.0f, 0.f });
 
 	//Platform hookable hawk
-	vec = DirectX::XMVectorSet(-11.f, 14.2f, -64.f + 140.f, 1.f);
-	this->addPlatformToRoom(3, &m_models->at(3), vec, DirectX::XMFLOAT3(4.f, 0.5f, 2.5f));
+	vec = DirectX::XMVectorSet(-11.3f, 14.2f, -64.9f + 140.f, 1.f);
+	this->addPlatformToRoom(3, &m_models->at(3), vec, DirectX::XMFLOAT3(4.f, 0.5f, 2.f));
 	this->m_gameObjects.back()->setScale({ 0.0f,0.0f,0.0f, 0.0f });
 
 	//Swinging axes + boundingBoxes for them
