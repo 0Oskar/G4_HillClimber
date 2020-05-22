@@ -318,6 +318,11 @@ void GameState::loadModels()
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
 	this->m_models[27].initializeModelBff(m_device, m_dContext, "Bells.bff", mat, L"Textures/ColorTexture.png"); //load model
+
+	//28. Lever Grip (Tristan)
+	this->m_models.emplace_back(); //add empty model
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f); //reset material
+	this->m_models[28].initializeModelBff(m_device, m_dContext, "TristansLeverGrip.bff", mat, L"Textures/ColorTexture.png"); //load model
 }
 
 
