@@ -20,6 +20,7 @@ private:
 
 	std::vector<DirectX::BoundingOrientedBox> axeBB;
 	DirectX::BoundingOrientedBox axeTestBB;
+	Lever* lever;
 
 	int timesHit = 0;
 	std::string timesHitString;
@@ -32,6 +33,8 @@ private:
 	XMFLOAT4 rot;
 
 	bool flipDirection = false;
+
+	bool wonGame = false;
 
 	Lever* m_objectTest;
 public:

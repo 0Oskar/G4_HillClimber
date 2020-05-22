@@ -20,6 +20,20 @@ void finalRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& active
 
 	timesHitString = std::to_string(timesHit);
 
+	lever->collidesWithPlayer();
+
+	if (this->lever->getCanUseLever() == true)
+	{
+		if (this->m_player->getinUse() == true)
+		{
+			this->wonGame = true;
+			OutputDebugStringA("WON");
+			OutputDebugStringA("\n");
+		}
+	}
+			
+				
+	//Do once to correct the positioning of the axes due to them being rotated differently at export
 
 	if (doOnceAtStart != 1)
 	{
@@ -122,10 +136,26 @@ void finalRoom::createBoundingBoxes()
 	this->addBoundingBox({ -10.f, -1.0f, -104.0f + 140.f, 1 }, DirectX::XMFLOAT3(40.f, 1.f, 120.f));
 	this->addBoundingBox({ 18.f, 5.0f, -104.0f + 140.f, 1 }, DirectX::XMFLOAT3(2.f, 20.f, 50.f));
 	this->addBoundingBox({ -43.f, 5.0f, -104.0f + 140.f, 1 }, DirectX::XMFLOAT3(2.f, 20.f, 50.f));
-	this->addBoundingBox({ -13.f, 5.0f, -61.0f + 140.f, 1 }, DirectX::XMFLOAT3(50.f, 20.f, 2.f));
+	this->addBoundingBox({ -13.f, 5.0f, -58.0f + 140.f, 1 }, DirectX::XMFLOAT3(50.f, 20.f, 2.f));
 	this->addBoundingBox({ -10.f, 25.0f, -135.0f + 140.f, 1 }, DirectX::XMFLOAT3(40.f, 1.f, 85.f));
 	this->addBoundingBox({ -13.f, 5.0f, -215.0f + 140.f, 1 }, DirectX::XMFLOAT3(50.f, 20.f, 2.f));
+	this->addBoundingBox({ 5.f, 5.0f, -150.0f + 140.f, 1 }, DirectX::XMFLOAT3(11.5f, 20.f, 2.f));
+	this->addBoundingBox({ -31.6f, 5.0f, -150.0f + 140.f, 1 }, DirectX::XMFLOAT3(11.5f, 20.f, 2.f));
+	this->addBoundingBox({ -6.6f, 2.f, -53.f, 1.f }, DirectX::XMFLOAT3(1.5f, 5.f, 46.f));
+	this->addBoundingBox({ -21.4f, 2.f, -53.f, 1.f }, DirectX::XMFLOAT3(1.5f, 5.f, 46.f));
 
+	//Pillars boundingBoxes
+	this->addBoundingBox({ -32.5f, 20.f, 61.f, 1.f }, DirectX::XMFLOAT3(2.f, 20.f, 2.f));
+	this->addBoundingBox({ -32.5f, 20.f, 7.1f, 1.f }, DirectX::XMFLOAT3(2.f, 20.f, 2.f));
+	this->addBoundingBox({ 7.2f, 20.f, 7.1f, 1.f }, DirectX::XMFLOAT3(2.f, 20.f, 2.f));
+	this->addBoundingBox({ 7.2f, 20.f, 61.f, 1.f }, DirectX::XMFLOAT3(2.f, 20.f, 2.f));
+
+	//Objects in room boundingBoxes
+	this->addBoundingBox({ 10.4f, 4.f, 43.6f, 1.f }, DirectX::XMFLOAT3(4.f, 3.f, 3.3f));
+	this->addBoundingBox({ -11.4f, 2.f, 75.2f, 1.f }, DirectX::XMFLOAT3(3.5f, 2.f, 2.f));
+	this->addBoundingBox({ -12.7f, 2.f, 33.3f, 1.f }, DirectX::XMFLOAT3(2.7f, 2.f, 7.f));
+	this->addBoundingBox({ -21.f, 2.f, -4.f, 1.f }, DirectX::XMFLOAT3(1.5f, 3.f, 1.5f));
+	this->addBoundingBox({ -6.6f, 2.f, -4.f, 1.f }, DirectX::XMFLOAT3(1.5f, 3.f, 1.5f));
 }
 void finalRoom::createSceneObjects()
 {
@@ -146,6 +176,10 @@ void finalRoom::createSceneObjects()
 	this->addGameObjectToRoom(false, false, 2, 27, &m_models->at(27), vec, DirectX::XMVectorSet(1, 1, 1, 1), DirectX::XMFLOAT3(1.f, 1.f, 1.f));
 	this->m_gameObjects.back()->setRotation({ 0.0f, XMConvertToRadians(180), 0.0f, 0.f });
 
+	//Platform hookable hawk
+	vec = DirectX::XMVectorSet(-11.f, 12.f, -70.5f + 140.f, 1.f);
+	this->addPlatformToRoom(3, &m_models->at(3), vec, DirectX::XMFLOAT3(4.f, 0.5f, 2.5f));
+	this->m_gameObjects.back()->setScale({ 0.0f,0.0f,0.0f, 0.0f });
 
 	//Swinging axes + boundingBoxes for them
 	vec = DirectX::XMVectorSet(-13.4f, 13.5f, -20.1f, 1.f);
@@ -194,7 +228,15 @@ void finalRoom::createSceneObjects()
 	this->axeBB.emplace_back(BoundingOrientedBox(axePos, XMFLOAT3(2.8f, 30.f, 0.8f), rot));
 	this->m_orientedBoundingBoxes.emplace_back(BoundingOrientedBox(axePos, XMFLOAT3(2.8f, 30.f, 0.8f), rot));
 
+	//Lever
+	vec = DirectX::XMVectorSet(-12.7f, 2.f, 73.f, 1.f);
+	rotation = DirectX::XMVectorSet(0.f, pMath::convertDegreesToRadians(-90), pMath::convertDegreesToRadians(-270), 1.f);
+	this->addLeverToRoom(7, &m_models->at(7), vec, rotation, DirectX::XMFLOAT3(4.f, 3.f, 4.f));
 
+	lever = dynamic_cast<Lever*>(this->m_gameObjects.back());
+
+	lever->setScale(XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f));
+	this->lever->setPlayerBoundingBox(this->m_player->getAABBPtr());
 }
 void finalRoom::onCompleted()
 {
