@@ -63,6 +63,7 @@ std::vector<LightBFF> lightData2;
 std::vector<CameraBFF> cameraData2;
 
 std::vector<std::vector<BlendShapesBFF>> blendShapeDataArr3;
+std::vector<VertexAnimBFF> keyFrameData2;
 
 //Make a file
 
@@ -276,8 +277,35 @@ int main(int argc, char** argv)
         }
     }
     // ****************** Vertex Animation ****************** //
+    keyFrameData2 = getKeyFrameData();
+    myStringFile5.writeToStringFile("\n\n\n-------------  Vertex Animation:\n\n");
 
+    for (int i = 0; i < getNrOfkeyframes(); i++)
+    {
+        myStringFile5.writeToStringFile(
+            "Frame: " + std::to_string(keyFrameData2[i].time) +
+            "\n" +
+            "PosX: " + std::to_string(keyFrameData2[i].pos[0]) +
+            "\n" +
+            "PosY: " + std::to_string(keyFrameData2[i].pos[1]) +
+            "\n" +
+            "PosZ: " + std::to_string(keyFrameData2[i].pos[2]) +
+            "\n" +
+            "RotX: " + std::to_string(keyFrameData2[i].rot[0]) +
+            "\n" +
+            "RotY: " + std::to_string(keyFrameData2[i].rot[1]) +
+            "\n" +
+            "RotZ: " + std::to_string(keyFrameData2[i].rot[2]) +
+            "\n" +
+            "ScaleX: " + std::to_string(keyFrameData2[i].scale[0]) +
+            "\n" +
+            "ScaleY: " + std::to_string(keyFrameData2[i].scale[1]) +
+            "\n" +
+            "ScaleZ: " + std::to_string(keyFrameData2[i].scale[2]) +
+            "\n\n");
 
+        myFile5.writeToFile((const char*)&keyFrameData2, sizeof(VertexAnimBFF)); // Add to biFile
+    }
 
 
     return 0;

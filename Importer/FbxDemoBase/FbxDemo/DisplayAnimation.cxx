@@ -51,6 +51,16 @@ void DisplayAnimation(FbxScene* pScene)
     }
 }
 
+std::vector<VertexAnimBFF> getKeyFrameData()
+{
+    return keyFrameData;
+}
+
+int getNrOfkeyframes()
+{
+    return keyFrameData.size();
+}
+
 void DisplayAnimation(FbxAnimStack* pAnimStack, FbxNode* pNode, bool isSwitcher)
 {
     int l;
@@ -604,8 +614,8 @@ void DisplayCurveKeys(FbxAnimCurve* pCurve)
         FBXSDK_printf (lOutputString);
     }
 
-    
-    if (someVar == 8)
+    //Vertex Animation
+    /*if (someVar == 8)
     {
         keyFrameData.resize(lKeyCount);
         myStringFile4.writeToStringFile("\n\n\n-------------  Vertex Animation: \n\n");
@@ -635,7 +645,7 @@ void DisplayCurveKeys(FbxAnimCurve* pCurve)
                 "ScaleZ: " + std::to_string(keyFrameData[i].scale[2]) +
                 "\n\n");
         }
-    }
+    }*/
 }
 
 void DisplayListCurveKeys(FbxAnimCurve* pCurve, FbxProperty* pProperty)
