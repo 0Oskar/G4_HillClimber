@@ -56,6 +56,7 @@ static bool gVerbose = true;
 FileWrite myFile5("../biFile.bff");
 FileWrite myStringFile5("../stringFile.bff");
 
+SceneBFF sceneData;
 MeshBFF meshData2;
 std::vector<VertexBFF> vertexData2;
 MaterialBFF materialData3;
@@ -150,13 +151,31 @@ int main(int argc, char** argv)
 
     // Destroy all objects created by the FBX SDK.
     DestroySdkObjects(lSdkManager, lResult);
+    sceneData.nrOfLights = getNrOfLights();
+    sceneData.nrOfCameras = getNrOfCameras();
+    sceneData.nrOfVertexAnimFrames = getNrOfkeyframes();
+    sceneData.nrOfBlendShapes = GetNrOfBlendShapes2();
 
+    // ****************** Scene ****************** //
+    myStringFile5.writeToStringFile("\n------------- Scene: \n\n");
+    myStringFile5.writeToStringFile(
+        "NrOfLights: " + std::to_string(sceneData.nrOfLights) +
+        "\n" +
+        "NrOfCameras: " + std::to_string(sceneData.nrOfCameras) +
+        "\n" +
+        "NrOfVertexAnimFrames: " + std::to_string(sceneData.nrOfVertexAnimFrames) +
+        "\n" +
+        "NrOfBlendShapes: " + std::to_string(sceneData.nrOfBlendShapes) +
+        "\n\n"
+    );
+    myFile5.writeToFile((const char*)&sceneData, sizeof(SceneBFF));
     // ****************** Mesh ****************** //
     meshData2 = GetMeshData();
     myStringFile5.writeToStringFile(
-        "Mesh Name: " + (std::string)meshData2.name +
-        "\n" + 
-        "NrOfVertex: " + std::to_string(meshData2.nrOfVertex));
+        "\n------------- Mesh: \n\nMesh Name: " + (std::string)meshData2.name +
+        "\n" +
+        "NrOfVertex: " + std::to_string(meshData2.nrOfVertex) +
+        "\n\n");
 
     myFile5.writeToFile((const char*)&meshData2, sizeof(MeshBFF)); //Add to biFile
 

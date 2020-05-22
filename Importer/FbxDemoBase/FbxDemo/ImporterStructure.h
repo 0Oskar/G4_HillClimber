@@ -1,5 +1,13 @@
 #pragma once
 
+struct SceneBFF
+{
+	unsigned int nrOfLights;
+	unsigned int nrOfCameras;
+	unsigned int nrOfVertexAnimFrames;
+	unsigned int nrOfBlendShapes;
+};
+
 struct MeshBFF
 {
 	char name[64];
