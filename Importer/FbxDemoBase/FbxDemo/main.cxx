@@ -248,7 +248,6 @@ int main(int argc, char** argv)
     myFile5.writeToFile((const char*)&cameraData2, sizeof(CameraBFF)); //Add to biFile
 
     // ****************** Shapes ****************** //
-    blendShapeDataArr3 = GetBlendShapeDataArr2();
     for (int i = 0; i < GetNrOfBlendShapes2(); i++)
     {
         myStringFile5.writeToStringFile("\n\n\n------------- BlendShape:\n\n");
@@ -316,6 +315,7 @@ void DisplayContent(FbxNode* pNode)
 
         case FbxNodeAttribute::eMesh:      
             DisplayMesh(pNode);
+            blendShapeDataArr3 = GetBlendShapeDataArr2(pNode);
             break;
 
         case FbxNodeAttribute::eNurbs:      

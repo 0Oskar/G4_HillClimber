@@ -60,6 +60,7 @@ void DisplayShape(FbxGeometry* pGeometry)
 				{
 					DisplayInt("        Control Point ", j);
 					Display3DVector("            Coordinates: ", lControlPoints[j]);
+					//pMesh->GetPolygonVertex(i, j);
 
 					blendShapeDataArr[currentShape][j].pos[0] = lControlPoints[j][0];
 					blendShapeDataArr[currentShape][j].pos[1] = lControlPoints[j][1];

@@ -28,8 +28,6 @@ FileWrite myFile2("../biFile.bff");
 FileWrite myStringFile2("../stringFile.bff");
 CameraBFF cameraData;
 
-
-
 void DisplayCamera(FbxNode* pNode)
 {
     DisplayCamera((FbxCamera*) pNode->GetNodeAttribute(), (char *) pNode->GetName(), pNode->GetTarget(), pNode->GetTargetUp());
@@ -37,6 +35,7 @@ void DisplayCamera(FbxNode* pNode)
 
 void DisplayCamera(FbxCamera* pCamera, char* pName, FbxNode* pTargetNode, FbxNode* pTargetUpNode)
 {
+    myStringFile2.writeToStringFile("\n\n\n------------- Camera:\n\n");
     DisplayString("Camera Name: ", pName);
     if (!pCamera)
     {
@@ -65,27 +64,6 @@ void DisplayCamera(FbxCamera* pCamera, char* pName, FbxNode* pTargetNode, FbxNod
     DisplayRenderOptions(pCamera);
     DisplayDefaultAnimationValues(pCamera);
 
-    //myStringFile2.writeToStringFile("\n\n\n------------- Camera:\n\n");
-    //myStringFile2.writeToStringFile(
-    //    "PosX: " + std::to_string(cameraData.pos[0]) + "\n" +
-    //    "PosY: " + std::to_string(cameraData.pos[1]) + "\n" +
-    //    "PosZ: " + std::to_string(cameraData.pos[2]) + "\n" +
-    //    "\n" +
-    //    "upVecX: " + std::to_string(cameraData.upVec[0]) + "\n" +
-    //    "upVecY: " + std::to_string(cameraData.upVec[1]) + "\n" +
-    //    "upVecZ: " + std::to_string(cameraData.upVec[2]) + "\n" +
-    //    "\n" +
-    //    "forwardVecX: " + std::to_string(cameraData.forwardVec[0]) + "\n" +
-    //    "forwardVecY: " + std::to_string(cameraData.forwardVec[1]) + "\n" +
-    //    "forwardVecZ: " + std::to_string(cameraData.forwardVec[2]) + "\n" +
-    //    "\n" +
-    //    "nearPlane: " + std::to_string(cameraData.nearPlane) + "\n" +
-    //    "\n" +
-    //    "farPlane: " + std::to_string(cameraData.farPlane) + "\n" +
-    //    "\n" +
-    //    "FOV: " + std::to_string(cameraData.FOV) + " (degrees)");
-
-    /*myFile2.writeToFile((const char*)&cameraData, sizeof(CameraBFF));*/
 }
 
 

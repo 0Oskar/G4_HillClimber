@@ -48,7 +48,8 @@ MeshBFF meshData;
 int currentVertex = 0;
 
 MaterialBFF materialData;
-std::vector<BlendShapesBFF> blendShapeData2;
+
+//FbxMesh* MeshRef;
 std::vector<std::vector<BlendShapesBFF>> blendShapeDataArr2;
 int nrOfShapes2;
 int nrOfVertexInShape2;
@@ -63,6 +64,7 @@ void DisplayMesh(FbxNode* pNode)
 	//Vertex vertexData;
 
 	FbxMesh* lMesh = (FbxMesh*)pNode->GetNodeAttribute();
+	//MeshRef = (FbxMesh*)pNode->GetNodeAttribute();
 
 	DisplayString("Mesh Name: ", (char*)pNode->GetName());
 
@@ -87,49 +89,6 @@ void DisplayMesh(FbxNode* pNode)
 	DisplayMaterialConnections(lMesh);
 	DisplayLink(lMesh);
 	DisplayShape(lMesh);
-
-
-	//myFile.writeToFile((const char*)&meshData, sizeof(MeshBFF)); //Add mesh data to output <------------------------------------------
-	//myStringFile.writeToStringFile(meshData.name + std::to_string(meshData.nrOfVertex));
-	//for (int i = 0; i < vertexCount; i++)
-	//{
-	//	myFile.writeToFile((const char*)&vertexData[i], sizeof(VertexBFF)); //Add vertex data to output <------------------------------------------ 
-
-	//	myStringFile.writeToStringFile(
-	//		"\n------------- Index " + std::to_string(i) + ")\n\n" +
-	//		"PosX: " + std::to_string(vertexData[i].pos[0]) + "\n" +
-	//		"PosY: " + std::to_string(vertexData[i].pos[1]) + "\n" +
-	//		"PosZ: " + std::to_string(vertexData[i].pos[2]) + "\n" +
-	//		"\n" +
-	//		"U: " + std::to_string(vertexData[i].uv[0]) + "\n" +
-	//		"V: " + std::to_string(vertexData[i].uv[1]) + "\n" +
-	//		"\n" +
-	//		"NormX: " + std::to_string(vertexData[i].norm[0]) + "\n" +
-	//		"NormY: " + std::to_string(vertexData[i].norm[1]) + "\n" +
-	//		"NormZ: " + std::to_string(vertexData[i].norm[2]) + "\n" +
-	//		"\n" +
-	//		"biNormX: " + std::to_string(vertexData[i].biNorm[0]) + "\n" +
-	//		"biNormY: " + std::to_string(vertexData[i].biNorm[1]) + "\n" +
-	//		"biNormZ: " + std::to_string(vertexData[i].biNorm[2]) + "\n" +
-	//		"\n" +
-	//		"TanX: " + std::to_string(vertexData[i].tan[0]) + "\n" +
-	//		"TanY: " + std::to_string(vertexData[i].tan[1]) + "\n" +
-	//		"TanZ: " + std::to_string(vertexData[i].tan[2]) + "\n" + "\n" + "\n");
-
-	//}
-	//myFile.writeToFile((const char*)&materialData, sizeof(MaterialBFF)); //Add material data to output <------------------------------------------
-
-	//myStringFile.writeToStringFile(
-	//	"\n------------- Material: \n\n"
-	//	"DiffuseR: " + std::to_string(materialData.Diffuse[0]) + "\n" +
-	//	"DiffuseG: " + std::to_string(materialData.Diffuse[1]) + "\n" +
-	//	"DiffuseB: " + std::to_string(materialData.Diffuse[2]) + "\n" +
-	//	"\n" +
-	//	"AmbientR: " + std::to_string(materialData.Ambient[0]) + "\n" +
-	//	"AmbientG: " + std::to_string(materialData.Ambient[1]) + "\n" +
-	//	"AmbientB: " + std::to_string(materialData.Ambient[2]) + "\n" +
-	//	"\n" + 
-	//	"Opacity: " + std::to_string(materialData.Opacity) + "\n ");
 	DisplayCache(lMesh);
 }
 
@@ -149,9 +108,72 @@ MaterialBFF GetMaterialData2()
 	return materialData;
 }
 
-std::vector<std::vector<BlendShapesBFF>> GetBlendShapeDataArr2()
+std::vector<std::vector<BlendShapesBFF>> GetBlendShapeDataArr2(FbxNode* pNode)
 {
-	return GetBlendShapeDataArr();
+	blendShapeDataArr2 = GetBlendShapeDataArr();
+
+	FbxMesh* MeshRef = (FbxMesh*)pNode->GetNodeAttribute();
+	FbxShape* shape;
+	FbxBlendShape* blendShape;
+	FbxBlendShapeChannel* blendShapeChannels;
+	int blendShapeCount = MeshRef->GetDeformerCount(FbxDeformer::eBlendShape);
+	int nrOfFaces = MeshRef->GetPolygonCount();
+	int nrOfBlendShapeChannels;
+	int lTargetShapeCount;
+	int nrOfControlPoints;
+
+	
+	for (int i = 0; i < blendShapeCount; ++i)														//Alla belnds shapes					2
+	{
+		//myStringFile.writeToStringFile("\n\n----------\n\n");
+		//myStringFile.writeToStringFile("\nShapeNr = " + std::to_string(i));
+		blendShape = (FbxBlendShape*)MeshRef->GetDeformer(i, FbxDeformer::eBlendShape);
+		nrOfBlendShapeChannels = blendShape->GetBlendShapeChannelCount();
+		for (int j = 0; j < nrOfBlendShapeChannels; ++j)											//Alla kanaler i blend shapen			1
+		{
+			blendShapeChannels = blendShape->GetBlendShapeChannel(j);
+			lTargetShapeCount = blendShapeChannels->GetTargetShapeCount();
+			for (int k = 0; k < lTargetShapeCount; ++k)												//Alla targets för blend shapen			1
+			{
+				shape = blendShapeChannels->GetTargetShape(k);
+				nrOfControlPoints = shape->GetControlPointsCount();
+				for (int l = 0; l < nrOfControlPoints; l++)											//Alla Control points i blend shapen	3
+				{
+					//myStringFile.writeToStringFile("\nControlPointIndex = " + std::to_string(l));
+					FbxLayerElementArrayTemplate<FbxVector4>* normals = NULL;
+					bool status = shape->GetNormals(&normals);
+					FbxVector4* controlPoints = shape->GetControlPoints();
+					//for (int m = 0; m < GetNrOfBlendShapes(); m++)								//
+					//{
+						for (int n = 0; n < nrOfFaces; n++)											//Alla faces i meshen					1
+						{
+							//myStringFile.writeToStringFile("\nFace = " + std::to_string(n));
+							int nrOfVertexInFace = MeshRef->GetPolygonSize(n);
+							for (int o = 0; o < nrOfVertexInFace; o++)								//Alla vertex punkter i facen			3
+							{
+								//myStringFile.writeToStringFile("\nNrOfVertexInFace = " + std::to_string(o));
+								int currentControllPoint = MeshRef->GetPolygonVertex(n, o);
+
+								blendShapeDataArr2[i][o].pos[0] = controlPoints[currentControllPoint][0];
+								blendShapeDataArr2[i][o].pos[1] = controlPoints[currentControllPoint][1];
+								blendShapeDataArr2[i][o].pos[2] = controlPoints[currentControllPoint][2];
+								
+								//Innan var i = m
+								if (status && normals && normals->GetCount() == nrOfControlPoints)
+								{
+									blendShapeDataArr2[i][o].norm[0] = normals->GetAt(currentControllPoint)[0];
+									blendShapeDataArr2[i][o].norm[1] = normals->GetAt(currentControllPoint)[1];
+									blendShapeDataArr2[i][o].norm[2] = normals->GetAt(currentControllPoint)[2];
+								}
+							}
+						}
+					//}
+				}
+			}
+		}
+	}
+	return blendShapeDataArr2;
+	//return GetBlendShapeDataArr();
 }
 
 int GetNrOfVertexInBlendShape2()
@@ -173,7 +195,6 @@ void DisplayControlsPoints(FbxMesh* pMesh)
 {
 	int i, lControlPointsCount = pMesh->GetControlPointsCount();
 	FbxVector4* lControlPoints = pMesh->GetControlPoints();
-
 
 	DisplayString("    Control Points");
 	std::string VertexData = "";
@@ -222,6 +243,9 @@ void DisplayPolygons(FbxMesh* pMesh)
 	DisplayString("    Polygons");
 
 	int vertexId = 0;
+	//MeshRef = pMesh;
+
+
 	for (i = 0; i < lPolygonCount; i++) // i = nrOfFaces
 	{
 		DisplayInt("        Polygon ", i);
@@ -269,6 +293,7 @@ void DisplayPolygons(FbxMesh* pMesh)
 				vertexData[currentVertex].pos[0] = lControlPoints[lControlPointIndex][0];
 				vertexData[currentVertex].pos[1] = lControlPoints[lControlPointIndex][1];
 				vertexData[currentVertex].pos[2] = lControlPoints[lControlPointIndex][2]; //Add VertexPos <------------------------------------------
+				
 			}
 
 			for (l = 0; l < pMesh->GetElementVertexColorCount(); l++)
@@ -381,15 +406,12 @@ void DisplayPolygons(FbxMesh* pMesh)
 
 				if (leTangent->GetMappingMode() == FbxGeometryElement::eByPolygonVertex)
 				{
+					//myStringFile.writeToStringFile("khaskd\n");
 					switch (leTangent->GetReferenceMode())
 					{
 					case FbxGeometryElement::eDirect:
 						Display3DVector(header, leTangent->GetDirectArray().GetAt(vertexId));
-						currentTangent = leTangent->GetDirectArray().GetAt(vertexId);
-						vertexData[currentVertex].tan[0] = currentTangent[0];
-						vertexData[currentVertex].tan[1] = currentTangent[1];
-						vertexData[currentVertex].tan[2] = currentTangent[2]; //Add Tangent <------------------------------------------
-						
+						//myStringFile.writeToStringFile("IASHDKHASD\n");
 						break;
 					case FbxGeometryElement::eIndexToDirect:
 					{
@@ -401,12 +423,17 @@ void DisplayPolygons(FbxMesh* pMesh)
 						break; // other reference modes not shown here!
 					}
 				}
+				currentTangent = leTangent->GetDirectArray().GetAt(vertexId);
+				vertexData[currentVertex].tan[0] = currentTangent[0];
+				vertexData[currentVertex].tan[1] = currentTangent[1];
+				vertexData[currentVertex].tan[2] = currentTangent[2]; //Add Tangent <------------------------------------------
 
 			}
 			for (l = 0; l < pMesh->GetElementBinormalCount(); ++l)
 			{
 
 				FbxGeometryElementBinormal* leBinormal = pMesh->GetElementBinormal(l);
+				//leBinormal->SetMappingMode(FbxGeometryElement::eByPolygonVertex);
 				
 				FBXSDK_sprintf(header, 100, "            Binormal: ");
 				if (leBinormal->GetMappingMode() == FbxGeometryElement::eByPolygonVertex)
@@ -415,10 +442,7 @@ void DisplayPolygons(FbxMesh* pMesh)
 					{
 					case FbxGeometryElement::eDirect:
 						Display3DVector(header, leBinormal->GetDirectArray().GetAt(vertexId));
-						currentBiNormal = leBinormal->GetDirectArray().GetAt(vertexId);
-						vertexData[currentVertex].biNorm[0] = currentBiNormal[0];
-						vertexData[currentVertex].biNorm[1] = currentBiNormal[1];
-						vertexData[currentVertex].biNorm[2] = currentBiNormal[2]; //Add BiNormal <------------------------------------------
+
 						break;
 					case FbxGeometryElement::eIndexToDirect:
 					{
@@ -430,28 +454,22 @@ void DisplayPolygons(FbxMesh* pMesh)
 						break; // other reference modes not shown here!
 					}
 				}
+				currentBiNormal = leBinormal->GetDirectArray().GetAt(vertexId);
+				vertexData[currentVertex].biNorm[0] = currentBiNormal[0];
+				vertexData[currentVertex].biNorm[1] = currentBiNormal[1];
+				vertexData[currentVertex].biNorm[2] = currentBiNormal[2]; //Add BiNormal <------------------------------------------
 			}
 
 			for (l = 0; l < pMesh->GetElementNormalCount(); ++l)
 			{
 				FbxGeometryElementNormal* leNormal = pMesh->GetElementNormal(l);
 				FBXSDK_sprintf(header, 100, "            Normal: ");
-				//myStringFile.writeToStringFile(std::to_string(l));
-				//leNormal->SetMappingMode(FbxGeometryElement::eByPolygonVertex);
 				if (leNormal->GetMappingMode() == FbxGeometryElement::eByPolygonVertex)
 				{
 					switch (leNormal->GetReferenceMode())
 					{
 					case FbxGeometryElement::eDirect:
-						Display3DVector(header, leNormal->GetDirectArray().GetAt(vertexId));
-						//FbxVector4 currentNormal;
-						//currentNormal[0] = ( currentTangent[1] * currentBiNormal[2] - currentTangent[2] * currentBiNormal[1] );
-						//currentNormal[1] = ( currentTangent[2] * currentBiNormal[0] - currentTangent[0] * currentBiNormal[2] );
-						//currentNormal[2] = ( currentTangent[0] * currentBiNormal[1] - currentTangent[1] * currentBiNormal[0] );
-						//currentNormal[3] = 0;
-						//vertexData[currentVertex].norm[0] = currentNormal[0];
-						//vertexData[currentVertex].norm[1] = currentNormal[1];
-						//vertexData[currentVertex].norm[2] = currentNormal[2]; //Add Normal <------------------------------------------				
+						Display3DVector(header, leNormal->GetDirectArray().GetAt(vertexId));		
 
 						break;
 					case FbxGeometryElement::eIndexToDirect:

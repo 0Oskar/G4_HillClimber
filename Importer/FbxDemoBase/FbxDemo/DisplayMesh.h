@@ -19,7 +19,7 @@ MeshBFF GetMeshData();
 std::vector<VertexBFF> GetVertxData();
 MaterialBFF GetMaterialData2();
 
-std::vector<std::vector<BlendShapesBFF>> GetBlendShapeDataArr2();
+std::vector<std::vector<BlendShapesBFF>> GetBlendShapeDataArr2(FbxNode* pNode);
 int GetNrOfVertexInBlendShape2();
 int GetNrOfBlendShapes2();
 
