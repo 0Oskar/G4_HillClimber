@@ -1,25 +1,38 @@
-Mesh Name: MasterTri
+
+------------- Scene: 
+
+NrOfLights: 0
+NrOfCameras: 0
+NrOfVertexAnimFrames: 0
+NrOfBlendShapes: 0
+
+
+------------- Mesh: 
+
+Mesh Name: pPlane1
 NrOfVertex: 3
+
+
 ------ Index 0)
 
 PosX: -0.500000
 PosY: 0.000000
-PosZ: 0.000000
+PosZ: 0.500000
 
-U: 0.000000
-V: 0.500000
+U: 0.163028
+V: 0.201791
 
 NormX: 0.000000
 NormY: 1.000000
 NormZ: 0.000000
 
-biNormX: -0.000000
+biNormX: 0.012248
 biNormY: 0.000000
-biNormZ: -1.000000
+biNormZ: -0.999925
 
-TanX: 1.000000
-TanY: 0.000000
-TanZ: -0.000000
+TanX: 0.999925
+TanY: -0.000000
+TanZ: 0.012248
 
 
 
@@ -29,57 +42,59 @@ PosX: 0.500000
 PosY: 0.000000
 PosZ: 0.500000
 
-U: 1.000000
-V: 0.000000
+U: 0.919008
+V: 0.211051
 
 NormX: 0.000000
 NormY: 1.000000
 NormZ: 0.000000
 
-biNormX: -0.000000
+biNormX: 0.012248
 biNormY: 0.000000
-biNormZ: -1.000000
+biNormZ: -0.999925
 
-TanX: 1.000000
-TanY: 0.000000
-TanZ: -0.000000
+TanX: 0.999925
+TanY: -0.000000
+TanZ: 0.012248
 
 
 
 ------ Index 2)
 
-PosX: 0.500000
+PosX: -0.500000
 PosY: 0.000000
 PosZ: -0.500000
 
-U: 1.000000
-V: 1.000000
+U: 0.153768
+V: 0.957772
 
 NormX: 0.000000
 NormY: 1.000000
 NormZ: 0.000000
 
-biNormX: -0.000000
+biNormX: 0.012248
 biNormY: 0.000000
-biNormZ: -1.000000
+biNormZ: -0.999925
 
-TanX: 1.000000
-TanY: 0.000000
-TanZ: -0.000000
+TanX: 0.999925
+TanY: -0.000000
+TanZ: 0.012248
 
 
 
 ------------- Material: 
 
-DiffuseR: 0.500000
-DiffuseG: 0.500000
-DiffuseB: 0.500000
+DiffuseR: 1.000000
+DiffuseG: 1.000000
+DiffuseB: 1.000000
 
 AmbientR: 0.000000
 AmbientG: 0.000000
 AmbientB: 0.000000
 
 Opacity: 0.000000
+ 
+TexturePath: 69
  
 
 
@@ -90,71 +105,47 @@ Opacity: 0.000000
 
 ------------- Camera:
 
-PosX: 2.000000
-PosY: 2.000000
-PosZ: 2.000000
-
-upVecX: 0.000000
-upVecY: 1.000000
-upVecZ: 0.000000
-
-forwardVecX: 0.000000
-forwardVecY: 0.000000
-forwardVecZ: 1.000000
-
-nearPlane: 0.100000
-
-farPlane: 10000.000000
-
-FOV: 25.115000 (degrees)
 
 
-------------- BlendShape:
+
+-------------  Vertex Animation:
+
+
+------------- Scene: 
+
+NrOfLights: 0
+NrOfCameras: 0
+NrOfVertexAnimFrames: 0
+NrOfBlendShapes: 0
+
+
+------------- Mesh: 
+
+Mesh Name: pPlane1
+NrOfVertex: 3
 
 
 ------ Index 0)
 
 PosX: -0.500000
 PosY: 0.000000
-PosZ: 0.000000
+PosZ: 0.500000
+
+U: 0.163028
+V: 0.201791
+
 NormX: 0.000000
 NormY: 1.000000
 NormZ: 0.000000
 
+biNormX: 0.012248
+biNormY: 0.000000
+biNormZ: -0.999925
 
------- Index 1)
+TanX: 0.999925
+TanY: -0.000000
+TanZ: 0.012248
 
-PosX: 0.500000
-PosY: 0.000000
-PosZ: 56.604912
-NormX: 0.000000
-NormY: 1.000000
-NormZ: 0.000000
-
-
------- Index 2)
-
-PosX: 0.500000
-PosY: 0.000000
-PosZ: -74.503242
-NormX: 0.000000
-NormY: 1.000000
-NormZ: 0.000000
-
-
-
-
-------------- BlendShape:
-
-
------- Index 0)
-
-PosX: -0.500000
-PosY: -1.606066
-PosZ: 0.000000
-NormX: -0.400490
-NormY: 0.490342
-NormZ: -0.774062
 
 
 ------ Index 1)
@@ -162,34 +153,111 @@ NormZ: -0.774062
 PosX: 0.500000
 PosY: 0.000000
 PosZ: 0.500000
-NormX: -0.400490
-NormY: 0.490342
-NormZ: -0.774062
+
+U: 0.919008
+V: 0.211051
+
+NormX: 0.000000
+NormY: 1.000000
+NormZ: 0.000000
+
+biNormX: 0.012248
+biNormY: 0.000000
+biNormZ: -0.999925
+
+TanX: 0.999925
+TanY: -0.000000
+TanZ: 0.012248
+
 
 
 ------ Index 2)
 
-PosX: 2.432788
+PosX: -0.500000
 PosY: 0.000000
 PosZ: -0.500000
-NormX: -0.400490
-NormY: 0.490342
-NormZ: -0.774062
+
+U: 0.153768
+V: 0.957772
+
+NormX: 0.000000
+NormY: 1.000000
+NormZ: 0.000000
+
+biNormX: 0.012248
+biNormY: 0.000000
+biNormZ: -0.999925
+
+TanX: 0.999925
+TanY: -0.000000
+TanZ: 0.012248
+
+
+
+------------- Material: 
+
+DiffuseR: 1.000000
+DiffuseG: 1.000000
+DiffuseB: 1.000000
+
+AmbientR: 0.000000
+AmbientG: 0.000000
+AmbientB: 0.000000
+
+Opacity: 0.000000
+ 
+TexturePath: E
+ 
+
+
+------------- Light
 
 
 
 
-------------- BlendShape:
+------------- Camera:
+
+
+
+
+-------------  Vertex Animation:
+
+
+------------- Scene: 
+
+NrOfLights: 0
+NrOfCameras: 0
+NrOfVertexAnimFrames: 0
+NrOfBlendShapes: 0
+
+
+------------- Mesh: 
+
+Mesh Name: pPlane1
+NrOfVertex: 3
 
 
 ------ Index 0)
 
 PosX: -0.500000
 PosY: 0.000000
-PosZ: 0.472664
-NormX: -0.014615
-NormY: 0.844959
-NormZ: 0.534631
+PosZ: 0.500000
+
+U: 0.163028
+V: 0.201791
+
+NormX: 0.000000
+NormY: 1.000000
+NormZ: 0.000000
+
+biNormX: 0.012248
+biNormY: 0.000000
+biNormZ: -0.999925
+
+TanX: 0.999925
+TanY: -0.000000
+TanZ: 0.012248
+
 
 
 ------ Index 1)
@@ -197,30 +265,66 @@ NormZ: 0.534631
 PosX: 0.500000
 PosY: 0.000000
 PosZ: 0.500000
-NormX: -0.014615
-NormY: 0.844959
-NormZ: 0.534631
+
+U: 0.919008
+V: 0.211051
+
+NormX: 0.000000
+NormY: 1.000000
+NormZ: 0.000000
+
+biNormX: 0.012248
+biNormY: 0.000000
+biNormZ: -0.999925
+
+TanX: 0.999925
+TanY: -0.000000
+TanZ: 0.012248
+
 
 
 ------ Index 2)
 
-PosX: 0.500000
-PosY: 0.632729
+PosX: -0.500000
+PosY: 0.000000
 PosZ: -0.500000
-NormX: -0.014615
-NormY: 0.844959
-NormZ: 0.534631
+
+U: 0.153768
+V: 0.957772
+
+NormX: 0.000000
+NormY: 1.000000
+NormZ: 0.000000
+
+biNormX: 0.012248
+biNormY: 0.000000
+biNormZ: -0.999925
+
+TanX: 0.999925
+TanY: -0.000000
+TanZ: 0.012248
 
 
-Face = 0
-Face = 0
-Face = 0
-Face = 0
-Face = 0
-Face = 0
-Face = 0
-Face = 0
-Face = 0
+
+------------- Material: 
+
+DiffuseR: 1.000000
+DiffuseG: 1.000000
+DiffuseB: 1.000000
+
+AmbientR: 0.000000
+AmbientG: 0.000000
+AmbientB: 0.000000
+
+Opacity: 0.000000
+ 
+TexturePath: E:\Litet Spelprojekt\G4_HillClimber\Importer\FbxDemoBase\shrekTr
+ 
+
+
+------------- Light
+
+
 
 
 ------------- Camera:
@@ -228,5 +332,117 @@ Face = 0
 
 
 
+-------------  Vertex Animation:
+
+
+------------- Scene: 
+
+NrOfLights: 0
+NrOfCameras: 0
+NrOfVertexAnimFrames: 0
+NrOfBlendShapes: 0
+
+
+------------- Mesh: 
+
+Mesh Name: pPlane1
+NrOfVertex: 3
+
+
+------ Index 0)
+
+PosX: -0.500000
+PosY: 0.000000
+PosZ: 0.500000
+
+U: 0.163028
+V: 0.201791
+
+NormX: 0.000000
+NormY: 1.000000
+NormZ: 0.000000
+
+biNormX: 0.012248
+biNormY: 0.000000
+biNormZ: -0.999925
+
+TanX: 0.999925
+TanY: -0.000000
+TanZ: 0.012248
+
+
+
+------ Index 1)
+
+PosX: 0.500000
+PosY: 0.000000
+PosZ: 0.500000
+
+U: 0.919008
+V: 0.211051
+
+NormX: 0.000000
+NormY: 1.000000
+NormZ: 0.000000
+
+biNormX: 0.012248
+biNormY: 0.000000
+biNormZ: -0.999925
+
+TanX: 0.999925
+TanY: -0.000000
+TanZ: 0.012248
+
+
+
+------ Index 2)
+
+PosX: -0.500000
+PosY: 0.000000
+PosZ: -0.500000
+
+U: 0.153768
+V: 0.957772
+
+NormX: 0.000000
+NormY: 1.000000
+NormZ: 0.000000
+
+biNormX: 0.012248
+biNormY: 0.000000
+biNormZ: -0.999925
+
+TanX: 0.999925
+TanY: -0.000000
+TanZ: 0.012248
+
+
+
+------------- Material: 
+
+DiffuseR: 1.000000
+DiffuseG: 1.000000
+DiffuseB: 1.000000
+
+AmbientR: 0.000000
+AmbientG: 0.000000
+AmbientB: 0.000000
+
+Opacity: 0.000000
+ 
+TexturePath: E:\Litet Spelprojekt\G4_HillClimber\Importer\FbxDemoBase\shrekTriangle.fbm/ShrekPic.png
+ 
+
+
+------------- Light
+
+
+
+
 ------------- Camera:
+
+
+
+
+-------------  Vertex Animation:
 

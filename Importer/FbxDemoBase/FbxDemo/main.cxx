@@ -56,12 +56,14 @@ static bool gVerbose = true;
 FileWrite myFile5("../biFile.bff");
 FileWrite myStringFile5("../stringFile.bff");
 
+std::string texturePath;
 SceneBFF sceneData;
 MeshBFF meshData2;
 std::vector<VertexBFF> vertexData2;
 MaterialBFF materialData3;
 std::vector<LightBFF> lightData2;
 std::vector<CameraBFF> cameraData2;
+char* textureTempName;
 
 std::vector<std::vector<BlendShapesBFF>> blendShapeDataArr3;
 std::vector<VertexAnimBFF> keyFrameData2;
@@ -95,7 +97,7 @@ int main(int argc, char** argv)
 	if( lFilePath.IsEmpty() )
 	{
 
-        lFilePath = "../testTriangle(Tristan).fbx";
+        lFilePath = "../shrekTriangle.fbx";
 		lResult = LoadScene(lSdkManager, lScene, lFilePath.Buffer());
 	}
 	else
@@ -209,6 +211,14 @@ int main(int argc, char** argv)
 
     // ****************** Material ****************** //
     materialData3 = GetMaterialData2();
+
+	textureTempName = getTextureName2();
+
+	for (int i = 0; i < sizeof(materialData3.texturePath); i++)
+	{
+		materialData3.texturePath[i] = textureTempName[i];
+	}
+	
     myStringFile5.writeToStringFile(
         "\n------------- Material: \n\n"
         "DiffuseR: " + std::to_string(materialData3.Diffuse[0]) + "\n" +
@@ -219,7 +229,9 @@ int main(int argc, char** argv)
         "AmbientG: " + std::to_string(materialData3.Ambient[1]) + "\n" +
         "AmbientB: " + std::to_string(materialData3.Ambient[2]) + "\n" +
         "\n" +
-        "Opacity: " + std::to_string(materialData3.Opacity) + "\n ");
+        "Opacity: " + std::to_string(materialData3.Opacity) + "\n " +
+		"\n" +
+		"TexturePath: " + std::string(materialData3.texturePath) + "\n " );
 
     myFile5.writeToFile((const char*)&materialData3, sizeof(MaterialBFF)); //Add to biFile
 

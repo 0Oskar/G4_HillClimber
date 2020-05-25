@@ -28,6 +28,7 @@ struct MaterialBFF
 	float Diffuse[3];
 	float Ambient[3];
 	float Opacity;
+	char texturePath[128];
 };
 
 struct LightBFF
@@ -62,3 +63,5 @@ struct BlendShapesBFF
 	float pos[3];
 	float norm[3];
 };
+
+

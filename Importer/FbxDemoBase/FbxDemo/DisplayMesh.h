@@ -22,6 +22,7 @@ MaterialBFF GetMaterialData2();
 std::vector<std::vector<BlendShapesBFF>> GetBlendShapeDataArr2(FbxNode* pNode);
 int GetNrOfVertexInBlendShape2();
 int GetNrOfBlendShapes2();
+char* getTextureName2();
 
 
 #endif // #ifndef _DISPLAY_MESH_H
