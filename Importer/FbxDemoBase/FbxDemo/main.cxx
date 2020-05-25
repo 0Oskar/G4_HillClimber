@@ -97,7 +97,9 @@ int main(int argc, char** argv)
 	if( lFilePath.IsEmpty() )
 	{
 
+
         lFilePath = "../shrekTriangle.fbx";
+
 		lResult = LoadScene(lSdkManager, lScene, lFilePath.Buffer());
 	}
 	else
@@ -237,10 +239,11 @@ int main(int argc, char** argv)
 
     // ****************** Light ****************** //
     lightData2 = GetLightData();
-    myStringFile5.writeToStringFile("\n\n\n------------- Light\n\n");
 
     for (int i = 0; i < getNrOfLights(); i++)
     {
+        myStringFile5.writeToStringFile("\n\n\n------------- Light\n\n");
+
         myStringFile5.writeToStringFile(
             "Type: " + (std::string)lightData2[i].type + "\n" +
             "\n" +
@@ -257,10 +260,10 @@ int main(int argc, char** argv)
 
     // ****************** Camera ****************** //
     cameraData2 = GetCameraData();
-    myStringFile5.writeToStringFile("\n\n\n------------- Camera:\n\n");
     
     for (int i = 0; i < getNrOfCameras(); i++)
     {
+        myStringFile5.writeToStringFile("\n\n\n------------- Camera:\n\n");
 
         myStringFile5.writeToStringFile(
             "PosX: " + std::to_string(cameraData2[i].pos[0]) + "\n" +
@@ -308,10 +311,11 @@ int main(int argc, char** argv)
     }
     // ****************** Vertex Animation ****************** //
     keyFrameData2 = getKeyFrameData();
-    myStringFile5.writeToStringFile("\n\n\n-------------  Vertex Animation:\n\n");
 
     for (int i = 0; i < getNrOfkeyframes(); i++)
     {
+        myStringFile5.writeToStringFile("\n\n\n-------------  Vertex Animation:\n\n");
+
         myStringFile5.writeToStringFile(
             "Frame: " + std::to_string(keyFrameData2[i].time) +
             "\n" +
