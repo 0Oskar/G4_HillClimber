@@ -56,13 +56,15 @@ static bool gVerbose = true;
 FileWrite myFile5("../biFile.bff");
 FileWrite myStringFile5("../stringFile.bff");
 
+SceneBFF sceneData;
 MeshBFF meshData2;
 std::vector<VertexBFF> vertexData2;
 MaterialBFF materialData3;
 std::vector<LightBFF> lightData2;
-CameraBFF cameraData2;
+std::vector<CameraBFF> cameraData2;
 
 std::vector<std::vector<BlendShapesBFF>> blendShapeDataArr3;
+std::vector<VertexAnimBFF> keyFrameData2;
 
 //Make a file
 
@@ -93,7 +95,7 @@ int main(int argc, char** argv)
 	if( lFilePath.IsEmpty() )
 	{
 
-        lFilePath = "../2Camera.fbx";
+        lFilePath = "../testTriangle(Tristan).fbx";
 		lResult = LoadScene(lSdkManager, lScene, lFilePath.Buffer());
 	}
 	else
@@ -149,13 +151,31 @@ int main(int argc, char** argv)
 
     // Destroy all objects created by the FBX SDK.
     DestroySdkObjects(lSdkManager, lResult);
+    sceneData.nrOfLights = getNrOfLights();
+    sceneData.nrOfCameras = getNrOfCameras();
+    sceneData.nrOfVertexAnimFrames = getNrOfkeyframes();
+    sceneData.nrOfBlendShapes = GetNrOfBlendShapes2();
 
+    // ****************** Scene ****************** //
+    myStringFile5.writeToStringFile("\n------------- Scene: \n\n");
+    myStringFile5.writeToStringFile(
+        "NrOfLights: " + std::to_string(sceneData.nrOfLights) +
+        "\n" +
+        "NrOfCameras: " + std::to_string(sceneData.nrOfCameras) +
+        "\n" +
+        "NrOfVertexAnimFrames: " + std::to_string(sceneData.nrOfVertexAnimFrames) +
+        "\n" +
+        "NrOfBlendShapes: " + std::to_string(sceneData.nrOfBlendShapes) +
+        "\n\n"
+    );
+    myFile5.writeToFile((const char*)&sceneData, sizeof(SceneBFF));
     // ****************** Mesh ****************** //
     meshData2 = GetMeshData();
     myStringFile5.writeToStringFile(
-        "Mesh Name: " + (std::string)meshData2.name +
-        "\n" + 
-        "NrOfVertex: " + std::to_string(meshData2.nrOfVertex));
+        "\n------------- Mesh: \n\nMesh Name: " + (std::string)meshData2.name +
+        "\n" +
+        "NrOfVertex: " + std::to_string(meshData2.nrOfVertex) +
+        "\n\n");
 
     myFile5.writeToFile((const char*)&meshData2, sizeof(MeshBFF)); //Add to biFile
 
@@ -226,26 +246,31 @@ int main(int argc, char** argv)
     // ****************** Camera ****************** //
     cameraData2 = GetCameraData();
     myStringFile5.writeToStringFile("\n\n\n------------- Camera:\n\n");
-    myStringFile5.writeToStringFile(
-        "PosX: " + std::to_string(cameraData2.pos[0]) + "\n" +
-        "PosY: " + std::to_string(cameraData2.pos[1]) + "\n" +
-        "PosZ: " + std::to_string(cameraData2.pos[2]) + "\n" +
-        "\n" +
-        "upVecX: " + std::to_string(cameraData2.upVec[0]) + "\n" +
-        "upVecY: " + std::to_string(cameraData2.upVec[1]) + "\n" +
-        "upVecZ: " + std::to_string(cameraData2.upVec[2]) + "\n" +
-        "\n" +
-        "forwardVecX: " + std::to_string(cameraData2.forwardVec[0]) + "\n" +
-        "forwardVecY: " + std::to_string(cameraData2.forwardVec[1]) + "\n" +
-        "forwardVecZ: " + std::to_string(cameraData2.forwardVec[2]) + "\n" +
-        "\n" +
-        "nearPlane: " + std::to_string(cameraData2.nearPlane) + "\n" +
-        "\n" +
-        "farPlane: " + std::to_string(cameraData2.farPlane) + "\n" +
-        "\n" +
-        "FOV: " + std::to_string(cameraData2.FOV) + " (degrees)");
+    
+    for (int i = 0; i < getNrOfCameras(); i++)
+    {
 
-    myFile5.writeToFile((const char*)&cameraData2, sizeof(CameraBFF)); //Add to biFile
+        myStringFile5.writeToStringFile(
+            "PosX: " + std::to_string(cameraData2[i].pos[0]) + "\n" +
+            "PosY: " + std::to_string(cameraData2[i].pos[1]) + "\n" +
+            "PosZ: " + std::to_string(cameraData2[i].pos[2]) + "\n" +
+            "\n" +
+            "upVecX: " + std::to_string(cameraData2[i].upVec[0]) + "\n" +
+            "upVecY: " + std::to_string(cameraData2[i].upVec[1]) + "\n" +
+            "upVecZ: " + std::to_string(cameraData2[i].upVec[2]) + "\n" +
+            "\n" +
+            "forwardVecX: " + std::to_string(cameraData2[i].forwardVec[0]) + "\n" +
+            "forwardVecY: " + std::to_string(cameraData2[i].forwardVec[1]) + "\n" +
+            "forwardVecZ: " + std::to_string(cameraData2[i].forwardVec[2]) + "\n" +
+            "\n" +
+            "nearPlane: " + std::to_string(cameraData2[i].nearPlane) + "\n" +
+            "\n" +
+            "farPlane: " + std::to_string(cameraData2[i].farPlane) + "\n" +
+            "\n" +
+            "FOV: " + std::to_string(cameraData2[i].FOV) + " (degrees)" + "\n" + "\n" + "\n");
+        myFile5.writeToFile((const char*)&cameraData2, sizeof(CameraBFF)); //Add to biFile
+
+    }
 
     // ****************** Shapes ****************** //
     for (int i = 0; i < GetNrOfBlendShapes2(); i++)
@@ -269,6 +294,37 @@ int main(int argc, char** argv)
             "\n\n");
         }
     }
+    // ****************** Vertex Animation ****************** //
+    keyFrameData2 = getKeyFrameData();
+    myStringFile5.writeToStringFile("\n\n\n-------------  Vertex Animation:\n\n");
+
+    for (int i = 0; i < getNrOfkeyframes(); i++)
+    {
+        myStringFile5.writeToStringFile(
+            "Frame: " + std::to_string(keyFrameData2[i].time) +
+            "\n" +
+            "PosX: " + std::to_string(keyFrameData2[i].pos[0]) +
+            "\n" +
+            "PosY: " + std::to_string(keyFrameData2[i].pos[1]) +
+            "\n" +
+            "PosZ: " + std::to_string(keyFrameData2[i].pos[2]) +
+            "\n" +
+            "RotX: " + std::to_string(keyFrameData2[i].rot[0]) +
+            "\n" +
+            "RotY: " + std::to_string(keyFrameData2[i].rot[1]) +
+            "\n" +
+            "RotZ: " + std::to_string(keyFrameData2[i].rot[2]) +
+            "\n" +
+            "ScaleX: " + std::to_string(keyFrameData2[i].scale[0]) +
+            "\n" +
+            "ScaleY: " + std::to_string(keyFrameData2[i].scale[1]) +
+            "\n" +
+            "ScaleZ: " + std::to_string(keyFrameData2[i].scale[2]) +
+            "\n\n");
+
+        myFile5.writeToFile((const char*)&keyFrameData2, sizeof(VertexAnimBFF)); // Add to biFile
+    }
+
 
     return 0;
 }

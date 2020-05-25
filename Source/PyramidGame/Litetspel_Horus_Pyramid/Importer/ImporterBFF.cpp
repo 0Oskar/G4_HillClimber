@@ -8,6 +8,7 @@ namespace ImporterBFF
 	{
 		ModelBFF model;
 
+
 		std::ifstream MeshFile(filePath, std::ifstream::binary);
 
 		MeshFile.read((char*)&model.mesh, sizeof(MeshBFF));
@@ -23,7 +24,10 @@ namespace ImporterBFF
 			model.vertexArr[i].uv[1] *= -1;
 		}
 		MeshFile.read((char*)&model.material, sizeof(MaterialBFF));
-		MeshFile.read((char*)&model.camera, sizeof(CameraBFF));
+		MeshFile.read((char*)&model.light, model.scene.nrOfLights * sizeof(LightBFF));
+		MeshFile.read((char*)&model.camera, model.scene.nrOfCameras * sizeof(CameraBFF));
+		MeshFile.read((char*)&model.vertexAnim, model.scene.nrOfVertexAnimFrames * sizeof(VertexAnimBFF));
+		MeshFile.read((char*)&model.blendShapes, model.scene.nrOfBlendShapes * sizeof(BlendShapesBFF));
 
 		MeshFile.close();
 

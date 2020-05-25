@@ -24,7 +24,9 @@ void DisplayBackgroundProperties(FbxCamera* pCamera);
 void DisplayApertureAndFilmControls(FbxCamera* pCamera);
 void DisplayViewingAreaControls(FbxCamera* pCamera);
 void DisplayCameraPositionAndOrientation(FbxCamera* pCamera, FbxNode* pTargetNode, FbxNode* pUpTargetNode);
-CameraBFF GetCameraData();
+std::vector<CameraBFF> GetCameraData();
+
+int getNrOfCameras();
 
 #endif // #ifndef _DISPLAY_CAMERA_H
 

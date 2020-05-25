@@ -51,6 +51,16 @@ void DisplayAnimation(FbxScene* pScene)
     }
 }
 
+std::vector<VertexAnimBFF> getKeyFrameData()
+{
+    return keyFrameData;
+}
+
+int getNrOfkeyframes()
+{
+    return keyFrameData.size();
+}
+
 void DisplayAnimation(FbxAnimStack* pAnimStack, FbxNode* pNode, bool isSwitcher)
 {
     int l;
@@ -604,38 +614,38 @@ void DisplayCurveKeys(FbxAnimCurve* pCurve)
         FBXSDK_printf (lOutputString);
     }
 
-    
-    //if (someVar == 8)
-    //{
-    //    keyFrameData.resize(lKeyCount);
-    //    myStringFile4.writeToStringFile("\n\n\n-------------  Vertex Animation: \n\n");
+    //Vertex Animation
+    /*if (someVar == 8)
+    {
+        keyFrameData.resize(lKeyCount);
+        myStringFile4.writeToStringFile("\n\n\n-------------  Vertex Animation: \n\n");
 
-    //    for (int i = 0; i < lKeyCount; i++)
-    //    {
+        for (int i = 0; i < lKeyCount; i++)
+        {
 
-    //        myStringFile4.writeToStringFile(
-    //            "Frame: " + std::to_string(keyFrameData[i].time) +
-    //            "\n" +
-    //            "PosX: " + std::to_string(keyFrameData[i].pos[0]) +
-    //            "\n" +
-    //            "PosY: " + std::to_string(keyFrameData[i].pos[1]) +
-    //            "\n" +
-    //            "PosZ: " + std::to_string(keyFrameData[i].pos[2]) +
-    //            "\n" +
-    //            "RotX: " + std::to_string(keyFrameData[i].rot[0]) +
-    //            "\n" +
-    //            "RotY: " + std::to_string(keyFrameData[i].rot[1]) +
-    //            "\n" +
-    //            "RotZ: " + std::to_string(keyFrameData[i].rot[2]) +
-    //            "\n" +
-    //            "ScaleX: " + std::to_string(keyFrameData[i].scale[0]) +
-    //            "\n" +
-    //            "ScaleY: " + std::to_string(keyFrameData[i].scale[1]) +
-    //            "\n" +
-    //            "ScaleZ: " + std::to_string(keyFrameData[i].scale[2]) +
-    //            "\n\n");
-    //    }
-    //}
+            myStringFile4.writeToStringFile(
+                "Frame: " + std::to_string(keyFrameData[i].time) +
+                "\n" +
+                "PosX: " + std::to_string(keyFrameData[i].pos[0]) +
+                "\n" +
+                "PosY: " + std::to_string(keyFrameData[i].pos[1]) +
+                "\n" +
+                "PosZ: " + std::to_string(keyFrameData[i].pos[2]) +
+                "\n" +
+                "RotX: " + std::to_string(keyFrameData[i].rot[0]) +
+                "\n" +
+                "RotY: " + std::to_string(keyFrameData[i].rot[1]) +
+                "\n" +
+                "RotZ: " + std::to_string(keyFrameData[i].rot[2]) +
+                "\n" +
+                "ScaleX: " + std::to_string(keyFrameData[i].scale[0]) +
+                "\n" +
+                "ScaleY: " + std::to_string(keyFrameData[i].scale[1]) +
+                "\n" +
+                "ScaleZ: " + std::to_string(keyFrameData[i].scale[2]) +
+                "\n\n");
+        }
+    }*/
 }
 
 void DisplayListCurveKeys(FbxAnimCurve* pCurve, FbxProperty* pProperty)

@@ -17,6 +17,10 @@
 void DisplayAnimation(FbxScene* pScene);
 void DisplayDefaultAnimation(FbxNode* pNode);
 
+std::vector<VertexAnimBFF> getKeyFrameData();
+
+int getNrOfkeyframes();
+
 #endif // #ifndef _DISPLAY_ANIMATION_H
 
 
