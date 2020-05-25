@@ -14,13 +14,11 @@ private:
 	// Lever
 	std::vector<DirectX::BoundingBox*> m_LeverBB;
 	std::vector<Lever*> m_Lever;
+	bool m_leverBeenPulled;
 
 	// Gate
 	GameObject* gate;
-	//std::vector<DirectX::BoundingBox*> m_GateBB;
-	BoundingBox *m_GateBB;
-
-
+	BoundingBox* m_GateBB;
 	bool m_MoveGateUp;
 	DirectX::XMVECTOR gatePos = DirectX::XMVectorSet(0, 5, 34, 1);
 
@@ -40,7 +38,8 @@ private:
 	bool m_GameSlotFilled_3;
 	bool m_GameSlotFilled_4;
 
-	
+	// Portal
+	BoundingBox* m_PortalBB;
 	
 
 public:

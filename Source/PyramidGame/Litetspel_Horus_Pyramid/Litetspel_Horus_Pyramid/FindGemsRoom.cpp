@@ -8,6 +8,8 @@ void FindGemsRoom::createBoundingBoxes()
 
 	this->addBoundingBox({ 0, 0, -31, 1 }, DirectX::XMFLOAT3(30, 15, 2));    // Back wall
 	this->addBoundingBox({ 0, 4, -29.5, 1 }, DirectX::XMFLOAT3(5, 6, 2));    // Portal wall
+	m_PortalBB = &this->m_boundingBoxes.back();
+
 
 	this->addBoundingBox({ 20, 0, 31, 1 }, DirectX::XMFLOAT3(13, 15, 2));    // Front wall right
 	this->addBoundingBox({ -20, 0, 31, 1 }, DirectX::XMFLOAT3(13, 15, 2));   // Front wall left
@@ -27,7 +29,7 @@ void FindGemsRoom::createBoundingBoxes()
 
 	this->addBoundingBox({ 18, 0, -23, 1 }, DirectX::XMFLOAT3(1, 1, 1.5));  // Chest "Right side"
 
-	this->addBoundingBox({ 0, 4, 35, 1 }, DirectX::XMFLOAT3(12, 10, 2));
+	this->addBoundingBox({ 0, 3, 35, 1 }, DirectX::XMFLOAT3(12, 9, 2));
 	m_GateBB = &this->m_boundingBoxes.back();
 	
 }
@@ -248,6 +250,18 @@ void FindGemsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& act
 
 	if (this->m_GameSlotFilled_0 == true && this->m_GameSlotFilled_1 == true && this->m_GameSlotFilled_2 == true && this->m_GameSlotFilled_3 == true && this->m_GameSlotFilled_4 == true) {
 		this->m_MoveGateUp = true;
+
+		if (this->m_leverBeenPulled) {
+			if (this->m_PortalBB->Intersects(this->m_player->getAABB())) {
+				// teleport
+
+				// Fixa manuellt eller "addPortalToWorld" och förminska mesh
+
+
+
+
+			}
+		}
 	}
 
 
@@ -258,6 +272,7 @@ void FindGemsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& act
 	{
 		this->m_Lever[0]->setPosition(DirectX::XMVectorSet(0, -1.5, 43.1, 1) + this->m_worldPosition + DirectX::XMVectorSet(-1.2, 0, 0, 0));
 		this->m_Lever[0]->setRotation(DirectX::XMVectorSet(0.f, 0.f, pMath::convertDegreesToRadians(-45), 0.f));
+		this->m_leverBeenPulled = true;
 	}
 
 	// Move gate
