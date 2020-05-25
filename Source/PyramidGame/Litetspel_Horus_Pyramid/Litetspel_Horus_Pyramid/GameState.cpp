@@ -154,6 +154,11 @@ void GameState::looseALife(bool looseLife)
 	}
 }
 
+std::wstring GameState::getRoomUITexturePath()
+{
+	return dynamic_cast<FindGemsRoom*>(this->m_rooms.at(1))->getRoomUITexturePath();
+}
+
 void GameState::loadModels()
 {
 	// Material

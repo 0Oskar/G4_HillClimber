@@ -138,6 +138,22 @@ void ViewLayer::initShaders()
 	shaders.vs = L"Shader Files\\VertexShader.hlsl";
 	shaders.ps = L"Shader Files\\PixelShader.hlsl";
 	this->m_shaders.initialize(this->m_device.Get(), this->m_deviceContext.Get(), shaders);
+
+	CD3D11_RASTERIZER_DESC rastDesc(
+		D3D11_FILL_SOLID,
+		D3D11_CULL_NONE,
+		FALSE,
+		D3D11_DEFAULT_DEPTH_BIAS,
+		D3D11_DEFAULT_DEPTH_BIAS_CLAMP,
+		D3D11_DEFAULT_SLOPE_SCALED_DEPTH_BIAS,
+		TRUE,
+		FALSE,
+		TRUE,
+		TRUE
+	);
+
+	HRESULT hr = this->m_device->CreateRasterizerState(&rastDesc, this->m_spriteRasterizerState.ReleaseAndGetAddressOf());
+	assert(SUCCEEDED(hr) && "Error, failed to create sprite rasterizer state!");
 }
 
 ViewLayer::ViewLayer()
@@ -147,8 +163,8 @@ ViewLayer::ViewLayer()
 	this->m_wvpCBufferFromState = nullptr;
 
 	this->resourceHandler = &ResourceHandler::get();
-	this->m_crossHairSRV = nullptr;
 	this->m_crosshairPosition = DirectX::XMFLOAT2();
+	this->m_gemUI_Position = DirectX::XMFLOAT2();
 
 	this->m_drawPrimitives = false;
 
@@ -184,6 +200,11 @@ void ViewLayer::setViewMatrix(DirectX::XMMATRIX* newViewMatrix)
 void ViewLayer::setProjectionMatrix(DirectX::XMMATRIX* newProjectionMatrix)
 {
 	this->m_projectionMatrix = newProjectionMatrix;
+}
+
+void ViewLayer::setRoomUITexturePath(std::wstring texturePath)
+{
+	this->m_currentRoomUIPath = texturePath;
 }
 
 void ViewLayer::setgameObjectsFromState(std::vector<GameObject*>* gameObjectsFromState)
@@ -306,6 +327,18 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 	int crosshairX = (this->m_options->width / 2) - (desc.Width / 2);
 	int crosshairY = (this->m_options->height / 2) - (desc.Height / 2);
 	this->m_crosshairPosition = DirectX::XMFLOAT2((float)crosshairX, (float)crosshairY);
+
+	// Gem UI - Test  
+	this->m_gemUI0_SRV = Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> (this->resourceHandler->getTexture(L"Textures/GemsUI_null.png"));
+	this->m_gemUI1_SRV = Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> (this->resourceHandler->getTexture(L"Textures/GemsUI_1.png"));
+	this->m_gemUI2_SRV = Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> (this->resourceHandler->getTexture(L"Textures/GemsUI_2.png"));
+	this->m_gemUI3_SRV = Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> (this->resourceHandler->getTexture(L"Textures/GemsUI_3.png"));
+	this->m_gemUI4_SRV = Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> (this->resourceHandler->getTexture(L"Textures/GemsUI_4.png"));
+	this->m_gemUI5_SRV = Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> (this->resourceHandler->getTexture(L"Textures/GemsUI_5.png"));
+	int gemsUI_Xpos = 40;
+	int gemsUI_Ypos = (this->m_options->height) - 140;
+	this->m_gemUI_Position = DirectX::XMFLOAT2((float)gemsUI_Xpos, (float)gemsUI_Ypos);
+
 
 	// Primitive Batch
 	this->m_states = std::make_unique<DirectX::CommonStates >(this->m_device.Get());
@@ -468,13 +501,37 @@ void ViewLayer::render()
 	m_timerString = "Time: ";
 
 	// Draw Sprites
-	this->m_spriteBatch->Begin();
-	this->m_spriteBatch->Draw(this->m_crossHairSRV, this->m_crosshairPosition);
+	this->m_deviceContext->RSSetState(this->m_spriteRasterizerState.Get());
+	this->m_spriteBatch->Begin(SpriteSortMode_Deferred,this->m_states->AlphaBlend());
+
+	if (this->m_currentRoomUIPath == L"GemsUI_null") {
+		this->m_spriteBatch->Draw(this->m_gemUI0_SRV.Get(), this->m_gemUI_Position, nullptr, Colors::White, 0.f, XMFLOAT2(0, 0), XMFLOAT2(0.2, 0.2));
+	}
+	else if (this->m_currentRoomUIPath == L"GemsUI_1") {
+		this->m_spriteBatch->Draw(this->m_gemUI1_SRV.Get(), this->m_gemUI_Position, nullptr, Colors::White, 0.f, XMFLOAT2(0, 0), XMFLOAT2(0.2, 0.2));
+	}
+	else if (this->m_currentRoomUIPath == L"GemsUI_2") {
+		this->m_spriteBatch->Draw(this->m_gemUI2_SRV.Get(), this->m_gemUI_Position, nullptr, Colors::White, 0.f, XMFLOAT2(0, 0), XMFLOAT2(0.2, 0.2));
+	}
+	else if (this->m_currentRoomUIPath == L"GemsUI_3") {
+		this->m_spriteBatch->Draw(this->m_gemUI3_SRV.Get(), this->m_gemUI_Position, nullptr, Colors::White, 0.f, XMFLOAT2(0, 0), XMFLOAT2(0.2, 0.2));
+	}
+	else if (this->m_currentRoomUIPath == L"GemsUI_4") {
+		this->m_spriteBatch->Draw(this->m_gemUI4_SRV.Get(), this->m_gemUI_Position, nullptr, Colors::White, 0.f, XMFLOAT2(0, 0), XMFLOAT2(0.2, 0.2));
+	}
+	else if (this->m_currentRoomUIPath == L"GemsUI_5") {
+		this->m_spriteBatch->Draw(this->m_gemUI5_SRV.Get(), this->m_gemUI_Position, nullptr, Colors::White, 0.f, XMFLOAT2(0, 0), XMFLOAT2(0.2, 0.2));
+	}
+	
+	
+	
+	this->m_spriteBatch->Draw(this->m_crossHairSRV.Get(), this->m_crosshairPosition);
 	this->m_spriteFont->DrawString(this->m_spriteBatch.get(), this->m_fpsString.c_str(), DirectX::XMFLOAT2((float)this->m_options->width - 100.f, 0), DirectX::Colors::White, 0.f, DirectX::XMFLOAT2(0.f, 0.f));
 	this->m_spriteFont->DrawString(this->m_spriteBatch.get(), this->m_timerString.c_str(), DirectX::XMFLOAT2(10.f, 0.f), this->m_gameTimePtr->isActive() ? DirectX::Colors::White : DirectX::Colors::Green, 0.f, DirectX::XMFLOAT2(0.f, 0.f));
 	this->m_spriteFont->DrawString(this->m_spriteBatch.get(), std::to_string((int)this->m_gameTimePtr->timeElapsed()).c_str(), DirectX::XMFLOAT2(65.f, 0.f), DirectX::Colors::Green, 0.f, DirectX::XMFLOAT2(0.f, 0.f));
 	this->m_spriteBatch->End();
 	
+
 	// Swap Frames
 	this->m_swapChain->Present(0, 0);
 }
