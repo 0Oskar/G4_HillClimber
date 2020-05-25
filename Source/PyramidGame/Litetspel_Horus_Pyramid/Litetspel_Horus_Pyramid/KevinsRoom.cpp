@@ -22,11 +22,7 @@ void KevinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 
 	XMFLOAT3 scorpionPos = XMFLOAT3(scorpionX, scorpionY, scorpionZ);
 
-	//this->scorpionBB[0]->Center = scorpionPos;
 
-	///////////////    
-
-	//if(scorpionBB[0])
 
 	if (triggerBB[0].Intersects(this->m_player->getAABB()))
 	{
@@ -72,6 +68,7 @@ void KevinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 		if (deathTrapBB[i].Intersects(this->m_player->getAABB()))
 		{
 			void looseLife();
+			//this->m_player->resetVelocity();
 			this->m_player->getMoveCompPtr()->position = this->getRelativePosition(DirectX::XMVectorSet(-12.f, 20.f, -155.f + 140.f, 1.f));
 		}
 	}
@@ -81,6 +78,7 @@ void KevinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 		if (dartTrap[i]->getAABB().Intersects(this->m_player->getAABB()))
 		{
 			void looseLife();
+			//this->m_player->resetVelocity();
 			this->m_player->getMoveCompPtr()->position = this->getRelativePosition(DirectX::XMVectorSet(-12.f, -20.f, -155.f + 140.f, 1.f));
 		}
 	}
