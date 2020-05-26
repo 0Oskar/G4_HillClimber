@@ -74,7 +74,7 @@ void followingEnemy::followPlayer(float dt)
 	float playerRotationY = XMVectorGetY(playerRotation);
 
 	playerPosition = this->thePlayer->getMoveCompPtr()->position;
-	playerPosition = XMVectorSetY(playerPosition, 2.9f);
+	playerPosition = XMVectorSetY(playerPosition, 5.f);
 	previousPosition = playerPosition;
 
 
@@ -89,26 +89,24 @@ void followingEnemy::followPlayer(float dt)
 	{
 		this->getMoveCompPtr()->position += (walkDirection * dt * 13);
 
-		XMVECTOR newPlayerPosition = this->thePlayer->getMoveCompPtr()->position;
-		XMVECTOR scorpionPosition = this->getMoveCompPtr()->position;
-
 
 		float targetRotation = (float)atan2((double)(walkDirection.m128_f32[0]), (double)(walkDirection.m128_f32[2])) + XM_PI;
-
 		float rotationDifference = targetRotation - currentRotationY;
 
-		if (rotationDifference > XM_PI)
+		if (rotationDifference < XM_PI )
 		{
 			rotationDifference -= (float)XM_PI * 2;
+		
 		}
 
-		if (rotationDifference < -XM_PI)
+		if (rotationDifference > -XM_PI )
 		{
 			rotationDifference += (float)XM_PI * 2;
+			
 		}
 
 		currentRotationY += (rotationDifference)*dt * 5;
-
+		
 		this->getMoveCompPtr()->rotation = XMVectorSet(0.0f, currentRotationY, 0.0f, 0.0f);
 	}
 
@@ -123,18 +121,16 @@ void followingEnemy::followPlayer(float dt)
 		{
 			this->getMoveCompPtr()->position += (walkBackDirection * dt * 13);
 
-
-
 			float targetRotation = (float)atan2((double)(walkBackDirection.m128_f32[0]), (double)(walkBackDirection.m128_f32[2])) + XM_PI;
 
 			float rotationDifference = targetRotation - currentRotationY;
 
-			if (rotationDifference > XM_PI)
+			if (rotationDifference < XM_PI)
 			{
 				rotationDifference -= (float)XM_PI * 2;
 			}
 
-			if (rotationDifference < -XM_PI)
+			if (rotationDifference > -XM_PI)
 			{
 				rotationDifference += (float)XM_PI * 2;
 			}
@@ -144,13 +140,7 @@ void followingEnemy::followPlayer(float dt)
 			this->getMoveCompPtr()->rotation = XMVectorSet(0.0f, currentRotationY, 0.0f, 0.0f);
 		}
 	}
-
-	
-
-	
-
-
-	}
+}
 	
 
 	
