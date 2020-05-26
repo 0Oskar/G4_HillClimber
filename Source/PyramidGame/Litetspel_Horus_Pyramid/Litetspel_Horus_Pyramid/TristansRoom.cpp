@@ -41,7 +41,7 @@ void TristansRoom::createSceneObjects()
 
 	//Diamond
 	pos = DirectX::XMVectorSet(0, 50, -10, 1); // World pos
-	this->addGameObjectToRoom(true, false, 1, 30, &m_models->at(30), pos, scale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(1.f, 1.f, 1.f));
+	this->addGameObjectToRoom(true, false, 1, 32, &m_models->at(32), pos, scale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(1.f, 1.f, 1.f));
 	this->m_gameObjects.back()->setRotation({ XMConvertToRadians(180),0.0f, 0.0f, 0.f }); 
 
 	////Bell 1
