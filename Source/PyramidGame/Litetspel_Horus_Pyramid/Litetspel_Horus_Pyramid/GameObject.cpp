@@ -136,7 +136,6 @@ void GameObject::update(float dt)
 		this->m_physicsComp->updatePosition(dt);
 	else
 		this->m_physicsComp->updatePositionNoDecel(dt);
-
 }
 
 bool GameObject::visible() const
@@ -154,6 +153,11 @@ bool GameObject::getDrawBB() const
 	return this->m_drawBB;
 }
 
+XMVECTOR GameObject::getRotation() const
+{
+	return this->m_movementComp->rotation;
+}
+
 DirectX::XMVECTOR GameObject::getPosition() const
 {
 	return this->m_movementComp->position;
@@ -163,6 +167,7 @@ DirectX::XMMATRIX GameObject::getWorldMatrix() const
 {
 	return DirectX::XMMATRIX(
 		DirectX::XMMatrixScalingFromVector(this->m_movementComp->scale) *
+		DirectX::XMMatrixRotationRollPitchYawFromVector(this->m_movementComp->localRotation) *
 		DirectX::XMMatrixRotationRollPitchYawFromVector(this->m_movementComp->rotation) *
 		DirectX::XMMatrixTranslationFromVector(this->m_movementComp->position));
 }
