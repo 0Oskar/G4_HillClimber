@@ -16,6 +16,7 @@
 #include "DisplayLink.h"
 #include "DisplayShape.h"
 #include "DisplayCache.h"
+#include <Windows.h>
 
 //#include "FileWrite.h"
 //#include "FileWrite.h"
@@ -88,11 +89,31 @@ void DisplayMesh(FbxNode* pNode)
 
 	DisplayTexture(lMesh);
 
-	char temp2[128];
-	std::string bajs = GetTexturePath();
-	strcpy_s(temp2, _countof(temp2), GetTexturePath().c_str());
-	for (int i = 0; i < sizeof(temp2); i++)
-		materialData.texturePath[i] = temp2[i];
+	std::string fullPath = GetTexturePath();
+	if (fullPath != "")
+	{
+		int index1 = fullPath.find_last_of("\\");
+		int index2 = fullPath.find_last_of("/");
+
+		std::string start = fullPath.substr(0, index1);
+		std::string end = fullPath.substr(index2, fullPath.size() - 1);
+
+		std::string destination = start + end;
+		CopyFile(GetTexturePath().c_str(), destination.c_str(), FALSE);
+
+		char temp2[128];
+		strcpy_s(temp2, _countof(temp2), destination.c_str()); 
+		for (int i = 0; i < sizeof(temp2); i++)
+			materialData.texturePath[i] = temp2[i];
+	}
+	else
+	{
+		std::string noTextureString = "No texture found!";
+		char temp2[128];
+		strcpy_s(temp2, _countof(temp2), noTextureString.c_str());
+		for (int i = 0; i < sizeof(temp2); i++)
+			materialData.texturePath[i] = temp2[i];
+	}
 
 	DisplayMaterialConnections(lMesh);
 	DisplayLink(lMesh);
