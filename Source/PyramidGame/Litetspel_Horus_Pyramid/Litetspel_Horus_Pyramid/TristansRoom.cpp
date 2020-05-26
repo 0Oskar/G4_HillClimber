@@ -7,8 +7,8 @@ void TristansRoom::createBoundingBoxes()
 	DirectX::XMVECTOR pos = DirectX::XMVectorSet(0.f, -10.f, 0.f, 1.f);
 	DirectX::XMVECTOR rot = DirectX::XMVectorSet(0.f, 0.f, 0.f, 1.f);
 
-	this->addBoundingBox({ 70, 15, 0 }, DirectX::XMFLOAT3(1, 75, 150)); //Left Wall
-	this->addBoundingBox({ -70, 15, 0 }, DirectX::XMFLOAT3(1, 75, 150)); //Right Wall
+	this->addBoundingBox({ 69, 15, 0 }, DirectX::XMFLOAT3(1, 75, 150)); //Left Wall
+	this->addBoundingBox({ -69, 15, 0 }, DirectX::XMFLOAT3(1, 75, 150)); //Right Wall
 	this->addBoundingBox({ 0, 4.5f, 110 }, DirectX::XMFLOAT3(100, 75, 1)); //Back Wall
 	this->addBoundingBox({ 0, 4.5f, -100 }, DirectX::XMFLOAT3(100, 75, 1)); //Front Wall
 
@@ -39,10 +39,14 @@ void TristansRoom::createSceneObjects()
 	pos = DirectX::XMVectorSet(0, 45, 110, 1); // World pos
 	this->addGameObjectToRoom(true, false, 1, 21, &m_models->at(21), pos, scale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(1.f, 1.f, 1.f));
 
+	//Diamond
+	pos = DirectX::XMVectorSet(0, 50, -10, 1); // World pos
+	this->addGameObjectToRoom(true, false, 1, 32, &m_models->at(32), pos, scale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(1.f, 1.f, 1.f));
+	this->m_gameObjects.back()->setRotation({ XMConvertToRadians(180),0.0f, 0.0f, 0.f }); 
+
 	////Bell 1
 	//pos = DirectX::XMVectorSet(0, 45, 100, 1); // World pos
 	//this->addGameObjectToRoom(true, false, 1, 28, &m_models->at(28), pos, scale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(1.f, 1.f, 1.f));
-
 	////Bell 2
 	//pos = DirectX::XMVectorSet(0, 45, 100, 1); // World pos
 	//this->addGameObjectToRoom(true, false, 1, 29, &m_models->at(29), pos, scale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(1.f, 1.f, 1.f));
@@ -98,6 +102,7 @@ TristansRoom::~TristansRoom()
 
 void TristansRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activeRoomChanged)
 {
+
 	Room::update(dt, camera, activeRoom, activeRoomChanged);
 	//Spikes
 	for (int i = 0; i < SpikesBB.size(); i++)
@@ -111,7 +116,7 @@ void TristansRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& act
 	this->leverGrip[0]->collidesWithPlayer();
 	if (this->leverGrip[0]->getCanUseLever() == true)
 	{
-		if (this->m_player->getinUse() == true && this->tempLever0 == false && this->canPullLever0 == true)
+		if (this->m_player->getinUse() == true && this->tempLever0 == false && this->canPullLever0 == true) //press E
 		{
 			this->tempLever0 = true;
 			this->leverTimer[0].restart();
@@ -130,11 +135,31 @@ void TristansRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& act
 	{
 		this->moveLever0 = false;
 	}
+	if (this->leverTimer[0].timeElapsed() >= 3)
+	{
+		this->moveLeverAgain0 = true;
+	}
+	if (this->leverTimer[0].timeElapsed() < 4)
+	{
+		if (this->moveLeverAgain0 == true)
+		{
+			this->leverGrip[0]->getMoveCompPtr()->rotation += DirectX::XMVectorSet(pMath::convertDegreesToRadians(-90) * dt, 0, 0, 10);
+		}
+	}
+	//if (this->leverTimer[0].timeElapsed() >= 4)
+	//{
+	//	this->tempLever0 = false;
+	//	this->canPullLever0 = true;
+	//	this->moveLever0 = false;
+	//	this->leverGrip[0]->getCanUseLever() = true;
+	//	//this->leverTimer[0].
+	//}
+
 	//Back Lever 1
 	this->leverGrip[1]->collidesWithPlayer();
 	if (this->leverGrip[1]->getCanUseLever() == true)
 	{
-		if (this->m_player->getinUse() == true && this->tempLever1 == false && this->canPullLever1 == true)
+		if (this->m_player->getinUse() == true && this->tempLever1 == false && this->canPullLever1 == true) //press E
 		{
 			this->tempLever1 = true;
 			this->leverTimer[1].restart();
@@ -153,11 +178,22 @@ void TristansRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& act
 	{
 		this->moveLever1 = false;
 	}
+	if (this->leverTimer[1].timeElapsed() >= 3)
+	{
+		this->moveLeverAgain1 = true;
+	}
+	if (this->leverTimer[1].timeElapsed() < 4)
+	{
+		if (this->moveLeverAgain1 == true)
+		{
+			this->leverGrip[1]->getMoveCompPtr()->rotation += DirectX::XMVectorSet(pMath::convertDegreesToRadians(-90) * dt, 0, 0, 10);
+		}
+	}
 	//Back Lever 2
 	this->leverGrip[2]->collidesWithPlayer();
 	if (this->leverGrip[2]->getCanUseLever() == true)
 	{
-		if (this->m_player->getinUse() == true && this->tempLever2 == false && this->canPullLever2 == true)
+		if (this->m_player->getinUse() == true && this->tempLever2 == false && this->canPullLever2 == true) //press E
 		{
 			this->tempLever2 = true;
 			this->leverTimer[2].restart();
@@ -176,11 +212,22 @@ void TristansRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& act
 	{
 		this->moveLever2 = false;
 	}
+	if (this->leverTimer[2].timeElapsed() >= 3)
+	{
+		this->moveLeverAgain2 = true;
+	}
+	if (this->leverTimer[2].timeElapsed() < 4)
+	{
+		if (this->moveLeverAgain2 == true)
+		{
+			this->leverGrip[2]->getMoveCompPtr()->rotation += DirectX::XMVectorSet(pMath::convertDegreesToRadians(-90) * dt, 0, 0, 10);
+		}
+	}
 	//Back Lever 3
 	this->leverGrip[3]->collidesWithPlayer();
 	if (this->leverGrip[3]->getCanUseLever() == true)
 	{
-		if (this->m_player->getinUse() == true && this->tempLever3 == false && this->canPullLever3 == true)
+		if (this->m_player->getinUse() == true && this->tempLever3 == false && this->canPullLever3 == true) //press E
 		{
 			this->tempLever3 = true;
 			this->leverTimer[3].restart();
@@ -199,33 +246,17 @@ void TristansRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& act
 	{
 		this->moveLever3 = false;
 	}
-
-	//levers
-	/*for (int i = 0; i < 3; i++)
+	if (this->leverTimer[3].timeElapsed() >= 3)
 	{
-		this->leverGrip[i]->collidesWithPlayer();
-		if (this->leverGrip[i]->getCanUseLever() == true)
+		this->moveLeverAgain3 = true;
+	}
+	if (this->leverTimer[3].timeElapsed() < 4)
+	{
+		if (this->moveLeverAgain3 == true)
 		{
-			if (this->m_player->getinUse() == true && this->tempLever == false && this->canPullLever == true)
-			{
-				this->tempLever = true;
-				this->leverTimer[i].restart();
-				this->canPullLever = false;
-				this->moveLever = true;
-			}
+			this->leverGrip[3]->getMoveCompPtr()->rotation += DirectX::XMVectorSet(pMath::convertDegreesToRadians(-90) * dt, 0, 0, 10);
 		}
-		if (this->leverTimer[i].timeElapsed() < 1)
-		{
-			if (this->moveLever == true)
-			{
-				this->leverGrip[i]->getMoveCompPtr()->rotation += DirectX::XMVectorSet(pMath::convertDegreesToRadians(90) * dt, 0, 0, 10);
-			}
-		}
-		if (this->leverTimer[i].timeElapsed() >= 1)
-		{
-			this->moveLever = false;
-		}
-	}*/
+	}
 }
 
 void TristansRoom::onEntrance()

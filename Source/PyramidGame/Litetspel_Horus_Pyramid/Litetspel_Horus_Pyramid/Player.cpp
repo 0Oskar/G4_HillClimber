@@ -11,7 +11,7 @@ Player::Player() : GameObject()
 
 Player::~Player() {}
 
-void Player::initialize(int modelIndex, int wvpCBufferIndex, float mass, DirectX::XMFLOAT3 acceleration, DirectX::XMFLOAT3 deceleration, GameObject* gObj, GameObject* hookGun, std::vector<GameObject*>* chainGObjects, std::shared_ptr<DirectX::AudioEngine> audioEngine, std::vector<DirectX::BoundingBox*> platformBB)
+void Player::initialize(int modelIndex, int wvpCBufferIndex, float mass, DirectX::XMFLOAT3 acceleration, DirectX::XMFLOAT3 deceleration, GameObject* gObj, GameObject* hookGun, GameObject* hookHandLeftWing, GameObject* hookHandRightWing, std::vector<GameObject*>* chainGObjects, std::shared_ptr<DirectX::AudioEngine> audioEngine, std::vector<DirectX::BoundingBox*> platformBB)
 {
 	this->m_isStatic = true;
 	this->m_collidable = true;
@@ -24,7 +24,7 @@ void Player::initialize(int modelIndex, int wvpCBufferIndex, float mass, DirectX
 	this->m_physicsComp = new PhysicsComponent();
 	this->m_physicsComp->initialize(this->m_movementComp, mass, acceleration, deceleration);
 	this->m_physicsComp->setBoundingBox(this->m_movementComp->getPositionF3(), boundingbox);
-	this->m_hookHand.init(gObj, m_movementComp, &m_collidableAABBoxes, hookGun, chainGObjects, audioEngine, platformBB);
+	this->m_hookHand.init(gObj, m_movementComp, m_physicsComp, &m_collidableAABBoxes, hookGun, hookHandLeftWing, hookHandRightWing, chainGObjects, audioEngine, platformBB);
 }
 
 void Player::updateHookHandBB(std::vector<DirectX::BoundingBox*> platformBB)
@@ -182,7 +182,7 @@ void Player::update(Keyboard* keyboard, Mouse* mouse, float dt)
 		StatusTextHandler::get().sendText("QA Mode ON!", 0.5);
 	}
 
-	this->m_physicsComp->updatePosition(dt);
+	this->m_physicsComp->updatePosition(dt, true); // If Camera is not following player, remove last argument( Only dt)
 	this->m_hookHand.update(dt);
 }
 
