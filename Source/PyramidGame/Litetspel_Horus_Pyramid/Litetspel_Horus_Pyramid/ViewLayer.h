@@ -114,6 +114,7 @@ public:
 	void setModelsFromState(std::vector<Model>* models);
 	void setDirLightFromActiveRoom(PS_DIR_BUFFER dirLight);
 	void setFogDataFromActiveRoom(PS_FOG_BUFFER fogData);
+	void setLightDataFromActiveRoom(PS_LIGHT_BUFFER lightData);
 	void setWvpCBufferFromState(std::vector< ConstBuffer<VS_CONSTANT_BUFFER> >* models);
 	void setGameTimePtr(Timer* gameTimer);
 	// Initialization

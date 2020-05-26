@@ -8,6 +8,19 @@ PyramidRoom::PyramidRoom()
 	this->m_fogData.fogEnd = 600.0f;
 	this->m_fogData.fogStart = 300.0f;
 	this->m_fogData.fogColor = { 0.79f, 0.67f, 0.42f };
+
+	PointLight pLight;
+	pLight.plPosition = { 0, 10, 0 };
+	pLight.plDiffuse = { 0.3, 0.3, 0.3, 1 };
+	pLight.plAmbient = { 0.0, 0.0, 0.0, 1 };
+	pLight.plRange = 50;
+	pLight.att = { 1, 0, 0 };
+
+	int lightID = this->createLight(pLight); //Create light passing pointlight struct, index return position in array;
+	this->getLight(lightID)->plRange = 50; //Using lightID to getLight pointer, change range to 10;
+	this->createLight({ -10, 10, -10 }, 50, { 0.0f, 0.0f, 0.1f, 1.f }, { 0.5f, 0.f, 0.f, 1.f }); //Create light passing parameters
+	this->m_lightData.lightColor = { 1, 1, 1, };
+	this->m_lightData.strength = 0.2f;
 }
 PyramidRoom::~PyramidRoom()
 {

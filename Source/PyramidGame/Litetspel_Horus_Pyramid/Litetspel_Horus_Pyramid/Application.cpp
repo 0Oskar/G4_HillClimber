@@ -64,6 +64,7 @@ bool Application::initApplication(HINSTANCE hInstance, LPWSTR lpCmdLine, HWND hW
 	this->m_viewLayerPtr->setOrientedBoundingBoxesFromActiveRoom(this->m_gameState.getActiveRoomOrientedBoundingBoxPtr());
 	this->m_viewLayerPtr->setDirLightFromActiveRoom(this->m_gameState.getActiveRoomDirectionalLight());
 	this->m_viewLayerPtr->setFogDataFromActiveRoom(this->m_gameState.getActiveRoomFogData());
+	this->m_viewLayerPtr->setLightDataFromActiveRoom(this->m_gameState.getActiveRoomLightData());
 	this->m_viewLayerPtr->setTriggerBoxFromActiveRoom(this->m_gameState.getActiveRoomTriggerBox());
 	this->m_viewLayerPtr->setGameTimePtr(this->m_gameState.getGameTimerPtr());
 	this->m_viewLayerPtr->setWvpCBufferFromState(this->m_gameState.getWvpCBuffersPtr());
@@ -231,6 +232,7 @@ void Application::GameStateChecks()
 		this->m_viewLayerPtr->setTriggerBoxFromActiveRoom(this->m_gameState.getActiveRoomTriggerBox());
 		this->m_viewLayerPtr->setDirLightFromActiveRoom(this->m_gameState.getActiveRoomDirectionalLight());
 		this->m_viewLayerPtr->setFogDataFromActiveRoom(this->m_gameState.getActiveRoomFogData());
+		this->m_viewLayerPtr->setLightDataFromActiveRoom(this->m_gameState.getActiveRoomLightData());
 		this->m_gameState.m_activeRoomChanged = false;
 		this->m_gameState.roomChangeInit();
 	}

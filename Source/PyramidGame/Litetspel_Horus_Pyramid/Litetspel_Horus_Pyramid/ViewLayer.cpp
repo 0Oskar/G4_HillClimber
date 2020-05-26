@@ -245,6 +245,12 @@ void ViewLayer::setFogDataFromActiveRoom(PS_FOG_BUFFER fogData)
 	this->m_fogBuffer.m_data = fogData;
 }
 
+void ViewLayer::setLightDataFromActiveRoom(PS_LIGHT_BUFFER lightData)
+{
+	this->m_lightBuffer.m_data = lightData;
+	this->m_lightBuffer.upd();
+}
+
 void ViewLayer::setWvpCBufferFromState(std::vector< ConstBuffer<VS_CONSTANT_BUFFER> >* buffers)
 {
 	this->m_wvpCBufferFromState = buffers;
@@ -293,10 +299,18 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 	this->initShaders();
 	this->initConstantBuffer();
 
+	PointLight pLight;
+	pLight.plPosition = { 0, 10, 0 };
+	pLight.plDiffuse = { 0, 0, 0, 1 };
+	pLight.plAmbient = { 0, 0, 0, 1 };
+	pLight.plRange = 100;
+	pLight.att = { 0, 1, 0 };
 	// Ambient Light buffer
 	PS_LIGHT_BUFFER lightBuffer;
-	lightBuffer.lightColor = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
-	lightBuffer.strength = 0.5f;
+	lightBuffer.lightColor = DirectX::XMFLOAT3(1.f, 1.0f, 1.0f); //Set default behaviour in room.cpp and change for induvidual rooms in theire class by accesing this->m_lightData
+	lightBuffer.strength = 0.1f;
+	lightBuffer.nrOfPointLights = 1;
+	lightBuffer.pointLights[0] = pLight;
 	this->m_lightBuffer.m_data = lightBuffer;
 	this->m_lightBuffer.upd();
 
@@ -311,7 +325,7 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 
 	// Directional Light buffer
 	PS_DIR_BUFFER dirBuffer;
-	dirBuffer.lightColor = DirectX::XMFLOAT4(.8f, .8f, .8f, 1.f);
+	dirBuffer.lightColor = DirectX::XMFLOAT4(0.f, 0.f, 0.f, 1.f);
 	dirBuffer.lightDirection = DirectX::XMFLOAT4(-0.8f, 1.0f, -0.7f, 0.0f);
 	this->m_dirLightBuffer.m_data = dirBuffer;
 	this->m_dirLightBuffer.upd();

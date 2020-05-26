@@ -91,6 +91,14 @@ PS_FOG_BUFFER GameState::getActiveRoomFogData()
 		return PS_FOG_BUFFER();
 }
 
+PS_LIGHT_BUFFER GameState::getActiveRoomLightData()
+{
+	if (this->m_activeRoom != nullptr)
+		return this->m_activeRoom->getLightData();
+	else
+		return PS_LIGHT_BUFFER();
+}
+
 void GameState::addGameObjectToWorld(bool dynamic, bool colide, float weight, int mdlIndx, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR scale3D, DirectX::XMFLOAT3 boundingBoxSize = DirectX::XMFLOAT3(0, 0, 0), DirectX::XMFLOAT3 acceleration = DirectX::XMFLOAT3(1, 1, 1), DirectX::XMFLOAT3 deceleration = DirectX::XMFLOAT3(1, 1, 1))
 {
 	this->m_gameObjects.emplace_back(new GameObject());
@@ -178,6 +186,7 @@ void GameState::loadModels()
 {
 	// Material
 	MaterialData mat;
+	mat.ambient = { 0.2, 0.2, 0.2, 1 };
 
 	//0 - Desert Ground
 	this->m_models.emplace_back();
