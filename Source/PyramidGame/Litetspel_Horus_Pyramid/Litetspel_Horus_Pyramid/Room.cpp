@@ -33,6 +33,13 @@ void Room::initParent()
 	this->m_worldPosition = DirectX::XMVectorZero();
 	this->m_dirLight.lightColor = { .8f, .8f, .8f, 1.f };
 	this->m_dirLight.lightDirection = {-0.8f, 1.0f, -0.7f, 0.0f };
+	this->m_fogData.cameraPos = XMFLOAT3(0, 0, 0);
+	this->m_fogData.fogEnd = 0;
+	this->m_fogData.fogStart = 0;
+	this->m_fogData.fogColor = { 0.5f, 0.5f, 0.5f };
+	this->m_lightData.lightColor = DirectX::XMFLOAT3(1.f, 1.0f, 1.0f);
+	this->m_lightData.strength = 0.5f;
+	this->m_lightData.nrOfPointLights = 0;
 }
 void Room::update(float dt, Camera* camera, Room* &activeRoom, bool &activeRoomChanged)
 {
@@ -60,7 +67,7 @@ void Room::update(float dt, Camera* camera, Room* &activeRoom, bool &activeRoomC
 		DirectX::XMMATRIX viewPMtrx = camera->getViewMatrix() * camera->getProjectionMatrix();
 		wvpData.wvp = this->m_gameObjects[i]->getWorldMatrix() * viewPMtrx;
 		wvpData.worldMatrix = this->m_gameObjects[i]->getWorldMatrix();
-			
+
 		this->m_wvpCBuffers->at(this->m_gameObjects.at(i)->getWvpCBufferIndex()).upd(&wvpData);
 	}
 }
@@ -221,6 +228,58 @@ void Room::updatePlayerBB()
 	this->m_player->addOrientedBBFromVector(&m_orientedBoundingBoxes);
 }
 
+int Room::createLight(XMFLOAT3 position, float range, XMFLOAT4 ambientColor, XMFLOAT4 diffuseColor, XMFLOAT3 atteniation)
+{
+	if(m_lightData.nrOfPointLights < 5)
+	{
+		XMFLOAT3 wPos;
+		XMStoreFloat3(&wPos, this->m_worldPosition + XMLoadFloat3(&position));
+		PointLight pLight;
+		pLight.plPosition = wPos;
+		pLight.plRange = range;
+		pLight.plAmbient = ambientColor;
+		pLight.plDiffuse = diffuseColor;
+		pLight.att = atteniation;
+
+		this->m_lightData.pointLights[this->m_lightData.nrOfPointLights++] = pLight;
+	}
+	else
+	{
+		assert(false && "Error, adding more lights to room than allowed.");
+	}
+	return this->m_lightData.nrOfPointLights - 1;
+}
+
+int Room::createLight(PointLight pLight)
+{
+	XMFLOAT3 wPos;
+	XMStoreFloat3(&wPos, this->m_worldPosition + XMLoadFloat3(&pLight.plPosition));
+	pLight.plPosition = wPos;
+	if (m_lightData.nrOfPointLights < 5)
+	{
+		this->m_lightData.pointLights[this->m_lightData.nrOfPointLights++] = pLight;
+	}
+	else
+	{
+		assert(false && "Error, adding more lights to room than allowed.");
+	}
+	return this->m_lightData.nrOfPointLights - 1;
+}
+
+void Room::changeLight(int index, XMFLOAT3 position, float range, XMFLOAT4 ambientColor, XMFLOAT4 diffuseColor, XMFLOAT3 atteniation)
+{
+	this->m_lightData.pointLights[index].plPosition = position;
+	this->m_lightData.pointLights[index].plRange = range;
+	this->m_lightData.pointLights[index].plAmbient = ambientColor;
+	this->m_lightData.pointLights[index].plDiffuse = ambientColor;
+	this->m_lightData.pointLights[index].att = atteniation;
+}
+
+PointLight* Room::getLight(int index)
+{
+	return &m_lightData.pointLights[index];
+}
+
 DirectX::XMVECTOR Room::getRelativePosition(DirectX::XMVECTOR pos)
 {
 	XMVECTOR temp = this->m_worldPosition + pos;
@@ -230,4 +289,14 @@ DirectX::XMVECTOR Room::getRelativePosition(DirectX::XMVECTOR pos)
 PS_DIR_BUFFER Room::getDirectionalLight()
 {
 	return this->m_dirLight;
+}
+
+PS_FOG_BUFFER Room::getFogData()
+{
+	return this->m_fogData;
+}
+
+PS_LIGHT_BUFFER Room::getLightData()
+{
+	return this->m_lightData;
 }

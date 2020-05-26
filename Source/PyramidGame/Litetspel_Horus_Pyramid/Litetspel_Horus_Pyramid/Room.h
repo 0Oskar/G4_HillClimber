@@ -22,6 +22,8 @@ protected:
 	std::vector<DirectX::BoundingBox> m_triggerBoundingBoxes;
 	std::vector<Room*> m_rooms;
 	PS_DIR_BUFFER m_dirLight;
+	PS_FOG_BUFFER m_fogData;
+	PS_LIGHT_BUFFER m_lightData;
 	
 	Player* m_player;
 	std::shared_ptr<DirectX::AudioEngine> audioEngine;
@@ -52,7 +54,11 @@ public:
 	void addObjectToRoom(GameObject* object);
 	void addRooms(std::vector<Room*>* rooms);
 	void updatePlayerBB();
-
+	
+	int createLight(XMFLOAT3 position, float range, XMFLOAT4 ambientColor, XMFLOAT4 diffuseColor, XMFLOAT3 atteniation = { 1, 0, 0 });
+	int createLight(PointLight pLight);
+	void changeLight(int index, XMFLOAT3 position, float range, XMFLOAT4 ambientColor, XMFLOAT4 diffuseColor, XMFLOAT3 atteniation = { 1, 0, 0 });
+	PointLight* getLight(int index);
 	std::vector<GameObject*>* getGameObjectsPtr();
 	std::vector<BoundingBox>* getBoundingBoxPtr();
 	std::vector<BoundingOrientedBox>* getOrientedBoundingBoxPtr();
@@ -60,6 +66,9 @@ public:
 	DirectX::XMVECTOR getEntrancePosition();
 	DirectX::XMVECTOR getRelativePosition(DirectX::XMVECTOR pos);
 	PS_DIR_BUFFER getDirectionalLight();
+	PS_FOG_BUFFER getFogData();
+	PS_LIGHT_BUFFER getLightData();
+
 
 	bool m_completed;
 
