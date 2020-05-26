@@ -100,10 +100,10 @@ int main(int argc, char** argv)
 	{
 
 
-        lFilePath = "../TriAnim.fbx";
+        //lFilePath = "../TriAnim.fbx";
 
 
-        //lFilePath = "../shrekTriangle.fbx";
+        lFilePath = "../shrekTriangle.fbx";
 
 		lResult = LoadScene(lSdkManager, lScene, lFilePath.Buffer());
 	}
@@ -243,12 +243,12 @@ int main(int argc, char** argv)
     // ****************** Material ****************** //
     materialData3 = GetMaterialData2();
 
-	textureTempName = getTextureName2();
+	//textureTempName = getTextureName2();
 
-	for (int i = 0; i < sizeof(materialData3.texturePath); i++)
-	{
-		materialData3.texturePath[i] = textureTempName[i];
-	}
+	//for (int i = 0; i < sizeof(materialData3.texturePath); i++)
+	//{
+	//	materialData3.texturePath[i] = textureTempName[i];
+	//}
 	
     myStringFile5.writeToStringFile(
         "\n------------- Material: \n\n"

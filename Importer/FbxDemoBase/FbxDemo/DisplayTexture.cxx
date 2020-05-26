@@ -13,6 +13,8 @@
 
 #include "DisplayCommon.h"
 #include "DisplayTexture.h"
+std::string textureName;
+char* eyMan;
 
 void DisplayTextureInfo(FbxTexture* pTexture, int pBlendMode)
 {
@@ -20,11 +22,16 @@ void DisplayTextureInfo(FbxTexture* pTexture, int pBlendMode)
 	FbxProceduralTexture *lProceduralTexture = FbxCast<FbxProceduralTexture>(pTexture);
 
     DisplayString("            Name: \"", (char *) pTexture->GetName(), "\"");
+    
 	if (lFileTexture)
 	{
+        
 		DisplayString("            Type: File Texture");
-		DisplayString("            File Name: \"", (char *) lFileTexture->GetFileName(), "\"");
-		setTextureName((char*)lFileTexture->GetFileName());		
+        eyMan = (char*)lFileTexture->GetFileName();
+		DisplayString("            File Name: \"", (char*)lFileTexture->GetFileName(), "\"");
+        textureName = std::string(eyMan);
+		//setTextureName((char*)lFileTexture->GetFileName());		
+        
 	}
 	else if (lProceduralTexture)
 	{
@@ -82,15 +89,20 @@ void DisplayTextureInfo(FbxTexture* pTexture, int pBlendMode)
 
 }
 
-void setTextureName(char* theTexture)
+std::string GetTexturePath()
 {
-	aTextureName = theTexture;
+    return textureName;
 }
 
-char* getTextureName()
-{
-	return aTextureName;
-}
+//void setTextureName(char* theTexture)
+//{
+//	aTextureName = theTexture;
+//}
+//
+//char* getTextureName()
+//{
+//	return aTextureName;
+//}
 
 void FindAndDisplayTextureInfoByProperty(FbxProperty pProperty, bool& pDisplayHeader, int pMaterialIndex){
 

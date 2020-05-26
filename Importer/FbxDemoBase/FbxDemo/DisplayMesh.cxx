@@ -85,7 +85,15 @@ void DisplayMesh(FbxNode* pNode)
 	DisplayMaterialMapping(lMesh);
 	DisplayMaterial(lMesh);
 	materialData = getMaterialInfo();
+
 	DisplayTexture(lMesh);
+
+	char temp2[128];
+	std::string bajs = GetTexturePath();
+	strcpy_s(temp2, _countof(temp2), GetTexturePath().c_str());
+	for (int i = 0; i < sizeof(temp2); i++)
+		materialData.texturePath[i] = temp2[i];
+
 	DisplayMaterialConnections(lMesh);
 	DisplayLink(lMesh);
 	DisplayShape(lMesh);
@@ -186,10 +194,7 @@ int GetNrOfBlendShapes2()
 	return GetNrOfBlendShapes();
 }
 
-char* getTextureName2()
-{
-	return getTextureName();
-}
+
 
 
 

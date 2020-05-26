@@ -18,10 +18,10 @@
 void FindAndDisplayTextureInfoByProperty(FbxProperty pProperty, bool& pDisplayHeader, int pMaterialIndex);
 void DisplayTexture(FbxGeometry* pGeometry);
 void DisplayTextureInfo(FbxTexture* pTexture, int pBlendMode);
-void setTextureName(char* theTexture);
-static char* aTextureName;
-char* getTextureName();
-
+//void setTextureName(char* theTexture);
+//static char* aTextureName;
+//char* getTextureName();
+std::string GetTexturePath();
 
 #endif // #ifndef _DISPLAY_TEXTURE_H
 
