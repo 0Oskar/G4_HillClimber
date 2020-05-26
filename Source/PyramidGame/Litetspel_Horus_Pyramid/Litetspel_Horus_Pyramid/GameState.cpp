@@ -543,6 +543,10 @@ void GameState::update(Keyboard* keyboard, MouseEvent mouseEvent, Mouse* mousePt
 		{
 			this->m_camera.update(mEvent, dt);
 		}
+		else if (mEvent.getEvent() == Event::MouseLPressed)
+		{
+			this->m_player.shoot();
+		}
 	}
 
 	// Player

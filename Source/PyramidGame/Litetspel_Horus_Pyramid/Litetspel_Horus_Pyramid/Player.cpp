@@ -164,10 +164,11 @@ void Player::update(Keyboard* keyboard, Mouse* mouse, float dt)
 	{
 		this->m_hookHand.retract();
 	}
-	if ( mouse->isLDown())
+	if ( mouse->isLDown() )
 	{
-		this->m_hookHand.fire();
+		//this->m_hookHand.fire();
 	}
+
 
 	// QA Toggle
 	if (keyboard->isKeyPressed('P'))
@@ -183,4 +184,9 @@ void Player::update(Keyboard* keyboard, Mouse* mouse, float dt)
 
 	this->m_physicsComp->updatePosition(dt);
 	this->m_hookHand.update(dt);
+}
+
+void Player::shoot()
+{
+	this->m_hookHand.fire();
 }

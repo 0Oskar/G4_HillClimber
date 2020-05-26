@@ -49,4 +49,6 @@ public:
 	void respawn();
 	void updateHookHandBB(std::vector<DirectX::BoundingBox*> platformBB);
 	void update(Keyboard* keyboard, Mouse* mouse, float dt);
+	void shoot();
+
 };
