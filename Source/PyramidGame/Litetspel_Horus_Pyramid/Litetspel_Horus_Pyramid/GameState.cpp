@@ -351,7 +351,7 @@ void GameState::loadModels()
 	//29. swingingAxe
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
-  this->m_models[29].loadVertexFromOBJ(m_device, m_dContext, L"Models/swingingAxe.obj", mat, L"Textures/ColorTexture.png");
+	this->m_models[29].loadVertexFromOBJ(m_device, m_dContext, L"Models/swingingAxe.obj", mat, L"Textures/ColorTexture.png");
   
 	//30. Left Wing
 	this->m_models.emplace_back();
@@ -362,6 +362,13 @@ void GameState::loadModels()
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
 	this->m_models[31].initializeModelBff(m_device, m_dContext, "Gauntlet_RightWing.bff", mat, L"Textures/ColorTexture.png");
+
+	//32. Diamond
+	this->m_models.emplace_back(); //add empty model
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f); //reset material
+	this->m_models[32].initializeModelBff(m_device, m_dContext, "Diamond.bff", mat, L"Textures/ColorTexture.png"); //load model
+
+
 }
 
 

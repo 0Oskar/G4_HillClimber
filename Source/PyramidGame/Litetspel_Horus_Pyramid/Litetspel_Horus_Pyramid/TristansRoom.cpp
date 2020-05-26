@@ -7,8 +7,8 @@ void TristansRoom::createBoundingBoxes()
 	DirectX::XMVECTOR pos = DirectX::XMVectorSet(0.f, -10.f, 0.f, 1.f);
 	DirectX::XMVECTOR rot = DirectX::XMVectorSet(0.f, 0.f, 0.f, 1.f);
 
-	this->addBoundingBox({ 70, 15, 0 }, DirectX::XMFLOAT3(1, 75, 150)); //Left Wall
-	this->addBoundingBox({ -70, 15, 0 }, DirectX::XMFLOAT3(1, 75, 150)); //Right Wall
+	this->addBoundingBox({ 69, 15, 0 }, DirectX::XMFLOAT3(1, 75, 150)); //Left Wall
+	this->addBoundingBox({ -69, 15, 0 }, DirectX::XMFLOAT3(1, 75, 150)); //Right Wall
 	this->addBoundingBox({ 0, 4.5f, 110 }, DirectX::XMFLOAT3(100, 75, 1)); //Back Wall
 	this->addBoundingBox({ 0, 4.5f, -100 }, DirectX::XMFLOAT3(100, 75, 1)); //Front Wall
 
@@ -39,10 +39,14 @@ void TristansRoom::createSceneObjects()
 	pos = DirectX::XMVectorSet(0, 45, 110, 1); // World pos
 	this->addGameObjectToRoom(true, false, 1, 21, &m_models->at(21), pos, scale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(1.f, 1.f, 1.f));
 
+	//Diamond
+	pos = DirectX::XMVectorSet(0, 50, -10, 1); // World pos
+	this->addGameObjectToRoom(true, false, 1, 32, &m_models->at(32), pos, scale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(1.f, 1.f, 1.f));
+	this->m_gameObjects.back()->setRotation({ XMConvertToRadians(180),0.0f, 0.0f, 0.f }); 
+
 	////Bell 1
 	//pos = DirectX::XMVectorSet(0, 45, 100, 1); // World pos
 	//this->addGameObjectToRoom(true, false, 1, 28, &m_models->at(28), pos, scale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(1.f, 1.f, 1.f));
-
 	////Bell 2
 	//pos = DirectX::XMVectorSet(0, 45, 100, 1); // World pos
 	//this->addGameObjectToRoom(true, false, 1, 29, &m_models->at(29), pos, scale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(1.f, 1.f, 1.f));
