@@ -230,10 +230,12 @@ void Room::updatePlayerBB()
 
 int Room::createLight(XMFLOAT3 position, float range, XMFLOAT4 ambientColor, XMFLOAT4 diffuseColor, XMFLOAT3 atteniation)
 {
-	if(m_lightData.nrOfPointLights < 10)
+	if(m_lightData.nrOfPointLights < 5)
 	{
+		XMFLOAT3 wPos;
+		XMStoreFloat3(&wPos, this->m_worldPosition + XMLoadFloat3(&position));
 		PointLight pLight;
-		pLight.plPosition = position;
+		pLight.plPosition = wPos;
 		pLight.plRange = range;
 		pLight.plAmbient = ambientColor;
 		pLight.plDiffuse = diffuseColor;
@@ -250,6 +252,9 @@ int Room::createLight(XMFLOAT3 position, float range, XMFLOAT4 ambientColor, XMF
 
 int Room::createLight(PointLight pLight)
 {
+	XMFLOAT3 wPos;
+	XMStoreFloat3(&wPos, this->m_worldPosition + XMLoadFloat3(&pLight.plPosition));
+	pLight.plPosition = wPos;
 	if (m_lightData.nrOfPointLights < 5)
 	{
 		this->m_lightData.pointLights[this->m_lightData.nrOfPointLights++] = pLight;
