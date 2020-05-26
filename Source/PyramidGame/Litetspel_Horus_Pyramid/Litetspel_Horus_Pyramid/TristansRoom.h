@@ -23,10 +23,16 @@ private:
 	bool moveLever2 = false;
 	bool moveLever3 = false;
 
+	bool moveLeverAgain0 = false;
+	bool moveLeverAgain1 = false;
+	bool moveLeverAgain2 = false;
+	bool moveLeverAgain3 = false;
+
 	bool tempLever0 = false;
 	bool tempLever1 = false;
 	bool tempLever2 = false;
 	bool tempLever3 = false;
+
 
 public:
 
