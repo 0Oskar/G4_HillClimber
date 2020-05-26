@@ -428,25 +428,27 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_player.addPyramidOBB(&this->m_pyramidOBB);
 
 
-	// HookHead 
+	// Hook Head 
 	vec = DirectX::XMVectorSet(10.f, 1.f, -20.f, 1.f);
 	this->addGameObjectToWorld(true, false, 1, 2, &m_models[2], vec, XMVectorSet(.5f, .5f, .5f, 1.f), DirectX::XMFLOAT3(.5f, .5f, .5f), DirectX::XMFLOAT3(10, 10, 10), DirectX::XMFLOAT3(10, 10, 10));
 	hook = this->m_gameObjects.back();
   
-	//HookHand
+	// Hook Hand
 	vec = DirectX::XMVectorSet(10.f, 1.f, -20.f, 1.f);
 	this->addGameObjectToWorld(true, false, 1, 4, &m_models[4], vec, XMVectorSet(.5f, .5f, .5f, 1.f), DirectX::XMFLOAT3(0, 0, 0), DirectX::XMFLOAT3(10, 10, 10), DirectX::XMFLOAT3(10, 10, 10));
 	hookHand = this->m_gameObjects.back();
 
+	// Hook Left Wing
 	vec = DirectX::XMVectorSet(9.f, 1.f, -20.f, 1.f);
 	this->addGameObjectToWorld(true, false, 1, 30, &m_models[30], vec, XMVectorSet(.5f, .5f, .5f, 1.f), DirectX::XMFLOAT3(0, 0, 0), DirectX::XMFLOAT3(10, 10, 10), DirectX::XMFLOAT3(10, 10, 10));
 	hookHandLeftWing = this->m_gameObjects.back();
 
+	// Hook Right Wing
 	vec = DirectX::XMVectorSet(11.f, 1.f, -20.f, 1.f);
 	this->addGameObjectToWorld(true, false, 1, 31, &m_models[31], vec, XMVectorSet(.5f, .5f, .5f, 1.f), DirectX::XMFLOAT3(0, 0, 0), DirectX::XMFLOAT3(10, 10, 10), DirectX::XMFLOAT3(10, 10, 10));
 	hookHandRightWing = this->m_gameObjects.back();
 
-	//Chain link
+	// Hook Chain link
     DirectX::XMFLOAT3 vecF3 = hook->getMoveCompPtr()->getPositionF3();
 	for (size_t i = 0; i < NR_OF_CHAIN_LINKS; i++)
 	{
@@ -475,6 +477,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_rooms.emplace_back(new PyramidRoom());
 	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, 0, 1), audioEngine, &this->m_gameTime);
 	dynamic_cast<PyramidRoom*>(this->m_rooms.back())->init(&m_pyramidOBB);
+	m_activeRoom = m_rooms.back();
 
 	//Template Room [1] //Up for grabs
 	this->m_rooms.emplace_back(new TemplateRoom());
@@ -500,7 +503,6 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_rooms.emplace_back(new finalRoom());
 	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, -200, 1), audioEngine, &this->m_gameTime);
 	dynamic_cast<finalRoom*>(this->m_rooms.back())->init();
-	m_activeRoom = m_rooms.back();
 
 
 	//Otaget rum [4] -
@@ -569,13 +571,12 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 
 void GameState::update(Keyboard* keyboard, MouseEvent mouseEvent, Mouse* mousePtr, float dt)
 {
+	// Camera
 	while (!mousePtr->empty())
 	{
 		MouseEvent mEvent = mousePtr->readEvent();
 		if (mEvent.getEvent() == Event::MouseRAW_MOVE)
-		{
 			this->m_camera.update(mEvent, dt);
-		}
 	}
 
 	// Player

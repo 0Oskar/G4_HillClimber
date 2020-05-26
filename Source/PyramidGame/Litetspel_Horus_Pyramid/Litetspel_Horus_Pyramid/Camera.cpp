@@ -31,6 +31,11 @@ void Camera::initialize(float mouseSense, float fovAngle, float aspectRatio, flo
 		this->m_movementComp = new MovementComponent();
 }
 
+void Camera::updateView()
+{
+	this->m_movementComp->updateViewMatrix();
+}
+
 void Camera::update(MouseEvent mouseEvent, float dt)
 {
 	// Rotate Camera

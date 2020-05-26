@@ -181,6 +181,6 @@ void Player::update(Keyboard* keyboard, Mouse* mouse, float dt)
 		StatusTextHandler::get().sendText("QA Mode ON!", 0.5);
 	}
 
-	this->m_physicsComp->updatePosition(dt);
+	this->m_physicsComp->updatePosition(dt, true); // If Camera is not following player, remove last argument( Only dt)
 	this->m_hookHand.update(dt);
 }

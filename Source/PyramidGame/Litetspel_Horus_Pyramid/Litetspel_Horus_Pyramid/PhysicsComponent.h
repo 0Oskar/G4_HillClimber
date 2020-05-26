@@ -317,7 +317,7 @@ public:
 		}
 	}
 	
-	void updatePosition(float dt)
+	void updatePosition(float dt, bool isCamera = false)
 	{
 		this->m_moveComp->position = DirectX::XMVectorAdd(
 			this->m_moveComp->position, 
@@ -328,12 +328,15 @@ public:
 		);
 		this->m_aabb->Center = this->m_moveComp->getPositionF3();
 
-		this->m_moveComp->updateViewMatrix();
+		if (isCamera)
+			this->m_moveComp->updateViewMatrix();
+		else
+			this->m_moveComp->updateDirVectors();
 
 		this->m_velocity.x *= this->m_deceleration.x * dt;
 		this->m_velocity.z *= this->m_deceleration.z * dt;
 	}
-	void updatePositionNoDecel(float dt)
+	void updatePositionNoDecel(float dt, bool isCamera = false)
 	{
 		this->m_moveComp->position = DirectX::XMVectorAdd(
 			this->m_moveComp->position,
@@ -344,6 +347,9 @@ public:
 		);
 		this->m_aabb->Center = this->m_moveComp->getPositionF3();
 
-		this->m_moveComp->updateViewMatrix();
+		if (isCamera)
+			this->m_moveComp->updateViewMatrix();
+		else
+			this->m_moveComp->updateDirVectors();
 	}
 };
