@@ -579,7 +579,6 @@ void GameState::update(Keyboard* keyboard, MouseEvent mouseEvent, Mouse* mousePt
 		MouseEvent mEvent = mousePtr->readEvent();
 		if (mEvent.getEvent() == Event::MouseRAW_MOVE)
 			this->m_camera.update(mEvent, dt);
-		}
 		else if (mEvent.getEvent() == Event::MouseLPressed)
 		{
 			this->m_player.shoot();
