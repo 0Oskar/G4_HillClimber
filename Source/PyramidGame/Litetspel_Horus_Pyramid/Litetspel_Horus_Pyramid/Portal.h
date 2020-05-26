@@ -16,6 +16,7 @@ public:
 
 	Portal();
 	~Portal();
+	void setActiveStatus(bool activeStatus);
 	void initialize(int modelIndex, int wvpCBufferIndex, Model* mdl, XMVECTOR teleportLocation, Player* player, int roomID, bool oneTimeUse = true);
 	void update();
 	void resetActiveRoomVariable();

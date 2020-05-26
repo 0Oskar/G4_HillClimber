@@ -241,5 +241,11 @@ void TristansRoom::init()
 
 void TristansRoom::portals()
 {
-
+	this->addPortalToRoom(XMVectorSet(0, 0, 0, 1), 9, &m_models->at(9),
+		XMVectorSet(0, 48.8f, 113, 1), //Pos
+		XMVectorSet(1, 1, 1, 1),    //Scale
+		DirectX::XMFLOAT3(3, 20, 5), //BBSize
+		0, false);
+	portal = dynamic_cast<Portal*>(this->m_gameObjects.back());
+	//portal->setActiveStatus(false);
 }
