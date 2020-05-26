@@ -201,7 +201,7 @@ void GameState::loadModels()
 	//2- HookHead model
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
-	this->m_models[2].loadVertexFromOBJ(m_device, m_dContext, L"Models/FinalBird.obj", mat, L"Textures/ColorTexture.png");
+	this->m_models[2].initializeModelBff(m_device, m_dContext, "Hook_Bird.bff", mat, L"Textures/ColorTexture.png");
 
 	//3- platform model
 	this->m_models.emplace_back();
@@ -211,12 +211,12 @@ void GameState::loadModels()
 	//4- HookHand
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
-	this->m_models[4].loadVertexFromOBJ(m_device, m_dContext, L"Models/FinalHook.obj", mat, L"Textures/ColorTexture.png");
+	this->m_models[4].initializeModelBff(m_device, m_dContext, "Gauntlet_Base.bff", mat, L"Textures/ColorTexture.png");
 
 	//5- Chain Link
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
-	this->m_models[5].loadVertexFromOBJ(m_device, m_dContext, L"Models/FinalChainLink.obj", mat, L"Textures/ColorTexture.png");
+	this->m_models[5].initializeModelBff(m_device, m_dContext, "Hook_ChainLink.bff", mat, L"Textures/ColorTexture.png");
 
 	//6- Lever Room aka Kevins room
 	this->m_models.emplace_back();
@@ -352,11 +352,23 @@ void GameState::loadModels()
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
 	this->m_models[29].loadVertexFromOBJ(m_device, m_dContext, L"Models/swingingAxe.obj", mat, L"Textures/ColorTexture.png");
+  
+	//30. Left Wing
+	this->m_models.emplace_back();
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
+	this->m_models[30].initializeModelBff(m_device, m_dContext, "Gauntlet_LeftWing.bff", mat, L"Textures/ColorTexture.png");
+	
+	//31. Right Wing
+	this->m_models.emplace_back();
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
+	this->m_models[31].initializeModelBff(m_device, m_dContext, "Gauntlet_RightWing.bff", mat, L"Textures/ColorTexture.png");
 
-	//30. Diamond
+	//32. Diamond
 	this->m_models.emplace_back(); //add empty model
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f); //reset material
-	this->m_models[30].initializeModelBff(m_device, m_dContext, "Diamond.bff", mat, L"Textures/ColorTexture.png"); //load model
+	this->m_models[32].initializeModelBff(m_device, m_dContext, "Diamond.bff", mat, L"Textures/ColorTexture.png"); //load model
+
+
 }
 
 
@@ -394,6 +406,8 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 {
 	GameObject* hook = nullptr;
 	GameObject* hookHand = nullptr;
+	GameObject* hookHandLeftWing = nullptr;
+	GameObject* hookHandRightWing = nullptr;
 	this->m_device = device;
 	this->m_dContext = dContext;
 	this->loadModels(); //Loads all models
@@ -423,25 +437,28 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 
 	// HookHead 
 	vec = DirectX::XMVectorSet(10.f, 1.f, -20.f, 1.f);
-	this->addGameObjectToWorld(true, false, 1, 2, &m_models[2], vec, NormalScale, DirectX::XMFLOAT3(.5f, .5f, .5f), DirectX::XMFLOAT3(10, 10, 10), DirectX::XMFLOAT3(10, 10, 10));
+	this->addGameObjectToWorld(true, false, 1, 2, &m_models[2], vec, XMVectorSet(.5f, .5f, .5f, 1.f), DirectX::XMFLOAT3(.5f, .5f, .5f), DirectX::XMFLOAT3(10, 10, 10), DirectX::XMFLOAT3(10, 10, 10));
 	hook = this->m_gameObjects.back();
   
 	//HookHand
 	vec = DirectX::XMVectorSet(10.f, 1.f, -20.f, 1.f);
-	this->addGameObjectToWorld(true, false, 1, 4, &m_models[4], vec, DirectX::XMVectorSet(.7f, .7f, .7f, 1.f), DirectX::XMFLOAT3(0, 0, 0), DirectX::XMFLOAT3(10, 10, 10), DirectX::XMFLOAT3(10, 10, 10));
+	this->addGameObjectToWorld(true, false, 1, 4, &m_models[4], vec, XMVectorSet(.5f, .5f, .5f, 1.f), DirectX::XMFLOAT3(0, 0, 0), DirectX::XMFLOAT3(10, 10, 10), DirectX::XMFLOAT3(10, 10, 10));
 	hookHand = this->m_gameObjects.back();
+
+	vec = DirectX::XMVectorSet(9.f, 1.f, -20.f, 1.f);
+	this->addGameObjectToWorld(true, false, 1, 30, &m_models[30], vec, XMVectorSet(.5f, .5f, .5f, 1.f), DirectX::XMFLOAT3(0, 0, 0), DirectX::XMFLOAT3(10, 10, 10), DirectX::XMFLOAT3(10, 10, 10));
+	hookHandLeftWing = this->m_gameObjects.back();
+
+	vec = DirectX::XMVectorSet(11.f, 1.f, -20.f, 1.f);
+	this->addGameObjectToWorld(true, false, 1, 31, &m_models[31], vec, XMVectorSet(.5f, .5f, .5f, 1.f), DirectX::XMFLOAT3(0, 0, 0), DirectX::XMFLOAT3(10, 10, 10), DirectX::XMFLOAT3(10, 10, 10));
+	hookHandRightWing = this->m_gameObjects.back();
 
 	//Chain link
     DirectX::XMFLOAT3 vecF3 = hook->getMoveCompPtr()->getPositionF3();
-	vec = DirectX::XMVectorSet(vecF3.x, vecF3.y, vecF3.z - 5.f, 1.f);
-	this->addGameObjectToWorld(true, false, 1, 5, &m_models[5], vec, NormalScale, XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
-	this->m_chainGObjects->push_back(this->m_gameObjects.back());
-
-	//Chain link stuff
 	for (size_t i = 0; i < NR_OF_CHAIN_LINKS; i++)
 	{
 		vec = DirectX::XMVectorSet(vecF3.x, vecF3.y, vecF3.z - 5.f -((float)i * 0.6f), 1.f);
-	  this->addGameObjectToWorld(true, false, 1, 5, &m_models[5], vec, NormalScale, XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
+		this->addGameObjectToWorld(true, false, 1, 5, &m_models[5], vec, XMVectorSet(.9f, .9f, .9f, 1.f), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
 		this->m_chainGObjects->push_back(this->m_gameObjects.back());
 	}
 
@@ -456,7 +473,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	}
 
 	// Player
-	this->m_player.initialize(-1, -1, 60.f, DirectX::XMFLOAT3(20.f, 20.f, 20.f), DirectX::XMFLOAT3(.01f, .01f, .01f), hook, hookHand, this->m_chainGObjects, audioEngine, platformBB);
+	this->m_player.initialize(-1, -1, 60.f, DirectX::XMFLOAT3(20.f, 20.f, 20.f), DirectX::XMFLOAT3(.01f, .01f, .01f), hook, hookHand, hookHandLeftWing, hookHandRightWing, this->m_chainGObjects, audioEngine, platformBB);
     this->m_player.setSpawnPosition(DirectX::XMVectorSet(0.f, 10.f, -1.f, 1.f));
 	this->m_player.respawn();
 	

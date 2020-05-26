@@ -535,8 +535,7 @@ void ViewLayer::render()
 	
 	// Draw Sprites
 	this->m_deviceContext->RSSetState(this->m_spriteRasterizerState.Get());
-
-	this->m_spriteBatch->Begin(SpriteSortMode_Deferred, this->m_states->NonPremultiplied());
+	this->m_spriteBatch->Begin(SpriteSortMode_Deferred, this->m_states->AlphaBlend());
 	this->m_spriteBatch->Draw(this->m_crossHairSRV, this->m_crosshairPosition);
 	this->m_spriteFont16->DrawString(this->m_spriteBatch.get(), this->m_fpsString.c_str(), DirectX::XMFLOAT2((float)this->m_options->width - 110.f, 10.f), DirectX::Colors::White, 0.f, DirectX::XMFLOAT2(0.f, 0.f));
 	this->m_spriteFont16->DrawString(this->m_spriteBatch.get(), this->m_timerString.c_str(), DirectX::XMFLOAT2(10.f, 10.f), this->m_gameTimePtr->isActive() ? DirectX::Colors::White : DirectX::Colors::Green, 0.f, DirectX::XMFLOAT2(0.f, 0.f));
