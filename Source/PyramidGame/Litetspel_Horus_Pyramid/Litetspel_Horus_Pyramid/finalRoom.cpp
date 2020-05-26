@@ -121,7 +121,6 @@ void finalRoom::init()
 {
 	this->createSceneObjects();
 	this->createBoundingBoxes();
-	this->m_player->addAABBFromVector(&m_boundingBoxes);
 }
 
 void finalRoom::portals()
@@ -189,7 +188,7 @@ void finalRoom::createSceneObjects()
 	this->m_objectTest->setPosition({ 0, 0, 0 }); //We can now set positions etc
 
 	vec = DirectX::XMVectorSet(-0.f, -4.3f, 0.f, 1.f);
-	this->addGameObjectToRoom(false, false, 2, 27, &m_models->at(27), vec, DirectX::XMVectorSet(1, 1, 1, 1), DirectX::XMFLOAT3(1.f, 1.f, 1.f));
+	this->addGameObjectToRoom(false, false, 2, 28, &m_models->at(28), vec, DirectX::XMVectorSet(1, 1, 1, 1), DirectX::XMFLOAT3(1.f, 1.f, 1.f));
 	this->m_gameObjects.back()->setRotation({ 0.0f, XMConvertToRadians(180), 0.0f, 0.f });
 
 	//Platform hookable hawk
@@ -199,17 +198,17 @@ void finalRoom::createSceneObjects()
 
 	//Swinging axes + boundingBoxes for them
 	vec = DirectX::XMVectorSet(-13.4f, 13.5f, -20.1f, 1.f);
-	this->addGameObjectToRoom(true, false, 2, 28, &m_models->at(28), vec, DirectX::XMVectorSet(1.f, 1.f, 1.f, 1), DirectX::XMFLOAT3(2.f, 2.f, 2.f));
+	this->addGameObjectToRoom(true, false, 2, 29, &m_models->at(29), vec, DirectX::XMVectorSet(1.f, 1.f, 1.f, 1), DirectX::XMFLOAT3(2.f, 2.f, 2.f));
 	this->swingingAxes.emplace_back(this->m_gameObjects.back());
 
 	vec = DirectX::XMVectorSet(-13.4f, 13.5f, -34.65f, 1.f);
-	this->addGameObjectToRoom(true, false, 2, 28, &m_models->at(28), vec, DirectX::XMVectorSet(1.f, 1.f, 1.f, 1), DirectX::XMFLOAT3(2.f, 2.f, 2.f));
+	this->addGameObjectToRoom(true, false, 2, 29, &m_models->at(29), vec, DirectX::XMVectorSet(1.f, 1.f, 1.f, 1), DirectX::XMFLOAT3(2.f, 2.f, 2.f));
 	this->swingingAxes.emplace_back(this->m_gameObjects.back());
 	this->swingingAxes[1]->getMoveCompPtr()->rotation = (XMVectorSet(0.0f, 0.0f, XMConvertToRadians(230), 0.0f));
 	
 
 	vec = DirectX::XMVectorSet(-13.4f, 13.5f, -47.f, 1.f);
-	this->addGameObjectToRoom(true, false, 2, 28, &m_models->at(28), vec, DirectX::XMVectorSet(1.f, 1.f, 1.f, 1), DirectX::XMFLOAT3(2.f, 2.f, 2.f));
+	this->addGameObjectToRoom(true, false, 2, 29, &m_models->at(29), vec, DirectX::XMVectorSet(1.f, 1.f, 1.f, 1), DirectX::XMFLOAT3(2.f, 2.f, 2.f));
 	this->swingingAxes.emplace_back(this->m_gameObjects.back());
 
 	XMStoreFloat3(&axePos, swingingAxes[0]->getMoveCompPtr()->position);

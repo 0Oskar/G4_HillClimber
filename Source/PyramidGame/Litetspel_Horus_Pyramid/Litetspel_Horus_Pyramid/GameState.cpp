@@ -343,17 +343,15 @@ void GameState::loadModels()
 	//mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
 	//this->m_models[30].initializeModelBff(m_device, m_dContext, "NewBell3.bff", mat, L"Textures/ColorTexture.png"); //load model
 
-  //31. finalRoom
+    //28. finalRoom
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
-	this->m_models[31].loadVertexFromOBJ(m_device, m_dContext, L"Models/endRoom.obj", mat, L"Textures/ColorTexture.png");
+	this->m_models[28].loadVertexFromOBJ(m_device, m_dContext, L"Models/endRoom.obj", mat, L"Textures/ColorTexture.png");
 
-	//32. swingingAxe
+	//29. swingingAxe
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
-	this->m_models[32].loadVertexFromOBJ(m_device, m_dContext, L"Models/swingingAxe.obj", mat, L"Textures/ColorTexture.png");
-
-
+	this->m_models[29].loadVertexFromOBJ(m_device, m_dContext, L"Models/swingingAxe.obj", mat, L"Textures/ColorTexture.png");
 
 }
 
@@ -463,7 +461,6 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_rooms.emplace_back(new PyramidRoom());
 	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, 0, 1), audioEngine, &this->m_gameTime);
 	dynamic_cast<PyramidRoom*>(this->m_rooms.back())->init(&m_pyramidOBB);
-	m_activeRoom = m_rooms.back();
 
 	//Template Room [1] //Up for grabs
 	this->m_rooms.emplace_back(new TemplateRoom());
@@ -474,7 +471,6 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_rooms.emplace_back(new KevinsRoom());
 	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(100, 2, 100, 1), audioEngine, &this->m_gameTime);
 	dynamic_cast<KevinsRoom*>(this->m_rooms.back())->init();
-	//m_activeRoom = m_rooms.back();
 
 	//Edvin Room [3]
 	this->m_rooms.emplace_back(new EdvinsRoom());
@@ -486,12 +482,11 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, -200, 1), audioEngine, &this->m_gameTime);
 	dynamic_cast<TristansRoom*>(this->m_rooms.back())->init();
 
-
 	// final Room [5]
 	this->m_rooms.emplace_back(new finalRoom());
 	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, -200, 1), audioEngine, &this->m_gameTime);
 	dynamic_cast<finalRoom*>(this->m_rooms.back())->init();
-	
+	m_activeRoom = m_rooms.back();
 
 
 	//Otaget rum [4] -
