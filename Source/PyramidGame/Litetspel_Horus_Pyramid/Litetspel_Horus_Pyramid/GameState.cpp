@@ -353,7 +353,7 @@ void GameState::loadModels()
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
 	this->m_models[29].loadVertexFromOBJ(m_device, m_dContext, L"Models/swingingAxe.obj", mat, L"Textures/ColorTexture.png");
 
-	//30. swingingAxe
+	//30. Diamond
 	this->m_models.emplace_back(); //add empty model
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f); //reset material
 	this->m_models[30].initializeModelBff(m_device, m_dContext, "Diamond.bff", mat, L"Textures/ColorTexture.png"); //load model
