@@ -13,7 +13,7 @@ KevinsRoom::~KevinsRoom()
 void KevinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activeRoomChanged)
 {
 	Room::update(dt, camera, activeRoom, activeRoomChanged);
-	//Så boundingBoxen följer skorpionen.w
+	//SÃ¥ boundingBoxen fÃ¶ljer skorpionen.w
 
 	float scorpionX = XMVectorGetX(this->scorpion->getPosition());
 	float scorpionY = XMVectorGetY(this->scorpion->getPosition());
@@ -165,7 +165,6 @@ void KevinsRoom::init()
 {
 	this->createSceneObjects();
 	this->createBoundingBoxes();
-	this->m_player->addAABBFromVector(&m_boundingBoxes);
 
 	this->m_entrencePosition = XMVectorSet(-13, 4, -20, 0);
 }
@@ -318,7 +317,9 @@ void KevinsRoom::createSceneObjects()
 	//SCORPION
 
 	this->scorpion = new followingEnemy();
+
 	this->scorpion->init(true, 23, this->m_wvpCBuffers->size() - 1, &m_models->at(23), m_player);
+
 	this->scorpion->getMoveCompPtr()->position = XMVectorSet(-11.f, 2.9f, -100.f + 140.f, 1.f) + this->m_worldPosition;
 
 	this->m_gameObjects.emplace_back(this->scorpion);

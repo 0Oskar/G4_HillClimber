@@ -217,7 +217,7 @@ void Model::initializeModelBff(ID3D11Device* device, ID3D11DeviceContext* dConte
 
 	ModelBFF myModel = myManager->LoadModel(fileName.c_str());
 	m_vertices.resize(myModel.mesh.nrOfVertex);
-	for (int i = 0; i < myModel.mesh.nrOfVertex; i++)
+	for (unsigned int i = 0; i < myModel.mesh.nrOfVertex; i++)
 	{
 		m_vertices[i].position = XMFLOAT3(myModel.vertexArr[i].pos);
 		m_vertices[i].normal = XMFLOAT3(myModel.vertexArr[i].norm);
@@ -240,7 +240,7 @@ void Model::initializeModelBff(ID3D11Device* device, ID3D11DeviceContext* dConte
 
 void Model::printBffModel(ModelBFF model)
 {
-for (int i = 0; i < model.mesh.nrOfVertex; i++)
+for (unsigned int i = 0; i < model.mesh.nrOfVertex; i++)
 {
 	std::string vtxNr = "\nvtx:		" + std::to_string(i) + "\n";
 

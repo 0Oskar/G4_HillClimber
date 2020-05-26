@@ -2,16 +2,35 @@
 
 #include "pch.h"
 
+struct PointLight
+{
+	XMFLOAT4 plAmbient;
+	XMFLOAT4 plDiffuse;
+	XMFLOAT3 plPosition;
+	float plRange;
+	XMFLOAT3 att;
+	float padding;
+};
 struct VS_CONSTANT_BUFFER
 {
 	DirectX::XMMATRIX wvp;
 	DirectX::XMMATRIX worldMatrix;
 };
 
+struct PS_FOG_BUFFER
+{
+	XMFLOAT3 cameraPos;
+	float fogStart;
+	XMFLOAT3 fogColor;
+	float fogEnd;
+};
+
 struct PS_LIGHT_BUFFER
 {
 	DirectX::XMFLOAT3 lightColor;
 	float strength;
+	PointLight pointLights[5];
+	int nrOfPointLights;
 };
 
 struct PS_DIR_BUFFER

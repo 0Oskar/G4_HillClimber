@@ -19,7 +19,6 @@ void TemplateRoom::init()
 {
 	this->createSceneObjects();
 	this->createBoundingBoxes();
-	this->m_player->addAABBFromVector(&m_boundingBoxes);
 }
 
 void TemplateRoom::portals()

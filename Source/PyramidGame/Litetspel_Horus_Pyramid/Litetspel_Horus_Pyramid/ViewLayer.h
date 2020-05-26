@@ -5,7 +5,7 @@
 #include "Timer.h"
 #include "Platform.h"
 #include "Shaders.h"
-
+#include "StatusTextHandler.h"
 
 class ViewLayer
 {
@@ -14,7 +14,6 @@ private:
 	HWND m_window;
 	GameOptions* m_options;
 
-
 	// Device
 	Microsoft::WRL::ComPtr< ID3D11Device > m_device;
 	Microsoft::WRL::ComPtr< ID3D11DeviceContext > m_deviceContext;
@@ -22,7 +21,7 @@ private:
 	// Render Target
 	Microsoft::WRL::ComPtr< IDXGISwapChain > m_swapChain;
 	Microsoft::WRL::ComPtr< ID3D11RenderTargetView > m_outputRTV;
-	float clearColor[4] = { 0.f, 0.f, 0.f, 1.f };
+	float clearColor[4] = { 0.5f, 0.5f, 0.5f, 1.f };
 
 	// Depth Buffer
 	Microsoft::WRL::ComPtr< ID3D11DepthStencilView > m_depthStencilView;
@@ -40,11 +39,6 @@ private:
 
 	// Texture Handler
 	ResourceHandler* resourceHandler;
-
-	// Crosshair SpriteBatch
-	std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
-	ID3D11ShaderResourceView* m_crossHairSRV;
-	DirectX::XMFLOAT2 m_crosshairPosition;
 
 	// Primitive Batch
 	std::unique_ptr< DirectX::CommonStates > m_states;
@@ -64,18 +58,32 @@ private:
 	DirectX::BoundingOrientedBox m_pyramidOBB;
 
 	ConstBuffer<PS_LIGHT_BUFFER> m_lightBuffer;
+	ConstBuffer<PS_FOG_BUFFER> m_fogBuffer;
 	ConstBuffer<PS_DIR_BUFFER> m_dirLightBuffer;
+	PS_DIR_BUFFER m_dirLight;
 
 	DirectX::XMMATRIX* m_viewMatrix;
 	DirectX::XMMATRIX* m_projectionMatrix;
 
+	// Sprite and Font Rendering
+	std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
+	std::unique_ptr<DirectX::SpriteFont> m_spriteFont16;
+	std::unique_ptr<DirectX::SpriteFont> m_spriteFont32;
+	Microsoft::WRL::ComPtr<ID3D11RasterizerState> m_spriteRasterizerState;
+
+	// Crosshair SpriteBatch
+	ID3D11ShaderResourceView* m_crossHairSRV;
+	DirectX::XMFLOAT2 m_crosshairPosition;
+
 	// FPS Counter
 	Timer m_timer;
-	std::unique_ptr<DirectX::SpriteFont> m_spriteFont;
 	std::string m_fpsString;
 	std::string m_timerString;
 	int m_fps;
 	Timer* m_gameTimePtr;
+
+	// Status Text
+	StatusTextHandler* m_statusTextHandler;
 
 	// Initialization Functions
 	void initDeviceAndSwapChain();
@@ -104,13 +112,16 @@ public:
 	void setOrientedBoundingBoxesFromActiveRoom(std::vector<BoundingOrientedBox>* bbFromRoom);
 	void setTriggerBoxFromActiveRoom(std::vector<BoundingBox>* bbFromRoom);
 	void setModelsFromState(std::vector<Model>* models);
+	void setDirLightFromActiveRoom(PS_DIR_BUFFER dirLight);
+	void setFogDataFromActiveRoom(PS_FOG_BUFFER fogData);
+	void setLightDataFromActiveRoom(PS_LIGHT_BUFFER lightData);
 	void setWvpCBufferFromState(std::vector< ConstBuffer<VS_CONSTANT_BUFFER> >* models);
 	void setGameTimePtr(Timer* gameTimer);
 	// Initialization
 	void initialize(HWND window, GameOptions* options);
 
 	// Update
-	void update(float dt);
+	void update(float dt, XMFLOAT3 cameraPos);
 
 	// Render
 	void render();

@@ -40,3 +40,17 @@ struct CameraBFF
 	float farPlane;
 	float FOV;
 };
+
+struct VertexAnimBFF
+{
+	int time;
+	float pos[3];
+	float rot[3];
+	float scale[3];
+};
+
+struct BlendShapesBFF
+{
+	float pos[3];
+	float norm[3];
+};

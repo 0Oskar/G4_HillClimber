@@ -71,6 +71,34 @@ std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* GameState::getWvpCBuffersPtr()
 	return &this->m_wvpCBuffers;
 }
 
+PS_DIR_BUFFER GameState::getActiveRoomDirectionalLight()
+{
+	if (this->m_activeRoom != nullptr)
+	{
+		return this->m_activeRoom->getDirectionalLight();
+	}
+	else
+		return PS_DIR_BUFFER();
+}
+
+PS_FOG_BUFFER GameState::getActiveRoomFogData()
+{
+	if (this->m_activeRoom != nullptr)
+	{
+		return this->m_activeRoom->getFogData();
+	}
+	else
+		return PS_FOG_BUFFER();
+}
+
+PS_LIGHT_BUFFER GameState::getActiveRoomLightData()
+{
+	if (this->m_activeRoom != nullptr)
+		return this->m_activeRoom->getLightData();
+	else
+		return PS_LIGHT_BUFFER();
+}
+
 void GameState::addGameObjectToWorld(bool dynamic, bool colide, float weight, int mdlIndx, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR scale3D, DirectX::XMFLOAT3 boundingBoxSize = DirectX::XMFLOAT3(0, 0, 0), DirectX::XMFLOAT3 acceleration = DirectX::XMFLOAT3(1, 1, 1), DirectX::XMFLOAT3 deceleration = DirectX::XMFLOAT3(1, 1, 1))
 {
 	this->m_gameObjects.emplace_back(new GameObject());
@@ -158,6 +186,7 @@ void GameState::loadModels()
 {
 	// Material
 	MaterialData mat;
+	mat.ambient = { 0.2, 0.2, 0.2, 1 };
 
 	//0 - Desert Ground
 	this->m_models.emplace_back();
@@ -267,7 +296,7 @@ void GameState::loadModels()
 	//21. PuzzleRoom(Tristan)
 	this->m_models.emplace_back(); //add empty model
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); //reset material
-	this->m_models[21].initializeModelBff(m_device, m_dContext, "TristansPuzzleRoom.bff", mat, L"Textures/ColorTexture.png"); //load model
+	this->m_models[21].initializeModelBff(m_device, m_dContext, "TristansNewPuzzleRoom.bff", mat, L"Textures/ColorTexture.png"); //load model
 
 	//22. Pyramid Portal
 	this->m_models.emplace_back(); //add empty model
@@ -294,15 +323,36 @@ void GameState::loadModels()
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
 	this->m_models[26].loadVertexFromOBJ(m_device, m_dContext, L"Models/expandingBridge.obj", mat, L"Textures/ColorTexture.png");
 
-	//27. finalRoom
-	this->m_models.emplace_back();
-	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
-	this->m_models[27].loadVertexFromOBJ(m_device, m_dContext, L"Models/endRoom.obj", mat, L"Textures/ColorTexture.png");
+	//27. Lever Grip (Tristan)
+	this->m_models.emplace_back(); //add empty model
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f); //reset material
+	this->m_models[27].initializeModelBff(m_device, m_dContext, "TristansLeverGrip.bff", mat, L"Textures/ColorTexture.png"); //load model
 
-	//28. swingingAxe
+	////28. Bell 1
+	//this->m_models.emplace_back();
+	//mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
+	//this->m_models[28].initializeModelBff(m_device, m_dContext, "NewBell1.bff", mat, L"Textures/ColorTexture.png"); //load model
+
+	////29. Bell 2
+	//this->m_models.emplace_back();
+	//mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
+	//this->m_models[29].initializeModelBff(m_device, m_dContext, "NewBell2.bff", mat, L"Textures/ColorTexture.png"); //load model
+
+	////30. Bell 3
+	//this->m_models.emplace_back();
+	//mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
+	//this->m_models[30].initializeModelBff(m_device, m_dContext, "NewBell3.bff", mat, L"Textures/ColorTexture.png"); //load model
+
+  //31. finalRoom
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
-	this->m_models[28].loadVertexFromOBJ(m_device, m_dContext, L"Models/swingingAxe.obj", mat, L"Textures/ColorTexture.png");
+	this->m_models[31].loadVertexFromOBJ(m_device, m_dContext, L"Models/endRoom.obj", mat, L"Textures/ColorTexture.png");
+
+	//32. swingingAxe
+	this->m_models.emplace_back();
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
+	this->m_models[32].loadVertexFromOBJ(m_device, m_dContext, L"Models/swingingAxe.obj", mat, L"Textures/ColorTexture.png");
+
 
 
 }
@@ -311,6 +361,7 @@ void GameState::loadModels()
 void GameState::roomChangeInit()
 {
 	platformBB.clear();
+	this->m_player.clearAABB();
 	//Gedddwt active room platforms to send to hookHand.
 	for (size_t i = 0; this->m_activeRoom && i < this->m_activeRoom->getGameObjectsPtr()->size(); i++)
 	{
@@ -320,14 +371,15 @@ void GameState::roomChangeInit()
 		{
 			platformBB.emplace_back(castToPlatform->getAABBPtr());
 		}
+
 	}
 	PyramidRoom* pyramidRoomPtr = dynamic_cast<PyramidRoom*>(this->m_rooms[0]);
 	for (size_t i = 0; pyramidRoomPtr && i < pyramidRoomPtr->getBBForHook().size(); i++)
 	{
 		this->platformBB.emplace_back(pyramidRoomPtr->getBBForHook().at(i));
 	}
-
 	this->m_player.updateHookHandBB(platformBB);
+	this->m_activeRoom->updatePlayerBB();
 
 }
 
@@ -422,11 +474,11 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_rooms.emplace_back(new KevinsRoom());
 	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(100, 2, 100, 1), audioEngine, &this->m_gameTime);
 	dynamic_cast<KevinsRoom*>(this->m_rooms.back())->init();
-	m_activeRoom = m_rooms.back();
+	//m_activeRoom = m_rooms.back();
 
 	//Edvin Room [3]
 	this->m_rooms.emplace_back(new EdvinsRoom());
-	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, -100, 1), audioEngine, &this->m_gameTime);
+	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(-200, 0, 200, 1), audioEngine, &this->m_gameTime);
 	dynamic_cast<EdvinsRoom*>(this->m_rooms.back())->init();
 
 	// Tristan Room [4]
@@ -502,6 +554,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->addPortalToWorld({ 0, 0, 0, 0 }, 10, & m_models[10], { -10, 4, -5, 1 }, { 1, 1, 1, 1 }, { 2, 2, 1 }, 3); //Edvins room
 	this->addPortalToWorld({ 0, 0, 0, 0 }, 10, &m_models[10], { 30, 4, -5, 1 }, { 1, 1, 1, 1 }, { 2, 2, 1 }, 4); //Tristans Room
 
+	this->m_activeRoom->updatePlayerBB();
 	this->m_gameTime.start();
 }
 
@@ -556,4 +609,9 @@ void GameState::update(Keyboard* keyboard, MouseEvent mouseEvent, Mouse* mousePt
 	if(m_activeRoom != nullptr)
 		this->m_activeRoom->update(dt, &m_camera, this->m_activeRoom, m_activeRoomChanged);
 
+}
+
+XMFLOAT3 GameState::getCameraPos()
+{
+	return this->m_player.getMoveCompPtr()->getPositionF3();
 }

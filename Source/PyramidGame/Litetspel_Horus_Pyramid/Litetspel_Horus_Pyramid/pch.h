@@ -25,7 +25,8 @@
 // Utilities
 #include "pugixml.hpp"
 #include "../Importer/ImporterBFF.h"
-#include"PyramidMathTools.h"
+#include "PyramidMathTools.h"
+#include "Timer.h"
 
 // DirectX 11
 #include <d3d11.h>
