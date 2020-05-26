@@ -253,33 +253,6 @@ void TristansRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& act
 			this->leverGrip[3]->getMoveCompPtr()->rotation += DirectX::XMVectorSet(pMath::convertDegreesToRadians(-90) * dt, 0, 0, 10);
 		}
 	}
-	//levers
-	
-	//for (int i = 0; i < 3; i++)
-	//{
-	//	this->leverGrip[i]->collidesWithPlayer();
-	//	if (this->leverGrip[i]->getCanUseLever() == true)
-	//	{
-	//		if (this->m_player->getinUse() == true && this->tempLever[i] == false && this->canPullLever[i] == true)
-	//		{
-	//			this->tempLever[i] = true;
-	//			this->leverTimer[i].restart();
-	//			this->canPullLever[i] = false;
-	//			this->moveLever[i] = true;
-	//		}
-	//	}
-	//	if (this->leverTimer[i].timeElapsed() < 1)
-	//	{
-	//		if (this->moveLever[i] == true)
-	//		{
-	//			this->leverGrip[i]->getMoveCompPtr()->rotation += DirectX::XMVectorSet(pMath::convertDegreesToRadians(90) * dt, 0, 0, 10);
-	//		}
-	//	}
-	//	if (this->leverTimer[i].timeElapsed() >= 1)
-	//	{
-	//		this->moveLever[i] = false;
-	//	}
-	//}
 }
 
 void TristansRoom::onEntrance()
