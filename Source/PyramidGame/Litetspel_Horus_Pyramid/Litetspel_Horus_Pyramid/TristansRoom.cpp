@@ -39,35 +39,42 @@ void TristansRoom::createSceneObjects()
 	pos = DirectX::XMVectorSet(0, 45, 110, 1); // World pos
 	this->addGameObjectToRoom(true, false, 1, 21, &m_models->at(21), pos, scale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(1.f, 1.f, 1.f));
 
-	//Bells
-	//pos = DirectX::XMVectorSet(0, 4.5f + 45, 0, 1); // World pos
-	pos = DirectX::XMVectorSet(0, 45, 100, 1); // World pos
-	this->addGameObjectToRoom(true, false, 1, 27, &m_models->at(27), pos, scale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(1.f, 1.f, 1.f));
+	////Bell 1
+	//pos = DirectX::XMVectorSet(0, 45, 100, 1); // World pos
+	//this->addGameObjectToRoom(true, false, 1, 28, &m_models->at(28), pos, scale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(1.f, 1.f, 1.f));
+
+	////Bell 2
+	//pos = DirectX::XMVectorSet(0, 45, 100, 1); // World pos
+	//this->addGameObjectToRoom(true, false, 1, 29, &m_models->at(29), pos, scale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(1.f, 1.f, 1.f));
+	//
+	////Bell 3
+	//pos = DirectX::XMVectorSet(0, 45, 100, 1); // World pos
+	//this->addGameObjectToRoom(true, false, 1, 30, &m_models->at(30), pos, scale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(1.f, 1.f, 1.f));
 
 	//Front Lever Grip
 	pos = DirectX::XMVectorSet(0, 48.8f, 89.15f, 1); // World pos
-	this->addLeverToRoom( 28, &m_models->at(28), pos,XMVectorZero(), XMFLOAT3(1.f, 1.f, 1.f));
+	this->addLeverToRoom( 27, &m_models->at(27), pos,XMVectorZero(), XMFLOAT3(1.f, 1.f, 1.f));
 	this->m_gameObjects.back()->getMoveCompPtr()->rotation = XMVectorZero();
 	this->leverGrip.emplace_back(dynamic_cast<Lever*>(m_gameObjects.back()));
 	this->leverGrip[0]->setPlayerBoundingBox(this->m_player->getAABBPtr());
 
 	//Back Lever Grip 1
 	pos = DirectX::XMVectorSet(15, 48.8f, 73.25f, 1); // World pos
-	this->addLeverToRoom(28, &m_models->at(28), pos, XMVectorZero(), XMFLOAT3(1.f, 1.f, 1.f));
+	this->addLeverToRoom(27, &m_models->at(27), pos, XMVectorZero(), XMFLOAT3(1.f, 1.f, 1.f));
 	this->m_gameObjects.back()->getMoveCompPtr()->rotation = XMVectorZero();
 	this->leverGrip.emplace_back(dynamic_cast<Lever*>(m_gameObjects.back()));
 	this->leverGrip[1]->setPlayerBoundingBox(this->m_player->getAABBPtr());
 
 	//Back Lever Grip 2
 	pos = DirectX::XMVectorSet(0, 48.8f, 73.25f, 1); // World pos
-	this->addLeverToRoom(28, &m_models->at(28), pos, XMVectorZero(), XMFLOAT3(1.f, 1.f, 1.f));
+	this->addLeverToRoom(27, &m_models->at(27), pos, XMVectorZero(), XMFLOAT3(1.f, 1.f, 1.f));
 	this->m_gameObjects.back()->getMoveCompPtr()->rotation = XMVectorZero();
 	this->leverGrip.emplace_back(dynamic_cast<Lever*>(m_gameObjects.back()));
 	this->leverGrip[2]->setPlayerBoundingBox(this->m_player->getAABBPtr());
 
 	//Back Lever Grip 3
 	pos = DirectX::XMVectorSet(-15, 48.8f, 73.25f, 1); // World pos
-	this->addLeverToRoom(28, &m_models->at(28), pos, XMVectorZero(), XMFLOAT3(1.f, 1.f, 1.f));
+	this->addLeverToRoom(27, &m_models->at(27), pos, XMVectorZero(), XMFLOAT3(1.f, 1.f, 1.f));
 	this->m_gameObjects.back()->getMoveCompPtr()->rotation = XMVectorZero();
 	this->leverGrip.emplace_back(dynamic_cast<Lever*>(m_gameObjects.back()));
 	this->leverGrip[3]->setPlayerBoundingBox(this->m_player->getAABBPtr());
