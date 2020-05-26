@@ -105,7 +105,7 @@ float4 main(PS_IN input) : SV_TARGET
     if (fogRange != 0)
     {
         float fogLerp = saturate((distance - fogStart) / fogRange);
-        //fColor = float4(lerp(fColor.xyz, fogColor, fogLerp), 1);
+        fColor = float4(lerp(fColor.xyz, fogColor, fogLerp), 1);
     }
     return float4(fColor.xyz, 1);
 }

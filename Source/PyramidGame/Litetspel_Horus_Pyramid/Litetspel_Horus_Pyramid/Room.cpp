@@ -242,7 +242,7 @@ int Room::createLight(XMFLOAT3 position, float range, XMFLOAT4 ambientColor, XMF
 		pLight.att = atteniation;
 
 		this->m_lightData.pointLights[this->m_lightData.nrOfPointLights++] = pLight;
-	}
+	}	
 	else
 	{
 		assert(false && "Error, adding more lights to room than allowed.");

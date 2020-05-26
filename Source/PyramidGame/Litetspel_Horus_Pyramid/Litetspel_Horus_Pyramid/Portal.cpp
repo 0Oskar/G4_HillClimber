@@ -16,6 +16,11 @@ Portal::~Portal()
 
 }
 
+void Portal::setActiveStatus(bool activeStatus)
+{
+	this->m_active = activeStatus;
+}
+
 void Portal::initialize(int modelIndex, int wvpCBufferIndex, Model* mdl, XMVECTOR teleportLocation,Player * player, int roomID, bool oneTimeUse)
 {
 

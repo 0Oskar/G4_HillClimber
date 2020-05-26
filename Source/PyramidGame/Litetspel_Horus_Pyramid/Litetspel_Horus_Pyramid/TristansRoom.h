@@ -7,7 +7,7 @@ private:
 	void createBoundingBoxes();
 	void createSceneObjects();
 	void onCompleted();
-
+	Portal* portal;
 	std::vector<DirectX::BoundingBox> SpikesBB;
 
 	std::vector<DirectX::BoundingBox*> LeverBB;

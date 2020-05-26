@@ -28,6 +28,7 @@ void TemplateRoom::portals()
 
 void TemplateRoom::onEntrance()
 {
+	Room::onEntrance();
 	//What should happen when player enter room
 }
 void TemplateRoom::createBoundingBoxes()
