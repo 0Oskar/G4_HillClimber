@@ -41,14 +41,13 @@ void TemplateRoom::createBoundingBoxes()
 void TemplateRoom::createSceneObjects()
 {
 	//Add all gameobjects that the room should have.
-	this->addPlatformToRoom(3, &m_models->at(3), DirectX::XMVectorSet(0, 5, 1, 1.f), DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f));
+	//this->addPlatformToRoom(3, &m_models->at(3), DirectX::XMVectorSet(0, 5, 1, 1.f), DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f));
 
-	//Demonstrate addOjvectToRoom function
-	this->m_objectTest = new Lever(); //Create any child of gameobject here. In this case a lever
-	this->m_objectTest->init(false, 7, -1, &m_models->at(7)); //Needs to be initialized. 
-	this->addObjectToRoom(this->m_objectTest); //Function add pointer to m_gameobjects and assigns it a wvpbuffer.
-	this->m_objectTest->setPosition({ 0, 0, 0 }); //We can now set positions etc
-
+	////Demonstrate addOjvectToRoom function
+	//this->m_objectTest = new Lever(); //Create any child of gameobject here. In this case a lever
+	//this->m_objectTest->init(false, 7, -1, &m_models->at(7)); //Needs to be initialized. 
+	//this->addObjectToRoom(this->m_objectTest); //Function add pointer to m_gameobjects and assigns it a wvpbuffer.
+	//this->m_objectTest->setPosition({ 0, 0, 0 }); //We can now set positions etc
 }
 void TemplateRoom::onCompleted()
 {

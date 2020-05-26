@@ -9,6 +9,7 @@ class MovementComponent
 public:
 	DirectX::XMVECTOR scale;
 	DirectX::XMVECTOR rotation;
+	DirectX::XMVECTOR localRotation;
 	DirectX::XMVECTOR position;
 	
 	// Direction Vectors
@@ -26,6 +27,7 @@ public:
 	{
 		this->scale = DirectX::XMVectorSet(1.f, 1.f, 1.f, 0.f);
 		this->rotation = DirectX::XMVectorSet(0.f, 0.f, 0.f, 1.f);
+		this->localRotation = DirectX::XMVectorSet(0.f, 0.f, 0.f, 1.f);
 		this->position = DirectX::XMVectorSet(0.f, 0.f, 0.f, 1.f);
 
 		this->forward = DirectX::XMVectorSet(0.f, 0.f, 1.f, 0.f);
@@ -41,6 +43,7 @@ public:
 	{
 		this->scale = otherMoveComponent.scale;
 		this->rotation = otherMoveComponent.rotation;
+		this->localRotation = otherMoveComponent.localRotation;
 		this->position = otherMoveComponent.position;
 
 		this->forward = otherMoveComponent.forward;
@@ -75,6 +78,7 @@ public:
 
 		this->scale = otherMoveComponent.scale;
 		this->rotation = otherMoveComponent.rotation;
+		this->localRotation = otherMoveComponent.localRotation;
 		this->position = otherMoveComponent.position;
 
 		this->forward = otherMoveComponent.forward;
@@ -119,7 +123,6 @@ public:
 		DirectX::XMVECTOR up = XMVectorSet(0.f, 1.f, 0.f, 0.f);
 
 		// Update View Matrix with new Rotation
-
 		*viewMatrix = DirectX::XMMatrixLookAtLH(this->position, lookAt, up);
 
 		// Update Direction Vectors

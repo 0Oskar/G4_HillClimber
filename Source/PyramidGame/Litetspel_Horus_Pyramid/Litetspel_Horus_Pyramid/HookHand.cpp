@@ -5,6 +5,8 @@ HookHand::HookHand()
 {
 	this->m_hookState = hookState::idle;
 	this->m_audioComponent = new AudioComponent();
+
+	this->m_wingsOpen = false;
 }
 
 HookHand::~HookHand()
@@ -15,17 +17,18 @@ HookHand::~HookHand()
 	}
 }
 
-
-
-void HookHand::init(GameObject* gObject, MovementComponent* movementComponent, std::vector<DirectX::BoundingBox*>* boundingBoxes, GameObject* hookGun, std::vector<GameObject*>* chainGObjects, std::shared_ptr<DirectX::AudioEngine> audioEngine, std::vector<DirectX::BoundingBox*> platformBB)
+void HookHand::init(GameObject* gObject, MovementComponent* movementComponent, PhysicsComponent* physicsComponent, std::vector<DirectX::BoundingBox*>* boundingBoxes, GameObject* hookGun, GameObject* hookHandLeftWing, GameObject* hookHandRightWing, std::vector<GameObject*>* chainGObjects, std::shared_ptr<DirectX::AudioEngine> audioEngine, std::vector<DirectX::BoundingBox*> platformBB)
 {
 	MaterialData mat;
 	mat.diffuse = DirectX::XMFLOAT4(0.5, 0.5, 0.5, 1);
 	this->m_hookGameObject = gObject;
 	this->m_gunGameObject = hookGun;
+	this->m_leftWingGameObject = hookHandLeftWing;
+	this->m_rightWingGameObject = hookHandRightWing;
 	this->m_chain.initialize(gObject, hookGun, chainGObjects);
 	this->m_hookPhysicsComp = this->m_hookGameObject->getphysicsCompPtr();
 	this->m_playerMovement = movementComponent;
+	this->m_playerPhysics = physicsComponent;
 	this->m_hookGameObject->setPosition(this->m_playerMovement->position);
 	this->m_hookTimer.start();
 	this->m_boundingBoxes = boundingBoxes;
@@ -90,18 +93,77 @@ bool HookHand::colide()
 	}
 	return  colided;
 }
-void HookHand::updateHandModel()
+void HookHand::updateHandModel(float dt)
 {
-	DirectX::XMFLOAT4 rot;
-	DirectX::XMStoreFloat4(&rot, this->m_playerMovement->rotation);
-	rot.x = -rot.x;
-
 	DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationRollPitchYawFromVector(this->m_playerMovement->rotation);
 	DirectX::XMVECTOR rotOff = this->m_playerMovement->rotation;
 
 	DirectX::XMVECTOR gunPosOffsetRotated = XMVector3TransformCoord(this->gunPosOffset, rotationMatrix);
-	this->m_gunGameObject->getMoveCompPtr()->rotation = DirectX::XMVectorAdd(rotOff, gunRotOffset);
+	this->m_gunGameObject->getMoveCompPtr()->localRotation = gunRotOffset;
+	this->m_gunGameObject->getMoveCompPtr()->rotation = rotOff + gunRotOffset;
 	this->m_gunGameObject->getMoveCompPtr()->position = DirectX::XMVectorAdd(this->m_playerMovement->position, gunPosOffsetRotated);
+
+	// Wings
+	// - Position
+	DirectX::XMVECTOR left = XMVector3TransformCoord(this->leftWingPosOffset, rotationMatrix);
+	this->m_leftWingGameObject->getMoveCompPtr()->position = this->m_gunGameObject->getMoveCompPtr()->position + left;
+
+	DirectX::XMVECTOR right = XMVector3TransformCoord(this->rightWingPosOffset, rotationMatrix);
+	this->m_rightWingGameObject->getMoveCompPtr()->position = this->m_gunGameObject->getMoveCompPtr()->position + right;
+
+	// - Rotation
+	XMVECTOR gunRotation = this->m_gunGameObject->getMoveCompPtr()->rotation;
+	this->m_leftWingGameObject->getMoveCompPtr()->rotation = gunRotation;
+	this->m_rightWingGameObject->getMoveCompPtr()->rotation = gunRotation;
+
+	// -- Extend Wing logic
+	float finalLeftRotationY = XMVectorGetY(this->leftWingRotOffset);
+	float currentLeftRotationY = XMVectorGetY(this->m_leftWingGameObject->getMoveCompPtr()->localRotation);
+	
+	float finalRightRotationY = XMVectorGetY(this->rightWingRotOffset);
+	float currentRightRotationY = XMVectorGetY(this->m_rightWingGameObject->getMoveCompPtr()->localRotation);
+
+	if (this->m_wingsOpen)
+	{
+		float rotationDifferenceY = finalLeftRotationY - currentLeftRotationY;
+
+		if (rotationDifferenceY <= 0.f) // No animation needed
+		{
+			this->m_leftWingGameObject->getMoveCompPtr()->localRotation = this->leftWingRotOffset;
+			this->m_rightWingGameObject->getMoveCompPtr()->localRotation = this->rightWingRotOffset;
+		}
+		else // Needs to animate
+		{
+			this->m_leftWingGameObject->getMoveCompPtr()->localRotation = XMVectorSet(0.f, currentLeftRotationY + (dt * this->wingAnimationSpeed), 0.f, 0.f);
+			this->m_rightWingGameObject->getMoveCompPtr()->localRotation = XMVectorSet(0.f, currentRightRotationY - (dt * this->wingAnimationSpeed), 0.f, 0.f);
+			if (finalLeftRotationY <= XMVectorGetY(this->m_leftWingGameObject->getMoveCompPtr()->localRotation))
+			{
+				this->m_leftWingGameObject->getMoveCompPtr()->localRotation = this->leftWingRotOffset;
+				this->m_rightWingGameObject->getMoveCompPtr()->localRotation = this->rightWingRotOffset;
+			}
+		}
+	}
+	else
+	{
+		float rotationDifferenceY = 0.f - currentLeftRotationY;
+
+		if (rotationDifferenceY >= 0.f) // No animation needed
+		{
+			this->m_leftWingGameObject->getMoveCompPtr()->localRotation = XMVectorZero();
+			this->m_rightWingGameObject->getMoveCompPtr()->localRotation = XMVectorZero();
+		}
+		else // Needs to animate
+		{
+			this->m_leftWingGameObject->getMoveCompPtr()->localRotation = XMVectorSet(0.f, currentLeftRotationY - (dt * this->wingAnimationSpeed), 0.f, 0.f);
+			this->m_rightWingGameObject->getMoveCompPtr()->localRotation = XMVectorSet(0.f, currentRightRotationY + (dt * this->wingAnimationSpeed), 0.f, 0.f);
+			if (0.f >= XMVectorGetY(this->m_leftWingGameObject->getMoveCompPtr()->localRotation))
+			{
+				this->m_leftWingGameObject->getMoveCompPtr()->localRotation = XMVectorZero();
+				this->m_rightWingGameObject->getMoveCompPtr()->localRotation = XMVectorZero();
+			}
+		}
+	}
+
 	this->hookPosOffset = XMVector3TransformCoord(this->hookPosOffsetConst, rotationMatrix);
 }
 
@@ -114,16 +176,13 @@ DirectX::XMVECTOR HookHand::invertX(DirectX::XMVECTOR VectorToInvertX)
 	
 	returnVector = DirectX::XMLoadFloat4(&rot);
 	return returnVector;
-
 }
 
 void HookHand::update(float dt)
 {
-	this->updateHandModel();
+	this->updateHandModel(dt);
 	if (m_hookState == hookState::shooting)
 	{
-		this->m_chain.setShooting(true);
-		this->m_chain.setVisibility(true);
 		if (this->colide())
 		{
 			this->m_hookState = hookState::hit;
@@ -139,7 +198,8 @@ void HookHand::update(float dt)
 			this->m_hookPhysicsComp->setVelocity(DirectX::XMFLOAT3(0.f, 0.f, 0.f));
 		}
 
-		this->m_chain;
+		// Wing rotation
+		this->m_wingsOpen = true;
 	}
 	else if (m_hookState == hookState::recalling)
 	{
@@ -177,9 +237,8 @@ void HookHand::update(float dt)
 	}
 	else
 	{
+		this->hookSpeedRetract = 40;
 		this->m_audioComponent->stopSound(1);
-		this->m_chain.setShooting(false);
-		this->m_chain.setVisibility(false);
 		if (this->m_hookState == hookState::waiting)
 		{
 			if (this->m_hookTimer.timeElapsed() >= this->hookDelayTime)
@@ -189,6 +248,9 @@ void HookHand::update(float dt)
 		}
 		this->m_hookGameObject->getMoveCompPtr()->rotation = this->m_playerMovement->rotation + this->hookRotOffsetConst;
 		this->m_hookGameObject->getMoveCompPtr()->position = DirectX::XMVectorAdd(this->m_gunGameObject->getMoveCompPtr()->position, hookPosOffset);
+
+		// Wing rotation
+		this->m_wingsOpen = false;
 	}
 
 	this->m_chain.update(dt);
