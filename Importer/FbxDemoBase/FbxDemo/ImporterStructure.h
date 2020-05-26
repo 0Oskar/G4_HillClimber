@@ -29,6 +29,7 @@ struct MaterialBFF
 	float Diffuse[3];
 	float Ambient[3];
 	float Opacity;
+	char texturePath[128];
 };
 
 struct LightBFF
@@ -69,3 +70,4 @@ struct BonesBFF
 	char name[64];
 	float bindRot[3];
 };
+

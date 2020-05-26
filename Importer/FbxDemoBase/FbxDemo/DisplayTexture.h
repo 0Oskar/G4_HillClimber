@@ -14,9 +14,14 @@
 
 #include "DisplayCommon.h"
 
+
 void FindAndDisplayTextureInfoByProperty(FbxProperty pProperty, bool& pDisplayHeader, int pMaterialIndex);
 void DisplayTexture(FbxGeometry* pGeometry);
 void DisplayTextureInfo(FbxTexture* pTexture, int pBlendMode);
+void setTextureName(char* theTexture);
+static char* aTextureName;
+char* getTextureName();
+
 
 #endif // #ifndef _DISPLAY_TEXTURE_H
 

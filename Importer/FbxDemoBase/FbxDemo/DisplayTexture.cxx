@@ -12,6 +12,7 @@
 #include <fbxsdk.h>
 
 #include "DisplayCommon.h"
+#include "DisplayTexture.h"
 
 void DisplayTextureInfo(FbxTexture* pTexture, int pBlendMode)
 {
@@ -23,6 +24,7 @@ void DisplayTextureInfo(FbxTexture* pTexture, int pBlendMode)
 	{
 		DisplayString("            Type: File Texture");
 		DisplayString("            File Name: \"", (char *) lFileTexture->GetFileName(), "\"");
+		setTextureName((char*)lFileTexture->GetFileName());		
 	}
 	else if (lProceduralTexture)
 	{
@@ -78,6 +80,16 @@ void DisplayTextureInfo(FbxTexture* pTexture, int pBlendMode)
     DisplayString("            Texture Use: ", pTextureUses[pTexture->GetTextureUse()]);
     DisplayString("");                
 
+}
+
+void setTextureName(char* theTexture)
+{
+	aTextureName = theTexture;
+}
+
+char* getTextureName()
+{
+	return aTextureName;
 }
 
 void FindAndDisplayTextureInfoByProperty(FbxProperty pProperty, bool& pDisplayHeader, int pMaterialIndex){

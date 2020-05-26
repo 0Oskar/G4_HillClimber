@@ -186,6 +186,11 @@ int GetNrOfBlendShapes2()
 	return GetNrOfBlendShapes();
 }
 
+char* getTextureName2()
+{
+	return getTextureName();
+}
+
 
 
 
