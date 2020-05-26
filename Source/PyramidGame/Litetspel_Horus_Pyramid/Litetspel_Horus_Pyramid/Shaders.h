@@ -81,7 +81,7 @@ const D3D11_INPUT_ELEMENT_DESC ParticleDesc[] = {
 			0
 		},
 		{
-			"LIFETIME",      
+			"AGE",      
 			0, 
 			DXGI_FORMAT_R32_FLOAT,       
 			0, 
@@ -96,9 +96,52 @@ const D3D11_INPUT_ELEMENT_DESC ParticleDesc[] = {
 			0, 
 			32, 
 			D3D11_INPUT_PER_VERTEX_DATA, 
-		0
+			0
 		}
 	};
+
+const D3D11_SO_DECLARATION_ENTRY ParticleSoDeclEntry[] = {
+	{
+		0,				// stream number
+		"POSITION",		//semantic name 
+		0,				//semantic index
+		0,				//start component
+		3,				//component count
+		0				//output slot
+	},
+	{
+		0,				// stream number
+		"VELOCITY",		//semantic name 
+		0,				//semantic index
+		0,				//start component
+		3,				//component count
+		0				//output slot
+	},
+	{
+		0,				// stream number
+		"SIZE",			//semantic name 
+		0,				//semantic index
+		0,				//start component
+		1,				//component count
+		0				//output slot
+	},
+	{
+		0,				// stream number
+		"AGE",			//semantic name 
+		0,				//semantic index
+		0,				//start component
+		1,				//component count
+		0				//output slot
+	},
+	{
+		0,				// stream number
+		"TYPE",			//semantic name 
+		0,				//semantic index
+		0,				//start component
+		1,				//component count
+		0				//output slot
+	},
+};
 
 struct ShaderFiles
 {
@@ -139,7 +182,12 @@ public:
 	Shaders();
 	virtual ~Shaders();
 
-	void initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, ShaderFiles names, LayoutType layoutType = LayoutType::POS_NOR_TEX , D3D_PRIMITIVE_TOPOLOGY topology = D3D_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	void initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext,
+		ShaderFiles names,
+		LayoutType layoutType = LayoutType::POS_NOR_TEX,
+		D3D_PRIMITIVE_TOPOLOGY topology = D3D_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST,
+		bool steamOutput = false
+	);
 
 	void setShaders();
 	void unbindShaders();

@@ -19,7 +19,7 @@ Shaders::Shaders()
 Shaders::~Shaders() {}
 
 
-void Shaders::initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, ShaderFiles names, LayoutType layoutType, D3D_PRIMITIVE_TOPOLOGY topology)
+void Shaders::initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, ShaderFiles names, LayoutType layoutType, D3D_PRIMITIVE_TOPOLOGY topology, bool steamOutput)
 {
 	// Device
 	this->m_device = device;
@@ -216,12 +216,29 @@ void Shaders::initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContex
 			assert(SUCCEEDED(hr));
 		}
 
-		hr = this->m_device->CreateGeometryShader(
-			gsBlob->GetBufferPointer(),
-			gsBlob->GetBufferSize(),
-			nullptr,
-			&this->m_geometryShader
-		);
+		if (steamOutput) 
+		{
+
+			hr = this->m_device->CreateGeometryShaderWithStreamOutput(
+				gsBlob->GetBufferPointer(),
+				gsBlob->GetBufferSize(),
+				ParticleSoDeclEntry,
+				sizeof(ParticleSoDeclEntry),
+				NULL,
+				0,
+				0,
+				NULL,
+				&this->m_geometryShader);
+		}
+		else 
+		{
+			hr = this->m_device->CreateGeometryShader(
+				gsBlob->GetBufferPointer(),
+				gsBlob->GetBufferSize(),
+				nullptr,
+				&this->m_geometryShader);
+		}
+	
 		assert(SUCCEEDED(hr) && "Error, Geometry shaders could not be created!");
 		gsBlob->Release();
 	}

@@ -22,7 +22,7 @@ public:
 
 	~VertexBuffer() {}
 
-	HRESULT initialize(ID3D11Device* device, T* data, int nrOfVertices, bool immutable = true) // PARTICLE EDIT HERE
+	HRESULT initialize(ID3D11Device* device, T* data, int nrOfVertices, bool immutable = true, bool streamOutput = false) // PARTICLE EDIT HERE
 	{
 		this->m_nrOf = nrOfVertices;
 		this->m_stride = UINT(sizeof(T));
@@ -38,7 +38,12 @@ public:
 			vertexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
 		else 
 			vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-		vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+
+		if(streamOutput)
+			vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER | D3D11_BIND_STREAM_OUTPUT;
+		else
+			vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+		
 		vertexBufferDesc.CPUAccessFlags = 0;
 		vertexBufferDesc.MiscFlags = 0;
 

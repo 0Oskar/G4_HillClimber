@@ -16,13 +16,17 @@ private:
 
 	ConstBuffer<GS_PARTICLE_BUFFER> m_particleBuffer;
 
-	Shaders m_particleShader;
+	//Shaders m_particleShader;
+	Shaders m_streamOutShader;
+	Shaders m_drawShader;
 
 	ParticleSystem* m_particleSystem;
 
 	VertexBuffer<Particle> m_initVB; 
 	VertexBuffer<Particle> m_drawVB;
 	VertexBuffer<Particle> m_streamOutVB;
+
+	bool m_firstRun;
 
 public:
 	ParticleRenderer();

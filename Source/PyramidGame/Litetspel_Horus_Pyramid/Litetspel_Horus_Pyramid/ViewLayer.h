@@ -75,6 +75,9 @@ private:
 	ParticleRenderer m_particleRenderer;
 	ParticleSystem m_particleSystem;
 
+	// Skapa tomma depthstates
+	// init update render
+
 
 	// Initialization Functions
 	void initDeviceAndSwapChain();
