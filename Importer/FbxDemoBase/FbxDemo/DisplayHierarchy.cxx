@@ -17,6 +17,8 @@
 #pragma GCC diagnostic ignored "-Wformat-security"
 #endif
 
+int nrOfJoints2;
+
 // Local functions prototype.
 void DisplayHierarchy(FbxNode* pNode, int pDepth);
 
@@ -24,6 +26,7 @@ void DisplayHierarchy(FbxScene* pScene)
 {
     int i;
     FbxNode* lRootNode = pScene->GetRootNode();
+    nrOfJoints2 = lRootNode->GetChildCount();
 
     for( i = 0; i < lRootNode->GetChildCount(); i++)
     {

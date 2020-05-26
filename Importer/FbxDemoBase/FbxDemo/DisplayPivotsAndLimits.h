@@ -15,6 +15,7 @@
 #include "DisplayCommon.h"
 
 void DisplayPivotsAndLimits(FbxNode* pNode);
+std::vector<FbxVector4> GetBindRots();
 
 #endif // #ifndef _DISPLAY_PIVOTS_AND_LIMITS_H
 

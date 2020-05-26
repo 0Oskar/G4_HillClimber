@@ -15,6 +15,8 @@
 #include "DisplayCommon.h"
 
 void DisplaySkeleton(FbxNode* pNode);
+int getNrOfJoints();
+std::vector<std::string> GetJointName();
 
 #endif // #ifndef _DISPLAY_SKELETON_H
 

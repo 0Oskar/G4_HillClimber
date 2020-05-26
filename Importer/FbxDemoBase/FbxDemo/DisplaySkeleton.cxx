@@ -12,13 +12,18 @@
 #include <fbxsdk.h>
 
 #include "DisplayCommon.h"
+#include "DisplaySkeleton.h"
+int nrOfJoints = 0;
+std::vector<std::string> names;
 
 void DisplaySkeleton(FbxNode* pNode)
 { 
+    nrOfJoints++;
     FbxSkeleton* lSkeleton = (FbxSkeleton*) pNode->GetNodeAttribute();
-
+    
     DisplayString("Skeleton Name: ", (char *) pNode->GetName());
     DisplayMetaDataConnections(lSkeleton);
+    names.push_back(pNode->GetName());
 
     const char* lSkeletonTypes[] = { "Root", "Limb", "Limb Node", "Effector" };
 
@@ -38,4 +43,14 @@ void DisplaySkeleton(FbxNode* pNode)
     }
 
     DisplayColor("    Color: ", lSkeleton->GetLimbNodeColor());
+}
+
+int getNrOfJoints()
+{
+    return nrOfJoints;
+}
+
+std::vector<std::string> GetJointName()
+{
+    return names;
 }

@@ -3,7 +3,7 @@
 
 NrOfLights: 0
 NrOfCameras: 0
-NrOfVertexAnimFrames: 0
+NrOfVertexAnimFrames: 3
 NrOfBlendShapes: 0
 
 
@@ -11,6 +11,7 @@ NrOfBlendShapes: 0
 
 Mesh Name: pPlane1
 NrOfVertex: 3
+NrOfJoints: 3
 
 
 ------ Index 0)
@@ -94,3 +95,80 @@ AmbientB: 0.000000
 
 Opacity: 0.000000
  
+
+
+------------- Bone:
+
+Bone Name: joint1
+BindRotX: -0.000000
+BindRotY: 90.000000
+BindRotZ: 0.000000
+
+
+
+
+------------- Bone:
+
+Bone Name: joint2
+BindRotX: 0.000000
+BindRotY: 120.963753
+BindRotZ: 0.000000
+
+
+
+
+------------- Bone:
+
+Bone Name: joint3
+BindRotX: 0.000000
+BindRotY: 149.036240
+BindRotZ: 0.000000
+
+
+
+
+-------------  Vertex Animation:
+
+Frame: 0
+PosX: 6.000000
+PosY: 0.000000
+PosZ: 0.000000
+RotX: 0.000000
+RotY: 0.000000
+RotZ: 0.000000
+ScaleX: 1.000000
+ScaleY: 1.000000
+ScaleZ: 1.000000
+
+
+
+
+-------------  Vertex Animation:
+
+Frame: 10
+PosX: 6.000000
+PosY: 0.000000
+PosZ: 0.000000
+RotX: 0.000000
+RotY: -90.000000
+RotZ: 0.000000
+ScaleX: 1.000000
+ScaleY: 1.000000
+ScaleZ: 1.000000
+
+
+
+
+-------------  Vertex Animation:
+
+Frame: 100
+PosX: 6.000000
+PosY: 0.000000
+PosZ: 0.000000
+RotX: 0.000000
+RotY: -90.000000
+RotZ: 0.000000
+ScaleX: 1.000000
+ScaleY: 1.000000
+ScaleZ: 1.000000
+

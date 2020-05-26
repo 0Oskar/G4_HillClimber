@@ -62,8 +62,8 @@ std::vector<VertexBFF> vertexData2;
 MaterialBFF materialData3;
 std::vector<LightBFF> lightData2;
 std::vector<CameraBFF> cameraData2;
-
 std::vector<std::vector<BlendShapesBFF>> blendShapeDataArr3;
+std::vector<BonesBFF> boneData2;
 std::vector<VertexAnimBFF> keyFrameData2;
 
 //Make a file
@@ -95,7 +95,7 @@ int main(int argc, char** argv)
 	if( lFilePath.IsEmpty() )
 	{
 
-        lFilePath = "../triBones.fbx";
+        lFilePath = "../TriAnim.fbx";
 		lResult = LoadScene(lSdkManager, lScene, lFilePath.Buffer());
 	}
 	else
@@ -156,6 +156,27 @@ int main(int argc, char** argv)
     sceneData.nrOfVertexAnimFrames = getNrOfkeyframes();
     sceneData.nrOfBlendShapes = GetNrOfBlendShapes2();
 
+    boneData2.resize(getNrOfJoints());
+    std::vector<std::string> names2;
+    names2 = GetJointName();
+
+    char temp[64];
+    for (int i = 0; i < getNrOfJoints(); i++)
+    {
+        strcpy_s(temp, _countof(temp), names2[i].c_str());
+        for (int j = 0; j < sizeof(temp); j++)
+            boneData2[i].name[j] = temp[j];
+    }
+
+    std::vector<FbxVector4> bindRots2;
+    bindRots2 = GetBindRots();
+    for (int i = 0; i < getNrOfJoints(); i++)
+    {
+        boneData2[i].bindRot[0] = bindRots2[i + 1][0];
+        boneData2[i].bindRot[1] = bindRots2[i + 1][1];
+        boneData2[i].bindRot[2] = bindRots2[i + 1][2];
+    }
+
     // ****************** Scene ****************** //
     myStringFile5.writeToStringFile("\n------------- Scene: \n\n");
     myStringFile5.writeToStringFile(
@@ -171,10 +192,13 @@ int main(int argc, char** argv)
     myFile5.writeToFile((const char*)&sceneData, sizeof(SceneBFF));
     // ****************** Mesh ****************** //
     meshData2 = GetMeshData();
+    meshData2.nrJoints = getNrOfJoints();
     myStringFile5.writeToStringFile(
         "\n------------- Mesh: \n\nMesh Name: " + (std::string)meshData2.name +
         "\n" +
         "NrOfVertex: " + std::to_string(meshData2.nrOfVertex) +
+        "\n" +
+        "NrOfJoints: " + std::to_string(meshData2.nrJoints) +
         "\n\n");
 
     myFile5.writeToFile((const char*)&meshData2, sizeof(MeshBFF)); //Add to biFile
@@ -256,17 +280,17 @@ int main(int argc, char** argv)
             "PosY: " + std::to_string(cameraData2[i].pos[1]) + "\n" +
             "PosZ: " + std::to_string(cameraData2[i].pos[2]) + "\n" +
             "\n" +
-            "upVecX: " + std::to_string(cameraData2[i].upVec[0]) + "\n" +
-            "upVecY: " + std::to_string(cameraData2[i].upVec[1]) + "\n" +
-            "upVecZ: " + std::to_string(cameraData2[i].upVec[2]) + "\n" +
+            "UpVecX: " + std::to_string(cameraData2[i].upVec[0]) + "\n" +
+            "UpVecY: " + std::to_string(cameraData2[i].upVec[1]) + "\n" +
+            "UpVecZ: " + std::to_string(cameraData2[i].upVec[2]) + "\n" +
             "\n" +
-            "forwardVecX: " + std::to_string(cameraData2[i].forwardVec[0]) + "\n" +
-            "forwardVecY: " + std::to_string(cameraData2[i].forwardVec[1]) + "\n" +
-            "forwardVecZ: " + std::to_string(cameraData2[i].forwardVec[2]) + "\n" +
+            "ForwardVecX: " + std::to_string(cameraData2[i].forwardVec[0]) + "\n" +
+            "ForwardVecY: " + std::to_string(cameraData2[i].forwardVec[1]) + "\n" +
+            "ForwardVecZ: " + std::to_string(cameraData2[i].forwardVec[2]) + "\n" +
             "\n" +
-            "nearPlane: " + std::to_string(cameraData2[i].nearPlane) + "\n" +
+            "NearPlane: " + std::to_string(cameraData2[i].nearPlane) + "\n" +
             "\n" +
-            "farPlane: " + std::to_string(cameraData2[i].farPlane) + "\n" +
+            "FarPlane: " + std::to_string(cameraData2[i].farPlane) + "\n" +
             "\n" +
             "FOV: " + std::to_string(cameraData2[i].FOV) + " (degrees)" + "\n" + "\n" + "\n");
         myFile5.writeToFile((const char*)&cameraData2, sizeof(CameraBFF)); //Add to biFile
@@ -295,6 +319,24 @@ int main(int argc, char** argv)
             "\n\n");
         }
     }
+    // ****************** Bones ****************** //    
+    for (int i = 0; i < getNrOfJoints(); i++)
+    {
+        myStringFile5.writeToStringFile("\n\n\n------------- Bone:\n\n");
+
+        myStringFile5.writeToStringFile(
+            "Bone Name: " + (std::string)boneData2[i].name + 
+            "\n"
+            "BindRotX: " + std::to_string(boneData2[i].bindRot[0]) +
+            "\n" +
+            "BindRotY: " + std::to_string(boneData2[i].bindRot[1]) +
+            "\n" +
+            "BindRotZ: " + std::to_string(boneData2[i].bindRot[2]) +
+            "\n\n");
+        //myFile5.writeToFile((const char*)&cameraData2, sizeof(CameraBFF)); //Add to biFile
+
+    }
+
     // ****************** Vertex Animation ****************** //
     keyFrameData2 = getKeyFrameData();
 

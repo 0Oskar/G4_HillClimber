@@ -10,6 +10,10 @@
 ****************************************************************************************/
 
 #include <fbxsdk.h>
+#include "DisplayCommon.h"
+#include "DisplayPivotsAndLimits.h"
+
+std::vector<FbxVector4> bindRots;
 
 void DisplayPivotsAndLimits(FbxNode* pNode)
 {
@@ -26,6 +30,7 @@ void DisplayPivotsAndLimits(FbxNode* pNode)
 
     lTmpVector = pNode->GetPreRotation(FbxNode::eSourcePivot);
     FBXSDK_printf("        Pre-Rotation: %f %f %f\n", lTmpVector[0], lTmpVector[1], lTmpVector[2]);
+    bindRots.push_back(lTmpVector);
 
     lTmpVector = pNode->GetPostRotation(FbxNode::eSourcePivot);
     FBXSDK_printf("        Post-Rotation: %f %f %f\n", lTmpVector[0], lTmpVector[1], lTmpVector[2]);
@@ -131,5 +136,10 @@ void DisplayPivotsAndLimits(FbxNode* pNode)
     FBXSDK_printf("                Min Limit Value: %f\n", lMinValues[2]);
     FBXSDK_printf("                Max Limit: %s\n", lMaxZActive ? "Active" : "Inactive");
     FBXSDK_printf("                Max Limit Value: %f\n", lMaxValues[2]);
+}
+
+std::vector<FbxVector4> GetBindRots()
+{
+    return bindRots;
 }
 

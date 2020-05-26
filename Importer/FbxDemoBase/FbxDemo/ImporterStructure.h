@@ -12,6 +12,7 @@ struct MeshBFF
 {
 	char name[64];
 	unsigned int nrOfVertex;
+	unsigned int nrJoints;
 };
 
 struct VertexBFF
@@ -61,4 +62,10 @@ struct BlendShapesBFF
 {
 	float pos[3];
 	float norm[3];
+};
+
+struct BonesBFF
+{
+	char name[64];
+	float bindRot[3];
 };
