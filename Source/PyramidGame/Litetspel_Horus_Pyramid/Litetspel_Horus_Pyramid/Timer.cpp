@@ -2,12 +2,14 @@
 #include"Timer.h"
 
 using namespace std::chrono;
-Timer::Timer()
+Timer::Timer(bool remember)
 {
 	this->m_startTime = high_resolution_clock::now();
 	this->m_stopTime = high_resolution_clock::now();
 	m_isRunning = false;
 	this->timeAdd = 0;
+	this->remeber = remember;
+	this->resumeValue = 0;
 }
 double Timer::timeElapsed()
 {
@@ -29,6 +31,10 @@ bool Timer::start()
 		canStart = false;
 	else
 	{
+		if (this->remeber)
+		{
+			this->addTime(resumeValue);
+		}
 		m_startTime = high_resolution_clock::now();
 		m_isRunning = true;
 	}
@@ -40,7 +46,13 @@ bool Timer::stop()
 	bool canStop = true;
 	if (m_isRunning)
 	{
+		if (this->remeber)
+		{
+			auto time = std::chrono::duration_cast<std::chrono::seconds>(high_resolution_clock::now() - m_startTime);
+			this->resumeValue = time.count();
+		}
 		m_stopTime = high_resolution_clock::now();
+		this->m_isRunning = false;
 	}
 	else
 		canStop = false;

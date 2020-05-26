@@ -230,7 +230,7 @@ void TristansRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& act
 
 void TristansRoom::onEntrance()
 {
-
+	Room::onEntrance();
 }
 
 void TristansRoom::init()

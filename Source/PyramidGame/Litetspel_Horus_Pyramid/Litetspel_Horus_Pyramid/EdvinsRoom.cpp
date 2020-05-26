@@ -384,7 +384,7 @@ void EdvinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 
 void EdvinsRoom::onEntrance()
 {
-	
+	Room::onEntrance();
 }
 
 void EdvinsRoom::init()

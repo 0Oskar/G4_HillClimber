@@ -185,6 +185,7 @@ void KevinsRoom::portals()
 
 void KevinsRoom::onEntrance()
 {
+	Room::onEntrance();
 	//What should happen when player enter room
 }
 void KevinsRoom::createBoundingBoxes()

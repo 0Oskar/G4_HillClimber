@@ -69,7 +69,16 @@ void PyramidRoom::portals()
 	this->addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 22, &m_models->at(22), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 2);
 	
 	vec = DirectX::XMVectorSet(9.7f, 85.f, 104.f, 1.f);
-	this->addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 22, &m_models->at(22), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 2);
+	this->addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 22, &m_models->at(22), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 3);
+
+	vec = DirectX::XMVectorSet(9.7f, 145.f, 164.f, 1.f);
+	this->addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 22, &m_models->at(22), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 4);
+
+	vec = DirectX::XMVectorSet(9.7f, 205.f, 224.f, 1.f);
+	this->addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 22, &m_models->at(22), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 4);
+
+	vec = DirectX::XMVectorSet(9.7f, 265.f, 284.f, 1.f);
+	this->addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 22, &m_models->at(22), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 4);
 }
 
 std::vector<DirectX::BoundingBox*> PyramidRoom::getBBForHook()
@@ -79,6 +88,8 @@ std::vector<DirectX::BoundingBox*> PyramidRoom::getBBForHook()
 
 void PyramidRoom::onEntrance()
 {
+	Room::onEntrance();
+	this->m_gameTimerPointer->start();
 	this->m_player->respawn();
 	completedRooms++;
 	XMVECTOR currentPos = this->m_checkpointHandler.getCurrentpos();
@@ -183,6 +194,15 @@ void PyramidRoom::createSceneObjects()
 	this->m_checkpointHandler.addCheckpointGameObject((int)this->m_gameObjects.size() - 1, this->m_gameObjects.back()->getPosition());
 	platformBB.emplace_back(this->m_gameObjects.back()->getAABBPtr());
 
+	vec = DirectX::XMVectorSet(10.f, 145.f, 158.f, 1.f);
+	this->addGameObjectToRoom(false, true, 0, 19, &m_models->at(19), vec, { 0.7f, 0.7f, 0.7f }, DirectX::XMFLOAT3(7.f, 1.f, 5.f));
+	this->m_checkpointHandler.addCheckpointGameObject((int)this->m_gameObjects.size() - 1, this->m_gameObjects.back()->getPosition());
+	platformBB.emplace_back(this->m_gameObjects.back()->getAABBPtr());
+
+	vec = DirectX::XMVectorSet(10.f, 205.f, 218.f, 1.f);
+	this->addGameObjectToRoom(false, true, 0, 19, &m_models->at(19), vec, { 0.7f, 0.7f, 0.7f }, DirectX::XMFLOAT3(7.f, 1.f, 5.f));
+	this->m_checkpointHandler.addCheckpointGameObject((int)this->m_gameObjects.size() - 1, this->m_gameObjects.back()->getPosition());
+	platformBB.emplace_back(this->m_gameObjects.back()->getAABBPtr());
 	//Initialize audio component for platforms and add theire boundingboxes to playerBoundingBoxes
 	for (size_t i = 0; i < this->m_gameObjects.size(); i++)
 	{
@@ -191,8 +211,8 @@ void PyramidRoom::createSceneObjects()
 		{
 			castToPlatform->setPlayerBoundingBox(this->m_player->getAABBPtr());
 			castToPlatform->initAudioComponent(audioEngine, m_player->getMoveCompPtr());
-			/*if (XMVectorGetY(castToPlatform->getPosition()) >= XMVectorGetY(this->m_checkpointHandler.getIndexPosAt(0).second))
-				castToPlatform->pushToLocation(castToPlatform->getPosition() - this->platformPush);*/
+			if (XMVectorGetY(castToPlatform->getPosition()) >= XMVectorGetY(this->m_checkpointHandler.getIndexPosAt(0).second))
+				castToPlatform->pushToLocation(castToPlatform->getPosition() - this->platformPush);
 		}
 	}
 }

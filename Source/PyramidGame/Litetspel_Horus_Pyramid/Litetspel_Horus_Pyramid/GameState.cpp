@@ -10,6 +10,7 @@ GameState::GameState()
 	this->m_chainGObjects = new std::vector<GameObject*>();
 	this->m_activeRoom = nullptr;
 	this->m_activeRoomChanged = false;
+	this->m_gameTime = Timer(true);
 }
 
 GameState::~GameState() {}
@@ -528,12 +529,6 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 		this->m_rooms.at(i)->addRooms(&this->m_rooms);
 		this->m_rooms.at(i)->portals();
 	}
-
-	this->addPortalToWorld({ 0, 0, 0, 0 }, 10, &m_models[10], { -40, 4, -5, 1 }, { 1, 1, 1, 1 }, { 2, 2, 1 }, 0); //Pyramid "Room"
-	this->addPortalToWorld({ 0, 0, 0, 0 }, 10, &m_models[10], { -30, 4, -5, 1 }, { 1, 1, 1, 1 }, { 2, 2, 1 }, 1); //Up for grabs - currently template room
-	this->addPortalToWorld({ 0, 0, 0, 0 }, 10, &m_models[10], { -20, 4, -5, 1 }, { 1, 1, 1, 1 }, { 2, 2, 1 }, 2); // Kevins room
-	this->addPortalToWorld({ 0, 0, 0, 0 }, 10, & m_models[10], { -10, 4, -5, 1 }, { 1, 1, 1, 1 }, { 2, 2, 1 }, 3); //Edvins room
-	this->addPortalToWorld({ 0, 0, 0, 0 }, 10, &m_models[10], { 30, 4, -5, 1 }, { 1, 1, 1, 1 }, { 2, 2, 1 }, 4); //Tristans Room
 
 	this->m_activeRoom->updatePlayerBB();
 	this->m_gameTime.start();

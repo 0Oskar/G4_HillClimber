@@ -8,8 +8,10 @@ private:
 	std::chrono::time_point<std::chrono::steady_clock> m_startTime;
 	std::chrono::time_point<std::chrono::steady_clock> m_stopTime;
 	int timeAdd;
+	bool remeber;
+	double resumeValue;
 public:
-	Timer();
+	Timer(bool remember = false);
 	double timeElapsed();
 	bool start();
 	bool stop();
