@@ -44,6 +44,9 @@ void Chain::simulateLinks(GameObject* link1, GameObject* link2, bool notFirst, f
 void Chain::linkRetractionUpdate()
 {
 	int nrOfLinks = std::ceil(XMVectorGetX(XMVector3LengthEst(this->m_hookGObject->getPosition() - this->m_gaunletGObject->getPosition())) / (this->m_length));
+	if (nrOfLinks > NR_OF_CHAIN_LINKS)
+		nrOfLinks = NR_OF_CHAIN_LINKS;
+
 	for (int i = 0; i < nrOfLinks; i++)
 		this->m_chainRetracted[i] = false;
 
