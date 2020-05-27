@@ -196,7 +196,7 @@ void GameState::loadModels()
 	//1 - Pyramid
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(0.9f, 0.7f, 0.3f, 1.0f);
-	this->m_models[1].loadVertexFromOBJ(m_device, m_dContext, L"Models/FinalPyramid.obj", mat, L"Textures/pyramidTexture.png");
+	this->m_models[1].initializeModelBff(m_device, m_dContext, "BasePyramidNew.bff", mat, L"Textures/pyramidTexture.png");
 
 	//2- HookHead model
 	this->m_models.emplace_back();
@@ -351,10 +351,14 @@ void GameState::loadModels()
 	//32. swingingAxe
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
+<<<<<<< Updated upstream
 	this->m_models[32].loadVertexFromOBJ(m_device, m_dContext, L"Models/swingingAxe.obj", mat, L"Textures/ColorTexture.png");
 
 
 
+=======
+	this->m_models[29].loadVertexFromOBJ(m_device, m_dContext, L"Models/swingingAxe.obj", mat, L"Textures/ColorTexture.png");
+>>>>>>> Stashed changes
 }
 
 

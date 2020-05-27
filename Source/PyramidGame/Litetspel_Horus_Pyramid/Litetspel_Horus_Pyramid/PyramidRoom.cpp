@@ -119,52 +119,65 @@ void PyramidRoom::createSceneObjects()
 	this->addGameObjectToRoom(false, true, 0, 0, &m_models->at(0), vec, NormalScale, DirectX::XMFLOAT3(1000.f, 10.f, 1000.f));
 
 	// Pyramid
-	vec = DirectX::XMVectorSet(0.f, 0.f, 315.f, 1.f);
+	vec = DirectX::XMVectorSet(0.f, 0.f, 646.f, 1.f);
 	this->addGameObjectToRoom(false, true, 0, 1, &m_models->at(1), vec, NormalScale);
 
 	// platform 1
-	vec = DirectX::XMVectorSet(-36.3f, 9.f, 26.f, 1.f);
+	vec = DirectX::XMVectorSet(-36.3f, 39.f, 56.f, 1.f);
 	this->addPlatformToRoom(3, &m_models->at(3), vec, DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f), &this->m_pyramidOOB);
 
-	// platform 2
-	vec = DirectX::XMVectorSet(-16.8f, 19.4f, 36.f, 1.f);
+	// platform 1
+	vec = DirectX::XMVectorSet(22.3f, 66.f, 84.f, 1.f);
 	this->addPlatformToRoom(3, &m_models->at(3), vec, DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f), &this->m_pyramidOOB);
 
-	// platform 3
-	vec = DirectX::XMVectorSet(29.9f, 30.f, 46.f, 1.f);
+	// platform 1
+	vec = DirectX::XMVectorSet(26.3f, 11.f, 28.f, 1.f);
 	this->addPlatformToRoom(3, &m_models->at(3), vec, DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f), &this->m_pyramidOOB);
 
-	// platform 4
-	vec = DirectX::XMVectorSet(-40.f, 40.f, 56.f, 1.f);
-	this->addPlatformToRoom(3, &m_models->at(3), vec, DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f), &this->m_pyramidOOB);
 
-	// platform 5
-	vec = DirectX::XMVectorSet(30.f, 50.f, 66.f, 1.f);
-	this->addPlatformToRoom(3, &m_models->at(3), vec, DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f), &this->m_pyramidOOB);
 
-	// platform 6
-	vec = DirectX::XMVectorSet(-10.f, 60.f, 76.f, 1.f);
-	this->addPlatformToRoom(3, &m_models->at(3), vec, DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f), &this->m_pyramidOOB);
 
-	// platform 7
-	vec = DirectX::XMVectorSet(20.f, 70.f, 86.f, 1.f);
-	this->addPlatformToRoom(3, &m_models->at(3), vec, DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f), &this->m_pyramidOOB);
+	//OLD PLATFORMS
 
-	// platform 8
-	vec = DirectX::XMVectorSet(0.f, 80.f, 96.f, 1.f);
-	this->addPlatformToRoom(3, &m_models->at(3), vec, DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f), &this->m_pyramidOOB);
+	//// platform 2
+	//vec = DirectX::XMVectorSet(-16.8f, 19.4f, 36.f, 1.f);
+	//this->addPlatformToRoom(3, &m_models->at(3), vec, DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f), &this->m_pyramidOOB);
 
-	// platform 9
-	vec = DirectX::XMVectorSet(-10.f, 90.f, 106.f, 1.f);
-	this->addPlatformToRoom(3, &m_models->at(3), vec, DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f), &this->m_pyramidOOB);
+	//// platform 3
+	//vec = DirectX::XMVectorSet(29.9f, 30.f, 46.f, 1.f);
+	//this->addPlatformToRoom(3, &m_models->at(3), vec, DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f), &this->m_pyramidOOB);
 
-	// platform 10
-	vec = DirectX::XMVectorSet(10.f, 100.f, 116.f, 1.f);
-	this->addPlatformToRoom(3, &m_models->at(3), vec, DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f), &this->m_pyramidOOB);
+	//// platform 4
+	//vec = DirectX::XMVectorSet(-40.f, 40.f, 56.f, 1.f);
+	//this->addPlatformToRoom(3, &m_models->at(3), vec, DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f), &this->m_pyramidOOB);
 
-	// platform 11
-	vec = DirectX::XMVectorSet(-10.f, 110.f, 126.f, 1.f);
-	this->addPlatformToRoom(3, &m_models->at(3), vec, DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f), &this->m_pyramidOOB);
+	//// platform 5
+	//vec = DirectX::XMVectorSet(30.f, 50.f, 66.f, 1.f);
+	//this->addPlatformToRoom(3, &m_models->at(3), vec, DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f), &this->m_pyramidOOB);
+
+	//// platform 6
+	//vec = DirectX::XMVectorSet(-10.f, 60.f, 76.f, 1.f);
+	//this->addPlatformToRoom(3, &m_models->at(3), vec, DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f), &this->m_pyramidOOB);
+
+	//// platform 7
+	//vec = DirectX::XMVectorSet(20.f, 70.f, 86.f, 1.f);
+	//this->addPlatformToRoom(3, &m_models->at(3), vec, DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f), &this->m_pyramidOOB);
+
+	//// platform 8
+	//vec = DirectX::XMVectorSet(0.f, 80.f, 96.f, 1.f);
+	//this->addPlatformToRoom(3, &m_models->at(3), vec, DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f), &this->m_pyramidOOB);
+
+	//// platform 9
+	//vec = DirectX::XMVectorSet(-10.f, 90.f, 106.f, 1.f);
+	//this->addPlatformToRoom(3, &m_models->at(3), vec, DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f), &this->m_pyramidOOB);
+
+	//// platform 10
+	//vec = DirectX::XMVectorSet(10.f, 100.f, 116.f, 1.f);
+	//this->addPlatformToRoom(3, &m_models->at(3), vec, DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f), &this->m_pyramidOOB);
+
+	//// platform 11
+	//vec = DirectX::XMVectorSet(-10.f, 110.f, 126.f, 1.f);
+	//this->addPlatformToRoom(3, &m_models->at(3), vec, DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f), &this->m_pyramidOOB);
 
 	// platform 12 final
 	vec = DirectX::XMVectorSet(0.f, 120.f, 136.f, 1.f);
@@ -173,12 +186,12 @@ void PyramidRoom::createSceneObjects()
 	this->m_gameObjects.back()->setScale(vec);*/
 
 	// Checkpoints
-	vec = DirectX::XMVectorSet(0.f, 25.f, 38.f, 1.f);
+	vec = DirectX::XMVectorSet(0.f, 55.f, 38.f, 1.f);
 	this->addGameObjectToRoom(false, true, 0, 19, &m_models->at(19), vec, { 0.7f, 0.7f, 0.7f }, DirectX::XMFLOAT3(7.f, 1.f, 5.f));
 	this->m_checkpointHandler.addCheckpointGameObject((int)this->m_gameObjects.size() - 1, this->m_gameObjects.back()->getPosition());
 	platformBB.emplace_back(this->m_gameObjects.back()->getAABBPtr());
 
-	vec = DirectX::XMVectorSet(10.f, 85.f, 98.f, 1.f);
+	vec = DirectX::XMVectorSet(10.f, 155.f, 98.f, 1.f);
 	this->addGameObjectToRoom(false, true, 0, 19, &m_models->at(19), vec, { 0.7f, 0.7f, 0.7f }, DirectX::XMFLOAT3(7.f, 1.f, 5.f));
 	this->m_checkpointHandler.addCheckpointGameObject((int)this->m_gameObjects.size() - 1, this->m_gameObjects.back()->getPosition());
 	platformBB.emplace_back(this->m_gameObjects.back()->getAABBPtr());
