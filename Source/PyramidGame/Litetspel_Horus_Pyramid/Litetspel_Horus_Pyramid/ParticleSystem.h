@@ -44,18 +44,21 @@ private:
 
 	ID3D11ShaderResourceView* m_TexArray;
 	ID3D11ShaderResourceView* m_RandomTex;
+	Microsoft::WRL::ComPtr< ID3D11DepthStencilState > m_disabledDepthState;
+	void CreateRandomTex(ID3D11Device* device);
 
 
 public:
-	ParticleSystem(int numParts, DirectX::XMVECTOR startOrigin);
+	ParticleSystem();
 	virtual ~ParticleSystem();
 
 	void setVPMatrix(XMMATRIX VPMatrix);
 	GS_PARTICLE_BUFFER* getParticleBuffer();
+	ID3D11DepthStencilState* getDisabledDepthState();
 
-	void initialize(ID3D11Device* device, ID3D11ShaderResourceView* texArray, ID3D11ShaderResourceView* randomTex, UINT maxParticles);
+	void initialize(ID3D11Device* device, ID3D11ShaderResourceView* texArray, UINT maxParticles, XMFLOAT3 emitPos, XMFLOAT3 emitDir);
 	void setToDefault(int i);
-	void update(float deltaTime, float gameTime, XMVECTOR camPos, XMFLOAT3 emitPos, XMFLOAT3 emitDir);
+	void update(float deltaTime, float gameTime, XMVECTOR camPos);
 
 
 };

@@ -74,10 +74,9 @@ private:
 	// Particles
 	ParticleRenderer m_particleRenderer;
 	ParticleSystem m_particleSystem;
+	Timer m_particleTimer; 
 
-	// Skapa tomma depthstates
 	// init update render
-
 
 	// Initialization Functions
 	void initDeviceAndSwapChain();
@@ -108,7 +107,7 @@ public:
 	void initialize(HWND window, GameOptions* options);
 
 	// Update
-	void update(float dt);
+	void update(float dt, XMFLOAT3 cameraPos);
 
 	// Render
 	void render();

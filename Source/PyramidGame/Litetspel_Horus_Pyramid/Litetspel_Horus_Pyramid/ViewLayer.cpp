@@ -27,9 +27,9 @@ void ViewLayer::initDeviceAndSwapChain()
 	};
 
 	UINT flags = D3D11_CREATE_DEVICE_SINGLETHREADED;
-//#if defined( DEBUG ) || defined( _DEBUG )
-//	flags |= D3D11_CREATE_DEVICE_DEBUG;
-//#endif
+	#if defined( DEBUG ) || defined( _DEBUG )
+		flags |= D3D11_CREATE_DEVICE_DEBUG;
+	#endif
 
 	HRESULT hr = D3D11CreateDeviceAndSwapChain(
 		NULL,
@@ -225,6 +225,7 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 	this->m_options = options;
 
 	this->m_timer.start();
+	this-> m_particleTimer.start(); // dont stop this timer
 
 	this->initDeviceAndSwapChain();
 	this->initViewPort();
@@ -301,12 +302,33 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 	this->m_spriteFont = std::make_unique<DirectX::SpriteFont>(this->m_device.Get(), L"Fonts\\product_sans_16.spritefont");
 	this->m_fpsString = "FPS: NULL";
 
+	this->m_particleSystem.initialize(this->m_device.Get(), this->resourceHandler->getTexture(L"Textures/flare.png"), 500, XMFLOAT3(0,0,0), XMFLOAT3(0,1,0));
+	this->m_particleRenderer.initlialize(this->m_device.Get(), this->m_deviceContext.Get());
+
 }
 
-void ViewLayer::update(float dt)
+void ViewLayer::update(float dt, XMFLOAT3 cameraPos)
 {
+	//FPS Counter
+	this->m_fps++;
+	if (1.0 < m_timer.timeElapsed())
+	{
+		this->m_fpsString = "FPS: " + std::to_string(this->m_fps);
+		m_timer.restart();
+		this->m_fps = 0;
+	}
 
+	//this->m_fogBuffer.m_data.cameraPos = cameraPos;
+	//this->m_fogBuffer.upd();
+	//this->clearColor[0] = this->m_fogBuffer.m_data.fogColor.x;
+	//this->clearColor[1] = this->m_fogBuffer.m_data.fogColor.y;
+	//this->clearColor[2] = this->m_fogBuffer.m_data.fogColor.z;
+
+	//this->m_statusTextHandler->update(dt);
+
+	this->m_particleSystem.update(dt, this->m_particleTimer.timeElapsed(), XMLoadFloat3(&cameraPos));
 }
+
 
 void ViewLayer::render()
 {
@@ -317,7 +339,7 @@ void ViewLayer::render()
 	// Set Render Target
 	this->m_deviceContext->OMSetRenderTargets(1, this->m_outputRTV.GetAddressOf(), this->m_depthStencilView.Get());
 	//this->m_deviceContext->OMSetBlendState(m_states->Opaque(), nullptr, 0xFFFFFFFF);
-	this->m_deviceContext->OMSetDepthStencilState(m_states->DepthDefault(), 0);
+	this->m_deviceContext->OMSetDepthStencilState(this->m_depthStencilState.Get(), 0);
 	this->m_deviceContext->RSSetState(this->m_states->CullCounterClockwise());
 
 	// Set Shaders
@@ -347,6 +369,11 @@ void ViewLayer::render()
 		}
 	}
 
+	// Draw Particles
+	this->m_particleRenderer.render(viewPMtrx);
+
+
+
 	// Draw Primitives
 	if (this->m_drawPrimitives)
 	{
@@ -373,15 +400,6 @@ void ViewLayer::render()
 		DX::Draw(m_batch.get(), this->m_pyramidOBB, DirectX::Colors::Blue);
 
 		m_batch->End();
-	}
-
-	//FPS Counter
-	this->m_fps++;
-	if (1.0 < m_timer.timeElapsed())
-	{
-		this->m_fpsString = "FPS: " + std::to_string(this->m_fps);
-		m_timer.restart();
-		this->m_fps = 0;
 	}
 
 	// Draw Sprites

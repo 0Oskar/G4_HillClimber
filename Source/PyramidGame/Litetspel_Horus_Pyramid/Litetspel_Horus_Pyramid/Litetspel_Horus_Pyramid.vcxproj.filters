@@ -7,19 +7,19 @@
     <FxCompile Include="Shader Files\PixelShader.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="StreamOutParticleVS.hlsl">
+    <FxCompile Include="Shader Files\DrawParticleGS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="StreamOutParticleGS.hlsl">
+    <FxCompile Include="Shader Files\DrawParticlePS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="DrawParticleVS.hlsl">
+    <FxCompile Include="Shader Files\DrawParticleVS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="DrawParticleGS.hlsl">
+    <FxCompile Include="Shader Files\StreamOutParticleGS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="DrawParticlePS.hlsl">
+    <FxCompile Include="Shader Files\StreamOutParticleVS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>

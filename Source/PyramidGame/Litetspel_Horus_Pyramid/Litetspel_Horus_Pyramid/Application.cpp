@@ -204,7 +204,7 @@ void Application::applicationLoop()
 			this->audioUpdate();
 
 
-			this->m_viewLayerPtr->update(this->m_deltaTime);
+			this->m_viewLayerPtr->update(this->m_deltaTime, this->m_gameState.getCameraPos());
 			this->m_viewLayerPtr->render();
 		}
 	}

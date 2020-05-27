@@ -288,3 +288,8 @@ void GameState::update(Keyboard* keyboard, MouseEvent mouseEvent, Mouse* mousePt
 		}
 	}
 }
+
+XMFLOAT3 GameState::getCameraPos()
+{
+	return this->m_player.getMoveCompPtr()->getPositionF3();
+}

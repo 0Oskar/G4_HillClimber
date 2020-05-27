@@ -38,4 +38,5 @@ public:
 
 	// Update
 	void update(Keyboard* keyboard, MouseEvent mouseEvent, Mouse* mousePointer, float dt);
+	XMFLOAT3 getCameraPos();
 };
