@@ -189,6 +189,7 @@
     <ClCompile Include="pugixml.cpp" />
     <ClCompile Include="PyramidRoom.cpp" />
     <ClCompile Include="Room.cpp" />
+    <ClCompile Include="ShadowMapInstance.cpp" />
     <ClCompile Include="TemplateRoom.cpp" />
     <ClCompile Include="Shaders.cpp" />
     <ClCompile Include="Timer.cpp" />
@@ -242,6 +243,7 @@
     <ClInclude Include="ResourceHandler.h" />
     <ClInclude Include="Room.h" />
     <ClInclude Include="Shaders.h" />
+    <ClInclude Include="ShadowMapInstance.h" />
     <ClInclude Include="StatusTextHandler.h" />
     <ClInclude Include="TemplateRoom.h" />
     <ClInclude Include="Timer.h" />

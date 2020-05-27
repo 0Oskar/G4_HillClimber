@@ -368,8 +368,11 @@ void GameState::loadModels()
 	this->m_models.emplace_back(); //add empty model
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f); //reset material
 	this->m_models[32].initializeModelBff(m_device, m_dContext, "Diamond.bff", mat, L"Textures/ColorTexture.png"); //load model
-
-
+	
+	//33. Hook Highlight Gem
+	this->m_models.emplace_back(); //add empty model
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f); //reset material
+	this->m_models[33].initializeModelBff(m_device, m_dContext, "Gauntlet_GreenGem.bff", mat, L"Textures/ColorTexture.png"); //load model
 }
 
 
@@ -407,6 +410,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 {
 	GameObject* hook = nullptr;
 	GameObject* hookHand = nullptr;
+	GameObject* hookGem = nullptr;
 	GameObject* hookHandLeftWing = nullptr;
 	GameObject* hookHandRightWing = nullptr;
 	this->m_device = device;
@@ -446,6 +450,11 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->addGameObjectToWorld(true, false, 1, 4, &m_models[4], vec, XMVectorSet(.5f, .5f, .5f, 1.f), DirectX::XMFLOAT3(0, 0, 0), DirectX::XMFLOAT3(10, 10, 10), DirectX::XMFLOAT3(10, 10, 10));
 	hookHand = this->m_gameObjects.back();
 
+	// Hook Gem
+	vec = DirectX::XMVectorSet(10.f, 1.f, -20.f, 1.f);
+	this->addGameObjectToWorld(true, false, 1, 33, &m_models[33], vec, XMVectorSet(.5f, .5f, .5f, 1.f), DirectX::XMFLOAT3(0, 0, 0), DirectX::XMFLOAT3(10, 10, 10), DirectX::XMFLOAT3(10, 10, 10));
+	hookGem = this->m_gameObjects.back();
+
 	// Hook Left Wing
 	vec = DirectX::XMVectorSet(9.f, 1.f, -20.f, 1.f);
 	this->addGameObjectToWorld(true, false, 1, 30, &m_models[30], vec, XMVectorSet(.5f, .5f, .5f, 1.f), DirectX::XMFLOAT3(0, 0, 0), DirectX::XMFLOAT3(10, 10, 10), DirectX::XMFLOAT3(10, 10, 10));
@@ -476,7 +485,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	}
 
 	// Player
-	this->m_player.initialize(-1, -1, 60.f, DirectX::XMFLOAT3(20.f, 20.f, 20.f), DirectX::XMFLOAT3(.01f, .01f, .01f), hook, hookHand, hookHandLeftWing, hookHandRightWing, this->m_chainGObjects, audioEngine, platformBB);
+	this->m_player.initialize(-1, -1, 60.f, DirectX::XMFLOAT3(20.f, 20.f, 20.f), DirectX::XMFLOAT3(.01f, .01f, .01f), hook, hookHand, hookGem, hookHandLeftWing, hookHandRightWing, this->m_chainGObjects, audioEngine, platformBB);
     this->m_player.setSpawnPosition(DirectX::XMVectorSet(0.f, 10.f, -1.f, 1.f));
 	this->m_player.respawn();
 	
