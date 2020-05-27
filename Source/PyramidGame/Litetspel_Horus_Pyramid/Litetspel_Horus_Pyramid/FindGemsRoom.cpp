@@ -43,13 +43,18 @@ void FindGemsRoom::createSceneObjects()
 	int nrOfCurrentLModels = 26; // Get the real number later
 
 	// Room
-	pos = DirectX::XMVectorSet(0, -1, 0, 1);
+	pos = DirectX::XMVectorSet(0, 5, 7.9, 1);
 	++nrOfCurrentLModels;
 	this->addGameObjectToRoom(true, false, 1, nrOfCurrentLModels, &m_models->at(nrOfCurrentLModels), pos, scale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
 
 	// Trasure Gate
 	++nrOfCurrentLModels;
 	this->addGameObjectToRoom(true, false, 1, nrOfCurrentLModels, &m_models->at(nrOfCurrentLModels), this->gatePos, scale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
+	this->gate = this->m_gameObjects.back();
+
+	// Portal - "Index in GameState = 10"
+	pos = DirectX::XMVectorSet(0, 4, -29.5, 1) + this->m_worldPosition; 
+	this->addGameObjectToRoom(true, false, 1, 10, &m_models->at(10), pos, scale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
 	this->gate = this->m_gameObjects.back();
 
 	// Lever top part

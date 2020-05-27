@@ -172,8 +172,8 @@ void GameState::loadModels()
 	//1 - Pyramid
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(0.9f, 0.7f, 0.3f, 1.0f);
-	//this->m_models[1].loadVertexFromOBJ(m_device, m_dContext, L"Models/FinalPyramid.obj", mat, L"Textures/pyramidTexture.png");
-	this->m_models[1].initializeModelBff(m_device, m_dContext, "BasePyramidNew.bff", mat, L"Textures/pyramidTexture.png"); //load model
+	this->m_models[1].loadVertexFromOBJ(m_device, m_dContext, L"Models/FinalPyramid.obj", mat, L"Textures/pyramidTexture.png");
+	//this->m_models[1].initializeModelBff(m_device, m_dContext, "BasePyramidNew.bff", mat, L"Textures/pyramidTexture.png"); //load model
 	//this->m_models[1].loadVertexFromOBJ(m_device, m_dContext, L"Models/BasePyramid_New.obj", mat, L"Textures/pyramidTexture.png");
 
 	//2- HookHead model
