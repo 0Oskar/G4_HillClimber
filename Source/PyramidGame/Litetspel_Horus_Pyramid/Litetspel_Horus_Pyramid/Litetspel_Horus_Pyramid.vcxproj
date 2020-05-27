@@ -154,6 +154,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
+    <ClCompile Include="Bell.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Chain.cpp" />
     <ClCompile Include="CheckpointHandler.cpp" />
@@ -211,6 +212,7 @@
   <ItemGroup>
     <ClInclude Include="Application.h" />
     <ClInclude Include="AudioComponent.h" />
+    <ClInclude Include="Bell.h" />
     <ClInclude Include="BoundingPrim.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Chain.h" />

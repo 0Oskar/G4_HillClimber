@@ -1,5 +1,6 @@
 #pragma once
 #include "Room.h"
+#include "Bell.h"
 
 class TristansRoom : public Room
 {
@@ -9,6 +10,14 @@ private:
 	void onCompleted();
 	Portal* portal;
 	std::vector<DirectX::BoundingBox> SpikesBB;
+
+	Bell* bell1;
+	Bell* bell2;
+	Bell* bell3;
+
+	const float bellOffset = 30;
+
+	bool animationIsFinnished;
 
 	std::vector<DirectX::BoundingBox*> LeverBB;
 	std::vector<Lever*> leverGrip;
@@ -33,11 +42,23 @@ private:
 	bool tempLever2 = false;
 	bool tempLever3 = false;
 
+	//void moveBellForward(GameObject * bell, float dt);
+	//void moveBellForward2(GameObject* bell, float dt);
+
+	//void moveBellBackward(GameObject* bell, float dt);
+	//void moveBellBackward2(GameObject* bell, float dt);
+
+	//void moveBellLeft(GameObject* bell, float dt);
+	//void moveBellLeft2(GameObject* bell, float dt);
+
+	//void moveBellRight(GameObject* bell, float dt);
+	//void moveBellRight2(GameObject* bell, float dt);
 
 public:
 
 	TristansRoom();
 	~TristansRoom();
+	void addBellToRoom(int mdlIndex, Model* mdl, DirectX::XMVECTOR position);
 	void update(float dt, Camera* camera, Room*& activeRoom, bool& activeRoomChanged);
 	void onEntrance();
 	void init();
