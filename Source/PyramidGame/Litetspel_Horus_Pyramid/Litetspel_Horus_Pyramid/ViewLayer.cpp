@@ -282,7 +282,6 @@ void ViewLayer::initSamplerState()
 
 	HRESULT hr = this->m_device->CreateSamplerState(&samplerDesc, this->m_samplerState.GetAddressOf());
 	assert(SUCCEEDED(hr) && "Error when creating sampler state!");
-
 }
 
 void ViewLayer::initialize(HWND window, GameOptions* options)
@@ -299,13 +298,17 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 	this->initShaders();
 	this->initConstantBuffer();
 
+	// Shadow Mapping
+	this->m_shadowInstance.initialize(this->m_device.Get(), this->m_deviceContext.Get(), 2048, 2048);
+
+	// Lights
 	PointLight pLight;
 	pLight.plPosition = { 0, 10, 0 };
 	pLight.plDiffuse = { 0, 0, 0, 1 };
 	pLight.plAmbient = { 0, 0, 0, 1 };
 	pLight.plRange = 100;
 	pLight.att = { 0, 1, 0 };
-	// Ambient Light buffer
+	// - Ambient Light buffer
 	PS_LIGHT_BUFFER lightBuffer;
 	lightBuffer.lightColor = DirectX::XMFLOAT3(1.f, 1.0f, 1.0f); //Set default behaviour in room.cpp and change for induvidual rooms in theire class by accesing this->m_lightData
 	lightBuffer.strength = 0.1f;
@@ -313,22 +316,21 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 	lightBuffer.pointLights[0] = pLight;
 	this->m_lightBuffer.m_data = lightBuffer;
 	this->m_lightBuffer.upd();
-
-	PS_FOG_BUFFER fogBuffer; //Just set for init, change in room with m_fogData member variable.
-	fogBuffer.fogEnd = 100.0f;
-	fogBuffer.fogStart = 50.0f;
-	fogBuffer.fogColor = XMFLOAT3(0.5f, 0.5f, 0.5f);
-
-
-	this->m_fogBuffer.m_data = fogBuffer;
-	this->m_fogBuffer.upd();
-
-	// Directional Light buffer
+	// - Directional Light buffer
 	PS_DIR_BUFFER dirBuffer;
 	dirBuffer.lightColor = DirectX::XMFLOAT4(0.f, 0.f, 0.f, 1.f);
 	dirBuffer.lightDirection = DirectX::XMFLOAT4(-0.8f, 1.0f, -0.7f, 0.0f);
 	this->m_dirLightBuffer.m_data = dirBuffer;
 	this->m_dirLightBuffer.upd();
+
+	// Fog
+	PS_FOG_BUFFER fogBuffer; //Just set for init, change in room with m_fogData member variable.
+	fogBuffer.fogEnd = 100.0f;
+	fogBuffer.fogStart = 50.0f;
+	fogBuffer.fogColor = XMFLOAT3(0.5f, 0.5f, 0.5f);
+
+	this->m_fogBuffer.m_data = fogBuffer;
+	this->m_fogBuffer.upd();
 
 	// Pyramid Frustum for drawing only(Seperate from)
 	DirectX::XMFLOAT3 center(0.f, 62.f, 80.f);

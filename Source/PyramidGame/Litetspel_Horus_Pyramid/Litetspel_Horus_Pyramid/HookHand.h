@@ -53,6 +53,7 @@ private:
 	hookState m_hookState;
 	GameObject* m_hookGameObject;
 	GameObject* m_gunGameObject;
+	GameObject* m_gemGameObject;
 	GameObject* m_leftWingGameObject;
 	GameObject* m_rightWingGameObject;
 	Chain m_chain;
@@ -76,7 +77,7 @@ public:
 	HookHand();
 	~HookHand();
 
-	void init(GameObject* gObject, MovementComponent* plyMoveComp, PhysicsComponent* physicsComponent, std::vector<DirectX::BoundingBox*>* bb, GameObject* hookGun, GameObject* hookHandLeftWing, GameObject* hookHandRightWing, std::vector<GameObject*>* chainGObjects, std::shared_ptr<DirectX::AudioEngine> audioEngine, std::vector<DirectX::BoundingBox*> platformBB);
+	void init(GameObject* gObject, MovementComponent* plyMoveComp, PhysicsComponent* physicsComponent, std::vector<DirectX::BoundingBox*>* bb, GameObject* hookGun, GameObject* hookGem, GameObject* hookHandLeftWing, GameObject* hookHandRightWing, std::vector<GameObject*>* chainGObjects, std::shared_ptr<DirectX::AudioEngine> audioEngine, std::vector<DirectX::BoundingBox*> platformBB);
 	void setBB(std::vector<DirectX::BoundingBox*> platformBB);
 	
 	void update(float dt);

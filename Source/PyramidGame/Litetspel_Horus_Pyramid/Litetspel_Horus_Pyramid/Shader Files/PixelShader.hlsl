@@ -48,9 +48,20 @@ cbuffer fog : register(b3)
 };
 
 
-
 Texture2D objTexture : TEXTURE : register(t0);
+Texture2D shadowMap : TEXTURE : register(t1);
+
 SamplerState samplerState : SAMPLER : register(s0);
+SamplerComparisonState shadowSampler
+{
+    Filter = COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
+
+    AddressU = BORDER;
+    AddressV = BORDER;
+    AddressW = BORDER;
+    BorderColor = float4(0.f, 0.f, 0.f, 0.f);
+    ComparisonFunc = LESS_EQUAL;
+};
 
 float4 pointLightCalculation(float4 matAmbient, float4 matDiffuse, float4 lightAmbient, float4 lightDiffuse, float3 lightPos, float lightRange, float3 pposition, float3 pnormal, float3 attenuation)
 {

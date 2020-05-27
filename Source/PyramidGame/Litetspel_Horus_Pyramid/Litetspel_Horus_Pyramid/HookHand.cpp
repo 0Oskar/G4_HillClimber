@@ -17,12 +17,13 @@ HookHand::~HookHand()
 	}
 }
 
-void HookHand::init(GameObject* gObject, MovementComponent* movementComponent, PhysicsComponent* physicsComponent, std::vector<DirectX::BoundingBox*>* boundingBoxes, GameObject* hookGun, GameObject* hookHandLeftWing, GameObject* hookHandRightWing, std::vector<GameObject*>* chainGObjects, std::shared_ptr<DirectX::AudioEngine> audioEngine, std::vector<DirectX::BoundingBox*> platformBB)
+void HookHand::init(GameObject* gObject, MovementComponent* movementComponent, PhysicsComponent* physicsComponent, std::vector<DirectX::BoundingBox*>* boundingBoxes, GameObject* hookGun, GameObject* hookGem, GameObject* hookHandLeftWing, GameObject* hookHandRightWing, std::vector<GameObject*>* chainGObjects, std::shared_ptr<DirectX::AudioEngine> audioEngine, std::vector<DirectX::BoundingBox*> platformBB)
 {
 	MaterialData mat;
 	mat.diffuse = DirectX::XMFLOAT4(0.5, 0.5, 0.5, 1);
 	this->m_hookGameObject = gObject;
 	this->m_gunGameObject = hookGun;
+	this->m_gemGameObject = hookGem;
 	this->m_leftWingGameObject = hookHandLeftWing;
 	this->m_rightWingGameObject = hookHandRightWing;
 	this->m_chain.initialize(gObject, hookGun, chainGObjects);
@@ -97,11 +98,16 @@ void HookHand::updateHandModel(float dt)
 {
 	DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationRollPitchYawFromVector(this->m_playerMovement->rotation);
 	DirectX::XMVECTOR rotOff = this->m_playerMovement->rotation;
-
+	
+	// Hook Hand/Gun
 	DirectX::XMVECTOR gunPosOffsetRotated = XMVector3TransformCoord(this->gunPosOffset, rotationMatrix);
 	this->m_gunGameObject->getMoveCompPtr()->localRotation = gunRotOffset;
 	this->m_gunGameObject->getMoveCompPtr()->rotation = rotOff + gunRotOffset;
 	this->m_gunGameObject->getMoveCompPtr()->position = DirectX::XMVectorAdd(this->m_playerMovement->position, gunPosOffsetRotated);
+	
+	// Hook Gem
+	this->m_gemGameObject->getMoveCompPtr()->rotation = this->m_gunGameObject->getMoveCompPtr()->rotation;
+	this->m_gemGameObject->getMoveCompPtr()->position = this->m_gunGameObject->getMoveCompPtr()->position + XMVectorSet(0.f, 0.003f, 0.f, 0.f);
 
 	// Wings
 	// - Position

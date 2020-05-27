@@ -5,6 +5,7 @@
 #include "Timer.h"
 #include "Platform.h"
 #include "Shaders.h"
+#include "ShadowMapInstance.h"
 #include "StatusTextHandler.h"
 
 class ViewLayer
@@ -33,6 +34,10 @@ private:
 
 	// Shaders
 	Shaders m_shaders;
+
+	// Shadow Mapping
+	static const int SHADOW_MAP_SIZE = 2048;
+	ShadowMapInstance m_shadowInstance;
 
 	// Constant Buffer
 	Microsoft::WRL::ComPtr< ID3D11Buffer > m_constantBuffer;
