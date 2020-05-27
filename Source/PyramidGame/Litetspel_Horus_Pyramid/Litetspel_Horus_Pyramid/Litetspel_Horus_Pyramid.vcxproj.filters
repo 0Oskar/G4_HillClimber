@@ -103,6 +103,9 @@
     <ClCompile Include="ShadowMapInstance.cpp">
       <Filter>Source\View</Filter>
     </ClCompile>
+    <ClCompile Include="Bell.cpp">
+      <Filter>Source\Game Logic\GameObjects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -224,6 +227,9 @@
     </ClInclude>
     <ClInclude Include="ShadowMapInstance.h">
       <Filter>Header\View</Filter>
+    </ClInclude>
+    <ClInclude Include="Bell.h">
+      <Filter>Header\Game Logic\GameObjects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
