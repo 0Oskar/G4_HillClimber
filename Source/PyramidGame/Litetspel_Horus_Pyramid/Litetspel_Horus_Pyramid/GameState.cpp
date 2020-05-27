@@ -187,7 +187,7 @@ void GameState::loadModels()
 {
 	// Material
 	MaterialData mat;
-	mat.ambient = { 0.2, 0.2, 0.2, 1 };
+	mat.ambient = { 0.2f, 0.2f, 0.2f, 1.f };
 
 	//0 - Desert Ground
 	this->m_models.emplace_back();
@@ -364,7 +364,7 @@ void GameState::loadModels()
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
 	this->m_models[31].initializeModelBff(m_device, m_dContext, "Gauntlet_RightWing.bff", mat, L"Textures/ColorTexture.png");
 
-  //32. Hook Highlight Gem
+	//32. Hook Highlight Gem
 	this->m_models.emplace_back(); //add empty model
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f); //reset material
 	this->m_models[32].initializeModelBff(m_device, m_dContext, "Gauntlet_GreenGem.bff", mat, L"Textures/ColorTexture.png"); //load model
@@ -457,7 +457,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 
 	// Hook Gem
 	vec = DirectX::XMVectorSet(10.f, 1.f, -20.f, 1.f);
-	this->addGameObjectToWorld(true, false, 1, 33, &m_models[33], vec, XMVectorSet(.5f, .5f, .5f, 1.f), DirectX::XMFLOAT3(0, 0, 0), DirectX::XMFLOAT3(10, 10, 10), DirectX::XMFLOAT3(10, 10, 10));
+	this->addGameObjectToWorld(true, false, 1, 32, &m_models[32], vec, XMVectorSet(.5f, .5f, .5f, 1.f), DirectX::XMFLOAT3(0, 0, 0), DirectX::XMFLOAT3(10, 10, 10), DirectX::XMFLOAT3(10, 10, 10));
 	hookGem = this->m_gameObjects.back();
 
 	// Hook Left Wing

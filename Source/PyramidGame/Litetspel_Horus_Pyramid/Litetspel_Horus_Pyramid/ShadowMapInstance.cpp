@@ -70,12 +70,14 @@ void ShadowMapInstance::initialize(ID3D11Device* device, ID3D11DeviceContext* de
 	// Pipeline States
 	// Rasterizer
 	D3D11_RASTERIZER_DESC rasterizerDesc;
+	ZeroMemory(&rasterizerDesc, sizeof(rasterizerDesc));
 	rasterizerDesc.DepthBias = 100000;
 	rasterizerDesc.DepthBiasClamp = 0.f;
+	rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+	rasterizerDesc.CullMode = D3D11_CULL_NONE;
 	rasterizerDesc.SlopeScaledDepthBias = 1.f;
-	this->m_rasterizerState;
 
-	hr = device->CreateRasterizerState(&rasterizerDesc, this->m_rasterizerState.ReleaseAndGetAddressOf());
+	hr = device->CreateRasterizerState(&rasterizerDesc, this->m_rasterizerState.GetAddressOf());
 	assert(SUCCEEDED(hr) && "Error, failed to create shadow map rasterizer state!");
 
 	// Sampler

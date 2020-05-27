@@ -33,7 +33,7 @@ void TristansRoom::addBellToRoom(int mdlIndex, Model* mdl, DirectX::XMVECTOR pos
 {
 	this->m_wvpCBuffers->emplace_back();
 	this->m_wvpCBuffers->back().init(m_device, m_dContext);
-	this->m_gameObjects.emplace_back(new Bell*());
+	this->m_gameObjects.emplace_back(new Bell());
 	dynamic_cast<Bell*>(this->m_gameObjects.back())->initialize(mdlIndex, (int)m_wvpCBuffers->size() - 1, mdl);
 
 	XMVECTOR pos = m_worldPosition + position;
@@ -50,25 +50,25 @@ void TristansRoom::createSceneObjects()
 	pos = DirectX::XMVectorSet(0, 45, 110, 1); // World pos
 	this->addGameObjectToRoom(true, false, 1, 21, &m_models->at(21), pos, scale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(1.f, 1.f, 1.f));
 
-	//Diamond
+	// Diamond
 	pos = DirectX::XMVectorSet(0, 50, -30, 1); // World pos
-	this->addGameObjectToRoom(true, false, 1, 32, &m_models->at(32), pos, scale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(1.f, 1.f, 1.f));
+	this->addGameObjectToRoom(true, false, 1, 33, &m_models->at(33), pos, scale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(1.f, 1.f, 1.f));
 	this->m_gameObjects.back()->setRotation({ XMConvertToRadians(180),0.0f, 0.0f, 0.f });
 
 	//Bell 1
 	pos = DirectX::XMVectorSet(0 + bellOffset, 45, 100, 1); // World pos
-	this->addBellToRoom(33, &m_models->at(33), pos);
-	//this->bell1 = dynamic_cast<Bell*>(this->m_gameObjects.back());
+	this->addBellToRoom(34, &m_models->at(34), pos);
+	this->bell1 = dynamic_cast<Bell*>(this->m_gameObjects.back());
 
 	//Bell 2
 	pos = DirectX::XMVectorSet(0, 45, 100, 1); // World pos
-	this->addBellToRoom(33, &m_models->at(33), pos);
-	//this->bell2 = dynamic_cast<Bell*>(this->m_gameObjects.back());
+	this->addBellToRoom(34, &m_models->at(34), pos);
+	this->bell2 = dynamic_cast<Bell*>(this->m_gameObjects.back());
 
 	//Bell 3
 	pos = DirectX::XMVectorSet(0 - bellOffset, 45, 100, 1); // World pos
-	this->addBellToRoom(33, &m_models->at(33), pos);
-	//this->bell3 = dynamic_cast<Bell*>(this->m_gameObjects.back());
+	this->addBellToRoom(34, &m_models->at(34), pos);
+	this->bell3 = dynamic_cast<Bell*>(this->m_gameObjects.back());
 
 	//Front Lever Grip
 	pos = DirectX::XMVectorSet(0, 48.8f, 89.15f, 1); // World pos
