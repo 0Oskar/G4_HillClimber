@@ -59,6 +59,6 @@ public:
 
 	void moveBellsUp(Timer moveTime, int startTime);
 	void moveBellsDown(Timer moveTime, int startTime);
-	void swapSides(Timer moveTime, int startTime);
+	void move1(Timer moveTime, int startTime);
 
 };
