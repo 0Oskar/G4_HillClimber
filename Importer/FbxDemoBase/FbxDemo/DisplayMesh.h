@@ -17,6 +17,7 @@
 void DisplayMesh(FbxNode* pNode);
 MeshBFF GetMeshData();
 std::vector<VertexBFF> GetVertxData();
+std::vector<VertexBFF> NewGetVertxData(FbxMesh* pMesh);
 MaterialBFF GetMaterialData2();
 
 std::vector<std::vector<BlendShapesBFF>> GetBlendShapeDataArr2(FbxNode* pNode);

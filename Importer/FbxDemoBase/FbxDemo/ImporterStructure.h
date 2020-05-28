@@ -22,6 +22,8 @@ struct VertexBFF
 	float norm[3];
 	float biNorm[3];
 	float tan[3];
+	float weight[4];
+	float boneID[4];
 };
 
 struct MaterialBFF
@@ -68,6 +70,7 @@ struct BlendShapesBFF
 struct BonesBFF
 {
 	char name[64];
+	int boneIndex;
 	float bindRot[3];
 };
 
