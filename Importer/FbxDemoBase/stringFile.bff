@@ -3,13 +3,13 @@
 
 NrOfLights: 0
 NrOfCameras: 0
-NrOfVertexAnimFrames: 3
+NrOfVertexAnimFrames: 0
 NrOfBlendShapes: 0
 
 
 ------------- Mesh: 
 
-Mesh Name: pPlane1
+Mesh Name: BasicJointTri
 NrOfVertex: 3
 NrOfJoints: 3
 
@@ -18,29 +18,29 @@ NrOfJoints: 3
 
 PosX: -0.500000
 PosY: 0.000000
-PosZ: 0.000000
+PosZ: -0.500000
 
 U: 0.000000
-V: 0.500000
+V: 1.000000
 
 NormX: 0.000000
 NormY: 1.000000
 NormZ: 0.000000
 
-biNormX: -0.000000
+biNormX: 0.000000
 biNormY: 0.000000
 biNormZ: -1.000000
 
 TanX: 1.000000
-TanY: 0.000000
-TanZ: -0.000000
+TanY: -0.000000
+TanZ: 0.000000
 
 
 
 ------ Index 1)
 
 PosX: 0.500000
-PosY: 0.000000
+PosY: -0.000000
 PosZ: 0.500000
 
 U: 1.000000
@@ -50,13 +50,13 @@ NormX: 0.000000
 NormY: 1.000000
 NormZ: 0.000000
 
-biNormX: -0.000000
+biNormX: 0.000000
 biNormY: 0.000000
 biNormZ: -1.000000
 
 TanX: 1.000000
-TanY: 0.000000
-TanZ: -0.000000
+TanY: -0.000000
+TanZ: 0.000000
 
 
 
@@ -73,13 +73,13 @@ NormX: 0.000000
 NormY: 1.000000
 NormZ: 0.000000
 
-biNormX: -0.000000
+biNormX: 0.000000
 biNormY: 0.000000
 biNormZ: -1.000000
 
 TanX: 1.000000
-TanY: 0.000000
-TanZ: -0.000000
+TanY: -0.000000
+TanZ: 0.000000
 
 
 
@@ -102,8 +102,8 @@ TexturePath: No texture found!
 ------------- Bone:
 
 Bone Name: joint1
-BindRotX: -0.000000
-BindRotY: 90.000000
+BindRotX: 0.000000
+BindRotY: 88.872910
 BindRotZ: 0.000000
 
 
@@ -113,7 +113,7 @@ BindRotZ: 0.000000
 
 Bone Name: joint2
 BindRotX: 0.000000
-BindRotY: 120.963753
+BindRotY: 90.985596
 BindRotZ: 0.000000
 
 
@@ -123,54 +123,6 @@ BindRotZ: 0.000000
 
 Bone Name: joint3
 BindRotX: 0.000000
-BindRotY: 149.036240
+BindRotY: 180.141495
 BindRotZ: 0.000000
-
-
-
-
--------------  Vertex Animation:
-
-Frame: 0
-PosX: 6.000000
-PosY: 0.000000
-PosZ: 0.000000
-RotX: 0.000000
-RotY: 0.000000
-RotZ: 0.000000
-ScaleX: 1.000000
-ScaleY: 1.000000
-ScaleZ: 1.000000
-
-
-
-
--------------  Vertex Animation:
-
-Frame: 10
-PosX: 6.000000
-PosY: 0.000000
-PosZ: 0.000000
-RotX: 0.000000
-RotY: -90.000000
-RotZ: 0.000000
-ScaleX: 1.000000
-ScaleY: 1.000000
-ScaleZ: 1.000000
-
-
-
-
--------------  Vertex Animation:
-
-Frame: 100
-PosX: 6.000000
-PosY: 0.000000
-PosZ: 0.000000
-RotX: 0.000000
-RotY: -90.000000
-RotZ: 0.000000
-ScaleX: 1.000000
-ScaleY: 1.000000
-ScaleZ: 1.000000
 
