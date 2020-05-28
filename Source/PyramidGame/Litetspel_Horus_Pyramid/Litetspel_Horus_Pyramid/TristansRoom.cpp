@@ -56,17 +56,17 @@ void TristansRoom::createSceneObjects()
 	this->m_gameObjects.back()->setRotation({ XMConvertToRadians(180),0.0f, 0.0f, 0.f });
 
 	//Bell 1
-	pos = DirectX::XMVectorSet(0 + bellOffset, 45, 100, 1); // World pos
+	pos = DirectX::XMVectorSet(0 + bellOffset, 45 + bellOffset, 100, 1); // World pos
 	this->addBellToRoom(34, &m_models->at(34), pos);
 	this->bell1 = dynamic_cast<Bell*>(this->m_gameObjects.back());
 
 	//Bell 2
-	pos = DirectX::XMVectorSet(0, 45, 100, 1); // World pos
+	pos = DirectX::XMVectorSet(0, 45 + bellOffset, 100, 1); // World pos
 	this->addBellToRoom(34, &m_models->at(34), pos);
 	this->bell2 = dynamic_cast<Bell*>(this->m_gameObjects.back());
 
 	//Bell 3
-	pos = DirectX::XMVectorSet(0 - bellOffset, 45, 100, 1); // World pos
+	pos = DirectX::XMVectorSet(0 - bellOffset, 45 + bellOffset, 100, 1); // World pos
 	this->addBellToRoom(34, &m_models->at(34), pos);
 	this->bell3 = dynamic_cast<Bell*>(this->m_gameObjects.back());
 
@@ -76,6 +76,8 @@ void TristansRoom::createSceneObjects()
 	this->m_gameObjects.back()->getMoveCompPtr()->rotation = XMVectorZero();
 	this->leverGrip.emplace_back(dynamic_cast<Lever*>(m_gameObjects.back()));
 	this->leverGrip[0]->setPlayerBoundingBox(this->m_player->getAABBPtr());
+	leverGrip[0]->activateLever();
+
 
 	//Back Lever Grip 1
 	pos = DirectX::XMVectorSet(15, 48.8f, 73.25f, 1); // World pos
@@ -137,8 +139,24 @@ void TristansRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& act
 			this->leverTimer[0].restart();
 			this->canPullLever0 = false;
 			this->moveLever0 = true;
+
+			leverGrip[0]->activateLever();
+			
+			OutputDebugString(L"LEVER PULLED");
+			
+			this->bellsShallRase = true;
 		}
 	}
+
+	if (this->bellsShallRase == true)
+	{
+		moveTimer.restart();
+		bellsShallRase = false;
+		moveBellsDown(moveTimer, 0);
+	}
+		swapSides(moveTimer, 1);
+
+
 	if (this->leverTimer[0].timeElapsed() < 1)
 	{
 		if (this->moveLever0 == true)
@@ -296,4 +314,64 @@ void TristansRoom::portals()
 		0, false);
 	portal = dynamic_cast<Portal*>(this->m_gameObjects.back());
 	//portal->setActiveStatus(false);
+}
+
+void TristansRoom::moveBellsUp(Timer moveTime, int startTime)
+{
+	if (moveTime.timeElapsed() >= startTime && moveTime.timeElapsed() <= startTime + 1)
+	{
+		if (this->bell1->GetAnimating() == false)
+		{
+			bell1->raiseBell();
+			bell2->raiseBell();
+			bell3->raiseBell();
+		}
+
+	}
+}
+
+void TristansRoom::moveBellsDown(Timer moveTime, int startTime)
+{
+	if (moveTime.timeElapsed() >= startTime && moveTime.timeElapsed() <= startTime + 1)
+	{
+		if (this->bell1->GetAnimating() == false)
+		{
+			bell1->lowerBell();
+			bell2->lowerBell();
+			bell3->lowerBell();
+		}
+	}
+}
+
+void TristansRoom::swapSides(Timer moveTime, int startTime)
+{
+
+	if (moveTime.timeElapsed() >= startTime && moveTime.timeElapsed() <= startTime+1)
+	{
+		if (this->bell1->GetAnimating() == false)
+		{
+			bell1->moveBellForward2();
+			//bell2->lowerBell();
+			bell3->moveBellForward();
+		}
+
+	}
+	if (moveTime.timeElapsed() >= startTime + 1 && moveTime.timeElapsed() <= startTime + 2)
+	{
+		if (this->bell1->GetAnimating() == false)
+		{
+			bell1->moveBellRight2();
+			//bell2->lowerBell();
+			bell3->moveBellLeft2();
+		}
+	}
+	if (moveTime.timeElapsed() >= startTime + 2 && moveTime.timeElapsed() <= startTime + 3)
+	{
+		if (this->bell1->GetAnimating() == false)
+		{
+			bell1->moveBellBackward2();
+			//bell2->lowerBell();
+			bell3->moveBellBackward();
+		}
+	}
 }

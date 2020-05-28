@@ -10,7 +10,9 @@ private:
 	XMVECTOR startPos;
 	XMVECTOR endPos;
 
-
+	Timer animationTimer;
+	//Timer moveTimer;
+	bool isAnimating = false;
 
 public:
 
@@ -21,6 +23,8 @@ public:
 
 	XMVECTOR getStartPos();
 	XMVECTOR getEndPos();
+
+	bool GetAnimating();
 
 	float getBellOffset();
 
@@ -38,5 +42,10 @@ public:
 
 	void moveBellRight();
 	void moveBellRight2();
+
+	void raiseBell();
+	void lowerBell();
+
+	void update(float dt);
 
 };

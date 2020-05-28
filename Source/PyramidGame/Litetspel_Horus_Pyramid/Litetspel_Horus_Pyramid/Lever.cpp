@@ -43,6 +43,10 @@ bool Lever::getLeverValue()
 
 bool Lever::getCanUseLever()
 {
+	if (this->activated == false)
+	{
+		return false;
+	}
 	return this->canUseLever;
 }
 

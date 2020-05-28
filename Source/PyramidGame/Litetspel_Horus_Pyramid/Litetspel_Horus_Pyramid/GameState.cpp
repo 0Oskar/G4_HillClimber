@@ -374,7 +374,7 @@ void GameState::loadModels()
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f); //reset material
 	this->m_models[33].initializeModelBff(m_device, m_dContext, "Diamond.bff", mat, L"Textures/ColorTexture.png"); //load model
 
-	//33. Bell 2
+	//33. Bell
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
 	this->m_models[34].initializeModelBff(m_device, m_dContext, "Bell2.bff", mat, L"Textures/ColorTexture.png"); //load model

@@ -15,7 +15,10 @@ private:
 	Bell* bell2;
 	Bell* bell3;
 
+	Timer moveTimer;
+
 	const float bellOffset = 30;
+
 
 	bool animationIsFinnished;
 
@@ -42,17 +45,7 @@ private:
 	bool tempLever2 = false;
 	bool tempLever3 = false;
 
-	//void moveBellForward(GameObject * bell, float dt);
-	//void moveBellForward2(GameObject* bell, float dt);
-
-	//void moveBellBackward(GameObject* bell, float dt);
-	//void moveBellBackward2(GameObject* bell, float dt);
-
-	//void moveBellLeft(GameObject* bell, float dt);
-	//void moveBellLeft2(GameObject* bell, float dt);
-
-	//void moveBellRight(GameObject* bell, float dt);
-	//void moveBellRight2(GameObject* bell, float dt);
+	bool bellsShallRase = false;
 
 public:
 
@@ -63,5 +56,9 @@ public:
 	void onEntrance();
 	void init();
 	void portals();
+
+	void moveBellsUp(Timer moveTime, int startTime);
+	void moveBellsDown(Timer moveTime, int startTime);
+	void swapSides(Timer moveTime, int startTime);
 
 };
