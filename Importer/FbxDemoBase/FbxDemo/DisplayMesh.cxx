@@ -43,7 +43,6 @@ FileWrite myFile("../biFile.bff");
 FileWrite myStringFile("../stringFile.bff");
 int vertexCount;
 std::vector<VertexBFF> vertexData;
-std::vector<VertexBFF> newVertexData;
 
 //Vertex vertexData[];
 MeshBFF meshData;
@@ -82,7 +81,6 @@ void DisplayMesh(FbxNode* pNode)
 	//c string func
 	DisplayMetaDataConnections(lMesh);
 	DisplayControlsPoints(lMesh);
-	//NewGetVertxData(lMesh); //EGEN FUNKTION
 	DisplayPolygons(lMesh);
 
 	DisplayMaterialMapping(lMesh);
@@ -133,75 +131,6 @@ std::vector<VertexBFF> GetVertxData()
 {
 	return vertexData;
 }
-
-
-
-
-
-
-
-
-
-
-
-std::vector<unsigned int> indicesList; //6
-std::vector<VertexBFF> controlList;    //4
-
-
-std::vector<VertexBFF> NewGetVertxData(FbxMesh* pMesh)
-{
-	int nrOfFaces = pMesh->GetPolygonCount();
-	int nrOfVerticies = 3 * nrOfFaces;
-	indicesList.resize(nrOfVerticies);
-
-	/* pMesh->GetPolygonVertices(); Samma sak som for looparna */
-	for (int i = 0; i < nrOfFaces; i++)
-	{
-		for (int j = 0; j < 3; j++)
-		{
-			int index = pMesh->GetPolygonVertex(i, j);
-			indicesList[i * 3 + j] = index;
-		}
-	}
-
-
-	int nrOfControlPoints = pMesh->GetControlPointsCount();
-	controlList.resize(nrOfControlPoints);
-	FbxVector4* controlPoint = pMesh->GetControlPoints();
-
-	for (int i = 0; i < nrOfControlPoints; i++)
-	{
-		controlList[i].pos[0] = controlPoint[i][0];
-		controlList[i].pos[1] = controlPoint[i][1];
-		controlList[i].pos[2] = controlPoint[i][2];
-	}
-
-
-	for (int i = 0; i < nrOfVerticies; i++)
-	{
-
-	}
-
-	return controlList;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 MaterialBFF GetMaterialData2()
 {
@@ -291,7 +220,7 @@ int GetNrOfBlendShapes2()
 
 
 
-int nrOfControllPoints = 0;
+
 
 void DisplayControlsPoints(FbxMesh* pMesh)
 {
@@ -304,6 +233,7 @@ void DisplayControlsPoints(FbxMesh* pMesh)
 	{
 		DisplayInt("        Control Point ", i);
 		Display3DVector("            Coordinates: ", lControlPoints[i]);
+
 
 		for (int j = 0; j < pMesh->GetElementNormalCount(); j++)
 		{
@@ -327,7 +257,6 @@ void DisplayControlsPoints(FbxMesh* pMesh)
 
 		}
 	}
-
 	DisplayString("");
 }
 
@@ -341,7 +270,7 @@ void DisplayPolygons(FbxMesh* pMesh)
 
 	vertexCount = 3 * lPolygonCount;
 	vertexData.resize(vertexCount);
-	meshData.nrOfVertex = pMesh->GetControlPointsCount();
+	meshData.nrOfVertex = vertexCount;
 	DisplayString("    Polygons");
 
 	int vertexId = 0;
