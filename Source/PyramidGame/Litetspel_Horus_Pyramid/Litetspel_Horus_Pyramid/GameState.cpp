@@ -310,35 +310,35 @@ void GameState::loadModels()
 
 	this->m_models.emplace_back(); 
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); 
-	this->m_models[++nrOfCurrentLModels].initializeModelBff(m_device, m_dContext, "vGate.bff", mat, L"Textures/ColorTexture.png");  
+	this->m_models[++nrOfCurrentLModels].initializeModelBff(m_device, m_dContext, "vGate_New.bff", mat, L"Textures/ColorTexture.png");  
 
 	this->m_models.emplace_back(); 
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); 
-	this->m_models[++nrOfCurrentLModels].initializeModelBff(m_device, m_dContext, "vLeaver.bff", mat, L"Textures/ColorTexture.png"); 
+	this->m_models[++nrOfCurrentLModels].initializeModelBff(m_device, m_dContext, "vLever_New.bff", mat, L"Textures/ColorTexture.png"); 
 
 	this->m_models.emplace_back(); 
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); 
-	this->m_models[++nrOfCurrentLModels].initializeModelBff(m_device, m_dContext, "vGem1.bff", mat, L"Textures/ColorTexture.png");
+	this->m_models[++nrOfCurrentLModels].initializeModelBff(m_device, m_dContext, "vGem1_New.bff", mat, L"Textures/ColorTexture.png");
 
 	this->m_models.emplace_back(); 
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); 
-	this->m_models[++nrOfCurrentLModels].initializeModelBff(m_device, m_dContext, "vGem2.bff", mat, L"Textures/ColorTexture.png"); 
+	this->m_models[++nrOfCurrentLModels].initializeModelBff(m_device, m_dContext, "vGem2_New.bff", mat, L"Textures/ColorTexture.png"); 
 
 	this->m_models.emplace_back(); 
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); 
-	this->m_models[++nrOfCurrentLModels].initializeModelBff(m_device, m_dContext, "vGem3.bff", mat, L"Textures/ColorTexture.png"); 
+	this->m_models[++nrOfCurrentLModels].initializeModelBff(m_device, m_dContext, "vGem3_New.bff", mat, L"Textures/ColorTexture.png"); 
 
 	this->m_models.emplace_back(); 
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); 
-	this->m_models[++nrOfCurrentLModels].initializeModelBff(m_device, m_dContext, "vGem4.bff", mat, L"Textures/ColorTexture.png"); 
+	this->m_models[++nrOfCurrentLModels].initializeModelBff(m_device, m_dContext, "vGem4_New.bff", mat, L"Textures/ColorTexture.png"); 
 
 	this->m_models.emplace_back(); 
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); 
-	this->m_models[++nrOfCurrentLModels].initializeModelBff(m_device, m_dContext, "vGem5.bff", mat, L"Textures/ColorTexture.png");
+	this->m_models[++nrOfCurrentLModels].initializeModelBff(m_device, m_dContext, "vGem5_New.bff", mat, L"Textures/ColorTexture.png");
 
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
-	this->m_models[++nrOfCurrentLModels].initializeModelBff(m_device, m_dContext, "vPedistal.bff", mat, L"Textures/ColorTexture.png");
+	this->m_models[++nrOfCurrentLModels].initializeModelBff(m_device, m_dContext, "vPedistal_New.bff", mat, L"Textures/ColorTexture.png");
 }
 
 

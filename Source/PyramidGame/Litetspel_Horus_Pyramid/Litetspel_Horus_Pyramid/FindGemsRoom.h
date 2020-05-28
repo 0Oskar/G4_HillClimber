@@ -14,7 +14,6 @@ private:
 	// Lever
 	std::vector<DirectX::BoundingBox*> m_LeverBB;
 	std::vector<Lever*> m_Lever;
-	bool m_leverBeenPulled;
 
 	// Gate
 	GameObject* gate;
@@ -40,6 +39,7 @@ private:
 
 	// Portal
 	BoundingBox* m_PortalBB;
+	Portal* m_portal;
 	
 
 public:
