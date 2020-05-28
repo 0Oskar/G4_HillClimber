@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ConstantBuffer.h"
+#include "Shaders.h"
 
 class ShadowMapInstance
 {
@@ -26,8 +27,16 @@ private:
 	// Viewport
 	D3D11_VIEWPORT m_viewport;
 
+	// Shaders
+	Shaders m_shadowMapShaders;
+
 	// World Bounding Sphere
 	BoundingSphere m_worldBoundingSphere;
+
+	// Constant Buffer
+	XMMATRIX m_lightViewMatrix;
+	XMMATRIX m_lightProjectionMatrix;
+	XMMATRIX m_shadowTranformMatrix;
 
 public:
 	ShadowMapInstance();

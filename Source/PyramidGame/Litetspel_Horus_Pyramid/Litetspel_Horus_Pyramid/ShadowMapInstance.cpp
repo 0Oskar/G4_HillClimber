@@ -96,6 +96,11 @@ void ShadowMapInstance::initialize(ID3D11Device* device, ID3D11DeviceContext* de
 	hr = device->CreateSamplerState(&samplerDesc, this->m_samplerState.GetAddressOf());
 	assert(SUCCEEDED(hr) && "Error when creating shadow map sampler state!");
 
+	// Shaders
+	ShaderFiles shaderFiles;
+	shaderFiles.vs = L"Shader Files\\ShadowMapVS.hlsl";
+	this->m_shadowMapShaders.initialize(device, deviceContext, shaderFiles);
+
 	// World Bounding Sphere
 	this->m_worldBoundingSphere.Center = { 0.f, 0.f, 0.f };
 	this->m_worldBoundingSphere.Radius = sqrtf(10.f * 10.f + 15.f * 15.f);
@@ -103,17 +108,43 @@ void ShadowMapInstance::initialize(ID3D11Device* device, ID3D11DeviceContext* de
 
 void ShadowMapInstance::buildLightMatrix(PS_DIR_BUFFER directionalLight)
 {
+	// Light View Matrix
 	XMVECTOR lightDirection = XMLoadFloat4(&directionalLight.lightDirection);
 	XMVECTOR lightPosition = -2.0f * this->m_worldBoundingSphere.Radius * lightDirection;
 	XMVECTOR targetPosition = XMLoadFloat3(&this->m_worldBoundingSphere.Center);
 	XMVECTOR up = XMVectorSet(0.f, 1.f, 0.f, 0.f);
 
-	XMMATRIX viewMatrix = XMMatrixLookAtLH(lightPosition, targetPosition, up);
+	this->m_lightViewMatrix = XMMatrixLookAtLH(lightPosition, targetPosition, up);
+
+	// Transform World Bounding Sphere to Light Local View Space
+	XMFLOAT3 worldSphereCenterLightSpace;
+	XMStoreFloat3(&worldSphereCenterLightSpace, XMVector3TransformCoord(targetPosition, this->m_lightViewMatrix));
+
+	// Construct Orthographic Frustum in Light View Space
+	float viewLeft		= worldSphereCenterLightSpace.x - this->m_worldBoundingSphere.Radius;
+	float viewRight		= worldSphereCenterLightSpace.y - this->m_worldBoundingSphere.Radius;
+	float viewBottom	= worldSphereCenterLightSpace.z - this->m_worldBoundingSphere.Radius;
+	float viewTop		= worldSphereCenterLightSpace.x + this->m_worldBoundingSphere.Radius;
+	float nearZ			= worldSphereCenterLightSpace.y + this->m_worldBoundingSphere.Radius;
+	float farZ			= worldSphereCenterLightSpace.z + this->m_worldBoundingSphere.Radius;
+
+	// Local Projection Matrix
+	this->m_lightProjectionMatrix = XMMatrixOrthographicOffCenterLH(viewLeft, viewRight, viewBottom, viewTop, nearZ, farZ);
+
+	// Shadow Texture Space Transformation
+	XMMATRIX textureSpaceMatrix
+	(
+		0.5f, 0.0f, 0.0f, 0.0f,
+		0.0f, -.5f, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		0.5f, 0.5f, 0.0f, 1.0f
+	);
+
+	this->m_shadowTranformMatrix = this->m_lightViewMatrix * this->m_lightProjectionMatrix * textureSpaceMatrix;
 }
 
 void ShadowMapInstance::update()
 {
-
 }
 
 ID3D11ShaderResourceView* ShadowMapInstance::getShadowMapSRV()
@@ -127,4 +158,5 @@ void ShadowMapInstance::bindViewsAndRenderTarget()
 	this->m_deviceContext->RSSetViewports(1, &this->m_viewport);
 	this->m_deviceContext->OMSetRenderTargets(1, m_rendertarget, this->m_shadowMapDSV.Get());
 	this->m_deviceContext->ClearDepthStencilView(this->m_shadowMapDSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0.f);
+	this->m_shadowMapShaders.setShaders();
 }

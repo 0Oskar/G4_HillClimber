@@ -24,6 +24,9 @@ private:
 	Microsoft::WRL::ComPtr< ID3D11RenderTargetView > m_outputRTV;
 	float clearColor[4] = { 0.5f, 0.5f, 0.5f, 1.f };
 
+	// Viewport
+	D3D11_VIEWPORT m_viewport;
+
 	// Depth Buffer
 	Microsoft::WRL::ComPtr< ID3D11DepthStencilView > m_depthStencilView;
 	Microsoft::WRL::ComPtr< ID3D11Texture2D > m_depthStencilBuffer;
@@ -129,6 +132,7 @@ public:
 	void update(float dt, XMFLOAT3 cameraPos);
 
 	// Render
+	void renderScene();
 	void render();
 	void toggleDrawPrimitives(bool toggle);
 };

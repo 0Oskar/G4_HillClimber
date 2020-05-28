@@ -65,14 +65,13 @@ void ViewLayer::initViewPort()
 	RECT winRect;
 	GetClientRect(this->m_window, &winRect);
 
-	D3D11_VIEWPORT viewport;
-	viewport.TopLeftX = (FLOAT)winRect.left;
-	viewport.TopLeftY = (FLOAT)winRect.top;
-	viewport.Width = (FLOAT)this->m_options->width;
-	viewport.Height = (FLOAT)this->m_options->height;
-	viewport.MinDepth = 0.f;
-	viewport.MaxDepth = 1.f;
-	this->m_deviceContext->RSSetViewports(1, &viewport);
+	this->m_viewport;
+	this->m_viewport.TopLeftX = (FLOAT)winRect.left;
+	this->m_viewport.TopLeftY = (FLOAT)winRect.top;
+	this->m_viewport.Width = (FLOAT)this->m_options->width;
+	this->m_viewport.Height = (FLOAT)this->m_options->height;
+	this->m_viewport.MinDepth = 0.f;
+	this->m_viewport.MaxDepth = 1.f;
 }
 
 void ViewLayer::initDepthStencilBuffer()
@@ -190,8 +189,6 @@ ID3D11DeviceContext* ViewLayer::getContextDevice()
 	return this->m_deviceContext.Get();
 }
 
-
-
 void ViewLayer::setViewMatrix(DirectX::XMMATRIX* newViewMatrix)
 {
 	this->m_viewMatrix = newViewMatrix;
@@ -299,7 +296,7 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 	this->initConstantBuffer();
 
 	// Shadow Mapping
-	this->m_shadowInstance.initialize(this->m_device.Get(), this->m_deviceContext.Get(), 2048, 2048);
+	this->m_shadowInstance.initialize(this->m_device.Get(), this->m_deviceContext.Get(), SHADOW_MAP_SIZE, SHADOW_MAP_SIZE);
 
 	// Lights
 	PointLight pLight;
@@ -322,6 +319,8 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 	dirBuffer.lightDirection = DirectX::XMFLOAT4(-0.8f, 1.0f, -0.7f, 0.0f);
 	this->m_dirLightBuffer.m_data = dirBuffer;
 	this->m_dirLightBuffer.upd();
+	// Send Directional Light to Shadow Map instance
+	this->m_shadowInstance.buildLightMatrix(dirBuffer);
 
 	// Fog
 	PS_FOG_BUFFER fogBuffer; //Just set for init, change in room with m_fogData member variable.
@@ -416,29 +415,8 @@ void ViewLayer::update(float dt, XMFLOAT3 cameraPos)
 	this->m_statusTextHandler->update(dt);
 }
 
-void ViewLayer::render()
+void ViewLayer::renderScene()
 {
-	// Clear Frame
-	this->m_deviceContext->ClearRenderTargetView(this->m_outputRTV.Get(), clearColor);
-	this->m_deviceContext->ClearDepthStencilView(this->m_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-
-	// Set Render Target
-	this->m_deviceContext->OMSetRenderTargets(1, this->m_outputRTV.GetAddressOf(), this->m_depthStencilView.Get());
-	//this->m_deviceContext->OMSetBlendState(m_states->Opaque(), nullptr, 0xFFFFFFFF);
-	this->m_deviceContext->OMSetDepthStencilState(m_states->DepthDefault(), 0);
-	this->m_deviceContext->RSSetState(this->m_states->CullClockwise());
-
-	// Set Shaders
-	this->m_shaders.setShaders();
-
-	this->m_deviceContext->PSSetSamplers(0, 1, this->m_samplerState.GetAddressOf());
-
-	// Set Constant Buffer
-	this->m_deviceContext->PSSetConstantBuffers(1, 1, this->m_lightBuffer.GetAdressOf());
-	this->m_deviceContext->PSSetConstantBuffers(2, 1, this->m_dirLightBuffer.GetAdressOf());
-
-	this->m_deviceContext->PSSetConstantBuffers(3, 1, this->m_fogBuffer.GetAdressOf());
-
 	// Draw
 	DirectX::XMMATRIX viewPMtrx = (*m_viewMatrix) * (*m_projectionMatrix);
 	for (size_t i = 0; i < this->m_gameObjectsFromState->size(); i++)
@@ -456,7 +434,7 @@ void ViewLayer::render()
 			this->m_modelsFromState->at(mIndex).draw(viewPMtrx);
 		}
 	}
-	//Active room draw
+	// Active room draw
 	if (this->m_gameObjectsFromActiveRoom != nullptr)
 	{
 		for (size_t i = 0; i < this->m_gameObjectsFromActiveRoom->size(); i++)
@@ -475,6 +453,41 @@ void ViewLayer::render()
 			}
 		}
 	}
+}
+
+void ViewLayer::render()
+{
+	// Render Shadow Map
+	this->m_shadowInstance.bindViewsAndRenderTarget();
+
+	this->renderScene();
+
+	this->m_deviceContext->RSSetState(0);
+
+	// Set Render Target
+	this->m_deviceContext->OMSetRenderTargets(1, this->m_outputRTV.GetAddressOf(), this->m_depthStencilView.Get());
+	this->m_deviceContext->OMSetDepthStencilState(this->m_depthStencilState.Get(), 0);
+	this->m_deviceContext->RSSetState(this->m_states->CullClockwise());
+	this->m_deviceContext->RSSetViewports(1, &this->m_viewport);
+
+	// Clear Frame
+	this->m_deviceContext->ClearRenderTargetView(this->m_outputRTV.Get(), clearColor);
+	this->m_deviceContext->ClearDepthStencilView(this->m_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
+	// Set Shaders
+	this->m_shaders.setShaders();
+
+	this->m_deviceContext->PSSetSamplers(0, 1, this->m_samplerState.GetAddressOf());
+
+	// Set Constant Buffer
+	this->m_deviceContext->PSSetConstantBuffers(1, 1, this->m_lightBuffer.GetAdressOf());
+	this->m_deviceContext->PSSetConstantBuffers(2, 1, this->m_dirLightBuffer.GetAdressOf());
+
+	this->m_deviceContext->PSSetConstantBuffers(3, 1, this->m_fogBuffer.GetAdressOf());
+
+	// Draw
+	this->renderScene();
+
 	// Draw Primitives
 	if (this->m_drawPrimitives)
 	{
