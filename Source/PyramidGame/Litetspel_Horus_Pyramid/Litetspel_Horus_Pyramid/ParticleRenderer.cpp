@@ -15,6 +15,7 @@ void ParticleRenderer::initlialize(ID3D11Device* device, ID3D11DeviceContext* dC
 	this->m_dContext = dContext;
 	this->m_particleSystem = particleSystem;
 	this->m_particleBuffer.init(device, dContext);
+	this->m_firstRun = true;
 
 	// Shaders Out
 	ShaderFiles shadersOut;
@@ -110,29 +111,34 @@ void ParticleRenderer::render(XMMATRIX vpMatrix)
 	// Set IA stage.
 	//
 	m_streamOutShader.setShaders();
-	m_drawShader.setShaders();
+	
 
 	UINT stride = sizeof(Particle);
 	UINT offset = 0;
 
 	// On the first pass, use the initialization VB.  Otherwise, use
 	// the VB that contains the current particle list.
+	
+	if (this->m_firstRun)
+		this->m_dContext->IASetVertexBuffers(0, 1, m_initVB.GetAddressOf(), &stride, &offset);
+	else
+		this->m_dContext->IASetVertexBuffers(0, 1, m_drawVB.GetAddressOf(), &stride, &offset);
+
+
+	this->m_dContext->SOSetTargets(1, m_streamOutVB.GetAddressOf(), &offset);
 	// Draw the current particle list using stream-out only to update them.  
 	// The updated vertices are streamed-out to the target VB. 
 	if (this->m_firstRun) 
 	{
-		this->m_dContext->IASetVertexBuffers(0, 1, m_initVB.GetAddressOf(), &stride, &offset);
 		this->m_dContext->Draw(1, 0);
 		this->m_firstRun = false;
 	}
 	else 
 	{
-
-		this->m_dContext->IASetVertexBuffers(0, 1, m_drawVB.GetAddressOf(), &stride, &offset);
 		this->m_dContext->DrawAuto();
 	}
-	this->m_dContext->SOSetTargets(1, m_streamOutVB.GetAddressOf(), &offset);
-
+	
+	
 
 	// done streaming-out--unbind the vertex buffer
 	ID3D11Buffer* bufferArray[1] = { 0 };
@@ -144,6 +150,8 @@ void ParticleRenderer::render(XMMATRIX vpMatrix)
 	//
 	// Draw the updated particle system we just streamed-out. 
 	//
+	m_drawShader.setShaders(); // flytta tillbaka till "m_streamOutShader.setShaders();"
+
 	this->m_dContext->IASetVertexBuffers(0, 1, m_drawVB.GetAddressOf(), &stride, &offset);
 
 	this->m_dContext->DrawAuto();
