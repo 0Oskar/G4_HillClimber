@@ -302,8 +302,8 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 	this->m_spriteFont = std::make_unique<DirectX::SpriteFont>(this->m_device.Get(), L"Fonts\\product_sans_16.spritefont");
 	this->m_fpsString = "FPS: NULL";
 
-	this->m_particleSystem.initialize(this->m_device.Get(), this->resourceHandler->getTexture(L"Textures/flare.png"), 500, XMFLOAT3(0,0,0), XMFLOAT3(0,1,0));
-	this->m_particleRenderer.initlialize(this->m_device.Get(), this->m_deviceContext.Get());
+	this->m_particleSystem.initialize(this->m_device.Get(), this->resourceHandler->getTexture(L"Textures/flare.png"), 500, XMFLOAT3(0,5,0), XMFLOAT3(0,1,0));
+	this->m_particleRenderer.initlialize(this->m_device.Get(), this->m_deviceContext.Get(), &this->m_particleSystem);
 
 }
 
@@ -371,7 +371,7 @@ void ViewLayer::render()
 
 	// Draw Particles
 	this->m_particleRenderer.render(viewPMtrx);
-
+	this->m_shaders.unbindShaders();
 
 
 	// Draw Primitives

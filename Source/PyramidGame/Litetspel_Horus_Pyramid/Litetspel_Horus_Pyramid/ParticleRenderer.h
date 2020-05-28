@@ -32,7 +32,7 @@ public:
 	ParticleRenderer();
 	~ParticleRenderer();
 
-	void initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext);
+	void initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext, ParticleSystem* particleSystem);
 	void setNoCullPR();
 	void setAlphaToCoveragePR();
 	void setTransparentPR();

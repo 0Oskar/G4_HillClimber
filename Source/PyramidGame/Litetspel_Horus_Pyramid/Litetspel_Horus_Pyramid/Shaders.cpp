@@ -216,6 +216,14 @@ void Shaders::initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContex
 			assert(SUCCEEDED(hr));
 		}
 
+		D3D11_SO_DECLARATION_ENTRY pDecl[] =
+		{
+			// semantic name, semantic index, start component, component count, output slot
+			{ 0, "SV_POSITION", 0, 0, 4, 0 },   // output all components of position
+			{ 0,"TEXCOORD0", 0, 0, 3, 0 },     // output the first 3 of the normal
+			{ 0,"TEXCOORD1", 0, 0, 2, 0 },     // output the first 2 texture coordinates
+		};
+
 		if (steamOutput) 
 		{
 
@@ -223,11 +231,11 @@ void Shaders::initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContex
 				gsBlob->GetBufferPointer(),
 				gsBlob->GetBufferSize(),
 				ParticleSoDeclEntry,
-				sizeof(ParticleSoDeclEntry),
-				NULL,
+				5,
+				nullptr,
 				0,
 				0,
-				NULL,
+				nullptr,
 				&this->m_geometryShader);
 		}
 		else 

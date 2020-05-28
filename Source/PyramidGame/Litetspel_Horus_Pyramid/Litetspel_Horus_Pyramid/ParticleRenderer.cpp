@@ -9,10 +9,12 @@ ParticleRenderer::~ParticleRenderer()
 {
 }
 
-void ParticleRenderer::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext)
+void ParticleRenderer::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext, ParticleSystem* particleSystem)
 {
 	this->m_device = device;
 	this->m_dContext = dContext;
+	this->m_particleSystem = particleSystem;
+	this->m_particleBuffer.init(device, dContext);
 
 	// Shaders Out
 	ShaderFiles shadersOut;
@@ -66,12 +68,12 @@ void ParticleRenderer::initlialize(ID3D11Device* device, ID3D11DeviceContext* dC
 	assert(SUCCEEDED(hr) && "Error when creating blendDesc_Transparent, in ParticleRenderer!");
 
 	Particle p;
-	p.ParticleLifetime = 0.0f;
+	p.ParticleLifetime = 10.0f; // make longer maybe?
 	p.Type = 0;
 	this->m_initVB.initialize(this->m_device, &p, 1, false);
 	
-	this->m_drawVB.initialize(this->m_device, &p, 1, false);
-	this->m_streamOutVB.initialize(this->m_device, &p, 1, false);
+	this->m_drawVB.initialize(this->m_device, &p, 1, false, true);
+	this->m_streamOutVB.initialize(this->m_device, &p, 1, false, true);
 
 }
 

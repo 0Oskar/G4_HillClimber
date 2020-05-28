@@ -40,7 +40,7 @@ public:
 			vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
 
 		if(streamOutput)
-			vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER | D3D11_BIND_STREAM_OUTPUT;
+			vertexBufferDesc.BindFlags = D3D11_BIND_STREAM_OUTPUT | D3D11_BIND_VERTEX_BUFFER;
 		else
 			vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 		
