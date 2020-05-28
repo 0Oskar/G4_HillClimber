@@ -56,17 +56,17 @@ void TristansRoom::createSceneObjects()
 	this->m_gameObjects.back()->setRotation({ XMConvertToRadians(180),0.0f, 0.0f, 0.f });
 
 	//Bell 1
-	pos = DirectX::XMVectorSet(0 + bellOffset, 45 + bellOffset, 100, 1); // World pos
+	pos = DirectX::XMVectorSet(0 + BELL_OFFSET, 45 + BELL_OFFSET, 100, 1); // World pos
 	this->addBellToRoom(34, &m_models->at(34), pos);
 	this->bell1 = dynamic_cast<Bell*>(this->m_gameObjects.back());
 
 	//Bell 2
-	pos = DirectX::XMVectorSet(0, 45 + bellOffset, 100, 1); // World pos
+	pos = DirectX::XMVectorSet(0, 45 + BELL_OFFSET, 100, 1); // World pos
 	this->addBellToRoom(34, &m_models->at(34), pos);
 	this->bell2 = dynamic_cast<Bell*>(this->m_gameObjects.back());
 
 	//Bell 3
-	pos = DirectX::XMVectorSet(0 - bellOffset, 45 + bellOffset, 100, 1); // World pos
+	pos = DirectX::XMVectorSet(0 - BELL_OFFSET, 45 + BELL_OFFSET, 100, 1); // World pos
 	this->addBellToRoom(34, &m_models->at(34), pos);
 	this->bell3 = dynamic_cast<Bell*>(this->m_gameObjects.back());
 
@@ -142,7 +142,7 @@ void TristansRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& act
 
 			leverGrip[0]->activateLever();
 			
-			OutputDebugString(L"LEVER PULLED");
+			OutputDebugString(L"LEVER PULLED\n");
 			
 			this->bellsShallRase = true;
 		}
@@ -154,6 +154,7 @@ void TristansRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& act
 		bellsShallRase = false;
 		moveBellsDown(moveTimer, 0);
 	}
+	if (this->moveTimer.isActive())
 		move1(moveTimer, 1);
 
 
@@ -343,49 +344,47 @@ void TristansRoom::moveBellsDown(Timer moveTime, int startTime)
 	}
 }
 
-void TristansRoom::move1(Timer moveTime, int startTime)
+void TristansRoom::move1(Timer moveTime, float startTime)
 {
 	//Step1
-	if (this->moveTimer.timeElapsed() >= startTime && this->moveTimer.timeElapsed() <= startTime+1)
+	if (this->moveTimer.timeElapsed() >= startTime && this->moveTimer.timeElapsed() <= startTime + 1.f)
 	{
-		if (this->bell1->GetAnimating() == false)
+		if (!this->bell1->GetAnimating() && !this->bell2->GetAnimating() && !this->bell3->GetAnimating())
 		{
+			OutputDebugString(L"Step 1 START!\n");
 			bell1->moveBellForward();
 			//bell2->lowerBell();
 			bell3->moveBellForward2();
 			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
-			OutputDebugString(L"Step 1 \n");
+			OutputDebugString(L", Step 1 END!\n");
 		}
-
 	}
 	//Step2
-	if (this->moveTimer.timeElapsed() >= startTime + 1 && this->moveTimer.timeElapsed() <= startTime + 2)
+	if (this->moveTimer.timeElapsed() >= startTime + 1.f && this->moveTimer.timeElapsed() <= startTime + 2.f)
 	{
-		if (this->bell1->GetAnimating() == false)
+		if (!this->bell1->GetAnimating() && !this->bell2->GetAnimating() && !this->bell3->GetAnimating())
 		{
 			bell1->moveBellRight();
 			bell2->moveBellRight();
 			bell3->moveBellLeft2();
 			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
-			OutputDebugString(L"Step 2 \n");
-
+			OutputDebugString(L", Step 2 \n");
 		}
 	}
 	//Step3
-	if (this->moveTimer.timeElapsed() >= startTime + 2 && this->moveTimer.timeElapsed() <= startTime + 3)
+	if (this->moveTimer.timeElapsed() >= startTime + 2.f && this->moveTimer.timeElapsed() <= startTime + 3.f)
 	{
-		if (this->bell1->GetAnimating() == false)
+		if (!this->bell1->GetAnimating() && !this->bell2->GetAnimating() && !this->bell3->GetAnimating())
 		{
 			//bell1->moveBellBackward2();
 			bell2->moveBellForward();
 			bell3->moveBellBackward();
 			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
-			OutputDebugString(L"Step 3 \n");
-
+			OutputDebugString(L", Step 3 \n");
 		}
 	}
 	//Step4
-	//if (this->moveTimer.timeElapsed() >= startTime + 3 && this->moveTimer.timeElapsed() <= startTime + 4)
+	//if (this->moveTimer.timeElapsed() >= startTime + 3.f && this->moveTimer.timeElapsed() <= startTime + 4.f)
 	//{
 	//	if (this->bell1->GetAnimating() == false)
 	//	{
@@ -394,7 +393,6 @@ void TristansRoom::move1(Timer moveTime, int startTime)
 	//		bell3->moveBellForward();
 	//		OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
 	//		OutputDebugString(L"Step 4 \n");
-
 	//	}
 	//}
 }

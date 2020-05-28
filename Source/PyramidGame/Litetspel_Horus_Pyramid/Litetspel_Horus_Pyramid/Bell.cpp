@@ -31,11 +31,6 @@ bool Bell::GetAnimating()
 	return this->isAnimating;
 }
 
-float Bell::getBellOffset()
-{
-	return bellOffset;
-}
-
 void Bell::setStartPos(XMVECTOR pos)
 {
 	startPos = pos;
@@ -51,9 +46,12 @@ void Bell::moveBellForward()
 	this->isAnimating = true;
 	startPos = this->getPosition();
 	animationTimer.restart();
-	XMVECTOR movePos = XMVectorSet(0, 0, bellOffset, 0);
+	XMVECTOR movePos = XMVectorSet(0, 0, -BELL_OFFSET, 0);
 	endPos = startPos + movePos;
 	//OutputDebugString(L"MOVE FORWARD");
+	std::wstring test(std::to_wstring(XMVectorGetX(this->getPosition())) + L", " + std::to_wstring(XMVectorGetY(this->getPosition())) + L", " + std::to_wstring(XMVectorGetZ(this->getPosition())));
+	OutputDebugString(test.c_str());
+	OutputDebugString(L"\n");
 }
 
 void Bell::moveBellForward2()
@@ -61,7 +59,7 @@ void Bell::moveBellForward2()
 	this->isAnimating = true;
 	startPos = this->getPosition();
 	animationTimer.restart();
-	XMVECTOR movePos = XMVectorSet(0, 0, bellOffset * 2, 0);
+	XMVECTOR movePos = XMVectorSet(0, 0, -BELL_OFFSET * 2, 0);
 	endPos = startPos + movePos;
 	//OutputDebugString(L"MOVE FORWARD");
 }
@@ -71,7 +69,7 @@ void Bell::moveBellBackward()
 	this->isAnimating = true;
 	startPos = this->getPosition();
 	animationTimer.restart();
-	XMVECTOR movePos = XMVectorSet(0, 0, -bellOffset, 0);
+	XMVECTOR movePos = XMVectorSet(0, 0, BELL_OFFSET, 0);
 	endPos = startPos + movePos;
 	//OutputDebugString(L"MOVE Backward");
 }
@@ -81,7 +79,7 @@ void Bell::moveBellBackward2()
 	this->isAnimating = true;
 	startPos = this->getPosition();
 	animationTimer.restart();
-	XMVECTOR movePos = XMVectorSet(0, 0, -bellOffset * 2, 0);
+	XMVECTOR movePos = XMVectorSet(0, 0, BELL_OFFSET * 2, 0);
 	endPos = startPos + movePos;
 	//OutputDebugString(L"MOVE Backward");
 }
@@ -91,7 +89,7 @@ void Bell::moveBellLeft()
 	this->isAnimating = true;
 	startPos = this->getPosition();
 	animationTimer.restart();
-	XMVECTOR movePos = XMVectorSet(-bellOffset, 0, 0, 0);
+	XMVECTOR movePos = XMVectorSet(BELL_OFFSET, 0, 0, 0);
 	endPos = startPos + movePos;
 	//OutputDebugString(L"MOVE Left");
 
@@ -102,7 +100,7 @@ void Bell::moveBellLeft2()
 	this->isAnimating = true;
 	startPos = this->getPosition();
 	animationTimer.restart();
-	XMVECTOR movePos = XMVectorSet(-bellOffset * 2, 0, 0, 0);
+	XMVECTOR movePos = XMVectorSet(BELL_OFFSET * 2, 0, 0, 0);
 	endPos = startPos + movePos;
 	//OutputDebugString(L"MOVE Left");
 
@@ -113,7 +111,7 @@ void Bell::moveBellRight()
 	this->isAnimating = true;
 	startPos = this->getPosition();
 	animationTimer.restart();
-	XMVECTOR movePos = XMVectorSet(bellOffset, 0, 0, 0);
+	XMVECTOR movePos = XMVectorSet(-BELL_OFFSET, 0, 0, 0);
 	endPos = startPos + movePos;
 	//OutputDebugString(L"MOVE Right");
 
@@ -124,7 +122,7 @@ void Bell::moveBellRight2()
 	this->isAnimating = true;
 	startPos = this->getPosition();
 	animationTimer.restart();
-	XMVECTOR movePos = XMVectorSet(bellOffset * 2, 0, 0, 0);
+	XMVECTOR movePos = XMVectorSet(-BELL_OFFSET * 2, 0, 0, 0);
 	endPos = startPos + movePos;
 	//OutputDebugString(L"MOVE Right");
 
@@ -135,7 +133,7 @@ void Bell::raiseBell()
 	this->isAnimating = true;
 	startPos = this->getPosition();
 	animationTimer.restart();
-	XMVECTOR movePos = XMVectorSet(0, -bellOffset, 0, 0);
+	XMVECTOR movePos = XMVectorSet(0, BELL_OFFSET, 0, 0);
 	endPos = startPos + movePos;
 	//OutputDebugString(L"MOVE Up");
 
@@ -146,7 +144,7 @@ void Bell::lowerBell()
 	this->isAnimating = true;
 	startPos = this->getPosition();
 	animationTimer.restart();
-	XMVECTOR movePos = XMVectorSet(0, bellOffset, 0, 0);
+	XMVECTOR movePos = XMVectorSet(0, -BELL_OFFSET, 0, 0);
 	endPos = startPos + movePos;
 	//OutputDebugString(L"MOVE Down");
 }
@@ -155,7 +153,7 @@ void Bell::update(float dt)
 {
 	if (!XMVector3Equal(startPos, endPos))
 	{
-		XMVECTOR positionDelta = this->startPos - this->endPos;
+		XMVECTOR positionDelta = this->endPos - this->startPos;
 		XMVECTOR currentPos = this->getPosition();
 		this->setPosition(startPos + (positionDelta * animationTimer.timeElapsed()));
 		//if (XMVector3Equal(XMVector3Cross(this->startPos - this->endPos, startPos - this->getPosition()), XMVectorZero()))
@@ -164,7 +162,7 @@ void Bell::update(float dt)
 			this->isAnimating = false;
 			startPos = endPos;
 			this->setPosition(endPos);
-			OutputDebugString(L"Animation Ended ");
+			OutputDebugString(L"Animation Ended\n");
 		}
 	}
 }

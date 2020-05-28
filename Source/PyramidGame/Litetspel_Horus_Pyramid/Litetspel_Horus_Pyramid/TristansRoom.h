@@ -17,9 +17,6 @@ private:
 
 	Timer moveTimer;
 
-	const float bellOffset = 30;
-
-
 	bool animationIsFinnished;
 
 	std::vector<DirectX::BoundingBox*> LeverBB;
@@ -59,6 +56,6 @@ public:
 
 	void moveBellsUp(Timer moveTime, int startTime);
 	void moveBellsDown(Timer moveTime, int startTime);
-	void move1(Timer moveTime, int startTime);
+	void move1(Timer moveTime, float startTime);
 
 };

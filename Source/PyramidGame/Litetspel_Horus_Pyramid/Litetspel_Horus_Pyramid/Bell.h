@@ -1,11 +1,10 @@
 #pragma once
 #include "GameObject.h"
 
+const float BELL_OFFSET = 30;
 class Bell : public GameObject
 {
 private:
-
-	const float bellOffset = 30;
 
 	XMVECTOR startPos;
 	XMVECTOR endPos;
@@ -25,8 +24,6 @@ public:
 	XMVECTOR getEndPos();
 
 	bool GetAnimating();
-
-	float getBellOffset();
 
 	void setStartPos(XMVECTOR pos);
 	void setEndPos(XMVECTOR pos);
