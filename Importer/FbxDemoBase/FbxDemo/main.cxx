@@ -218,28 +218,28 @@ int main(int argc, char** argv)
 
     // ****************** Vertex ****************** //
     vertexData2 = GetVertxData();
-    //for (int i = 0; i < meshData2.nrOfVertex; i++)
-    //{
-    //    myStringFile5.writeToStringFile(
-    //        "\n------ Index " + std::to_string(i) + ")\n\n" +
-    //        "PosX: " + std::to_string(vertexData2[i].pos[0]) + "\n" +
-    //        "PosY: " + std::to_string(vertexData2[i].pos[1]) + "\n" +
-    //        "PosZ: " + std::to_string(vertexData2[i].pos[2]) + "\n" +
-    //        "\n" +
-    //        "U: " + std::to_string(vertexData2[i].uv[0]) + "\n" +
-    //        "V: " + std::to_string(vertexData2[i].uv[1]) + "\n" +
-    //        "\n" +
-    //        "NormX: " + std::to_string(vertexData2[i].norm[0]) + "\n" +
-    //        "NormY: " + std::to_string(vertexData2[i].norm[1]) + "\n" +
-    //        "NormZ: " + std::to_string(vertexData2[i].norm[2]) + "\n" +
-    //        "\n" +
-    //        "biNormX: " + std::to_string(vertexData2[i].biNorm[0]) + "\n" +
-    //        "biNormY: " + std::to_string(vertexData2[i].biNorm[1]) + "\n" +
-    //        "biNormZ: " + std::to_string(vertexData2[i].biNorm[2]) + "\n" +
-    //        "\n" +
-    //        "TanX: " + std::to_string(vertexData2[i].tan[0]) + "\n" +
-    //        "TanY: " + std::to_string(vertexData2[i].tan[1]) + "\n" +
-    //        "TanZ: " + std::to_string(vertexData2[i].tan[2]) + "\n" + "\n" + "\n");
+    for (int i = 0; i < meshData2.nrOfVertex; i++)
+    {
+        myStringFile5.writeToStringFile(
+            "\n------ Index " + std::to_string(i) + ")\n\n" +
+            "PosX: " + std::to_string(vertexData2[i].pos[0]) + "\n" +
+            "PosY: " + std::to_string(vertexData2[i].pos[1]) + "\n" +
+            "PosZ: " + std::to_string(vertexData2[i].pos[2]) + "\n" +
+            "\n" +
+            "U: " + std::to_string(vertexData2[i].uv[0]) + "\n" +
+            "V: " + std::to_string(vertexData2[i].uv[1]) + "\n" +
+            "\n" +
+            "NormX: " + std::to_string(vertexData2[i].norm[0]) + "\n" +
+            "NormY: " + std::to_string(vertexData2[i].norm[1]) + "\n" +
+            "NormZ: " + std::to_string(vertexData2[i].norm[2]) + "\n" +
+            "\n" +
+            "biNormX: " + std::to_string(vertexData2[i].biNorm[0]) + "\n" +
+            "biNormY: " + std::to_string(vertexData2[i].biNorm[1]) + "\n" +
+            "biNormZ: " + std::to_string(vertexData2[i].biNorm[2]) + "\n" +
+            "\n" +
+            "TanX: " + std::to_string(vertexData2[i].tan[0]) + "\n" +
+            "TanY: " + std::to_string(vertexData2[i].tan[1]) + "\n" +
+            "TanZ: " + std::to_string(vertexData2[i].tan[2]) + "\n" + "\n" + "\n");
 
     //    myFile5.writeToFile((const char*)&vertexData2[i], sizeof(VertexBFF)); //Add to biFile
     //}
@@ -268,28 +268,28 @@ int main(int argc, char** argv)
     // ****************** Material ****************** //
     materialData3 = GetMaterialData2();
 
-	//textureTempName = getTextureName2();
+	textureTempName = getTextureName2();
 
-	//for (int i = 0; i < sizeof(materialData3.texturePath); i++)
-	//{
-	//	materialData3.texturePath[i] = textureTempName[i];
-	//}
+	for (int i = 0; i < sizeof(materialData3.texturePath); i++)
+	{
+		materialData3.texturePath[i] = textureTempName[i];
+	}
 	
-  //  myStringFile5.writeToStringFile(
-  //      "\n------------- Material: \n\n"
-  //      "DiffuseR: " + std::to_string(materialData3.Diffuse[0]) + "\n" +
-  //      "DiffuseG: " + std::to_string(materialData3.Diffuse[1]) + "\n" +
-  //      "DiffuseB: " + std::to_string(materialData3.Diffuse[2]) + "\n" +
-  //      "\n" +
-  //      "AmbientR: " + std::to_string(materialData3.Ambient[0]) + "\n" +
-  //      "AmbientG: " + std::to_string(materialData3.Ambient[1]) + "\n" +
-  //      "AmbientB: " + std::to_string(materialData3.Ambient[2]) + "\n" +
-  //      "\n" +
-  //      "Opacity: " + std::to_string(materialData3.Opacity) + "\n " +
-		//"\n" +
-		//"TexturePath: " + std::string(materialData3.texturePath) + "\n " );
+    myStringFile5.writeToStringFile(
+        "\n------------- Material: \n\n"
+        "DiffuseR: " + std::to_string(materialData3.Diffuse[0]) + "\n" +
+        "DiffuseG: " + std::to_string(materialData3.Diffuse[1]) + "\n" +
+        "DiffuseB: " + std::to_string(materialData3.Diffuse[2]) + "\n" +
+        "\n" +
+        "AmbientR: " + std::to_string(materialData3.Ambient[0]) + "\n" +
+        "AmbientG: " + std::to_string(materialData3.Ambient[1]) + "\n" +
+        "AmbientB: " + std::to_string(materialData3.Ambient[2]) + "\n" +
+        "\n" +
+        "Opacity: " + std::to_string(materialData3.Opacity) + "\n " +
+		"\n" +
+		"TexturePath: " + std::string(materialData3.texturePath) + "\n " );
 
-  //  myFile5.writeToFile((const char*)&materialData3, sizeof(MaterialBFF)); //Add to biFile
+    myFile5.writeToFile((const char*)&materialData3, sizeof(MaterialBFF)); //Add to biFile
 
     // ****************** Light ****************** //
     lightData2 = GetLightData();

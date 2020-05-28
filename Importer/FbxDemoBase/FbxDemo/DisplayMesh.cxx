@@ -136,34 +136,47 @@ std::vector<VertexBFF> GetVertxData()
 
 
 
-
-
-
-
-
-
-
-
+//std::allocator<int> *test;
+int* indiPtr;
 std::vector<unsigned int> indicesList; //6
 std::vector<VertexBFF> controlList;    //4
 
+//std::vector<unsigned int> face_indices;
 
 std::vector<VertexBFF> NewGetVertxData(FbxMesh* pMesh)
 {
 	int nrOfFaces = pMesh->GetPolygonCount();
 	int nrOfVerticies = 3 * nrOfFaces;
 	indicesList.resize(nrOfVerticies);
+	//int loopCount = 0;
 
-	/* pMesh->GetPolygonVertices(); Samma sak som for looparna */
-	for (int i = 0; i < nrOfFaces; i++)
-	{
-		for (int j = 0; j < 3; j++)
-		{
-			int index = pMesh->GetPolygonVertex(i, j);
-			indicesList[i * 3 + j] = index;
-		}
-	}
+	//indiPtr = pMesh->GetPolygonVertices(); //Samma sak som for looparna
+	//for (int i = 0; i < nrOfFaces; i++)
+	//{
+	//	for (int j = 0; j < 3; j++)
+	//	{
+	//		//int index = pMesh->GetPolygonVertex(i, j);
+	//		//indicesList[i * 3 + j] = index;
+	//		indicesList[j] = indiPtr[j];
+	//	}
+	//}
+	
+	// Fetching positions indices test
 
+	//int currentPosPolyIndex = face_indices.size(); // 3?
+	//face_indices.resize(currentPosPolyIndex + pMesh->GetPolygonCount());
+
+	//for (int polyIndex = 0; polyIndex < pMesh->GetPolygonCount(); ++polyIndex, ++currentPosPolyIndex)
+	//{
+	//	const auto polySize = pMesh->GetPolygonSize(polyIndex);
+	//	face_indices[currentPosPolyIndex].resize(polySize);
+
+	//	for (int polyVertIndex = 0; polyVertIndex < polySize; ++polyVertIndex) 
+	//	{
+	//		face_indices[currentPosPolyIndex][polyVertIndex] = pMesh->GetPolygonVertex(polyIndex, polyVertIndex);
+	//	}
+	//		
+	//}
 
 	int nrOfControlPoints = pMesh->GetControlPointsCount();
 	controlList.resize(nrOfControlPoints);
@@ -184,23 +197,6 @@ std::vector<VertexBFF> NewGetVertxData(FbxMesh* pMesh)
 
 	return controlList;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 MaterialBFF GetMaterialData2()
