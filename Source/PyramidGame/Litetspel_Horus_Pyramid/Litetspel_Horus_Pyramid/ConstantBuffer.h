@@ -2,6 +2,7 @@
 
 #include "pch.h"
 
+
 struct PointLight
 {
 	XMFLOAT4 plAmbient;
@@ -37,6 +38,13 @@ struct PS_DIR_BUFFER
 {
 	DirectX::XMFLOAT4 lightDirection;
 	DirectX::XMFLOAT4 lightColor;
+};
+
+struct constantBufferData
+{
+	PS_FOG_BUFFER fogBuffer;
+	PS_LIGHT_BUFFER lightBuffer;
+	PS_DIR_BUFFER dirBuffer;
 };
 
 template<class T>

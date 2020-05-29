@@ -1,6 +1,5 @@
 #include"pch.h"
 #include"Application.h"
-#include <Dbt.h>
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
@@ -19,6 +18,19 @@ Application::Application()
 Application::~Application()
 {
 	if (m_audioEngine) this->m_audioEngine->Suspend();
+}
+
+void Application::stateChange()
+{
+	iGameState* gameState = this->m_gameStateStack.top();
+	this->m_viewLayerPtr->setViewMatrix(gameState->getViewMatrix());
+	this->m_viewLayerPtr->setProjectionMatrix(gameState->getProjectionMatrix());
+	this->m_viewLayerPtr->setModelsFromState(gameState->getModelsPtr());
+	this->m_viewLayerPtr->setgameObjectsFromState(gameState->getGameObjectsPtr());
+	this->m_viewLayerPtr->setWvpCBufferFromState(gameState->getWvpCBuffersPtr());
+	this->m_viewLayerPtr->setConstantBuffersFromGameState(gameState->getConstantBufferData());
+	gameState->onEntry();
+	//gameState->updateCustomViewLayerVariables(this->m_viewLayerPtr.get());
 }
 
 bool Application::initApplication(HINSTANCE hInstance, LPWSTR lpCmdLine, HWND hWnd, int nShowCmd)
@@ -52,22 +64,12 @@ bool Application::initApplication(HINSTANCE hInstance, LPWSTR lpCmdLine, HWND hW
 
 	this->m_viewLayerPtr = std::make_unique<ViewLayer>();
 	this->m_viewLayerPtr->initialize(this->m_window, &this->m_gameOptions);
+	
+	this->m_gameStateStack.push(new MenuState());
+	this->m_gameStateStack.top()->initlialize(this->m_viewLayerPtr->getDevice(), this->m_viewLayerPtr->getContextDevice(), this->m_gameOptions, this->m_audioEngine);
+	stateChange();
 
-	this->m_gameState.initlialize(this->m_viewLayerPtr->getDevice(), this->m_viewLayerPtr->getContextDevice(), this->m_gameOptions, this->m_audioEngine);
-
-	this->m_viewLayerPtr->setViewMatrix(this->m_gameState.getViewMatrix());
-	this->m_viewLayerPtr->setProjectionMatrix(this->m_gameState.getProjectionMatrix());
-	this->m_viewLayerPtr->setModelsFromState(this->m_gameState.getModelsPtr());
-	this->m_viewLayerPtr->setgameObjectsFromState(this->m_gameState.getGameObjectsPtr());
-	this->m_viewLayerPtr->setgameObjectsFromActiveRoom(this->m_gameState.getActiveRoomGameObjectsPtr());
-	this->m_viewLayerPtr->setBoundingBoxesFromActiveRoom(this->m_gameState.getActiveRoomBoundingBoxsPtr());
-	this->m_viewLayerPtr->setOrientedBoundingBoxesFromActiveRoom(this->m_gameState.getActiveRoomOrientedBoundingBoxPtr());
-	this->m_viewLayerPtr->setDirLightFromActiveRoom(this->m_gameState.getActiveRoomDirectionalLight());
-	this->m_viewLayerPtr->setFogDataFromActiveRoom(this->m_gameState.getActiveRoomFogData());
-	this->m_viewLayerPtr->setLightDataFromActiveRoom(this->m_gameState.getActiveRoomLightData());
-	this->m_viewLayerPtr->setTriggerBoxFromActiveRoom(this->m_gameState.getActiveRoomTriggerBox());
-	this->m_viewLayerPtr->setGameTimePtr(this->m_gameState.getGameTimerPtr());
-	this->m_viewLayerPtr->setWvpCBufferFromState(this->m_gameState.getWvpCBuffersPtr());
+	
 	this->m_timer.start();
 
 	RAWINPUTDEVICE rawIDevice;
@@ -188,6 +190,7 @@ bool Application::loadGameOptions(std::string fileName)
 void Application::applicationLoop()
 {
 	MSG msg = { };
+	states fetchedState;
 	while (WM_QUIT != msg.message)
 	{
 		if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) // Message loop
@@ -210,31 +213,66 @@ void Application::applicationLoop()
 
 			this->GameStateChecks();
 			// Update Layers
-			this->m_gameState.update(this->m_input.getKeyboard(), MouseEvent(), this->m_input.getMouse(), this->m_deltaTime);
+			fetchedState = this->m_gameStateStack.top()->handleInput(this->m_input.getKeyboard(), this->m_input.getMouse(), this->m_deltaTime);
+			if (fetchedState != states::NONE)
+				pushNewState(fetchedState);
+			this->m_gameStateStack.top()->update(this->m_deltaTime);
 			
-			this->m_input.readBuffers();
+			//this->m_input.readBuffers();
 			this->audioUpdate();
 
-
-			this->m_viewLayerPtr->update(this->m_deltaTime, this->m_gameState.getCameraPos());
-			this->m_viewLayerPtr->render();
+			this->m_viewLayerPtr->update(this->m_deltaTime, this->m_gameStateStack.top()->getCameraPos());
+			this->m_viewLayerPtr->render(this->m_gameStateStack.top());
 		}
+	}
+}
+
+void Application::pushNewState(states state)
+{
+	//If we enter this function we always push or pop something
+	bool newState = false;
+	std::vector<Model>* mdlPointer = this->m_gameStateStack.top()->getModelsPtr();
+	this->m_gameStateStack.top()->onLeave();
+	switch (state)
+	{
+	case states::NONE:
+		break;
+	case states::MENU:
+		break;
+	case states::GAME:
+		this->m_gameStateStack.push(new GameState());
+		newState = true;
+		break;
+	case states::PAUSE:
+		break;
+	case states::POP:
+		this->m_gameStateStack.pop();
+		break;
+	default:
+		break;
+	}
+
+	if (newState)
+	{
+		this->m_gameStateStack.top()->setModelPointer(mdlPointer);
+		this->m_gameStateStack.top()->initlialize(this->m_viewLayerPtr->getDevice(), this->m_viewLayerPtr->getContextDevice(), this->m_gameOptions, this->m_audioEngine);
+	}
+	if (this->m_gameStateStack.size() <= 0)
+		PostQuitMessage(-1);
+	else
+	{
+		stateChange();
 	}
 }
 
 void Application::GameStateChecks()
 {
-	if (this->m_gameState.m_activeRoomChanged)
+	iGameState* gameState = this->m_gameStateStack.top();
+	if (gameState->m_majorChange)
 	{
-		this->m_viewLayerPtr->setgameObjectsFromActiveRoom(this->m_gameState.getActiveRoomGameObjectsPtr());
-		this->m_viewLayerPtr->setBoundingBoxesFromActiveRoom(this->m_gameState.getActiveRoomBoundingBoxsPtr());
-		this->m_viewLayerPtr->setOrientedBoundingBoxesFromActiveRoom(this->m_gameState.getActiveRoomOrientedBoundingBoxPtr());
-		this->m_viewLayerPtr->setTriggerBoxFromActiveRoom(this->m_gameState.getActiveRoomTriggerBox());
-		this->m_viewLayerPtr->setDirLightFromActiveRoom(this->m_gameState.getActiveRoomDirectionalLight());
-		this->m_viewLayerPtr->setFogDataFromActiveRoom(this->m_gameState.getActiveRoomFogData());
-		this->m_viewLayerPtr->setLightDataFromActiveRoom(this->m_gameState.getActiveRoomLightData());
-		this->m_gameState.m_activeRoomChanged = false;
-		this->m_gameState.roomChangeInit();
+		stateChange();
+		gameState->m_majorChange = false;
+		gameState->afterChange();
 	}
 }
 

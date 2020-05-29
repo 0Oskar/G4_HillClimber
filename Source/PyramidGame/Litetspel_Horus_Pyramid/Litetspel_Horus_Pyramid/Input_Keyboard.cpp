@@ -26,6 +26,10 @@ bool KeyboardEvent::isValid() const
 {
 	return this->eventType != Event::Invalid;
 }
+Event KeyboardEvent::getEvent() const
+{
+	return this->eventType;
+}
 unsigned char KeyboardEvent::getKey() const
 {
 	return this->key;

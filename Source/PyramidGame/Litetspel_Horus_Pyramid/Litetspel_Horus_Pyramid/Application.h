@@ -1,10 +1,12 @@
 #ifndef _APPLICATION_H_
 #define _APPLICATION_H_
 
-#include "GameState.h"
 #include "ViewLayer.h"
 #include "Input.h"
 #include"Timer.h"
+#include <Dbt.h>
+#include "GameState.h"
+#include "MenuState.h"
 
 class Application
 {
@@ -18,6 +20,8 @@ private:
 	bool m_resetAudio;
 	void audioUpdate();
 	std::shared_ptr<DirectX::AudioEngine> m_audioEngine;
+	std::stack<iGameState*> m_gameStateStack;
+
 
 public:
 	static Application& getInstance()
@@ -27,9 +31,10 @@ public:
 	}
 	~Application();
 
+	void stateChange();
+
 	Input m_input;
 	HWND m_window;
-	GameState m_gameState;
 	GameOptions m_gameOptions;
 	std::unique_ptr< ViewLayer > m_viewLayerPtr;
 
@@ -41,6 +46,7 @@ public:
 	bool loadGameOptions(std::string fileName);
 
 	void applicationLoop();
+	void pushNewState(states state);
 	void GameStateChecks();
 	void newAudioDevice() { this->m_resetAudio = true; OutputDebugString(L"New Audio Device!"); }
 };

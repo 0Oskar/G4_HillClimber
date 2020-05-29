@@ -31,7 +31,7 @@ PyramidRoom::~PyramidRoom()
 void PyramidRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activeRoomChanged)
 {
 	Room::update(dt, camera, activeRoom, activeRoomChanged);
-
+	if (this->m_player == nullptr) return;
 	// Checkpoints
 	for (size_t i = 0; i < this->m_checkpointHandler.size(); i++)
 	{
@@ -56,9 +56,10 @@ void PyramidRoom::init(DirectX::BoundingOrientedBox* pyramidBB)
 	srand((unsigned int)time(0));
 
 	this->m_pyramidOOB = *pyramidBB; //DirectX::BoundingOrientedBox(*pyramidBB);
+
+
 	this->createSceneObjects();
 	this->createBoundingBoxes();
-
 
 	this->m_entrencePosition = { -25, 0, -20 };
 }
@@ -71,16 +72,16 @@ void PyramidRoom::portals()
 	DirectX::XMVECTOR rotation = DirectX::XMVectorSet(0.f, 0.f, 0.f, 1.f);
 
 	vec = DirectX::XMVectorSet(-0.3f, 25.f, 44.f, 1.f);
-	this->addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 22, &m_models->at(22), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 2);
+	this->addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 22, &m_models->at(22), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 1);
 	
 	vec = DirectX::XMVectorSet(9.7f, 85.f, 104.f, 1.f);
-	this->addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 22, &m_models->at(22), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 3);
+	this->addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 22, &m_models->at(22), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 2);
 
 	vec = DirectX::XMVectorSet(9.7f, 145.f, 164.f, 1.f);
-	this->addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 22, &m_models->at(22), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 4);
+	this->addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 22, &m_models->at(22), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 3);
 
 	vec = DirectX::XMVectorSet(9.7f, 205.f, 224.f, 1.f);
-	this->addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 22, &m_models->at(22), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 2);
+	this->addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 22, &m_models->at(22), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 4);
 
 	vec = DirectX::XMVectorSet(9.7f, 285.f, 315.f, 1.f);
 	this->addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 22, &m_models->at(22), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 5);
@@ -240,7 +241,7 @@ void PyramidRoom::createSceneObjects()
 	for (size_t i = 0; i < this->m_gameObjects.size(); i++)
 	{
 		Platform* castToPlatform = dynamic_cast<Platform*>(this->m_gameObjects.at(i));
-		if (castToPlatform != nullptr)
+		if (castToPlatform != nullptr && this->m_player != nullptr)
 		{
 			castToPlatform->setPlayerBoundingBox(this->m_player->getAABBPtr());
 			castToPlatform->initAudioComponent(audioEngine, m_player->getMoveCompPtr());

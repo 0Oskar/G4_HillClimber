@@ -3,7 +3,6 @@
 #include"WICTextureLoader.h"
 
 
-
 class ResourceHandler
 {
 private:
@@ -80,7 +79,6 @@ public:
 
 		return audioMap[sound];
 	}
-
 
 	
 
