@@ -485,7 +485,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	
 	//Pyramid OBB
 	DirectX::XMFLOAT3 center(0.f, 62.f, 80.f);
-	DirectX::XMFLOAT3 extents(450.f, 550.f, 1.f);
+	DirectX::XMFLOAT3 extents(700.f, 800.f, 1.f);
 	float rotationX = XMConvertToRadians(46.f);
 	LPCWSTR test = std::to_wstring(rotationX).c_str();
 	DirectX::XMVECTOR quaternion = DirectX::XMQuaternionRotationRollPitchYaw(rotationX, 0.f, 0.f);
