@@ -70,8 +70,9 @@ void FindGemsRoom::createSceneObjects()
 	this->m_Gems.emplace_back(dynamic_cast<Lever*>(this->m_gameObjects.back())); //Add to buttons array
 	this->m_Gems.at(0)->setPlayerBoundingBox(this->m_player->getAABBPtr()); //Create BB
 
-	DirectX::XMFLOAT3 gemPos = XMLoadFloat3(this->m_Gems.at(0)->getPosition());  // FIX
-	this->m_Gems.at(0)->setBoundingBox(gemPos - DirectX::XMVectorSet(0.f, -20.f, 0.f, 1.f));
+	//DirectX::XMFLOAT3 gemPos;
+	//XMStoreFloat3(&gemPos, this->m_Gems.at(0)->getPosition());  // FIX
+	//this->m_Gems.at(0)->setBoundingBox(gemPos - DirectX::XMFLOAT3(0, 5, 0));
 	
 
 	// Gem 2
@@ -169,36 +170,47 @@ void FindGemsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& act
 		this->m_gemInPlace = 0;
 	}
 
+
 	// Pick up gem
+	//if(m_Gems[0]->collidable())
 	this->m_Gems[0]->collidesWithPlayer();
+
 	if (this->m_Gems[0]->getCanUseLever() == true && this->m_player->getinUse() == true && this->m_holdingGem == false)
 	{
 		this->m_Gems[0]->setPosition(this->m_player->getPosition() + (DirectX::XMVectorSet(0, -10, 0, 0)));
 		this->m_holdingGem = true;
 		this->m_gemInPlace = 1;
 	}
+	//if (m_Gems[1]->collidable())
 	this->m_Gems[1]->collidesWithPlayer();
+
 	if (this->m_Gems[1]->getCanUseLever() == true && this->m_player->getinUse() == true && this->m_holdingGem == false)
 	{
 		this->m_Gems[1]->setPosition(this->m_player->getPosition() + (DirectX::XMVectorSet(0, -10, 0, 0)));
 		this->m_holdingGem = true;
 		this->m_gemInPlace = 2;
 	}
+	//if (m_Gems[2]->collidable())
 	this->m_Gems[2]->collidesWithPlayer();
+
 	if (this->m_Gems[2]->getCanUseLever() == true && this->m_player->getinUse() == true && this->m_holdingGem == false)
 	{
 		this->m_Gems[2]->setPosition(this->m_player->getPosition() + (DirectX::XMVectorSet(0, -10, 0, 0)));
 		this->m_holdingGem = true;
 		this->m_gemInPlace = 3;
 	}
+	//if (m_Gems[3]->collidable())
 	this->m_Gems[3]->collidesWithPlayer();
+
 	if (this->m_Gems[3]->getCanUseLever() == true && this->m_player->getinUse() == true && this->m_holdingGem == false)
 	{
 		this->m_Gems[3]->setPosition(this->m_player->getPosition() + (DirectX::XMVectorSet(0, -10, 0, 0)));
 		this->m_holdingGem = true;
 		this->m_gemInPlace = 4;
 	}
+	//if (m_Gems[4]->collidable())
 	this->m_Gems[4]->collidesWithPlayer();
+
 	if (this->m_Gems[4]->getCanUseLever() == true && this->m_player->getinUse() == true && this->m_holdingGem == false)
 	{
 		this->m_Gems[4]->setPosition(this->m_player->getPosition() + (DirectX::XMVectorSet(0, -10, 0, 0)));
@@ -212,6 +224,9 @@ void FindGemsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& act
 	{
 		this->m_Gems[(int)this->m_gemInPlace - 1]->setPosition(m_gemSlots[0]->getPosition());
 		this->m_Gems[(int)this->m_gemInPlace - 1]->setRotation(DirectX::XMVectorSet(pMath::convertDegreesToRadians(75), 0.f, 0.f, 1.f));
+		this->m_Gems[(int)this->m_gemInPlace - 1]->setBoundingBox(DirectX::XMFLOAT3(0.1, 0.1, 0.1));
+		this->m_Gems[(int)this->m_gemInPlace - 1]->setIfCollidable(false);
+		this->m_Gems[(int)this->m_gemInPlace - 1]->setCnaUseLever(false);
 		this->m_holdingGem = false;
 		this->m_gemInPlace = 0;
 		this->m_GameSlotFilled_0 = true;
@@ -221,6 +236,9 @@ void FindGemsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& act
 	{
 		this->m_Gems[(int)this->m_gemInPlace - 1]->setPosition(m_gemSlots[1]->getPosition());
 		this->m_Gems[(int)this->m_gemInPlace - 1]->setRotation(DirectX::XMVectorSet(pMath::convertDegreesToRadians(180), pMath::convertDegreesToRadians(180), pMath::convertDegreesToRadians(180), 0.f));
+		this->m_Gems[(int)this->m_gemInPlace - 1]->setBoundingBox(DirectX::XMFLOAT3(0.1, 0.1, 0.1));
+		this->m_Gems[(int)this->m_gemInPlace - 1]->setIfCollidable(false);
+		this->m_Gems[(int)this->m_gemInPlace - 1]->setCnaUseLever(false);
 		this->m_holdingGem = false;
 		this->m_gemInPlace = 0;
 		this->m_GameSlotFilled_1 = true;
@@ -230,6 +248,9 @@ void FindGemsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& act
 	{
 		this->m_Gems[(int)this->m_gemInPlace - 1]->setPosition(m_gemSlots[2]->getPosition());
 		this->m_Gems[(int)this->m_gemInPlace - 1]->setRotation(DirectX::XMVectorSet(pMath::convertDegreesToRadians(75), pMath::convertDegreesToRadians(90), 0.f, 1.f));
+		this->m_Gems[(int)this->m_gemInPlace - 1]->setBoundingBox(DirectX::XMFLOAT3(0.1, 0.1, 0.1));
+		this->m_Gems[(int)this->m_gemInPlace - 1]->setIfCollidable(false);
+		this->m_Gems[(int)this->m_gemInPlace - 1]->setCnaUseLever(false);
 		this->m_holdingGem = false;
 		this->m_gemInPlace = 0;
 		this->m_GameSlotFilled_2 = true;
@@ -239,6 +260,9 @@ void FindGemsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& act
 	{
 		this->m_Gems[(int)this->m_gemInPlace - 1]->setPosition(m_gemSlots[3]->getPosition());
 		this->m_Gems[(int)this->m_gemInPlace - 1]->setRotation(DirectX::XMVectorSet(pMath::convertDegreesToRadians(75), pMath::convertDegreesToRadians(90), 0.f, 1.f));
+		this->m_Gems[(int)this->m_gemInPlace - 1]->setBoundingBox(DirectX::XMFLOAT3(0.1, 0.1, 0.1));
+		this->m_Gems[(int)this->m_gemInPlace - 1]->setIfCollidable(false);
+		this->m_Gems[(int)this->m_gemInPlace - 1]->setCnaUseLever(false);
 		this->m_holdingGem = false;
 		this->m_gemInPlace = 0;
 		this->m_GameSlotFilled_3 = true;
@@ -248,6 +272,9 @@ void FindGemsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& act
 	{
 		this->m_Gems[(int)this->m_gemInPlace - 1]->setPosition(m_gemSlots[4]->getPosition());
 		this->m_Gems[(int)this->m_gemInPlace - 1]->setRotation(DirectX::XMVectorSet(pMath::convertDegreesToRadians(75), pMath::convertDegreesToRadians(-90), 0.f, 1.f));
+		this->m_Gems[(int)this->m_gemInPlace - 1]->setBoundingBox(DirectX::XMFLOAT3(0.1, 0.1, 0.1));
+		this->m_Gems[(int)this->m_gemInPlace - 1]->setIfCollidable(false);
+		this->m_Gems[(int)this->m_gemInPlace - 1]->setCnaUseLever(false);
 		this->m_holdingGem = false;
 		this->m_gemInPlace = 0;
 		this->m_GameSlotFilled_4 = true;
@@ -346,6 +373,11 @@ void FindGemsRoom::init()
 	//this->portals();
 	this->m_player->addAABBFromVector(&m_boundingBoxes);
 	
+	m_Gems[0]->setCnaUseLever(true);
+	m_Gems[1]->setCnaUseLever(true);
+	m_Gems[2]->setCnaUseLever(true);
+	m_Gems[3]->setCnaUseLever(true);
+	m_Gems[4]->setCnaUseLever(true);
 	
 
 
