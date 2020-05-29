@@ -359,17 +359,19 @@ void ViewLayer::render()
 		GameObject* gObject = this->m_gameObjectsFromState->at(i);
     if (gObject->visible())
 		{
-      int wvpIndex = gObject->getWvpCBufferIndex();
-      int mIndex = gObject->getModelIndex();
-      // Set Constant buffer
-      this->m_deviceContext->VSSetConstantBuffers(0, 1, this->m_wvpCBufferFromState->at(wvpIndex).GetAdressOf());
-      // Draw Model
-      this->m_modelsFromState->at(mIndex).m_material.setTexture(gObject->getTexturePath().c_str());
-      this->m_modelsFromState->at(mIndex).draw(viewPMtrx);
+			int wvpIndex = gObject->getWvpCBufferIndex();
+			int mIndex = gObject->getModelIndex();
+			// Set Constant buffer
+			this->m_deviceContext->VSSetConstantBuffers(0, 1, this->m_wvpCBufferFromState->at(wvpIndex).GetAdressOf());
+			// Draw Model
+			this->m_modelsFromState->at(mIndex).m_material.setTexture(gObject->getTexturePath().c_str());
+			this->m_modelsFromState->at(mIndex).draw(viewPMtrx);
 		}
 	}
 
 	// Draw Particles
+	this->m_deviceContext->GSSetSamplers(0, 1, this->m_samplerState.GetAddressOf());
+	this->m_deviceContext->OMSetDepthStencilState(m_states->DepthNone(), 0);
 	this->m_particleRenderer.render(viewPMtrx);
 	this->m_shaders.unbindShaders();
 

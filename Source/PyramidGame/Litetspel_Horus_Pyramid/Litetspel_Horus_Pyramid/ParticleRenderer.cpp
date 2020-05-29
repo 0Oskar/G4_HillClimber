@@ -36,7 +36,7 @@ void ParticleRenderer::initlialize(ID3D11Device* device, ID3D11DeviceContext* dC
 	NoCullDesc.FillMode = D3D11_FILL_SOLID;
 	NoCullDesc.CullMode = D3D11_CULL_NONE;
 	NoCullDesc.FrontCounterClockwise = false;
-	NoCullDesc.DepthClipEnable = true;
+	NoCullDesc.DepthClipEnable = false;
 
 	HRESULT hr = (device->CreateRasterizerState(&NoCullDesc, NoCullPR.GetAddressOf()));
 	assert(SUCCEEDED(hr) && "Error when creating rasterizerDesc, in ParticleRenderer!");
@@ -130,12 +130,16 @@ void ParticleRenderer::render(XMMATRIX vpMatrix)
 	// The updated vertices are streamed-out to the target VB. 
 	if (this->m_firstRun) 
 	{
+		this->m_dContext->PSSetShader(nullptr, nullptr, 0);
+		this->m_dContext->RSSetState(NoCullPR.Get());
 		this->m_dContext->Draw(1, 0);
 		this->m_firstRun = false;
 	}
 	else 
 	{
+		this->m_dContext->GSSetSamplers(0, 0, nullptr);
 		this->m_dContext->DrawAuto();
+
 	}
 	
 	
