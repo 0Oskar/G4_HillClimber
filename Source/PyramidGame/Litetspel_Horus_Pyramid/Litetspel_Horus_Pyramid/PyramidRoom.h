@@ -8,6 +8,7 @@ private:
 	void createBoundingBoxes();
 	void createSceneObjects();
 	void onCompleted();
+	void addPalmTrees();
 
 	DirectX::BoundingOrientedBox m_pyramidOOB;
 	CheckpointHandler m_checkpointHandler;

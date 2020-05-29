@@ -21,9 +21,6 @@
     <ClCompile Include="ViewLayer.cpp">
       <Filter>Source\View</Filter>
     </ClCompile>
-    <ClCompile Include="pugixml.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="Camera.cpp">
       <Filter>Source\View</Filter>
     </ClCompile>
@@ -102,6 +99,15 @@
     </ClCompile>
     <ClCompile Include="MenuState.cpp">
       <Filter>Source\Game Logic\GameStates</Filter>
+    </ClCompile>
+    <ClCompile Include="pugixml.cpp">
+      <Filter>Source\Utilites</Filter>
+    </ClCompile>
+    <ClCompile Include="ShadowMapInstance.cpp">
+      <Filter>Source\View</Filter>
+    </ClCompile>
+    <ClCompile Include="Bell.cpp">
+      <Filter>Source\Game Logic\GameObjects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -227,6 +233,12 @@
     </ClInclude>
     <ClInclude Include="MenuState.h">
       <Filter>Header\Game Logic\GameStates</Filter>
+    </ClInclude>
+    <ClInclude Include="ShadowMapInstance.h">
+      <Filter>Header\View</Filter>
+    </ClInclude>
+    <ClInclude Include="Bell.h">
+      <Filter>Header\Game Logic\GameObjects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

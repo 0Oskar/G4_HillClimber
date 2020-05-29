@@ -201,6 +201,11 @@ public:
 		this->m_velocity.y += this->m_mass * -GRAVITY;
 	}
 
+	void addYDecel(float dt)
+	{
+		this->m_velocity.y *= this->m_deceleration.y * dt;
+	}
+
 	void jump(float accelerationMultipler, float dt)
 	{
 		if (!this->m_isJumping)

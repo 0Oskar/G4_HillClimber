@@ -154,6 +154,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
+    <ClCompile Include="Bell.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Chain.cpp" />
     <ClCompile Include="CheckpointHandler.cpp" />
@@ -190,6 +191,7 @@
     <ClCompile Include="pugixml.cpp" />
     <ClCompile Include="PyramidRoom.cpp" />
     <ClCompile Include="Room.cpp" />
+    <ClCompile Include="ShadowMapInstance.cpp" />
     <ClCompile Include="TemplateRoom.cpp" />
     <ClCompile Include="Shaders.cpp" />
     <ClCompile Include="Timer.cpp" />
@@ -212,6 +214,7 @@
   <ItemGroup>
     <ClInclude Include="Application.h" />
     <ClInclude Include="AudioComponent.h" />
+    <ClInclude Include="Bell.h" />
     <ClInclude Include="BoundingPrim.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Chain.h" />
@@ -245,6 +248,7 @@
     <ClInclude Include="ResourceHandler.h" />
     <ClInclude Include="Room.h" />
     <ClInclude Include="Shaders.h" />
+    <ClInclude Include="ShadowMapInstance.h" />
     <ClInclude Include="StatusTextHandler.h" />
     <ClInclude Include="TemplateRoom.h" />
     <ClInclude Include="Timer.h" />
