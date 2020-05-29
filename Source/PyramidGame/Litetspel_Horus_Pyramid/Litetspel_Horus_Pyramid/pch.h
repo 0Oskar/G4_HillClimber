@@ -18,6 +18,8 @@
 #include <queue>
 #include <string>
 #include <sstream>
+#include <ctime>
+
 #include <math.h>
 #include <fstream>
 #include<stack>

@@ -11,11 +11,15 @@ private:
 	Portal* portal;
 	std::vector<DirectX::BoundingBox> SpikesBB;
 
+	GameObject* diamond;
+
 	Bell* bell1;
 	Bell* bell2;
 	Bell* bell3;
 
-	const float bellOffset = 30;
+	Timer moveTimer;
+
+	int randNr;
 
 	bool animationIsFinnished;
 
@@ -42,17 +46,9 @@ private:
 	bool tempLever2 = false;
 	bool tempLever3 = false;
 
-	//void moveBellForward(GameObject * bell, float dt);
-	//void moveBellForward2(GameObject* bell, float dt);
+	bool bellsShallRase = false;
 
-	//void moveBellBackward(GameObject* bell, float dt);
-	//void moveBellBackward2(GameObject* bell, float dt);
-
-	//void moveBellLeft(GameObject* bell, float dt);
-	//void moveBellLeft2(GameObject* bell, float dt);
-
-	//void moveBellRight(GameObject* bell, float dt);
-	//void moveBellRight2(GameObject* bell, float dt);
+	bool isAnimationGoing = false;
 
 public:
 
@@ -64,4 +60,11 @@ public:
 	void init();
 	void portals();
 
+	//int randomNr();
+
+	void moveBellsUp(float startTime);
+	void moveBellsDown(float startTime);
+	void Bellmove1(float startTime);
+	void Bellmove2(float startTime);
+	void Bellmove3(float startTime);
 };

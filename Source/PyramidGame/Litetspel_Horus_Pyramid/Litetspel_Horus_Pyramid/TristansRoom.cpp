@@ -46,6 +46,7 @@ void TristansRoom::createSceneObjects()
 	DirectX::XMVECTOR pos = DirectX::XMVectorSet(0.f, -10.f, 0.f, 1.f);
 	DirectX::XMVECTOR rot = DirectX::XMVectorSet(0.f, 0.f, 0.f, 1.f);
 
+
 	// PuzzleRoom
 	pos = DirectX::XMVectorSet(0, 45, 110, 1); // World pos
 	this->addGameObjectToRoom(true, false, 1, 21, &m_models->at(21), pos, scale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(1.f, 1.f, 1.f));
@@ -54,19 +55,20 @@ void TristansRoom::createSceneObjects()
 	pos = DirectX::XMVectorSet(0, 50, -30, 1); // World pos
 	this->addGameObjectToRoom(true, false, 1, 33, &m_models->at(33), pos, scale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(1.f, 1.f, 1.f));
 	this->m_gameObjects.back()->setRotation({ XMConvertToRadians(180),0.0f, 0.0f, 0.f });
+	this->diamond = this->m_gameObjects.back();
 
 	//Bell 1
-	pos = DirectX::XMVectorSet(0 + bellOffset, 45, 100, 1); // World pos
+	pos = DirectX::XMVectorSet(0 + BELL_OFFSET, 45 + BELL_OFFSET, 100, 1); // World pos
 	this->addBellToRoom(34, &m_models->at(34), pos);
 	this->bell1 = dynamic_cast<Bell*>(this->m_gameObjects.back());
 
 	//Bell 2
-	pos = DirectX::XMVectorSet(0, 45, 100, 1); // World pos
+	pos = DirectX::XMVectorSet(0, 45 + BELL_OFFSET, 100, 1); // World pos
 	this->addBellToRoom(34, &m_models->at(34), pos);
 	this->bell2 = dynamic_cast<Bell*>(this->m_gameObjects.back());
 
 	//Bell 3
-	pos = DirectX::XMVectorSet(0 - bellOffset, 45, 100, 1); // World pos
+	pos = DirectX::XMVectorSet(0 - BELL_OFFSET, 45 + BELL_OFFSET, 100, 1); // World pos
 	this->addBellToRoom(34, &m_models->at(34), pos);
 	this->bell3 = dynamic_cast<Bell*>(this->m_gameObjects.back());
 
@@ -76,6 +78,7 @@ void TristansRoom::createSceneObjects()
 	this->m_gameObjects.back()->getMoveCompPtr()->rotation = XMVectorZero();
 	this->leverGrip.emplace_back(dynamic_cast<Lever*>(m_gameObjects.back()));
 	this->leverGrip[0]->setPlayerBoundingBox(this->m_player->getAABBPtr());
+	leverGrip[0]->activateLever();
 
 	//Back Lever Grip 1
 	pos = DirectX::XMVectorSet(15, 48.8f, 73.25f, 1); // World pos
@@ -108,6 +111,8 @@ TristansRoom::TristansRoom()
 {
 	Room::initParent();
 	this->m_entrencePosition = { 0, 55, 95, 1};
+	srand((unsigned)time(0));
+	isAnimationGoing = false;
 }
 
 TristansRoom::~TristansRoom()
@@ -117,7 +122,6 @@ TristansRoom::~TristansRoom()
 
 void TristansRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activeRoomChanged)
 {
-
 	Room::update(dt, camera, activeRoom, activeRoomChanged);
 	//Spikes
 	for (int i = 0; i < SpikesBB.size(); i++)
@@ -137,8 +141,69 @@ void TristansRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& act
 			this->leverTimer[0].restart();
 			this->canPullLever0 = false;
 			this->moveLever0 = true;
+
+			leverGrip[0]->activateLever();
+			
+			OutputDebugString(L"LEVER PULLED\n");
+			
+			this->bellsShallRase = true;
 		}
 	}
+
+	if (this->bellsShallRase == true)
+	{
+		moveTimer.restart();
+		bellsShallRase = false;
+		moveBellsDown(0);
+		//randomNr();
+	}
+	if (this->moveTimer.isActive())
+	{
+		if (isAnimationGoing == false)
+		{
+			isAnimationGoing = true;
+			randNr = (rand() % 3);
+
+			OutputDebugString(L" randNr choosen \n ");
+			OutputDebugStringA(std::to_string(randNr).c_str());
+			OutputDebugString(L"\n ");
+			if (randNr == 0)
+			{
+				Bellmove1(1);
+			}
+			if (randNr == 1)
+			{
+				Bellmove2(1);
+			}
+			if (randNr == 2)
+			{
+				Bellmove3(1);
+			}
+		}
+		else
+		{
+			if (randNr == 0)
+			{
+				OutputDebugString(L" ranNr 01 \n ");
+				Bellmove1(1);
+				OutputDebugString(L" ranNr 02 \n ");
+			}
+			if (randNr == 1)
+			{
+				OutputDebugString(L" ranNr 11 \n ");
+				Bellmove2(1);
+				OutputDebugString(L" ranNr 12 \n ");
+			}
+			if (randNr == 2)
+			{
+				OutputDebugString(L" ranNr 21 \n ");
+				Bellmove3(1);
+				OutputDebugString(L" ranNr 22 \n ");
+			}
+		}
+	}
+
+
 	if (this->leverTimer[0].timeElapsed() < 1)
 	{
 		if (this->moveLever0 == true)
@@ -296,4 +361,505 @@ void TristansRoom::portals()
 		0, false);
 	portal = dynamic_cast<Portal*>(this->m_gameObjects.back());
 	//portal->setActiveStatus(false);
+}
+
+//int TristansRoom::randomNr()
+//{
+//	int randNr;
+//	randNr = (rand() % 3 )+ 1;
+//	return randNr;
+//}
+
+void TristansRoom::moveBellsUp(float startTime)
+{
+	if (this->moveTimer.timeElapsed() >= startTime && this->moveTimer.timeElapsed() <= startTime + 1)
+	{
+		if (this->bell1->GetAnimating() == false)
+		{
+			bell1->raiseBell();
+			bell2->raiseBell();
+			bell3->raiseBell();
+		}
+
+	}
+}
+
+void TristansRoom::moveBellsDown(float startTime)
+{
+	if (this->moveTimer.timeElapsed() >= startTime && this->moveTimer.timeElapsed() <= startTime + 1)
+	{
+		if (this->bell1->GetAnimating() == false)
+		{
+			bell1->lowerBell();
+			bell2->lowerBell();
+			bell3->lowerBell();
+		}
+	}
+}
+
+void TristansRoom::Bellmove1(float startTime)
+{
+	//Step1
+	if (this->moveTimer.timeElapsed() >= startTime && this->moveTimer.timeElapsed() <= startTime + 1.f)
+	{
+		OutputDebugString(L"MOVE1");
+		if (!this->bell1->GetAnimating() && !this->bell2->GetAnimating() && !this->bell3->GetAnimating())
+		{
+			OutputDebugString(L"Step 1 START!\n");
+			bell1->moveBellForward();
+			//bell2->lowerBell();
+			bell3->moveBellForward2();
+			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			OutputDebugString(L", Step 1 END!\n");
+			this->diamond->setPosition(DirectX::XMVectorSet( 30.f, 0.f, -30.f, 1) + this->m_worldPosition);
+		}
+	}
+	//Step2
+	if (this->moveTimer.timeElapsed() >= startTime + 1.f && this->moveTimer.timeElapsed() <= startTime + 2.f)
+	{
+		if (!this->bell1->GetAnimating() && !this->bell2->GetAnimating() && !this->bell3->GetAnimating())
+		{
+			bell1->moveBellRight();
+			bell2->moveBellRight();
+			bell3->moveBellLeft2();
+			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			OutputDebugString(L", Step 2 \n");
+		}
+	}
+	//Step3
+	if (this->moveTimer.timeElapsed() >= startTime + 2.f && this->moveTimer.timeElapsed() <= startTime + 3.f)
+	{
+		if (!this->bell1->GetAnimating() && !this->bell2->GetAnimating() && !this->bell3->GetAnimating())
+		{
+			//bell1->moveBellBackward2();
+			bell2->moveBellForward2();
+			bell3->moveBellBackward2();
+			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			OutputDebugString(L", Step 3 \n");
+		}
+	}
+	//Step4
+	if (this->moveTimer.timeElapsed() >= startTime + 3.f && this->moveTimer.timeElapsed() <= startTime + 4.f)
+	{
+		if (!this->bell1->GetAnimating() && !this->bell2->GetAnimating() && !this->bell3->GetAnimating())
+		{
+			//bell1->moveBellBackward2();
+			bell2->moveBellLeft();
+			bell3->moveBellRight();
+			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			OutputDebugString(L"Step 4 \n");
+		}
+	}
+	//Step5
+	if (this->moveTimer.timeElapsed() >= startTime + 4.f && this->moveTimer.timeElapsed() <= startTime + 5.f)
+	{
+		if (!this->bell1->GetAnimating() && !this->bell2->GetAnimating() && !this->bell3->GetAnimating())
+		{
+			bell1->moveBellLeft();
+			bell2->moveBellRight();
+			//bell3->moveBellRight();
+			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			OutputDebugString(L"Step 5 \n");
+		}
+	}
+	//Step6
+	if (this->moveTimer.timeElapsed() >= startTime + 5.f && this->moveTimer.timeElapsed() <= startTime + 6.f)
+	{
+		if (!this->bell1->GetAnimating() && !this->bell2->GetAnimating() && !this->bell3->GetAnimating())
+		{
+			bell1->moveBellBackward();
+			bell2->moveBellBackward();
+			bell3->moveBellForward2();
+			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			OutputDebugString(L"Step 6 \n");
+		}
+	}
+	//Step7
+	if (this->moveTimer.timeElapsed() >= startTime + 6.f && this->moveTimer.timeElapsed() <= startTime + 7.f)
+	{
+		if (!this->bell1->GetAnimating() && !this->bell2->GetAnimating() && !this->bell3->GetAnimating())
+		{
+			//bell1->moveBellBackward();
+			bell2->moveBellLeft2();
+			bell3->moveBellRight();
+			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			OutputDebugString(L"Step 7 \n");
+		}
+	}
+	//Step8
+	if (this->moveTimer.timeElapsed() >= startTime + 7.f && this->moveTimer.timeElapsed() <= startTime + 8.f)
+	{
+		if (!this->bell1->GetAnimating() && !this->bell2->GetAnimating() && !this->bell3->GetAnimating())
+		{
+			bell1->moveBellForward();
+			bell2->moveBellForward();
+			bell3->moveBellBackward2();
+			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			OutputDebugString(L"Step 8 \n");
+		}
+	}
+	//Step9
+	if (this->moveTimer.timeElapsed() >= startTime + 8.f && this->moveTimer.timeElapsed() <= startTime + 9.f)
+	{
+		if (!this->bell1->GetAnimating() && !this->bell2->GetAnimating() && !this->bell3->GetAnimating())
+		{
+			bell1->moveBellRight2();
+			bell2->moveBellRight();
+			bell3->moveBellLeft2();
+			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			OutputDebugString(L"Step 9 \n");
+		}
+	}
+	//Step10
+	if (this->moveTimer.timeElapsed() >= startTime + 9.f && this->moveTimer.timeElapsed() <= startTime + 10.f)
+	{
+		if (!this->bell1->GetAnimating() && !this->bell2->GetAnimating() && !this->bell3->GetAnimating())
+		{
+			//bell1->moveBellRight2();
+			bell2->moveBellBackward2();
+			bell3->moveBellForward2();
+			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			OutputDebugString(L"Step 10 \n");
+		}
+	}
+	//Step11
+	if (this->moveTimer.timeElapsed() >= startTime + 10.f && this->moveTimer.timeElapsed() <= startTime + 11.f)
+	{
+		if (!this->bell1->GetAnimating() && !this->bell2->GetAnimating() && !this->bell3->GetAnimating())
+		{
+			bell1->moveBellLeft();
+			bell2->moveBellLeft();
+			bell3->moveBellRight2();
+			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			OutputDebugString(L"Step 11 \n");
+		}
+	}
+	//Step12
+	if (this->moveTimer.timeElapsed() >= startTime + 11.f && this->moveTimer.timeElapsed() <= startTime + 12.f)
+	{
+		if (!this->bell1->GetAnimating() && !this->bell2->GetAnimating() && !this->bell3->GetAnimating())
+		{
+			bell1->moveBellBackward();
+			//bell2->moveBellLeft();
+			bell3->moveBellBackward2();
+			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			OutputDebugString(L"Step 12 \n");
+		}
+	}
+	if (this->moveTimer.timeElapsed() >= startTime + 12.f)
+	{
+		this->diamond->setPosition(DirectX::XMVectorSet(30.f, 50.f, -30.f, 1) + this->m_worldPosition);
+	}
+}
+
+void TristansRoom::Bellmove2(float startTime)
+{
+	//Step1
+	if (this->moveTimer.timeElapsed() >= startTime && this->moveTimer.timeElapsed() <= startTime + 1.f)
+	{
+		OutputDebugString(L"MOVE2");
+		if (!this->bell1->GetAnimating() && !this->bell2->GetAnimating() && !this->bell3->GetAnimating())
+		{
+			OutputDebugString(L"Step 1 START!\n");
+			bell1->moveBellForward();
+			bell2->moveBellForward2();
+			//bell3->moveBellForward2();
+			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			OutputDebugString(L", Step 1 END!\n");
+			this->diamond->setPosition(DirectX::XMVectorSet(0.f, 0.f, -30.f, 1) + this->m_worldPosition);
+		}
+	}
+	//Step2
+	if (this->moveTimer.timeElapsed() >= startTime + 1.f && this->moveTimer.timeElapsed() <= startTime + 2.f)
+	{
+		if (!this->bell1->GetAnimating() && !this->bell2->GetAnimating() && !this->bell3->GetAnimating())
+		{
+			bell1->moveBellRight();
+			//bell2->moveBellRight();
+			bell3->moveBellLeft();
+			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			OutputDebugString(L", Step 2 \n");
+		}
+	}
+	//Step3
+	if (this->moveTimer.timeElapsed() >= startTime + 2.f && this->moveTimer.timeElapsed() <= startTime + 3.f)
+	{
+		if (!this->bell1->GetAnimating() && !this->bell2->GetAnimating() && !this->bell3->GetAnimating())
+		{
+			bell1->moveBellRight();
+			//bell2->moveBellForward2();
+			//bell3->moveBellBackward2();
+			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			OutputDebugString(L", Step 3 \n");
+		}
+	}
+	//Step4
+	if (this->moveTimer.timeElapsed() >= startTime + 3.f && this->moveTimer.timeElapsed() <= startTime + 4.f)
+	{
+		if (!this->bell1->GetAnimating() && !this->bell2->GetAnimating() && !this->bell3->GetAnimating())
+		{
+			bell1->moveBellBackward();
+			//bell2->moveBellLeft();
+			//bell3->moveBellRight();
+			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			OutputDebugString(L"Step 4 \n");
+		}
+	}
+	//Step5
+	if (this->moveTimer.timeElapsed() >= startTime + 4.f && this->moveTimer.timeElapsed() <= startTime + 5.f)
+	{
+		if (!this->bell1->GetAnimating() && !this->bell2->GetAnimating() && !this->bell3->GetAnimating())
+		{
+			//bell1->moveBellLeft();
+			//bell2->moveBellRight();
+			bell3->moveBellForward();
+			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			OutputDebugString(L"Step 5 \n");
+		}
+	}
+	//Step6
+	if (this->moveTimer.timeElapsed() >= startTime + 5.f && this->moveTimer.timeElapsed() <= startTime + 6.f)
+	{
+		if (!this->bell1->GetAnimating() && !this->bell2->GetAnimating() && !this->bell3->GetAnimating())
+		{
+			bell1->moveBellLeft2();
+			bell2->moveBellRight();
+			//bell3->moveBellForward2();
+			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			OutputDebugString(L"Step 6 \n");
+		}
+	}
+	//Step7
+	if (this->moveTimer.timeElapsed() >= startTime + 6.f && this->moveTimer.timeElapsed() <= startTime + 7.f)
+	{
+		if (!this->bell1->GetAnimating() && !this->bell2->GetAnimating() && !this->bell3->GetAnimating())
+		{
+			bell1->moveBellForward2();
+			bell2->moveBellBackward();
+			bell3->moveBellForward();
+			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			OutputDebugString(L"Step 7 \n");
+		}
+	}
+	//Step8
+	if (this->moveTimer.timeElapsed() >= startTime + 7.f && this->moveTimer.timeElapsed() <= startTime + 8.f)
+	{
+		if (!this->bell1->GetAnimating() && !this->bell2->GetAnimating() && !this->bell3->GetAnimating())
+		{
+			bell1->moveBellBackward2();
+			bell2->moveBellLeft();
+			bell3->moveBellRight();
+			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			OutputDebugString(L"Step 8 \n");
+		}
+	}
+	//Step9
+	if (this->moveTimer.timeElapsed() >= startTime + 8.f && this->moveTimer.timeElapsed() <= startTime + 9.f)
+	{
+		if (!this->bell1->GetAnimating() && !this->bell2->GetAnimating() && !this->bell3->GetAnimating())
+		{
+			bell1->moveBellRight2();
+			bell2->moveBellLeft();
+			bell3->moveBellLeft2();
+			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			OutputDebugString(L"Step 9 \n");
+		}
+	}
+	//Step10
+	if (this->moveTimer.timeElapsed() >= startTime + 9.f && this->moveTimer.timeElapsed() <= startTime + 10.f)
+	{
+		if (!this->bell1->GetAnimating() && !this->bell2->GetAnimating() && !this->bell3->GetAnimating())
+		{
+			bell1->moveBellForward2();
+			bell2->moveBellBackward();
+			bell3->moveBellBackward();
+			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			OutputDebugString(L"Step 10 \n");
+		}
+	}
+	//Step11
+	if (this->moveTimer.timeElapsed() >= startTime + 10.f && this->moveTimer.timeElapsed() <= startTime + 11.f)
+	{
+		if (!this->bell1->GetAnimating() && !this->bell2->GetAnimating() && !this->bell3->GetAnimating())
+		{
+			bell1->moveBellLeft2();
+			bell2->moveBellRight();
+			bell3->moveBellRight2();
+			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			OutputDebugString(L"Step 11 \n");
+		}
+	}
+	//Step12
+	if (this->moveTimer.timeElapsed() >= startTime + 11.f && this->moveTimer.timeElapsed() <= startTime + 12.f)
+	{
+		if (!this->bell1->GetAnimating() && !this->bell2->GetAnimating() && !this->bell3->GetAnimating())
+		{
+			bell1->moveBellBackward2();
+			//bell2->moveBellLeft();
+			bell3->moveBellBackward();
+			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			OutputDebugString(L"Step 12 \n");
+			//this->diamond->setPosition(DirectX::XMVectorSet(0.f, 50.f, -30.f, 1.f) + this->m_worldPosition);
+		}
+	}
+	if (this->moveTimer.timeElapsed() >= startTime + 12.f)
+	{
+		this->diamond->setPosition(DirectX::XMVectorSet(0.f, 50.f, -30.f, 1.f) + this->m_worldPosition);
+	}
+}
+
+void TristansRoom::Bellmove3(float startTime)
+{
+	//Step1
+	if (this->moveTimer.timeElapsed() >= startTime && this->moveTimer.timeElapsed() <= startTime + 1.f)
+	{
+		OutputDebugString(L"MOVE3");
+		if (!this->bell1->GetAnimating() && !this->bell2->GetAnimating() && !this->bell3->GetAnimating())
+		{
+			OutputDebugString(L"Step 1 START!\n");
+			bell1->moveBellForward();
+			bell2->moveBellForward2();
+			//bell3->moveBellForward2();
+			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			OutputDebugString(L", Step 1 END!\n");
+			this->diamond->setPosition(DirectX::XMVectorSet(-30.f, 0.f, -30.f, 1) + this->m_worldPosition);
+		}
+	}
+	//Step2
+	if (this->moveTimer.timeElapsed() >= startTime + 1.f && this->moveTimer.timeElapsed() <= startTime + 2.f)
+	{
+		if (!this->bell1->GetAnimating() && !this->bell2->GetAnimating() && !this->bell3->GetAnimating())
+		{
+			bell1->moveBellRight2();
+			bell2->moveBellLeft();
+			bell3->moveBellLeft();
+			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			OutputDebugString(L", Step 2 \n");
+		}
+	}
+	//Step3
+	if (this->moveTimer.timeElapsed() >= startTime + 2.f && this->moveTimer.timeElapsed() <= startTime + 3.f)
+	{
+		if (!this->bell1->GetAnimating() && !this->bell2->GetAnimating() && !this->bell3->GetAnimating())
+		{
+			//bell1->moveBellRight();
+			bell2->moveBellBackward2();
+			bell3->moveBellForward2();
+			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			OutputDebugString(L", Step 3 \n");
+		}
+	}
+	//Step4
+	if (this->moveTimer.timeElapsed() >= startTime + 3.f && this->moveTimer.timeElapsed() <= startTime + 4.f)
+	{
+		if (!this->bell1->GetAnimating() && !this->bell2->GetAnimating() && !this->bell3->GetAnimating())
+		{
+			bell1->moveBellLeft();
+			bell2->moveBellRight();
+			//bell3->moveBellRight();
+			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			OutputDebugString(L"Step 4 \n");
+		}
+	}
+	//Step5
+	if (this->moveTimer.timeElapsed() >= startTime + 4.f && this->moveTimer.timeElapsed() <= startTime + 5.f)
+	{
+		if (!this->bell1->GetAnimating() && !this->bell2->GetAnimating() && !this->bell3->GetAnimating())
+		{
+			bell1->moveBellLeft();
+			//bell2->moveBellRight();
+			bell3->moveBellRight();
+			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			OutputDebugString(L"Step 5 \n");
+		}
+	}
+	//Step6
+	if (this->moveTimer.timeElapsed() >= startTime + 5.f && this->moveTimer.timeElapsed() <= startTime + 6.f)
+	{
+		if (!this->bell1->GetAnimating() && !this->bell2->GetAnimating() && !this->bell3->GetAnimating())
+		{
+			bell1->moveBellBackward();
+			bell2->moveBellForward2();
+			//bell3->moveBellForward2();
+			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			OutputDebugString(L"Step 6 \n");
+		}
+	}
+	//Step7
+	if (this->moveTimer.timeElapsed() >= startTime + 6.f && this->moveTimer.timeElapsed() <= startTime + 7.f)
+	{
+		if (!this->bell1->GetAnimating() && !this->bell2->GetAnimating() && !this->bell3->GetAnimating())
+		{
+			bell1->moveBellRight2();
+			bell2->moveBellLeft();
+			bell3->moveBellLeft();
+			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			OutputDebugString(L"Step 7 \n");
+		}
+	}
+	//Step8
+	if (this->moveTimer.timeElapsed() >= startTime + 7.f && this->moveTimer.timeElapsed() <= startTime + 8.f)
+	{
+		if (!this->bell1->GetAnimating() && !this->bell2->GetAnimating() && !this->bell3->GetAnimating())
+		{
+			bell1->moveBellForward2();
+			bell2->moveBellBackward();
+			bell3->moveBellBackward2();
+			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			OutputDebugString(L"Step 8 \n");
+		}
+	}
+	//Step9
+	if (this->moveTimer.timeElapsed() >= startTime + 8.f && this->moveTimer.timeElapsed() <= startTime + 9.f)
+	{
+		if (!this->bell1->GetAnimating() && !this->bell2->GetAnimating() && !this->bell3->GetAnimating())
+		{
+			bell1->moveBellLeft();
+			bell2->moveBellRight();
+			//bell3->moveBellLeft2();
+			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			OutputDebugString(L"Step 9 \n");
+		}
+	}
+	//Step10
+	if (this->moveTimer.timeElapsed() >= startTime + 9.f && this->moveTimer.timeElapsed() <= startTime + 10.f)
+	{
+		if (!this->bell1->GetAnimating() && !this->bell2->GetAnimating() && !this->bell3->GetAnimating())
+		{
+			//bell1->moveBellForward2();
+			bell2->moveBellRight();
+			//bell3->moveBellBackward();
+			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			OutputDebugString(L"Step 10 \n");
+		}
+	}
+	//Step11
+	if (this->moveTimer.timeElapsed() >= startTime + 10.f && this->moveTimer.timeElapsed() <= startTime + 11.f)
+	{
+		if (!this->bell1->GetAnimating() && !this->bell2->GetAnimating() && !this->bell3->GetAnimating())
+		{
+			bell1->moveBellLeft();
+			//bell2->moveBellRight();
+			//bell3->moveBellRight2();
+			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			OutputDebugString(L"Step 11 \n");
+		}
+	}
+	//Step12
+	if (this->moveTimer.timeElapsed() >= startTime + 11.f && this->moveTimer.timeElapsed() <= startTime + 12.f)
+	{
+		if (!this->bell1->GetAnimating() && !this->bell2->GetAnimating() && !this->bell3->GetAnimating())
+		{
+			bell1->moveBellBackward2();
+			bell2->moveBellBackward();
+			//bell3->moveBellBackward();
+			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			OutputDebugString(L"Step 12 \n");
+			//this->diamond->setPosition(DirectX::XMVectorSet(-30.f, 50.f, -30.f, 1) + this->m_worldPosition);
+		}
+	}
+	if (this->moveTimer.timeElapsed() >= startTime + 12.f)
+	{
+		this->diamond->setPosition(DirectX::XMVectorSet(-30.f, 50.f, -30.f, 1) + this->m_worldPosition);
+	}
 }
