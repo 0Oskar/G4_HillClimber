@@ -332,8 +332,8 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 
 	// Pyramid Frustum for drawing only(Seperate from)
 	DirectX::XMFLOAT3 center(0.f, 62.f, 80.f);
-	DirectX::XMFLOAT3 extents(200.f, 205.f, 1.f);
-	float rotationX = XMConvertToRadians(45.f);
+	DirectX::XMFLOAT3 extents(450.f, 550.f, 1.f);
+	float rotationX = XMConvertToRadians(46.f);
 	LPCWSTR test = std::to_wstring(rotationX).c_str();
 	DirectX::XMVECTOR quaternion = DirectX::XMQuaternionRotationRollPitchYaw(rotationX, 0.f, 0.f);
 	DirectX::XMFLOAT4 orientation;

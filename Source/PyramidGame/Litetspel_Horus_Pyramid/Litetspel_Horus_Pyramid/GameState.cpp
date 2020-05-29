@@ -197,8 +197,8 @@ void GameState::loadModels()
 	//1 - Pyramid
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(0.9f, 0.7f, 0.3f, 1.0f);
-	this->m_models[1].loadVertexFromOBJ(m_device, m_dContext, L"Models/FinalPyramid.obj", mat, L"Textures/pyramidTexture.png");
-
+	this->m_models[1].initializeModelBff(m_device, m_dContext, "BasePyramidNew.bff", mat, L"Textures/pyramidTexture.png");
+	
 	//2- HookHead model
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
@@ -419,8 +419,8 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	
 	//Pyramid OBB
 	DirectX::XMFLOAT3 center(0.f, 62.f, 80.f);
-	DirectX::XMFLOAT3 extents(200.f, 250.f, 1.f);
-	float rotationX = XMConvertToRadians(45.f);
+	DirectX::XMFLOAT3 extents(450.f, 550.f, 1.f);
+	float rotationX = XMConvertToRadians(46.f);
 	LPCWSTR test = std::to_wstring(rotationX).c_str();
 	OutputDebugStringW(test);
 	OutputDebugStringW(L"\n");

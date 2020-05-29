@@ -87,7 +87,7 @@ void followingEnemy::followPlayer(float dt)
 
 	if (this-> reachedEdge == false)
 	{
-		this->getMoveCompPtr()->position += (walkDirection * dt * 13);
+		this->getMoveCompPtr()->position += (walkDirection * dt * 12);
 
 
 		float targetRotation = (float)atan2((double)(walkDirection.m128_f32[0]), (double)(walkDirection.m128_f32[2])) + XM_PI;
@@ -95,14 +95,12 @@ void followingEnemy::followPlayer(float dt)
 
 		if (rotationDifference < XM_PI )
 		{
-			rotationDifference -= (float)XM_PI * 2;
-		
+			rotationDifference -= (float)XM_PI * 2;	
 		}
 
 		if (rotationDifference > -XM_PI )
 		{
-			rotationDifference += (float)XM_PI * 2;
-			
+			rotationDifference += (float)XM_PI * 2;			
 		}
 
 		currentRotationY += (rotationDifference)*dt * 5;

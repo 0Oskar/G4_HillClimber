@@ -106,7 +106,8 @@ void Player::update(Keyboard* keyboard, Mouse* mouse, float dt)
 	else
 	{
 		// Gravity
-		this->m_physicsComp->addGravity(dt);
+		if(!this->m_QAmode)
+			this->m_physicsComp->addGravity(dt);
 
 		// Controls
 		if (keyboard->isKeyPressed('W'))
@@ -121,8 +122,13 @@ void Player::update(Keyboard* keyboard, Mouse* mouse, float dt)
 		if (keyboard->isKeyPressed('D'))
 			this->m_physicsComp->addForceDir(Direction::RIGHT, dt);
 
-		if (keyboard->isKeyPressed(' ')) // Space
-			this->m_physicsComp->jump(3.f, dt);
+		if (keyboard->isKeyPressed(' '))// Space
+		{
+			if (!this->m_QAmode)
+				this->m_physicsComp->jump(3.f, dt);		
+			else
+				this->m_physicsComp->addForceDir(Direction::UP, dt);		
+		}		
 
 		if (keyboard->isKeyPressed((unsigned char)16)) // Shift
 			flyDown(dt);
@@ -183,6 +189,8 @@ void Player::update(Keyboard* keyboard, Mouse* mouse, float dt)
 	}
 
 	this->m_physicsComp->updatePosition(dt, true); // If Camera is not following player, remove last argument( Only dt)
+	if (this->m_QAmode)
+		this->m_physicsComp->addYDecel(dt);
 	this->m_hookHand.update(dt);
 }
 
