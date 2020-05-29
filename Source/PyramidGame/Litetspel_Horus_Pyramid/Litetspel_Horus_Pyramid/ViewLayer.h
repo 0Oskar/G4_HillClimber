@@ -5,8 +5,9 @@
 #include "Timer.h"
 #include "Platform.h"
 #include "Shaders.h"
+#include "ShadowMapInstance.h"
 #include "StatusTextHandler.h"
-
+#include "iGameState.h"
 class ViewLayer
 {
 private:
@@ -34,11 +35,23 @@ private:
 	// Shaders
 	Shaders m_shaders;
 
+	// Shadow Mapping
+	static const int SHADOW_MAP_SIZE = 2048;
+	ShadowMapInstance m_shadowInstance;
+
 	// Constant Buffer
 	Microsoft::WRL::ComPtr< ID3D11Buffer > m_constantBuffer;
 
 	// Texture Handler
 	ResourceHandler* resourceHandler;
+
+	
+	// SpriteBatch
+	std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
+	Microsoft::WRL::ComPtr<ID3D11RasterizerState> m_spriteRasterizerState;
+	std::unique_ptr<DirectX::SpriteFont> m_spriteFont16;
+	std::unique_ptr<DirectX::SpriteFont> m_spriteFont32;
+
 
 	// Primitive Batch
 	std::unique_ptr< DirectX::CommonStates > m_states;
@@ -56,6 +69,7 @@ private:
 	std::vector<Model>* m_modelsFromState;
 	std::vector< ConstBuffer<VS_CONSTANT_BUFFER> >* m_wvpCBufferFromState;
 	DirectX::BoundingOrientedBox m_pyramidOBB;
+	constantBufferData* m_constantBufferDataFromStatePtr;
 
 	ConstBuffer<PS_LIGHT_BUFFER> m_lightBuffer;
 	ConstBuffer<PS_FOG_BUFFER> m_fogBuffer;
@@ -65,22 +79,10 @@ private:
 	DirectX::XMMATRIX* m_viewMatrix;
 	DirectX::XMMATRIX* m_projectionMatrix;
 
-	// Sprite and Font Rendering
-	std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
-	std::unique_ptr<DirectX::SpriteFont> m_spriteFont16;
-	std::unique_ptr<DirectX::SpriteFont> m_spriteFont32;
-	Microsoft::WRL::ComPtr<ID3D11RasterizerState> m_spriteRasterizerState;
-
-	// Crosshair SpriteBatch
-	ID3D11ShaderResourceView* m_crossHairSRV;
-	DirectX::XMFLOAT2 m_crosshairPosition;
-
 	// FPS Counter
 	Timer m_timer;
 	std::string m_fpsString;
-	std::string m_timerString;
 	int m_fps;
-	Timer* m_gameTimePtr;
 
 	// Status Text
 	StatusTextHandler* m_statusTextHandler;
@@ -102,7 +104,7 @@ public:
 	ID3D11DeviceContext* getContextDevice();
 
 	// Setters
-	void setViewMatrix(DirectX::XMMATRIX* newViewMatrix);
+	void setViewMatrix(DirectX::XMMATRIX* ViewMatrix);
 	void setProjectionMatrix(DirectX::XMMATRIX* newProjectionMatrix);
 
 	// Setters for State Pointers
@@ -114,9 +116,9 @@ public:
 	void setModelsFromState(std::vector<Model>* models);
 	void setDirLightFromActiveRoom(PS_DIR_BUFFER dirLight);
 	void setFogDataFromActiveRoom(PS_FOG_BUFFER fogData);
+	void setConstantBuffersFromGameState(constantBufferData* cbDataFromState);
 	void setLightDataFromActiveRoom(PS_LIGHT_BUFFER lightData);
 	void setWvpCBufferFromState(std::vector< ConstBuffer<VS_CONSTANT_BUFFER> >* models);
-	void setGameTimePtr(Timer* gameTimer);
 	// Initialization
 	void initialize(HWND window, GameOptions* options);
 
@@ -124,6 +126,6 @@ public:
 	void update(float dt, XMFLOAT3 cameraPos);
 
 	// Render
-	void render();
+	void render(iGameState* gameState);
 	void toggleDrawPrimitives(bool toggle);
 };

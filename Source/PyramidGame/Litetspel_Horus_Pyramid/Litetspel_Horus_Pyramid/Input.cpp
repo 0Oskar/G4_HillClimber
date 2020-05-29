@@ -18,8 +18,8 @@ LRESULT Input::handleMessages(HWND hwnd, UINT& uMsg, WPARAM& wParam, LPARAM& lPa
 		{
 			m_Keyboard.onKeyPressed(key);
 		}
-		if(key == (char)27)
-			uMsg = WM_DESTROY;
+		//if(key == (char)27)
+		//	//uMsg = WM_DESTROY;
 
 		return 0;
 	}

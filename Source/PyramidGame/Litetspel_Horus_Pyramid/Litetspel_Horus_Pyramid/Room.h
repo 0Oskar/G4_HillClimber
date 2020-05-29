@@ -24,12 +24,13 @@ protected:
 	PS_DIR_BUFFER m_dirLight;
 	PS_FOG_BUFFER m_fogData;
 	PS_LIGHT_BUFFER m_lightData;
-	
+	ResourceHandler* resourceHandler;
 	Player* m_player;
 	std::shared_ptr<DirectX::AudioEngine> audioEngine;
 	Timer* m_gameTimerPointer;
 	DirectX::XMVECTOR m_entrencePosition;
 	DirectX::XMVECTOR m_worldPosition;
+	GameOptions option;
 
 	virtual void createBoundingBoxes() {};
 	virtual void createSceneObjects() {};
@@ -40,12 +41,14 @@ protected:
 public:
 	Room();
 	~Room();
-	virtual void initialize(ID3D11Device* device, ID3D11DeviceContext* dContext, std::vector<Model>* models, std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* cBuffer, Player* player, XMVECTOR position, std::shared_ptr<DirectX::AudioEngine> audioEngine, Timer* gameTimer);
+	virtual void initialize(ID3D11Device* device, ID3D11DeviceContext* dContext, std::vector<Model>* models, std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* cBuffer, Player* player, XMVECTOR position, std::shared_ptr<DirectX::AudioEngine> audioEngine, Timer* gameTimer, GameOptions option);
 	void initParent();
 	virtual void update(float dt, Camera* camera, Room*& activeRoom, bool& activeRoomChanged) = 0;
 	virtual void init() {};
 	virtual void portals() {};
 	virtual void onEntrance() { this->m_gameTimerPointer->stop(); };
+	virtual void drawUI(DirectX::SpriteBatch* spriteBatchPtr, DirectX::SpriteFont* spriteFontPtr) { };
+
 
 	void addGameObjectToRoom(bool dynamic, bool colide, float weight, int mdlIndx, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR scale3D, DirectX::XMFLOAT3 boundingBoxSize = DirectX::XMFLOAT3(0, 0, 0), DirectX::XMFLOAT3 acceleration = DirectX::XMFLOAT3(1, 1, 1), DirectX::XMFLOAT3 deceleration = DirectX::XMFLOAT3(1, 1, 1));
 	void addPlatformToRoom(int mdlIndex, Model* mdl, DirectX::XMVECTOR position, DirectX::XMFLOAT3 platformBoundingBox, BoundingOrientedBox* pyramid = nullptr);
@@ -69,7 +72,5 @@ public:
 	PS_FOG_BUFFER getFogData();
 	PS_LIGHT_BUFFER getLightData();
 
-
 	bool m_completed;
-
 };

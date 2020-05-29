@@ -7,7 +7,7 @@
 
 void EdvinsRoom::createBoundingBoxes()
 {
-	this->addBoundingBox({ -35, -1, 0, 1 }, DirectX::XMFLOAT3(35, 2, 30)); //Floor Wall
+	this->addBoundingBox({ -35, -1, 0, 1 }, DirectX::XMFLOAT3(35, 1, 30)); //Floor
 
 	this->addBoundingBox({ 0, 6, 0, 1 }, DirectX::XMFLOAT3(1, 12, 20)); //Back Wall
 	this->addBoundingBox({ -69, 6, 0, 1 }, DirectX::XMFLOAT3(1, 12, 6)); //Portal Wall
@@ -125,9 +125,9 @@ void EdvinsRoom::createSceneObjects()
 
 void EdvinsRoom::onWin()
 {
-	OutputDebugStringA("\nYou won!\n");
 	this->guessPos = 6;
 	//Activate portal
+	StatusTextHandler::get().sendText("You guessed the correct order!\n           Portal activated", 5);
 	this->roomPortal->setPosition(XMVectorSet(-270, 0, 200, 1));
 
 	//Activate particalas
@@ -136,9 +136,8 @@ void EdvinsRoom::onWin()
 
 void EdvinsRoom::onFail()
 {
-	OutputDebugStringA("\nYou lost!\n");
 	//Reset Pos
-	this->m_player->getMoveCompPtr()->position = { -260, 0, 199, 1 };
+	this->m_player->getMoveCompPtr()->position = { -260, 5, 201, 1 };
 
 	//Reset lever
 	this->canPullLever = true;
@@ -153,7 +152,10 @@ void EdvinsRoom::onFail()
 		//Reset player guess array
 		this->guessOrder[i] = -1;
 	}
+
 	//Add Time
+	StatusTextHandler::get().sendText("You guessed the wrong order!\n         5 sec added to timer", 5);
+	this->m_gameTimerPointer->addTime(5);
 }
 
 bool EdvinsRoom::CorrectOrder(int arr1[], int arr2[])
@@ -175,7 +177,7 @@ bool EdvinsRoom::CorrectOrder(int arr1[], int arr2[])
 EdvinsRoom::EdvinsRoom()
 {
 	Room::initParent();
-	this->m_entrencePosition = { -60, 100, -1, 1 };
+	this->m_entrencePosition = { -60, -3, -1, 1 };
 }
 
 EdvinsRoom::~EdvinsRoom()
@@ -190,9 +192,10 @@ void EdvinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 	// -------- Lever Stuff -------- //
 
 	this->lever->collidesWithPlayer();
-	if (this->lever->getCanUseLever() == true) //Is inside lever BB
+	if (this->lever->getCanUseLever() == true && this->canPullLever == true) //Is inside lever BB
 	{
-		if (this->m_player->getinUse() == true && this->tempLever == false && this->canPullLever == true) //And press E on the BB
+		StatusTextHandler::get().sendText("Press E to interact", 0.01);
+		if (this->m_player->getinUse() == true && this->tempLever == false) //And press E on the BB
 		{
 			for (int i = 0; i < 5; i++)
 			{

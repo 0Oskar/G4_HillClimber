@@ -154,12 +154,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
+    <ClCompile Include="Bell.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Chain.cpp" />
     <ClCompile Include="CheckpointHandler.cpp" />
     <ClCompile Include="DebugDraw.cpp" />
     <ClCompile Include="EdvinsRoom.cpp" />
     <ClCompile Include="finalRoom.cpp" />
+    <ClCompile Include="FindGemsRoom.cpp" />
     <ClCompile Include="followingEnemy.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameState.cpp" />
@@ -172,6 +174,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Input_Mouse.cpp" />
+    <ClCompile Include="MenuState.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -189,6 +192,7 @@
     <ClCompile Include="pugixml.cpp" />
     <ClCompile Include="PyramidRoom.cpp" />
     <ClCompile Include="Room.cpp" />
+    <ClCompile Include="ShadowMapInstance.cpp" />
     <ClCompile Include="TemplateRoom.cpp" />
     <ClCompile Include="Shaders.cpp" />
     <ClCompile Include="Timer.cpp" />
@@ -211,6 +215,7 @@
   <ItemGroup>
     <ClInclude Include="Application.h" />
     <ClInclude Include="AudioComponent.h" />
+    <ClInclude Include="Bell.h" />
     <ClInclude Include="BoundingPrim.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Chain.h" />
@@ -218,10 +223,12 @@
     <ClInclude Include="ConstantBuffer.h" />
     <ClInclude Include="DebugDraw.h" />
     <ClInclude Include="finalRoom.h" />
+    <ClInclude Include="FindGemsRoom.h" />
     <ClInclude Include="followingEnemy.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameState.h" />
     <ClInclude Include="EdvinsRoom.h" />
+    <ClInclude Include="iGameState.h" />
     <ClInclude Include="HookHand.h" />
     <ClInclude Include="IndexBuffer.h" />
     <ClInclude Include="Input.h" />
@@ -230,6 +237,7 @@
     <ClInclude Include="KevinsRoom.h" />
     <ClInclude Include="Lever.h" />
     <ClInclude Include="Material.h" />
+    <ClInclude Include="MenuState.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="MovementComponent.h" />
     <ClInclude Include="pch.h" />
@@ -242,6 +250,7 @@
     <ClInclude Include="ResourceHandler.h" />
     <ClInclude Include="Room.h" />
     <ClInclude Include="Shaders.h" />
+    <ClInclude Include="ShadowMapInstance.h" />
     <ClInclude Include="StatusTextHandler.h" />
     <ClInclude Include="TemplateRoom.h" />
     <ClInclude Include="Timer.h" />
