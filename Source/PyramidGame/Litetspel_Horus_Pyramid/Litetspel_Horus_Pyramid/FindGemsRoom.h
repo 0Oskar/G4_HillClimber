@@ -41,6 +41,7 @@ private:
 	BoundingBox* m_PortalBB;
 	Portal* m_portal;
 	
+	//
 
 public:
 	FindGemsRoom();

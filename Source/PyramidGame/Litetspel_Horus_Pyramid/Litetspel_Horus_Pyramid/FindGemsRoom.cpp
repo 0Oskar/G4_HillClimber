@@ -29,8 +29,10 @@ void FindGemsRoom::createBoundingBoxes()
 
 	this->addBoundingBox({ 18, 0, -23, 1 }, DirectX::XMFLOAT3(1, 1, 1.5));  // Chest "Right side"
 
-	this->addBoundingBox({ 0, 3, 35, 1 }, DirectX::XMFLOAT3(12, 9, 2));
+	this->addBoundingBox({ 0, 3, 35, 1 }, DirectX::XMFLOAT3(12, 9, 2)); // Gate
 	m_GateBB = &this->m_boundingBoxes.back();
+
+	//this->addBoundingBox({ 0, -2, 33, 1 }, DirectX::XMFLOAT3(4, 1, 4)); // Ramp
 	
 }
 
@@ -145,6 +147,13 @@ void FindGemsRoom::createSceneObjects()
 	pos = m_PreFixedSpawnpoints[7] + DirectX::XMVectorSet(0, -3, 0, 0);
 	this->addGameObjectToRoom(true, false, 1, nrOfCurrentLModels, &m_models->at(nrOfCurrentLModels), pos, scale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
 	
+	// Ramp to back room
+	++nrOfCurrentLModels;
+	pos = DirectX::XMVectorSet(0, -1.1, 30, 1);
+	scale = DirectX::XMVectorSet(1, 1, 1, 1);
+	rot = DirectX::XMVectorSet(0.f, 0.f, 0.f, 1.f);
+	this->addGameObjectToRoom(true, false, 1, nrOfCurrentLModels, &m_models->at(nrOfCurrentLModels), pos, scale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
+
 }
 
 void FindGemsRoom::onCompleted()
