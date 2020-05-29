@@ -10,6 +10,8 @@ private:
 	void onCompleted();
 	void addPalmTrees();
 
+
+	GameObject* clouds;
 	DirectX::BoundingOrientedBox m_pyramidOOB;
 	CheckpointHandler m_checkpointHandler;
 	const XMVECTOR platformPush = XMVectorSet(0, 0, -10, 0 );
