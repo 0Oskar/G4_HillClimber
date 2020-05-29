@@ -24,7 +24,7 @@ void MenuState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	DirectX::XMVECTOR vec = DirectX::XMVectorSet(0.f, -10.f, 0.f, 1.f);
 	DirectX::XMVECTOR rotation = DirectX::XMVectorSet(0.f, 0.f, 0.f, 1.f);
 
-
+	
 
 	//Pyramid OBB
 	DirectX::XMFLOAT3 center(0.f, 62.f, 80.f);
@@ -53,6 +53,86 @@ void MenuState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_camera.followMoveComp(m_cameraMovementComponentPtr);
 	this->m_camera.initialize(options.mouseSensitivity, options.fov, (float)options.width / (float)options.height, 0.1f, 1000.f);
 	
+	this->loadModels();
+
+	m_pyramidRoom.initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, nullptr, XMVectorSet(0, 0, 0, 1), audioEngine, nullptr);
+	m_pyramidRoom.init(&pyramid);
+	this->m_constantbufferData.dirBuffer = this->m_pyramidRoom.getDirectionalLight();
+	this->m_constantbufferData.fogBuffer = this->m_pyramidRoom.getFogData();
+	this->m_constantbufferData.lightBuffer = this->m_pyramidRoom.getLightData();
+
+	this->m_cameraMovementComponentPtr->position = { 0, 100, 0 };
+
+}
+
+
+void MenuState::update(float dt)
+{
+	bool boolean = false;
+	float angle;
+	Room* tempRoomPtr = &this->m_pyramidRoom;
+	m_angle += 10 * dt;
+
+	angle = XMConvertToRadians(m_angle);
+	this->m_pyramidRoom.update(dt, &this->m_camera, tempRoomPtr, boolean);
+	for (size_t i = 0; i < this->m_gameObjects.size(); i++)
+	{
+		VS_CONSTANT_BUFFER wvpData;
+		DirectX::XMMATRIX viewPMtrx = this->m_camera.getViewMatrix() * this->m_camera.getProjectionMatrix();
+		wvpData.wvp = this->m_gameObjects.at(i)->getWorldMatrix() * viewPMtrx;
+		wvpData.worldMatrix = this->m_gameObjects[i]->getWorldMatrix();
+
+		this->m_wvpCBuffers[this->m_gameObjects[i]->getWvpCBufferIndex()].upd(&wvpData);
+		if (this->m_gameObjects[i]->m_removeMe)
+		{
+			this->m_gameObjects[i]->setVisibility(false);
+			this->m_gameObjects[i]->setIfCollidable(false);
+		}
+	}
+
+
+	
+
+	XMVECTOR newPos = XMVectorSet(cos(angle) * m_radiusConst, XMVectorGetY(m_moveAroundPosConst), sin(angle) * m_radiusConst, 1);
+	this->m_cameraMovementComponentPtr->position = newPos;
+
+	XMVECTOR cameraToPyramid;
+	cameraToPyramid = this->m_cameraMovementComponentPtr->position - m_lookAtPosConst;
+	cameraToPyramid = XMVector3Normalize(cameraToPyramid);
+	float targetRotation = (float)atan2((double)(cameraToPyramid.m128_f32[0]), (double)(cameraToPyramid.m128_f32[2])) + XM_PI;
+
+	
+	this->m_cameraMovementComponentPtr->rotation = XMVectorSet(0.0f, targetRotation, 0.0f, 0.0f);
+	
+
+	this->m_camera.updateView();
+}
+
+
+states MenuState::handleInput(Keyboard* keyboard, Mouse* mousePtr, float dt)
+{
+	states changeStateTo = states::NONE;
+	if (!keyboard->empty())
+	{
+		KeyboardEvent keyboardEvent = keyboard->readKey();
+		if (keyboardEvent.getEvent() == Event::Pressed)
+		{
+			if (keyboardEvent.getKey() == (char)27)
+				changeStateTo = states::POP;
+			else if(keyboardEvent.getKey() == (char)13)
+				changeStateTo = states::GAME;
+		}
+	}
+
+	return changeStateTo;
+}
+void MenuState::afterChange()
+{
+
+}
+
+void MenuState::loadModels()
+{
 	// Material
 	MaterialData mat;
 	mat.ambient = { 0.2f, 0.2f, 0.2f, 1.f };
@@ -237,84 +317,13 @@ void MenuState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
 	this->m_models[35].loadVertexFromOBJ(m_device, m_dContext, L"Models/PalmTree.obj", mat, L"Textures/ColorTexture.png");
 
-	m_pyramidRoom.initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, nullptr, XMVectorSet(0, 0, 0, 1), audioEngine, nullptr);
-	m_pyramidRoom.init(&pyramid);
-	this->m_constantbufferData.dirBuffer = this->m_pyramidRoom.getDirectionalLight();
-	this->m_constantbufferData.fogBuffer = this->m_pyramidRoom.getFogData();
-	this->m_constantbufferData.lightBuffer = this->m_pyramidRoom.getLightData();
-
-	this->m_cameraMovementComponentPtr->position = { 0, 100, 0 };
-
-}
-
-
-void MenuState::update(float dt)
-{
-	bool boolean = false;
-	float angle;
-	Room* tempRoomPtr = &this->m_pyramidRoom;
-	m_angle += 10 * dt;
-
-	angle = XMConvertToRadians(m_angle);
-	this->m_pyramidRoom.update(dt, &this->m_camera, tempRoomPtr, boolean);
-	for (size_t i = 0; i < this->m_gameObjects.size(); i++)
-	{
-		VS_CONSTANT_BUFFER wvpData;
-		DirectX::XMMATRIX viewPMtrx = this->m_camera.getViewMatrix() * this->m_camera.getProjectionMatrix();
-		wvpData.wvp = this->m_gameObjects.at(i)->getWorldMatrix() * viewPMtrx;
-		wvpData.worldMatrix = this->m_gameObjects[i]->getWorldMatrix();
-
-		this->m_wvpCBuffers[this->m_gameObjects[i]->getWvpCBufferIndex()].upd(&wvpData);
-		if (this->m_gameObjects[i]->m_removeMe)
-		{
-			this->m_gameObjects[i]->setVisibility(false);
-			this->m_gameObjects[i]->setIfCollidable(false);
-		}
-	}
-
-
-	XMVECTOR newPos = XMVectorSet(cos(angle) * m_radiusConst, XMVectorGetY(m_moveAroundPosConst), sin(angle) * m_radiusConst, 1);
-	this->m_cameraMovementComponentPtr->position = newPos;
-
-	XMVECTOR cameraToPyramid;
-	cameraToPyramid = this->m_cameraMovementComponentPtr->position - m_lookAtPosConst;
-	cameraToPyramid = XMVector3Normalize(cameraToPyramid);
-	float targetRotation = (float)atan2((double)(cameraToPyramid.m128_f32[0]), (double)(cameraToPyramid.m128_f32[2])) + XM_PI;
-
-	
-	this->m_cameraMovementComponentPtr->rotation = XMVectorSet(0.0f, targetRotation, 0.0f, 0.0f);
-	
-
-	this->m_camera.updateView();
-}
-
-
-states MenuState::handleInput(Keyboard* keyboard, Mouse* mousePtr, float dt)
-{
-	states changeStateTo = states::NONE;
-	if (!keyboard->empty())
-	{
-		KeyboardEvent keyboardEvent = keyboard->readKey();
-		if (keyboardEvent.getEvent() == Event::Pressed)
-		{
-			if (keyboardEvent.getKey() == (char)27)
-				changeStateTo = states::POP;
-			else if(keyboardEvent.getKey() == (char)13)
-				changeStateTo = states::GAME;
-		}
-	}
-
-	return changeStateTo;
-}
-void MenuState::afterChange()
-{
 
 }
 
 
 void MenuState::onEntry() 
 {
-	this->m_audioComponent->playSound(menuSound, 0, true);
+	this->m_audioComponent->playSound(menuSound, 0, true, 1.0f, 0.5f);
 }
 
 void MenuState::onLeave()
