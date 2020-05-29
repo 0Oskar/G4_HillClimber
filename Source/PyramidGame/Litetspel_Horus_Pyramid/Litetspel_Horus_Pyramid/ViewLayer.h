@@ -49,6 +49,8 @@ private:
 	// SpriteBatch
 	std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
 	Microsoft::WRL::ComPtr<ID3D11RasterizerState> m_spriteRasterizerState;
+	std::unique_ptr<DirectX::SpriteFont> m_spriteFont16;
+	std::unique_ptr<DirectX::SpriteFont> m_spriteFont32;
 	// Gem UI 
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_gemUI0_SRV;
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_gemUI1_SRV;
@@ -86,10 +88,7 @@ private:
 	DirectX::XMMATRIX* m_projectionMatrix;
 
 	// Sprite and Font Rendering
-	std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
-	std::unique_ptr<DirectX::SpriteFont> m_spriteFont16;
-	std::unique_ptr<DirectX::SpriteFont> m_spriteFont32;
-	Microsoft::WRL::ComPtr<ID3D11RasterizerState> m_spriteRasterizerState;
+	
 
 
 	// FPS Counter

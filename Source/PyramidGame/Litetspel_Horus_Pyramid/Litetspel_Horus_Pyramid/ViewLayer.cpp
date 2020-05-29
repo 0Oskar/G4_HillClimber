@@ -554,28 +554,6 @@ void ViewLayer::render(iGameState* gameState)
 	gameState->drawUI(m_spriteBatch.get(), m_spriteFont16.get());
 	this->m_spriteFont16->DrawString(this->m_spriteBatch.get(), this->m_fpsString.c_str(), DirectX::XMFLOAT2((float)this->m_options->width - 110.f, 10.f), DirectX::Colors::White, 0.f, DirectX::XMFLOAT2(0.f, 0.f));
 	this->m_statusTextHandler->render(this->m_spriteFont32.get(), this->m_spriteBatch.get());
-	this->m_spriteBatch->Begin(SpriteSortMode_Deferred,this->m_states->AlphaBlend());
-
-	if (this->m_currentRoomUIPath == L"GemsUI_null") {
-		this->m_spriteBatch->Draw(this->m_gemUI0_SRV.Get(), this->m_gemUI_Position, nullptr, Colors::White, 0.f, XMFLOAT2(0, 0), XMFLOAT2(0.2, 0.2));
-	}
-	else if (this->m_currentRoomUIPath == L"GemsUI_1") {
-		this->m_spriteBatch->Draw(this->m_gemUI1_SRV.Get(), this->m_gemUI_Position, nullptr, Colors::White, 0.f, XMFLOAT2(0, 0), XMFLOAT2(0.2, 0.2));
-	}
-	else if (this->m_currentRoomUIPath == L"GemsUI_2") {
-		this->m_spriteBatch->Draw(this->m_gemUI2_SRV.Get(), this->m_gemUI_Position, nullptr, Colors::White, 0.f, XMFLOAT2(0, 0), XMFLOAT2(0.2, 0.2));
-	}
-	else if (this->m_currentRoomUIPath == L"GemsUI_3") {
-		this->m_spriteBatch->Draw(this->m_gemUI3_SRV.Get(), this->m_gemUI_Position, nullptr, Colors::White, 0.f, XMFLOAT2(0, 0), XMFLOAT2(0.2, 0.2));
-	}
-	else if (this->m_currentRoomUIPath == L"GemsUI_4") {
-		this->m_spriteBatch->Draw(this->m_gemUI4_SRV.Get(), this->m_gemUI_Position, nullptr, Colors::White, 0.f, XMFLOAT2(0, 0), XMFLOAT2(0.2, 0.2));
-	}
-	else if (this->m_currentRoomUIPath == L"GemsUI_5") {
-		this->m_spriteBatch->Draw(this->m_gemUI5_SRV.Get(), this->m_gemUI_Position, nullptr, Colors::White, 0.f, XMFLOAT2(0, 0), XMFLOAT2(0.2, 0.2));
-	}
-	
-	this->m_spriteFont->DrawString(this->m_spriteBatch.get(), this->m_fpsString.c_str(), DirectX::XMFLOAT2((float)this->m_options->width - 100.f, 0), DirectX::Colors::White, 0.f, DirectX::XMFLOAT2(0.f, 0.f));
 	this->m_spriteBatch->End();
 	
 	// Swap Frames

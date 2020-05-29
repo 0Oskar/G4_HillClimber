@@ -42,7 +42,7 @@ void FindGemsRoom::createSceneObjects()
 	DirectX::XMVECTOR pos = DirectX::XMVectorSet(0.f, 0.f, 0.f, 1.f);
 	DirectX::XMVECTOR rot = DirectX::XMVectorSet(0.f, 0.f, 0.f, 1.f);
 
-	int nrOfCurrentLModels = 26; // Get the real number later
+	int nrOfCurrentLModels = 35; // Get the real number later
 
 	// Room
 	pos = DirectX::XMVectorSet(0, 5.5, 7.8, 1);

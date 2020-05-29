@@ -433,6 +433,25 @@ void GameState::drawUI(DirectX::SpriteBatch* spriteBatchPtr, DirectX::SpriteFont
 	spriteBatchPtr->Draw(this->m_crossHairSRV, this->m_crosshairPosition);
 	spriteFontPtr->DrawString(spriteBatchPtr, this->m_timerString.c_str(), DirectX::XMFLOAT2(10.f, 10.f), this->m_gameTime.isActive() ? DirectX::Colors::White : DirectX::Colors::Green, 0.f, DirectX::XMFLOAT2(0.f, 0.f));
 	spriteFontPtr->DrawString(spriteBatchPtr, std::to_string(this->m_gameTime.timeElapsed()).c_str(), DirectX::XMFLOAT2(70.f, 10.f), DirectX::Colors::Green, 0.f, DirectX::XMFLOAT2(0.f, 0.f));
+
+	//if (this->m_currentRoomUIPath == L"GemsUI_null") {
+	//	this->m_spriteBatch->Draw(this->m_gemUI0_SRV.Get(), this->m_gemUI_Position, nullptr, Colors::White, 0.f, XMFLOAT2(0.f, 0.f), XMFLOAT2(0.2f, 0.2f));
+	//}
+	//else if (this->m_currentRoomUIPath == L"GemsUI_1") {
+	//	this->m_spriteBatch->Draw(this->m_gemUI1_SRV.Get(), this->m_gemUI_Position, nullptr, Colors::White, 0.f, XMFLOAT2(0.f, 0.f), XMFLOAT2(0.2f, 0.2f));
+	//}
+	//else if (this->m_currentRoomUIPath == L"GemsUI_2") {
+	//	this->m_spriteBatch->Draw(this->m_gemUI2_SRV.Get(), this->m_gemUI_Position, nullptr, Colors::White, 0.f, XMFLOAT2(0.f, 0.f), XMFLOAT2(0.2f, 0.2f));
+	//}
+	//else if (this->m_currentRoomUIPath == L"GemsUI_3") {
+	//	this->m_spriteBatch->Draw(this->m_gemUI3_SRV.Get(), this->m_gemUI_Position, nullptr, Colors::White, 0.f, XMFLOAT2(0.f, 0.f), XMFLOAT2(0.2f, 0.2f));
+	//}
+	//else if (this->m_currentRoomUIPath == L"GemsUI_4") {
+	//	this->m_spriteBatch->Draw(this->m_gemUI4_SRV.Get(), this->m_gemUI_Position, nullptr, Colors::White, 0.f, XMFLOAT2(0.f, 0.f), XMFLOAT2(0.2f, 0.2f));
+	//}
+	//else if (this->m_currentRoomUIPath == L"GemsUI_5") {
+	//	this->m_spriteBatch->Draw(this->m_gemUI5_SRV.Get(), this->m_gemUI_Position, nullptr, Colors::White, 0.f, XMFLOAT2(0.f, 0.f), XMFLOAT2(0.2f, 0.2f));
+	//}
 }
 
 void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext, GameOptions options, std::shared_ptr<DirectX::AudioEngine> audioEngine)
@@ -547,7 +566,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 
 	//Template Room [1] Viktor
 	this->m_rooms.emplace_back(new FindGemsRoom());
-	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, 300, 1), audioEngine, &this->m_gameTime);
+	this->m_rooms.back()->initialize(m_device, m_dContext, m_modelsPtr, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, 300, 1), audioEngine, &this->m_gameTime);
 	dynamic_cast<FindGemsRoom*>(this->m_rooms.back())->init();
 
 	//Kevin Room [2]
