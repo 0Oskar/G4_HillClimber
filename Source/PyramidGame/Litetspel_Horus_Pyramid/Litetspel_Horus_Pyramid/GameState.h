@@ -31,7 +31,6 @@ private:
 	std::vector<DirectX::BoundingBox*> platformBB;
 	std::vector<GameObject*>* m_chainGObjects;
 	
-	void loadModels();
 
 	//UI Stuff
 	ID3D11ShaderResourceView* m_crossHairSRV;

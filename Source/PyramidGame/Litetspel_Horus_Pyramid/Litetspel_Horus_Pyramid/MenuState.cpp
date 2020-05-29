@@ -197,21 +197,6 @@ void MenuState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f); //reset material
 	this->m_models[27].initializeModelBff(m_device, m_dContext, "TristansLeverGrip.bff", mat, L"Textures/ColorTexture.png"); //load model
 
-	////28. Bell 1
-	//this->m_models.emplace_back();
-	//mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
-	//this->m_models[28].initializeModelBff(m_device, m_dContext, "NewBell1.bff", mat, L"Textures/ColorTexture.png"); //load model
-
-	////29. Bell 2
-	//this->m_models.emplace_back();
-	//mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
-	//this->m_models[29].initializeModelBff(m_device, m_dContext, "NewBell2.bff", mat, L"Textures/ColorTexture.png"); //load model
-
-	////30. Bell 3
-	//this->m_models.emplace_back();
-	//mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
-	//this->m_models[30].initializeModelBff(m_device, m_dContext, "NewBell3.bff", mat, L"Textures/ColorTexture.png"); //load model
-
 	//28. finalRoom
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
@@ -232,17 +217,25 @@ void MenuState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
 	this->m_models[31].initializeModelBff(m_device, m_dContext, "Gauntlet_RightWing.bff", mat, L"Textures/ColorTexture.png");
 
-	//32. Diamond
+	//32. Hook Highlight Gem
 	this->m_models.emplace_back(); //add empty model
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f); //reset material
-	this->m_models[32].initializeModelBff(m_device, m_dContext, "Diamond.bff", mat, L"Textures/ColorTexture.png"); //load model
+	this->m_models[32].initializeModelBff(m_device, m_dContext, "Gauntlet_GreenGem.bff", mat, L"Textures/ColorTexture.png"); //load model
 
-	// Ground
-	this->addGameObjectToWorld(false, true, 0, 0, &m_models.at(0), vec, NormalScale, DirectX::XMFLOAT3(1000.f, 10.f, 1000.f));
+	//33. Diamond
+	this->m_models.emplace_back(); //add empty model
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f); //reset material
+	this->m_models[33].initializeModelBff(m_device, m_dContext, "Diamond.bff", mat, L"Textures/ColorTexture.png"); //load model
 
-	// Pyramid
-	vec = DirectX::XMVectorSet(0.f, 0.f, 315.f, 1.f);
-	this->addGameObjectToWorld(false, true, 0, 1, &m_models.at(1), vec, NormalScale);
+	//33. Bell 2
+	this->m_models.emplace_back();
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
+	this->m_models[34].initializeModelBff(m_device, m_dContext, "Bell2.bff", mat, L"Textures/ColorTexture.png"); //load model
+
+	//34. PalmTree
+	this->m_models.emplace_back();
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
+	this->m_models[35].loadVertexFromOBJ(m_device, m_dContext, L"Models/PalmTree.obj", mat, L"Textures/ColorTexture.png");
 
 	m_pyramidRoom.initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, nullptr, XMVectorSet(0, 0, 0, 1), audioEngine, nullptr);
 	m_pyramidRoom.init(&pyramid);
