@@ -51,15 +51,7 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11RasterizerState> m_spriteRasterizerState;
 	std::unique_ptr<DirectX::SpriteFont> m_spriteFont16;
 	std::unique_ptr<DirectX::SpriteFont> m_spriteFont32;
-	// Gem UI 
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_gemUI0_SRV;
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_gemUI1_SRV;
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_gemUI2_SRV;
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_gemUI3_SRV;
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_gemUI4_SRV;
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_gemUI5_SRV;
-	DirectX::XMFLOAT2 m_gemUI_Position;
-	std::wstring m_currentRoomUIPath;
+
 
 	// Primitive Batch
 	std::unique_ptr< DirectX::CommonStates > m_states;
@@ -86,10 +78,6 @@ private:
 
 	DirectX::XMMATRIX* m_viewMatrix;
 	DirectX::XMMATRIX* m_projectionMatrix;
-
-	// Sprite and Font Rendering
-	
-
 
 	// FPS Counter
 	Timer m_timer;
@@ -118,7 +106,6 @@ public:
 	// Setters
 	void setViewMatrix(DirectX::XMMATRIX* ViewMatrix);
 	void setProjectionMatrix(DirectX::XMMATRIX* newProjectionMatrix);
-	void setRoomUITexturePath(std::wstring texturePath);
 
 	// Setters for State Pointers
 	void setgameObjectsFromState(std::vector<GameObject*>* gameObjectsFromState);

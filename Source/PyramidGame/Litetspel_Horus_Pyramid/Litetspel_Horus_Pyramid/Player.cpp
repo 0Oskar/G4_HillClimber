@@ -119,7 +119,9 @@ void Player::update(float dt)
 
 		// Fail State
 		if (!this->m_QAmode && this->m_lastOnGroundYPos != -1 && this->m_lastOnGroundYPos > XMVectorGetY(this->m_movementComp->position) + this->m_failThreshold)
-			this->respawn();
+		{
+			//this->respawn();
+		}
 
 		// Handle Collisions
 		this->m_physicsComp->handleCollision(this->m_collidableAABBoxes, this->m_pyramidOBB, dt, this->m_collidableOrientedBoxes);

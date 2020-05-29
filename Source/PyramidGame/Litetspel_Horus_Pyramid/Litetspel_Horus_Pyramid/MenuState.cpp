@@ -55,7 +55,7 @@ void MenuState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	
 	this->loadModels();
 
-	m_pyramidRoom.initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, nullptr, XMVectorSet(0, 0, 0, 1), audioEngine, nullptr);
+	m_pyramidRoom.initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, nullptr, XMVectorSet(0, 0, 0, 1), audioEngine, nullptr, options);
 	m_pyramidRoom.init(&pyramid);
 	this->m_constantbufferData.dirBuffer = this->m_pyramidRoom.getDirectionalLight();
 	this->m_constantbufferData.fogBuffer = this->m_pyramidRoom.getFogData();

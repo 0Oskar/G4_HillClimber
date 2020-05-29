@@ -11,7 +11,7 @@ Room::~Room()
 
 }
 
-void Room::initialize(ID3D11Device* device, ID3D11DeviceContext* dContext, std::vector<Model>* models, std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* cBuffer, Player* player, XMVECTOR position, std::shared_ptr<DirectX::AudioEngine> audioEngine, Timer* gameTimer)
+void Room::initialize(ID3D11Device* device, ID3D11DeviceContext* dContext, std::vector<Model>* models, std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* cBuffer, Player* player, XMVECTOR position, std::shared_ptr<DirectX::AudioEngine> audioEngine, Timer* gameTimer, GameOptions option)
 {
 	this->m_device = device;
 	this->m_dContext = dContext;
@@ -21,6 +21,9 @@ void Room::initialize(ID3D11Device* device, ID3D11DeviceContext* dContext, std::
 	this->m_models = models;
 	this->audioEngine = audioEngine;
 	this->m_gameTimerPointer = gameTimer;
+
+	this->resourceHandler = &ResourceHandler::get();
+	this->option = option;
 }
 void Room::initParent()
 {

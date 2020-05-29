@@ -37,6 +37,16 @@ private:
 	bool m_GameSlotFilled_3;
 	bool m_GameSlotFilled_4;
 
+	// Gem UI 
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_gemUI0_SRV;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_gemUI1_SRV;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_gemUI2_SRV;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_gemUI3_SRV;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_gemUI4_SRV;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_gemUI5_SRV;
+	DirectX::XMFLOAT2 m_gemUI_Position;
+	std::wstring m_currentRoomUIPath;
+
 	// Portal
 	BoundingBox* m_PortalBB;
 	Portal* m_portal;
@@ -52,4 +62,5 @@ public:
 	std::wstring getRoomUITexturePath();
 	void init();
 	void portals();
+	void drawUI(DirectX::SpriteBatch* spriteBatchPtr, DirectX::SpriteFont* spriteFontPtr);
 };

@@ -163,7 +163,7 @@ ViewLayer::ViewLayer()
 	this->m_wvpCBufferFromState = nullptr;
 
 	this->resourceHandler = &ResourceHandler::get();
-	this->m_gemUI_Position = DirectX::XMFLOAT2();
+	
 
 	this->m_drawPrimitives = false;
 
@@ -197,11 +197,6 @@ void ViewLayer::setViewMatrix(DirectX::XMMATRIX* newViewMatrix)
 void ViewLayer::setProjectionMatrix(DirectX::XMMATRIX* newProjectionMatrix)
 {
 	this->m_projectionMatrix = newProjectionMatrix;
-}
-
-void ViewLayer::setRoomUITexturePath(std::wstring texturePath)
-{
-	this->m_currentRoomUIPath = texturePath;
 }
 
 void ViewLayer::setgameObjectsFromState(std::vector<GameObject*>* gameObjectsFromState)
@@ -362,18 +357,6 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 
 	// Crosshair
 	this->m_spriteBatch = std::make_unique<DirectX::SpriteBatch>(this->m_deviceContext.Get());
-
-	// Gem UI - Test  
-	this->m_gemUI0_SRV = Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> (this->resourceHandler->getTexture(L"Textures/GemsUI_null.png"));
-	this->m_gemUI1_SRV = Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> (this->resourceHandler->getTexture(L"Textures/GemsUI_1.png"));
-	this->m_gemUI2_SRV = Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> (this->resourceHandler->getTexture(L"Textures/GemsUI_2.png"));
-	this->m_gemUI3_SRV = Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> (this->resourceHandler->getTexture(L"Textures/GemsUI_3.png"));
-	this->m_gemUI4_SRV = Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> (this->resourceHandler->getTexture(L"Textures/GemsUI_4.png"));
-	this->m_gemUI5_SRV = Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> (this->resourceHandler->getTexture(L"Textures/GemsUI_5.png"));
-	int gemsUI_Xpos = 40;
-	int gemsUI_Ypos = (this->m_options->height) - 140;
-	this->m_gemUI_Position = DirectX::XMFLOAT2((float)gemsUI_Xpos, (float)gemsUI_Ypos);
-
 
 	// Primitive Batch
 	this->m_states = std::make_unique< DirectX::CommonStates >(this->m_device.Get());
