@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "ViewLayer.h"
-//Jag lade till så gamestate.h är includad här
+
 
 void ViewLayer::initDeviceAndSwapChain()
 {
@@ -28,9 +28,9 @@ void ViewLayer::initDeviceAndSwapChain()
 	};
 
 	UINT flags = D3D11_CREATE_DEVICE_SINGLETHREADED;
-#if defined( DEBUG ) || defined( _DEBUG )
-	flags |= D3D11_CREATE_DEVICE_DEBUG;
-#endif
+//#if defined( DEBUG ) || defined( _DEBUG )
+//	flags |= D3D11_CREATE_DEVICE_DEBUG;
+//#endif
 
 	HRESULT hr = D3D11CreateDeviceAndSwapChain(
 		NULL,
@@ -163,16 +163,13 @@ ViewLayer::ViewLayer()
 	this->m_wvpCBufferFromState = nullptr;
 
 	this->resourceHandler = &ResourceHandler::get();
-	this->m_crossHairSRV = nullptr;
-	this->m_crosshairPosition = DirectX::XMFLOAT2();
+	
 
 	this->m_drawPrimitives = false;
 
 	this->m_viewMatrix = nullptr;
 	this->m_projectionMatrix = nullptr;
 	this->m_fps = 0;
-	this->m_gameTimePtr = nullptr;
-	this->m_timerString = "";
 }
 
 ViewLayer::~ViewLayer()
@@ -245,6 +242,18 @@ void ViewLayer::setFogDataFromActiveRoom(PS_FOG_BUFFER fogData)
 	this->m_fogBuffer.m_data = fogData;
 }
 
+void ViewLayer::setConstantBuffersFromGameState(constantBufferData* cbDataFromState)
+{
+	this->m_constantBufferDataFromStatePtr = cbDataFromState;
+	this->m_lightBuffer.m_data = cbDataFromState->lightBuffer;
+	this->m_dirLightBuffer.m_data = cbDataFromState->dirBuffer;
+	this->m_dirLight = cbDataFromState->dirBuffer;
+	this->m_fogBuffer.m_data = cbDataFromState->fogBuffer;
+	this->m_dirLightBuffer.upd();
+	this->m_fogBuffer.upd();
+	this->m_lightBuffer.upd();
+}
+
 void ViewLayer::setLightDataFromActiveRoom(PS_LIGHT_BUFFER lightData)
 {
 	this->m_lightBuffer.m_data = lightData;
@@ -256,10 +265,6 @@ void ViewLayer::setWvpCBufferFromState(std::vector< ConstBuffer<VS_CONSTANT_BUFF
 	this->m_wvpCBufferFromState = buffers;
 }
 
-void ViewLayer::setGameTimePtr(Timer* gameTimer)
-{
-	this->m_gameTimePtr = gameTimer;
-}
 
 void ViewLayer::initConstantBuffer()
 {
@@ -334,8 +339,8 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 
 	// Pyramid Frustum for drawing only(Seperate from)
 	DirectX::XMFLOAT3 center(0.f, 62.f, 80.f);
-	DirectX::XMFLOAT3 extents(200.f, 205.f, 1.f);
-	float rotationX = XMConvertToRadians(45.f);
+	DirectX::XMFLOAT3 extents(450.f, 550.f, 1.f);
+	float rotationX = XMConvertToRadians(46.f);
 	LPCWSTR test = std::to_wstring(rotationX).c_str();
 	DirectX::XMVECTOR quaternion = DirectX::XMQuaternionRotationRollPitchYaw(rotationX, 0.f, 0.f);
 	DirectX::XMFLOAT4 orientation;
@@ -345,22 +350,13 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 		extents,
 		orientation
 	);
+	this->m_spriteBatch = std::make_unique<DirectX::SpriteBatch>(this->m_deviceContext.Get());
 
 	this->resourceHandler->m_dContext = this->getContextDevice();
 	this->resourceHandler->m_device = this->getDevice();
 
 	// Crosshair
 	this->m_spriteBatch = std::make_unique<DirectX::SpriteBatch>(this->m_deviceContext.Get());
-	this->m_crossHairSRV = this->resourceHandler->getTexture(L"Textures/crosshair.png");
-	ID3D11Resource* crosshairTexture = 0;
-	this->m_crossHairSRV->GetResource(&crosshairTexture);
-	ID3D11Texture2D* crosshairTexture2D = 0;
-	crosshairTexture->QueryInterface<ID3D11Texture2D>(&crosshairTexture2D);
-	D3D11_TEXTURE2D_DESC desc;
-	crosshairTexture2D->GetDesc(&desc);
-	int crosshairX = (this->m_options->width / 2) - (desc.Width / 2);
-	int crosshairY = (this->m_options->height / 2) - (desc.Height / 2);
-	this->m_crosshairPosition = DirectX::XMFLOAT2((float)crosshairX, (float)crosshairY);
 
 	// Primitive Batch
 	this->m_states = std::make_unique< DirectX::CommonStates >(this->m_device.Get());
@@ -388,8 +384,7 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 	this->m_spriteFont32 = std::make_unique<DirectX::SpriteFont>(this->m_device.Get(), L"Fonts\\jost_32_bold.spritefont");
 	this->m_fpsString = "FPS: NULL";
 
-	// Timer
-	this->m_timerString = "Time: ";
+
 
 	// Status Text Handler
 	this->m_statusTextHandler = &StatusTextHandler::get();
@@ -416,7 +411,7 @@ void ViewLayer::update(float dt, XMFLOAT3 cameraPos)
 	this->m_statusTextHandler->update(dt);
 }
 
-void ViewLayer::render()
+void ViewLayer::render(iGameState* gameState)
 {
 	// Clear Frame
 	this->m_deviceContext->ClearRenderTargetView(this->m_outputRTV.Get(), clearColor);
@@ -534,14 +529,13 @@ void ViewLayer::render()
 
 		m_batch->End();
 	}
+
 	
 	// Draw Sprites
 	this->m_deviceContext->RSSetState(this->m_spriteRasterizerState.Get());
 	this->m_spriteBatch->Begin(SpriteSortMode_Deferred, this->m_states->AlphaBlend());
-	this->m_spriteBatch->Draw(this->m_crossHairSRV, this->m_crosshairPosition);
+	gameState->drawUI(m_spriteBatch.get(), m_spriteFont16.get());
 	this->m_spriteFont16->DrawString(this->m_spriteBatch.get(), this->m_fpsString.c_str(), DirectX::XMFLOAT2((float)this->m_options->width - 110.f, 10.f), DirectX::Colors::White, 0.f, DirectX::XMFLOAT2(0.f, 0.f));
-	this->m_spriteFont16->DrawString(this->m_spriteBatch.get(), this->m_timerString.c_str(), DirectX::XMFLOAT2(10.f, 10.f), this->m_gameTimePtr->isActive() ? DirectX::Colors::White : DirectX::Colors::Green, 0.f, DirectX::XMFLOAT2(0.f, 0.f));
-	this->m_spriteFont16->DrawString(this->m_spriteBatch.get(), std::to_string(this->m_gameTimePtr->timeElapsed()).c_str(), DirectX::XMFLOAT2(70.f, 10.f), DirectX::Colors::Green, 0.f, DirectX::XMFLOAT2(0.f, 0.f));
 	this->m_statusTextHandler->render(this->m_spriteFont32.get(), this->m_spriteBatch.get());
 	this->m_spriteBatch->End();
 	

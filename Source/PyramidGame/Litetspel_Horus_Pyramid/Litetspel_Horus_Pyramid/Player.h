@@ -23,6 +23,7 @@ private:
 	bool m_lastFly;
 
 	bool m_QAmode;
+	bool canMove();
 
 public:
 	Player();
@@ -48,7 +49,18 @@ public:
 	// Update
 	void respawn();
 	void updateHookHandBB(std::vector<DirectX::BoundingBox*> platformBB);
-	void update(Keyboard* keyboard, Mouse* mouse, float dt);
+	void update(float dt);
 	void shoot();
+
+
+	void jump(float dt);
+
+	void setUse(bool isUsing);
+
+	void movePlayer(Direction dir, float dt);
+
+	void setQAMode(bool qaMode);
+
+	void retract();
 
 };

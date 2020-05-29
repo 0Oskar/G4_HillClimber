@@ -81,8 +81,7 @@ int main(int argc, char** argv)
 
 	if( lFilePath.IsEmpty() )
 	{
-
-        lFilePath = "../NewBell3.fbx";
+        lFilePath = "../vRamp_New.fbx";
 		lResult = LoadScene(lSdkManager, lScene, lFilePath.Buffer());
 	}
 	else

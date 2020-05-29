@@ -16,7 +16,7 @@ private:
 
 	int doOnceAtStart = 0;
 
-	float swingingSpeed = 250.0f;
+	float swingingSpeed = 150.0f;
 
 	std::vector<DirectX::BoundingOrientedBox> axeBB;
 	DirectX::BoundingOrientedBox axeTestBB;
