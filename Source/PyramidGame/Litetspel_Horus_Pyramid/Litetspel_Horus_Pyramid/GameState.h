@@ -13,30 +13,30 @@
 #include"KevinsRoom.h"
 #include"EdvinsRoom.h"
 #include "TristansRoom.h"
+#include"iGameState.h"
 
 using namespace std;
 
-class GameState
+class GameState : public iGameState
 {
 private:
 	Player m_player;
-	Camera m_camera;
 	Timer m_gameTime;
 	DirectX::BoundingOrientedBox m_pyramidOBB;
-	
-	ID3D11Device* m_device;
-	ID3D11DeviceContext* m_dContext;
 	Room* m_activeRoom;
+	int nrOfGameObjects;
   
-	std::vector<Model> m_models;
-	std::vector<GameObject*> m_gameObjects;
-	std::vector<ConstBuffer<VS_CONSTANT_BUFFER>> m_wvpCBuffers;
 	std::vector<Room*> m_rooms;
 
 	std::vector<DirectX::BoundingBox*> platformBB;
 	std::vector<GameObject*>* m_chainGObjects;
 	
 	void loadModels();
+
+	//UI Stuff
+	ID3D11ShaderResourceView* m_crossHairSRV;
+	DirectX::XMFLOAT2 m_crosshairPosition;
+	std::string m_timerString;
 public:
 	GameState();
 	~GameState();
@@ -51,6 +51,7 @@ public:
 	std::vector<BoundingOrientedBox>* getActiveRoomOrientedBoundingBoxPtr();
 	std::vector<BoundingBox>* getActiveRoomTriggerBox();
 	std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* getWvpCBuffersPtr();
+	constantBufferData* getConstantBufferData();
 	PS_DIR_BUFFER getActiveRoomDirectionalLight();
 	PS_FOG_BUFFER getActiveRoomFogData();
 	PS_LIGHT_BUFFER getActiveRoomLightData();
@@ -62,10 +63,13 @@ public:
 	// Initialization
 	void initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext, GameOptions options, std::shared_ptr<DirectX::AudioEngine> audioEngine);
 	// Update
-	void update(Keyboard* keyboard, MouseEvent mouseEvent, Mouse* mousePointer, float dt);
+	void update(float dt);
+	states handleInput(Keyboard* keyboard, Mouse* mouePointer, float dt);
+	//void updateCustomViewLayerVariables(ViewLayer* viewLayer);
 	XMFLOAT3 getCameraPos();
 
-	bool m_activeRoomChanged;
 	void roomChangeInit();
 	Timer* getGameTimerPtr();
+	void afterChange();
+	void drawUI(DirectX::SpriteBatch* spriteBatchPtr, DirectX::SpriteFont* spriteFontPtr);
 };

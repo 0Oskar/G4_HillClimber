@@ -18,9 +18,9 @@
 #include <queue>
 #include <string>
 #include <sstream>
-//#include <ctgmath>
 #include <math.h>
 #include <fstream>
+#include<stack>
 
 // Utilities
 #include "pugixml.hpp"
@@ -62,6 +62,7 @@ struct GameOptions
 	float fov;
 	float mouseSensitivity;
 };
+
 
 enum class Event
 {

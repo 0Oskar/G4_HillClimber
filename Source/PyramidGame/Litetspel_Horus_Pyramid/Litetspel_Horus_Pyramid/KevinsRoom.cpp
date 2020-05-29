@@ -319,7 +319,7 @@ void KevinsRoom::createSceneObjects()
 
 	this->scorpion = new followingEnemy();
 
-	this->scorpion->init(true, 23, this->m_wvpCBuffers->size() - 1, &m_models->at(23), m_player);
+	this->scorpion->init(true, 23, (int)this->m_wvpCBuffers->size() - 1, &m_models->at(23), m_player);
 
 	this->scorpion->getMoveCompPtr()->position = XMVectorSet(-11.f, 2.9f, -100.f + 140.f, 1.f) + this->m_worldPosition;
 

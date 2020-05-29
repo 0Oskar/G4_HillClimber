@@ -39,9 +39,6 @@
     <ClCompile Include="Input_Mouse.cpp">
       <Filter>Source\Application</Filter>
     </ClCompile>
-    <ClCompile Include="GameState.cpp">
-      <Filter>Source\Game Logic</Filter>
-    </ClCompile>
     <ClCompile Include="Model.cpp">
       <Filter>Source\View</Filter>
     </ClCompile>
@@ -100,6 +97,12 @@
     <ClCompile Include="finalRoom.cpp">
       <Filter>Source\Game Logic\Rooms</Filter>
     </ClCompile>
+    <ClCompile Include="GameState.cpp">
+      <Filter>Source\Game Logic\GameStates</Filter>
+    </ClCompile>
+    <ClCompile Include="MenuState.cpp">
+      <Filter>Source\Game Logic\GameStates</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -134,9 +137,6 @@
     </ClInclude>
     <ClInclude Include="Input_Keyboard.h">
       <Filter>Header\Application</Filter>
-    </ClInclude>
-    <ClInclude Include="GameState.h">
-      <Filter>Header\Game Logic</Filter>
     </ClInclude>
     <ClInclude Include="Model.h">
       <Filter>Header\View</Filter>
@@ -219,6 +219,15 @@
     <ClInclude Include="StatusTextHandler.h">
       <Filter>Header\View</Filter>
     </ClInclude>
+    <ClInclude Include="iGameState.h">
+      <Filter>Header\Game Logic\GameStates</Filter>
+    </ClInclude>
+    <ClInclude Include="GameState.h">
+      <Filter>Header\Game Logic\GameStates</Filter>
+    </ClInclude>
+    <ClInclude Include="MenuState.h">
+      <Filter>Header\Game Logic\GameStates</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -271,6 +280,12 @@
     </Filter>
     <Filter Include="Header\Game Logic\Rooms">
       <UniqueIdentifier>{62ba70f7-e626-4e2a-95af-a1c201023870}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header\Game Logic\GameStates">
+      <UniqueIdentifier>{7ebbd474-41df-4d8e-8a40-45fc23e72100}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Game Logic\GameStates">
+      <UniqueIdentifier>{5813678a-7fa9-4e91-a54f-a52102af6a53}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

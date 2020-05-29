@@ -6,7 +6,7 @@
 #include "Platform.h"
 #include "Shaders.h"
 #include "StatusTextHandler.h"
-
+#include "iGameState.h"
 class ViewLayer
 {
 private:
@@ -56,6 +56,7 @@ private:
 	std::vector<Model>* m_modelsFromState;
 	std::vector< ConstBuffer<VS_CONSTANT_BUFFER> >* m_wvpCBufferFromState;
 	DirectX::BoundingOrientedBox m_pyramidOBB;
+	constantBufferData* m_constantBufferDataFromStatePtr;
 
 	ConstBuffer<PS_LIGHT_BUFFER> m_lightBuffer;
 	ConstBuffer<PS_FOG_BUFFER> m_fogBuffer;
@@ -71,16 +72,11 @@ private:
 	std::unique_ptr<DirectX::SpriteFont> m_spriteFont32;
 	Microsoft::WRL::ComPtr<ID3D11RasterizerState> m_spriteRasterizerState;
 
-	// Crosshair SpriteBatch
-	ID3D11ShaderResourceView* m_crossHairSRV;
-	DirectX::XMFLOAT2 m_crosshairPosition;
 
 	// FPS Counter
 	Timer m_timer;
 	std::string m_fpsString;
-	std::string m_timerString;
 	int m_fps;
-	Timer* m_gameTimePtr;
 
 	// Status Text
 	StatusTextHandler* m_statusTextHandler;
@@ -114,9 +110,9 @@ public:
 	void setModelsFromState(std::vector<Model>* models);
 	void setDirLightFromActiveRoom(PS_DIR_BUFFER dirLight);
 	void setFogDataFromActiveRoom(PS_FOG_BUFFER fogData);
+	void setConstantBuffersFromGameState(constantBufferData* cbDataFromState);
 	void setLightDataFromActiveRoom(PS_LIGHT_BUFFER lightData);
 	void setWvpCBufferFromState(std::vector< ConstBuffer<VS_CONSTANT_BUFFER> >* models);
-	void setGameTimePtr(Timer* gameTimer);
 	// Initialization
 	void initialize(HWND window, GameOptions* options);
 
@@ -124,6 +120,6 @@ public:
 	void update(float dt, XMFLOAT3 cameraPos);
 
 	// Render
-	void render();
+	void render(iGameState* gameState);
 	void toggleDrawPrimitives(bool toggle);
 };

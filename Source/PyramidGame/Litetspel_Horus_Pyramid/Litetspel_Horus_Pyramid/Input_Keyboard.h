@@ -14,6 +14,7 @@ public:
 	bool isPressed() const;
 	bool isReleased() const;
 	bool isValid() const;
+	Event getEvent() const;
 	unsigned char getKey() const;
 };
 

@@ -31,7 +31,7 @@ PyramidRoom::~PyramidRoom()
 void PyramidRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activeRoomChanged)
 {
 	Room::update(dt, camera, activeRoom, activeRoomChanged);
-
+	if (this->m_player == nullptr) return;
 	// Checkpoints
 	for (size_t i = 0; i < this->m_checkpointHandler.size(); i++)
 	{
@@ -52,10 +52,12 @@ void PyramidRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& acti
 
 void PyramidRoom::init(DirectX::BoundingOrientedBox* pyramidBB)
 {
+
 	this->m_pyramidOOB = *pyramidBB; //DirectX::BoundingOrientedBox(*pyramidBB);
+
+
 	this->createSceneObjects();
 	this->createBoundingBoxes();
-
 
 	this->m_entrencePosition = { -25, 0, -20 };
 }
@@ -226,7 +228,7 @@ void PyramidRoom::createSceneObjects()
 	for (size_t i = 0; i < this->m_gameObjects.size(); i++)
 	{
 		Platform* castToPlatform = dynamic_cast<Platform*>(this->m_gameObjects.at(i));
-		if (castToPlatform != nullptr)
+		if (castToPlatform != nullptr && this->m_player != nullptr)
 		{
 			castToPlatform->setPlayerBoundingBox(this->m_player->getAABBPtr());
 			castToPlatform->initAudioComponent(audioEngine, m_player->getMoveCompPtr());

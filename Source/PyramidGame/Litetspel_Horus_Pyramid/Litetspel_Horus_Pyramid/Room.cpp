@@ -93,7 +93,8 @@ void Room::addGameObjectToRoom(bool dynamic, bool colide, float weight, int mdlI
 
 	if (colide)
 	{
-		this->m_player->addAABB(gObject->getAABBPtr());
+		if(this->m_player != nullptr)
+			this->m_player->addAABB(gObject->getAABBPtr());
 	}
 	if (boundingBoxSize.x == 0 && boundingBoxSize.y == 0 && boundingBoxSize.z == 0)
 	{
@@ -112,7 +113,8 @@ void Room::addPlatformToRoom(int mdlIndex, Model* mdl, DirectX::XMVECTOR positio
 	XMVECTOR pos = m_worldPosition + position;
 	this->m_gameObjects.back()->setBoundingBox(platformBoundingBox);
 	this->m_gameObjects.back()->setPosition(pos);
-	this->m_player->addAABB(this->m_gameObjects.back()->getAABBPtr());
+	if(m_player != nullptr)
+		this->m_player->addAABB(this->m_gameObjects.back()->getAABBPtr());
 }
 
 void Room::addPortalToRoom(XMVECTOR teleportLocation, int mdlIndx, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR scale3D, DirectX::XMFLOAT3 boundingBoxSize, int room, bool oneTimeUse)
@@ -206,6 +208,7 @@ void Room::addTriggerBB(XMVECTOR position, XMFLOAT3 extends)
 
 DirectX::XMVECTOR Room::getEntrancePosition()
 {
+	if (m_player == nullptr) return XMVectorZero();
 	return (this->m_worldPosition + this->m_entrencePosition + XMVectorSet(0.f, m_player->getAABB().Extents.y + 0.1f, 0, 0));
 }
 
@@ -219,6 +222,7 @@ void Room::addRooms(std::vector<Room*>* rooms)
 
 void Room::updatePlayerBB()
 {
+	if (m_player == nullptr) return;
 	for (size_t i = 0; i < this->m_gameObjects.size(); i++)
 	{
 		if(this->m_gameObjects.at(i)->collidable())

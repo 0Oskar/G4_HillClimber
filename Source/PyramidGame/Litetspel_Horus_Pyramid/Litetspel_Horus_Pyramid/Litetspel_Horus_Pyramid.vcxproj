@@ -172,6 +172,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Input_Mouse.cpp" />
+    <ClCompile Include="MenuState.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -222,6 +223,7 @@
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameState.h" />
     <ClInclude Include="EdvinsRoom.h" />
+    <ClInclude Include="iGameState.h" />
     <ClInclude Include="HookHand.h" />
     <ClInclude Include="IndexBuffer.h" />
     <ClInclude Include="Input.h" />
@@ -230,6 +232,7 @@
     <ClInclude Include="KevinsRoom.h" />
     <ClInclude Include="Lever.h" />
     <ClInclude Include="Material.h" />
+    <ClInclude Include="MenuState.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="MovementComponent.h" />
     <ClInclude Include="pch.h" />

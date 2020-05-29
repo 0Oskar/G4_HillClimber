@@ -69,7 +69,5 @@ public:
 	PS_FOG_BUFFER getFogData();
 	PS_LIGHT_BUFFER getLightData();
 
-
 	bool m_completed;
-
 };
