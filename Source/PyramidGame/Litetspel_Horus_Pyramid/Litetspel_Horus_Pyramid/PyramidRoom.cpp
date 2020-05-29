@@ -168,7 +168,7 @@ void PyramidRoom::createSceneObjects()
 	// Clouds
 	vec = DirectX::XMVectorSet(0.f, 300.f, 315.f, 1.f);
 	NormalScale = DirectX::XMVectorSet(0.3f, 0.3f, 0.3f, 1.f);
-	this->addGameObjectToRoom(false, true, 0, 36, &m_models->at(36), vec, NormalScale);
+	this->addGameObjectToRoom(false, true, 0, 46, &m_models->at(46), vec, NormalScale);
 	this->m_gameObjects.back()->getMoveCompPtr()->rotation = DirectX::XMVectorSet(0, rand() % 360, 0, 1);
 	this->clouds = this->m_gameObjects.back();
 
@@ -841,7 +841,7 @@ void PyramidRoom::addPalmTrees()
 		pos = DirectX::XMVectorSet(posXNumber - 400, 0, posZNumber - 400 - 100, 1);
 		rot = DirectX::XMVectorSet(0, Rotnumber, 0, 1);
 		scale = DirectX::XMVectorSet(scaleNumber * 0.01, scaleNumber * 0.01, scaleNumber * 0.01, 1);
-		this->addGameObjectToRoom(false, true, 0, 35, &m_models->at(35), pos, scale);
+		this->addGameObjectToRoom(false, false, 0, 35, &m_models->at(35), pos, scale);
 		this->m_gameObjects.back()->getMoveCompPtr()->rotation = rot;
 	}
 
@@ -856,7 +856,7 @@ void PyramidRoom::addPalmTrees()
 		pos = DirectX::XMVectorSet(posXNumber + 300 + 100, 0, posZNumber - 300, 1);
 		rot = DirectX::XMVectorSet(0, Rotnumber, 0, 1);
 		scale = DirectX::XMVectorSet(scaleNumber * 0.01, scaleNumber * 0.01, scaleNumber * 0.01, 1);
-		this->addGameObjectToRoom(false, true, 0, 35, &m_models->at(35), pos, scale);
+		this->addGameObjectToRoom(false, false, 0, 35, &m_models->at(35), pos, scale);
 		this->m_gameObjects.back()->getMoveCompPtr()->rotation = rot;
 	}
 
@@ -871,7 +871,7 @@ void PyramidRoom::addPalmTrees()
 		pos = DirectX::XMVectorSet((posXNumber * -1) - 400, 0, posZNumber - 300, 1);
 		rot = DirectX::XMVectorSet(0, Rotnumber, 0, 1);
 		scale = DirectX::XMVectorSet(scaleNumber * 0.01, scaleNumber * 0.01, scaleNumber * 0.01, 1);
-		this->addGameObjectToRoom(false, true, 0, 35, &m_models->at(35), pos, scale);
+		this->addGameObjectToRoom(false, false, 0, 35, &m_models->at(35), pos, scale);
 		this->m_gameObjects.back()->getMoveCompPtr()->rotation = rot;
 	}
 
