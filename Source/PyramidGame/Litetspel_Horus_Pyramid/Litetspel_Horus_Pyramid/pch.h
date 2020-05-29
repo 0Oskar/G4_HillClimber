@@ -21,6 +21,10 @@
 #include <math.h>
 #include <fstream>
 #include<stack>
+#include <random>
+#include <algorithm>
+#include <iterator>
+#include <utility>
 
 // Utilities
 #include "pugixml.hpp"

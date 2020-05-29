@@ -13,7 +13,9 @@
 #include"KevinsRoom.h"
 #include"EdvinsRoom.h"
 #include "TristansRoom.h"
+#include "FindGemsRoom.h"
 #include"iGameState.h"
+
 
 using namespace std;
 
@@ -59,6 +61,8 @@ public:
 	void addLeverToWorld(int mdlIndex, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation, DirectX::XMFLOAT3 leverBB);
 	void addPortalToWorld(XMVECTOR teleportLocation, int mdlIndx, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR scale3D, DirectX::XMFLOAT3 boundingBoxSize, int room);
 	void looseALife(bool looseLife);
+	std::wstring getRoomUITexturePath();
+
 	// Initialization
 	void initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext, GameOptions options, std::shared_ptr<DirectX::AudioEngine> audioEngine);
 	// Update

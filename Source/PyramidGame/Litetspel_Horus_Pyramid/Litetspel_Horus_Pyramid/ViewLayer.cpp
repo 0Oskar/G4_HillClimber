@@ -163,7 +163,7 @@ ViewLayer::ViewLayer()
 	this->m_wvpCBufferFromState = nullptr;
 
 	this->resourceHandler = &ResourceHandler::get();
-
+	this->m_gemUI_Position = DirectX::XMFLOAT2();
 
 	this->m_drawPrimitives = false;
 
@@ -197,6 +197,11 @@ void ViewLayer::setViewMatrix(DirectX::XMMATRIX* newViewMatrix)
 void ViewLayer::setProjectionMatrix(DirectX::XMMATRIX* newProjectionMatrix)
 {
 	this->m_projectionMatrix = newProjectionMatrix;
+}
+
+void ViewLayer::setRoomUITexturePath(std::wstring texturePath)
+{
+	this->m_currentRoomUIPath = texturePath;
 }
 
 void ViewLayer::setgameObjectsFromState(std::vector<GameObject*>* gameObjectsFromState)
@@ -355,7 +360,21 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 	this->resourceHandler->m_dContext = this->getContextDevice();
 	this->resourceHandler->m_device = this->getDevice();
 
-	
+	// Crosshair
+	this->m_spriteBatch = std::make_unique<DirectX::SpriteBatch>(this->m_deviceContext.Get());
+
+	// Gem UI - Test  
+	this->m_gemUI0_SRV = Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> (this->resourceHandler->getTexture(L"Textures/GemsUI_null.png"));
+	this->m_gemUI1_SRV = Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> (this->resourceHandler->getTexture(L"Textures/GemsUI_1.png"));
+	this->m_gemUI2_SRV = Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> (this->resourceHandler->getTexture(L"Textures/GemsUI_2.png"));
+	this->m_gemUI3_SRV = Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> (this->resourceHandler->getTexture(L"Textures/GemsUI_3.png"));
+	this->m_gemUI4_SRV = Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> (this->resourceHandler->getTexture(L"Textures/GemsUI_4.png"));
+	this->m_gemUI5_SRV = Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> (this->resourceHandler->getTexture(L"Textures/GemsUI_5.png"));
+	int gemsUI_Xpos = 40;
+	int gemsUI_Ypos = (this->m_options->height) - 140;
+	this->m_gemUI_Position = DirectX::XMFLOAT2((float)gemsUI_Xpos, (float)gemsUI_Ypos);
+
+
 	// Primitive Batch
 	this->m_states = std::make_unique< DirectX::CommonStates >(this->m_device.Get());
 	this->m_batch = std::make_unique< DirectX::PrimitiveBatch<DirectX::VertexPositionColor> >(this->m_deviceContext.Get());
@@ -535,6 +554,28 @@ void ViewLayer::render(iGameState* gameState)
 	gameState->drawUI(m_spriteBatch.get(), m_spriteFont16.get());
 	this->m_spriteFont16->DrawString(this->m_spriteBatch.get(), this->m_fpsString.c_str(), DirectX::XMFLOAT2((float)this->m_options->width - 110.f, 10.f), DirectX::Colors::White, 0.f, DirectX::XMFLOAT2(0.f, 0.f));
 	this->m_statusTextHandler->render(this->m_spriteFont32.get(), this->m_spriteBatch.get());
+	this->m_spriteBatch->Begin(SpriteSortMode_Deferred,this->m_states->AlphaBlend());
+
+	if (this->m_currentRoomUIPath == L"GemsUI_null") {
+		this->m_spriteBatch->Draw(this->m_gemUI0_SRV.Get(), this->m_gemUI_Position, nullptr, Colors::White, 0.f, XMFLOAT2(0, 0), XMFLOAT2(0.2, 0.2));
+	}
+	else if (this->m_currentRoomUIPath == L"GemsUI_1") {
+		this->m_spriteBatch->Draw(this->m_gemUI1_SRV.Get(), this->m_gemUI_Position, nullptr, Colors::White, 0.f, XMFLOAT2(0, 0), XMFLOAT2(0.2, 0.2));
+	}
+	else if (this->m_currentRoomUIPath == L"GemsUI_2") {
+		this->m_spriteBatch->Draw(this->m_gemUI2_SRV.Get(), this->m_gemUI_Position, nullptr, Colors::White, 0.f, XMFLOAT2(0, 0), XMFLOAT2(0.2, 0.2));
+	}
+	else if (this->m_currentRoomUIPath == L"GemsUI_3") {
+		this->m_spriteBatch->Draw(this->m_gemUI3_SRV.Get(), this->m_gemUI_Position, nullptr, Colors::White, 0.f, XMFLOAT2(0, 0), XMFLOAT2(0.2, 0.2));
+	}
+	else if (this->m_currentRoomUIPath == L"GemsUI_4") {
+		this->m_spriteBatch->Draw(this->m_gemUI4_SRV.Get(), this->m_gemUI_Position, nullptr, Colors::White, 0.f, XMFLOAT2(0, 0), XMFLOAT2(0.2, 0.2));
+	}
+	else if (this->m_currentRoomUIPath == L"GemsUI_5") {
+		this->m_spriteBatch->Draw(this->m_gemUI5_SRV.Get(), this->m_gemUI_Position, nullptr, Colors::White, 0.f, XMFLOAT2(0, 0), XMFLOAT2(0.2, 0.2));
+	}
+	
+	this->m_spriteFont->DrawString(this->m_spriteBatch.get(), this->m_fpsString.c_str(), DirectX::XMFLOAT2((float)this->m_options->width - 100.f, 0), DirectX::Colors::White, 0.f, DirectX::XMFLOAT2(0.f, 0.f));
 	this->m_spriteBatch->End();
 	
 	// Swap Frames

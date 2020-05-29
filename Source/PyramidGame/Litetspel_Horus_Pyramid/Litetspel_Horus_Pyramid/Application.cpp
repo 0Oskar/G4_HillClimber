@@ -221,9 +221,9 @@ void Application::applicationLoop()
 			//this->m_input.readBuffers();
 			this->audioUpdate();
 
-
-			this->m_viewLayerPtr->update(this->m_deltaTime, this->m_gameStateStack.top()->getCameraPos());
-			this->m_viewLayerPtr->render(this->m_gameStateStack.top());
+			this->m_viewLayerPtr->setRoomUITexturePath(this->m_gameState.getRoomUITexturePath());
+			this->m_viewLayerPtr->update(this->m_deltaTime);
+			this->m_viewLayerPtr->render();
 		}
 	}
 }

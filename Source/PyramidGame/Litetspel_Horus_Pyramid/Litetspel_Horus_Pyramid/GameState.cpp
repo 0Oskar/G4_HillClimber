@@ -192,7 +192,197 @@ void GameState::looseALife(bool looseLife)
 	}
 }
 
+std::wstring GameState::getRoomUITexturePath()
+{
+	return dynamic_cast<FindGemsRoom*>(this->m_rooms.at(1))->getRoomUITexturePath();
+}
+/*
+void GameState::loadModels()
+{
+	// Material
+	MaterialData mat;
 
+	//0 - Desert Ground
+	this->m_models.emplace_back();
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
+	this->m_models[0].loadVertexFromOBJ(this->m_device, this->m_dContext, L"Models/desertGround.obj", mat, L"Textures/sandTexture.png");
+
+	//1 - Pyramid
+	this->m_models.emplace_back();
+	mat.diffuse = DirectX::XMFLOAT4(0.9f, 0.7f, 0.3f, 1.0f);
+	this->m_models[1].loadVertexFromOBJ(m_device, m_dContext, L"Models/FinalPyramid.obj", mat, L"Textures/pyramidTexture.png");
+	//this->m_models[1].initializeModelBff(m_device, m_dContext, "BasePyramidNew.bff", mat, L"Textures/pyramidTexture.png"); //load model
+	//this->m_models[1].loadVertexFromOBJ(m_device, m_dContext, L"Models/BasePyramid_New.obj", mat, L"Textures/pyramidTexture.png");
+
+	//2- HookHead model
+	this->m_models.emplace_back();
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
+	this->m_models[2].loadVertexFromOBJ(m_device, m_dContext, L"Models/FinalBird.obj", mat, L"Textures/ColorTexture.png");
+
+	//3- platform model
+	this->m_models.emplace_back();
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
+	this->m_models[3].loadVertexFromOBJ(m_device, m_dContext, L"Models/platform.obj", mat, L"Textures/platformTextureCracks1.png");
+
+	//4- HookHand
+	this->m_models.emplace_back();
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
+	this->m_models[4].loadVertexFromOBJ(m_device, m_dContext, L"Models/FinalHook.obj", mat, L"Textures/ColorTexture.png");
+
+	//5- Chain Link
+	this->m_models.emplace_back();
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
+	this->m_models[5].loadVertexFromOBJ(m_device, m_dContext, L"Models/FinalChainLink.obj", mat, L"Textures/ColorTexture.png");
+
+	//6- Lever Room aka Kevins room
+	this->m_models.emplace_back();
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
+	this->m_models[6].loadVertexFromOBJ(m_device, m_dContext, L"Models/LeverRoom2.obj", mat, L"Textures/ColorTexture.png");
+
+	//7 - Lever
+	this->m_models.emplace_back();
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
+	this->m_models[7].loadVertexFromOBJ(m_device, m_dContext, L"Models/Lever.obj", mat, L"Textures/ColorTexture.png");
+
+	//8. PuzzleRoom (Edvin)
+	this->m_models.emplace_back(); //add empty model
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); //reset material
+	this->m_models[8].initializeModelBff(m_device, m_dContext, "EdvinPuzzleRoom.bff", mat, L"Textures/ColorTexture.png"); //load model
+
+	//9. Button (Edvin)
+	this->m_models.emplace_back(); //add empty model
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); //reset material
+	this->m_models[9].initializeModelBff(m_device, m_dContext, "Button.bff", mat, L"Textures/Hyroglajf_0.png"); //load model
+
+	//10 - Portal
+	this->m_models.emplace_back();
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
+	this->m_models[10].initializeModelBff(m_device, m_dContext, "PortalGate.bff", mat, L"Textures/ColorTexture.png");
+
+	//11. Brick_1 (Edvin)
+	this->m_models.emplace_back(); //add empty model
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); //reset material
+	this->m_models[11].initializeModelBff(m_device, m_dContext, "Brick_1.bff", mat, L"Textures/Hyroglajf_0.png"); //load model
+
+	//12. Brick_2 (Edvin)
+	this->m_models.emplace_back(); //add empty model
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); //reset material
+	this->m_models[12].initializeModelBff(m_device, m_dContext, "Brick_2.bff", mat, L"Textures/Hyroglajf_1.png"); //load model
+
+	//13. Brick_3 (Edvin)
+	this->m_models.emplace_back(); //add empty model
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); //reset material
+	this->m_models[13].initializeModelBff(m_device, m_dContext, "Brick_3.bff", mat, L"Textures/Hyroglajf_2.png"); //load model
+
+	//14. Brick_4 (Edvin)
+	this->m_models.emplace_back(); //add empty model
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); //reset material
+	this->m_models[14].initializeModelBff(m_device, m_dContext, "Brick_4.bff", mat, L"Textures/Hyroglajf_3.png"); //load model
+
+	//15. Brick_5 (Edvin)
+	this->m_models.emplace_back(); //add empty model
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); //reset material
+	this->m_models[15].initializeModelBff(m_device, m_dContext, "Brick_5.bff", mat, L"Textures/Hyroglajf_4.png"); //load model
+  
+	//16. Leaver Base (Edvin)
+	this->m_models.emplace_back(); //add empty model
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); //reset material
+	this->m_models[16].initializeModelBff(m_device, m_dContext, "LeverBase.bff", mat, L"Textures/ColorTexture.png"); //load model
+
+	//17. Pedistal (Edvin)
+	this->m_models.emplace_back(); //add empty model
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); //reset material
+	this->m_models[17].initializeModelBff(m_device, m_dContext, "Pedistal.bff", mat, L"Textures/ColorTexture.png"); //load model
+
+	//18. Cover (Edvin)
+	this->m_models.emplace_back(); //add empty model
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); //reset material
+	this->m_models[18].initializeModelBff(m_device, m_dContext, "Cover.bff", mat, L"Textures/ColorTexture.png"); //load model
+
+	//19. checkpoint
+	this->m_models.emplace_back();
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
+	this->m_models[19].initializeModelBff(m_device, m_dContext, "checkpointPlatform.bff", mat, L"Textures/ColorTexture.png");
+
+	//20. Leaver Handle (Edvin)
+	this->m_models.emplace_back(); //add empty model
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); //reset material
+	this->m_models[20].initializeModelBff(m_device, m_dContext, "LeverHandle.bff", mat, L"Textures/ColorTexture.png"); //load model
+
+	//21. PuzzleRoom(Tristan)
+	this->m_models.emplace_back(); //add empty model
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); //reset material
+	this->m_models[21].initializeModelBff(m_device, m_dContext, "TristansPuzzleRoom.bff", mat, L"Textures/ColorTexture.png"); //load model
+
+	//22. Pyramid Portal
+	this->m_models.emplace_back(); //add empty model
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); //reset material
+	this->m_models[22].initializeModelBff(m_device, m_dContext, "PuzzleRoomGateExtended.bff", mat, L"Textures/ColorTexture.png"); //load model
+  
+    //23. Scorpion
+	this->m_models.emplace_back();
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
+	this->m_models[23].loadVertexFromOBJ(m_device, m_dContext, L"Models/scorpionDone.obj", mat, L"Textures/ColorTexture.png");
+
+	//24. dartWallObj
+	this->m_models.emplace_back();
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
+	this->m_models[24].loadVertexFromOBJ(m_device, m_dContext, L"Models/dartTrapWall.obj", mat, L"Textures/ColorTexture.png");
+
+	//25. dartWalldarts
+	this->m_models.emplace_back();
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
+	this->m_models[25].loadVertexFromOBJ(m_device, m_dContext, L"Models/dartTrapWallDart.obj", mat, L"Textures/ColorTexture.png");
+
+	//26. expandingBridge
+	this->m_models.emplace_back();
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
+	this->m_models[26].loadVertexFromOBJ(m_device, m_dContext, L"Models/expandingBridge.obj", mat, L"Textures/ColorTexture.png");
+
+	//LastNumber. Room (Viktor)
+	int nrOfCurrentLModels = 26;
+
+	this->m_models.emplace_back(); 
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); 
+	this->m_models[++nrOfCurrentLModels].initializeModelBff(m_device, m_dContext, "vRoom_New.bff", mat, L"Textures/ColorTexture.png"); 
+
+	this->m_models.emplace_back(); 
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); 
+	this->m_models[++nrOfCurrentLModels].initializeModelBff(m_device, m_dContext, "vGate_New.bff", mat, L"Textures/ColorTexture.png");  
+
+	this->m_models.emplace_back(); 
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); 
+	this->m_models[++nrOfCurrentLModels].initializeModelBff(m_device, m_dContext, "vLever_New.bff", mat, L"Textures/ColorTexture.png"); 
+
+	this->m_models.emplace_back(); 
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); 
+	this->m_models[++nrOfCurrentLModels].initializeModelBff(m_device, m_dContext, "vGem1_New.bff", mat, L"Textures/ColorTexture.png");
+
+	this->m_models.emplace_back(); 
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); 
+	this->m_models[++nrOfCurrentLModels].initializeModelBff(m_device, m_dContext, "vGem2_New.bff", mat, L"Textures/ColorTexture.png"); 
+
+	this->m_models.emplace_back(); 
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); 
+	this->m_models[++nrOfCurrentLModels].initializeModelBff(m_device, m_dContext, "vGem3_New.bff", mat, L"Textures/ColorTexture.png"); 
+
+	this->m_models.emplace_back(); 
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); 
+	this->m_models[++nrOfCurrentLModels].initializeModelBff(m_device, m_dContext, "vGem4_New.bff", mat, L"Textures/ColorTexture.png"); 
+
+	this->m_models.emplace_back(); 
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); 
+	this->m_models[++nrOfCurrentLModels].initializeModelBff(m_device, m_dContext, "vGem5_New.bff", mat, L"Textures/ColorTexture.png");
+
+	this->m_models.emplace_back();
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
+	this->m_models[++nrOfCurrentLModels].initializeModelBff(m_device, m_dContext, "vPedistal_New.bff", mat, L"Textures/ColorTexture.png");
+
+	this->m_models.emplace_back();
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
+	this->m_models[++nrOfCurrentLModels].initializeModelBff(m_device, m_dContext, "vRamp_New.bff", mat, L"Textures/ColorTexture.png");
+}
+*/
 
 void GameState::roomChangeInit()
 {
@@ -355,10 +545,10 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	dynamic_cast<PyramidRoom*>(this->m_rooms.back())->init(&m_pyramidOBB);
 	m_activeRoom = m_rooms.back();
 
-	//Template Room [1] //Up for grabs
-	this->m_rooms.emplace_back(new TemplateRoom());
-	this->m_rooms.back()->initialize(m_device, m_dContext, m_modelsPtr, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, 0, 1), audioEngine, &this->m_gameTime);
-	dynamic_cast<TemplateRoom*>(this->m_rooms.back())->init();
+	//Template Room [1] Viktor
+	this->m_rooms.emplace_back(new FindGemsRoom());
+	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, 300, 1), audioEngine, &this->m_gameTime);
+	dynamic_cast<FindGemsRoom*>(this->m_rooms.back())->init();
 
 	//Kevin Room [2]
 	this->m_rooms.emplace_back(new KevinsRoom());
@@ -375,7 +565,6 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_rooms.back()->initialize(m_device, m_dContext, m_modelsPtr, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, -200, 1), audioEngine, &this->m_gameTime);
 	dynamic_cast<TristansRoom*>(this->m_rooms.back())->init();
 	
-
 
 	// final Room [5]
 	this->m_rooms.emplace_back(new finalRoom());
@@ -438,6 +627,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	}
 
 	this->m_activeRoom->updatePlayerBB();
+
 	this->m_gameTime.start();
 	this->nrOfGameObjects = (int)this->m_gameObjects.size();
 	this->roomChangeInit();
