@@ -37,7 +37,7 @@ public:
 		if(immutable)
 			vertexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
 		else 
-			vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+			vertexBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
 
 		if(streamOutput)
 			vertexBufferDesc.BindFlags = D3D11_BIND_STREAM_OUTPUT | D3D11_BIND_VERTEX_BUFFER;
