@@ -44,8 +44,14 @@ public:
 		else
 			vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 		
-		vertexBufferDesc.CPUAccessFlags = 0;
+		if (immutable)
+			vertexBufferDesc.CPUAccessFlags = 0;
+		else
+			vertexBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+		
 		vertexBufferDesc.MiscFlags = 0;
+
+
 
 		// Subresource data
 		D3D11_SUBRESOURCE_DATA vertexData;

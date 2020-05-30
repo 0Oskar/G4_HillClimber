@@ -71,7 +71,7 @@ void ParticleRenderer::initlialize(ID3D11Device* device, ID3D11DeviceContext* dC
 	Particle p;
 	p.ParticleLifetime = 10.0f; // make longer maybe?
 	p.Type = 0;
-	this->m_initVB.initialize(this->m_device, &p, 1, false);
+	this->m_initVB.initialize(this->m_device, &p, 1, false, true);
 	
 	this->m_drawVB.initialize(this->m_device, &p, 1, false, true);
 	this->m_streamOutVB.initialize(this->m_device, &p, 1, false, true);
@@ -100,6 +100,11 @@ void ParticleRenderer::setParticleSystem(ParticleSystem* particleSystem)
 
 void ParticleRenderer::render(XMMATRIX vpMatrix)
 {
+	D3D11_MAPPED_SUBRESOURCE resource;
+	this->m_dContext->Map(this->m_initVB.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &resource);
+	memcpy(resource.pData, this->m_particleSystem->getParticleBuffer(), this->m_initVB.getSize());
+	m_dContext->Unmap(this->m_initVB.Get(), 0);
+
 	//
 	// Set constants.
 	//

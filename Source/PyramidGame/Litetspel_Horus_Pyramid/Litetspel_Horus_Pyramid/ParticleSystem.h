@@ -54,6 +54,7 @@ public:
 
 	void setVPMatrix(XMMATRIX VPMatrix);
 	GS_PARTICLE_BUFFER* getParticleBuffer();
+	float getParticleLifetime();
 	ID3D11DepthStencilState* getDisabledDepthState();
 
 	void initialize(ID3D11Device* device, ID3D11ShaderResourceView* texArray, UINT maxParticles, XMFLOAT3 emitPos, XMFLOAT3 emitDir);

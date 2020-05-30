@@ -117,6 +117,11 @@ GS_PARTICLE_BUFFER* ParticleSystem::getParticleBuffer()
 	return &this->m_partBuffer;
 }
 
+float ParticleSystem::getParticleLifetime()
+{
+	return this->m_ParticleLifetime;
+}
+
 ID3D11DepthStencilState* ParticleSystem::getDisabledDepthState()
 {
 	return this->m_disabledDepthState.Get();
