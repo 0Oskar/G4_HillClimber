@@ -13,6 +13,10 @@ GameState::GameState()
 	this->m_gameTime = Timer(true);
 	this->m_crossHairSRV = nullptr;
 	this->m_crosshairPosition = DirectX::XMFLOAT2();
+	this->m_map = nullptr;
+	this->m_mapPosition = DirectX::XMFLOAT2();
+	this->m_mapPlayer = nullptr;
+	this->m_mapPlayerPosition = DirectX::XMFLOAT2();
 	this->m_resourceHandler = &ResourceHandler::get();
 	this->m_timerString = "";
 }
@@ -453,6 +457,11 @@ void GameState::afterChange()
 void GameState::drawUI(DirectX::SpriteBatch* spriteBatchPtr, DirectX::SpriteFont* spriteFontPtr)
 {
 	spriteBatchPtr->Draw(this->m_crossHairSRV, this->m_crosshairPosition);
+	if (m_activeRoom == m_rooms[0])
+	{
+		spriteBatchPtr->Draw(this->m_map, this->m_mapPosition);
+		spriteBatchPtr->Draw(this->m_mapPlayer, this->m_mapPlayerPosition);
+	}
 	spriteFontPtr->DrawString(spriteBatchPtr, this->m_timerString.c_str(), DirectX::XMFLOAT2(10.f, 10.f), this->m_gameTime.isActive() ? DirectX::Colors::White : DirectX::Colors::Green, 0.f, DirectX::XMFLOAT2(0.f, 0.f));
 	spriteFontPtr->DrawString(spriteBatchPtr, std::to_string(this->m_gameTime.timeElapsed()).c_str(), DirectX::XMFLOAT2(70.f, 10.f), DirectX::Colors::Green, 0.f, DirectX::XMFLOAT2(0.f, 0.f));
 
@@ -489,9 +498,30 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	int crosshairX = (this->m_gameOptions.width / 2) - (desc.Width / 2);
 	int crosshairY = (this->m_gameOptions.height / 2) - (desc.Height / 2);
 	this->m_crosshairPosition = DirectX::XMFLOAT2((float)crosshairX, (float)crosshairY);
+	
+	// Map
+	this->m_map = this->m_resourceHandler->getTexture(L"Textures/map.png");
+	ID3D11Resource* mapTexture = 0;
+	this->m_map->GetResource(&mapTexture);
+	ID3D11Texture2D* mapTexture2D = 0;
+	mapTexture->QueryInterface<ID3D11Texture2D>(&mapTexture2D);
+	mapTexture2D->GetDesc(&desc);
+	int mapPositionX = this->m_gameOptions.width - 170;
+	int mapPositionY = 50;
+	this->m_mapPosition = DirectX::XMFLOAT2((float)mapPositionX, (float)mapPositionY);
+
+	// MapPlayer
+	this->m_mapPlayer = this->m_resourceHandler->getTexture(L"Textures/mapPlayerPos.png");
+	ID3D11Resource* mapPlayerTexture = 0;
+	this->m_mapPlayer->GetResource(&mapPlayerTexture);
+	ID3D11Texture2D* mapPlayerTexture2D = 0;
+	mapPlayerTexture->QueryInterface<ID3D11Texture2D>(&mapPlayerTexture2D);
+	mapTexture2D->GetDesc(&desc);
+	int mapPlayerPositionX = this->m_gameOptions.width - 73;
+	int mapPlayerPositionY = 108;
+	this->m_mapPlayerPosition = DirectX::XMFLOAT2((float)mapPlayerPositionX, (float)mapPlayerPositionY);
 
 	//-UI END-
-
 	DirectX::XMVECTOR NormalScale = DirectX::XMVectorSet(1, 1, 1, 1);
 	DirectX::XMVECTOR vec = DirectX::XMVectorSet(0.f, -10.f, 0.f, 1.f);
 	DirectX::XMVECTOR rotation = DirectX::XMVectorSet(0.f, 0.f, 0.f, 1.f);
@@ -567,11 +597,13 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_rooms.emplace_back(new PyramidRoom());
 	this->m_rooms.back()->initialize(m_device, m_dContext, m_modelsPtr, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, 0, 1), audioEngine, &this->m_gameTime, options);
 	dynamic_cast<PyramidRoom*>(this->m_rooms.back())->init(&m_pyramidOBB);
+  
 
 	//Template Room [1] Viktor
 	this->m_rooms.emplace_back(new FindGemsRoom());
 	this->m_rooms.back()->initialize(m_device, m_dContext, m_modelsPtr, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, -300, 1), audioEngine, &this->m_gameTime, options);
 	dynamic_cast<FindGemsRoom*>(this->m_rooms.back())->init();
+	
 
 	//Kevin Room [2]
 	this->m_rooms.emplace_back(new KevinsRoom());
@@ -582,6 +614,8 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_rooms.emplace_back(new EdvinsRoom());
 	this->m_rooms.back()->initialize(m_device, m_dContext, m_modelsPtr, &this->m_wvpCBuffers, &m_player, XMVectorSet(-200, 0, 200, 1), audioEngine, &this->m_gameTime, options);
 	dynamic_cast<EdvinsRoom*>(this->m_rooms.back())->init();
+	m_activeRoom = m_rooms.back();
+
 
 	// Tristan Room [4]
 	this->m_rooms.emplace_back(new TristansRoom());
@@ -699,6 +733,23 @@ void GameState::update(float dt)
 
 	if(m_activeRoom != nullptr)
 		this->m_activeRoom->update(dt, &m_camera, this->m_activeRoom, m_majorChange);
+
+
+	DirectX::XMFLOAT3 playerPos;
+	XMStoreFloat3(&playerPos, this->m_player.getPosition());
+	this->playerHeight = 4;
+	this->pyramidHeight = 585 - playerHeight;
+	this->playerPosY = (playerPos.y - playerHeight) / pyramidHeight;		//0 - 1
+	
+	if (playerPosY >= 1)
+		playerPosY = 1;
+	if (playerPosY <= 0)
+		playerPosY = 0;
+
+	this->markerTop = 108;
+	this->markerBottom = 601;
+	this->difference = markerBottom - markerTop;		//493
+	this->m_mapPlayerPosition.y = markerBottom - (playerPosY * difference);
 
 }
 
