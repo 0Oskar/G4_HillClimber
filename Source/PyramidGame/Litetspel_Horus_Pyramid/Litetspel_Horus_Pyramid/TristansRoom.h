@@ -18,18 +18,18 @@ private:
 	Bell* bell3;
 
 	Timer moveTimer;
+	Timer RaiseBellTimer;
 
 	int randNr;
 
-	bool animationIsFinnished;
+	bool isMoving;
+	XMVECTOR leverStartRot;
+	XMVECTOR leverEndRot;
 
 	std::vector<DirectX::BoundingBox*> LeverBB;
 	std::vector<Lever*> leverGrip;
 	Timer leverTimer[4];
-	bool canPullLever0 = true;
-	bool canPullLever1 = true;
-	bool canPullLever2 = true;
-	bool canPullLever3 = true;
+	
 
 	bool moveLever0 = false;
 	bool moveLever1 = false;
@@ -47,8 +47,10 @@ private:
 	bool tempLever3 = false;
 
 	bool bellsShallRase = false;
-
+	bool bellsShallLower = false;
 	bool isAnimationGoing = false;
+
+	bool guessedRight;
 
 public:
 
@@ -62,9 +64,14 @@ public:
 
 	//int randomNr();
 
-	void moveBellsUp(float startTime);
+	void moveBellsUp();
 	void moveBellsDown(float startTime);
 	void Bellmove1(float startTime);
 	void Bellmove2(float startTime);
 	void Bellmove3(float startTime);
+
+	void rotateLeverDown(int Index);
+
+	void onWin();
+	void onFail();
 };
