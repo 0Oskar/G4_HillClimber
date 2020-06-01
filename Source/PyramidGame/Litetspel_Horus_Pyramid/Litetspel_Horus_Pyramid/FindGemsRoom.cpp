@@ -3,6 +3,7 @@
 
 void FindGemsRoom::createBoundingBoxes()
 {
+	this->addBoundingBox({ 0.f, -1.f, 0.f, 1.f }, DirectX::XMFLOAT3(30.f, 1.f, 55.f));   // Ground
 	this->addBoundingBox({ 30.5f, 0.f, 0.f, 1.f }, DirectX::XMFLOAT3(2.f, 15.f, 35.f));   // Right wall
 	this->addBoundingBox({ -30.5f, 0.f, 0.f, 1.f }, DirectX::XMFLOAT3(2.f, 15.f, 35.f));  // Left wall
 
@@ -15,6 +16,7 @@ void FindGemsRoom::createBoundingBoxes()
 	this->addBoundingBox({ -20.f, 0.f, 31.f, 1.f }, DirectX::XMFLOAT3(13.f, 15.f, 2.f));   // Front wall left
 
 	this->addBoundingBox({ 0.f, 4.f, 50.f, 1.f }, DirectX::XMFLOAT3(10.f, 6.f, 2.f));      // Small room back wall
+	this->addBoundingBox({ 0.f, 10.f, 45.f, 1.f }, DirectX::XMFLOAT3(10.f, 1.f, 10.f));      // Small room roof
 	this->addBoundingBox({ 9.5f, 2.f, 41, 1.f }, DirectX::XMFLOAT3(2.f, 7.f, 10.f));    // Small room right wall
 	this->addBoundingBox({ -9.5f, 2.f, 41.f, 1.f }, DirectX::XMFLOAT3(2.f, 7.f, 10.f));   // Small room left wall
 
@@ -314,6 +316,8 @@ void FindGemsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& act
 			this->m_GateBB->Center.y = XMVectorGetY(this->gatePos);
 		}
 	}
+
+
 }
 
 void FindGemsRoom::onEntrance()
@@ -399,7 +403,18 @@ void FindGemsRoom::init()
 	m_Gems[3]->setCnaUseLever(true);
 	m_Gems[4]->setCnaUseLever(true);
 	
+	
+	XMFLOAT3 Pos;
+	XMStoreFloat3(&Pos, (this->m_worldPosition + DirectX::XMVectorSet(0, 0, -20 ,0)));
+	this->m_PortalLight.plPosition = (Pos);
+	this->m_PortalLight.att = { 1, 0, 0.5 };
+	this->m_PortalLight.plDiffuse = { 0,1,0,0 };
+	this->m_PortalLight.plAmbient = { 0,0,0,1 };
 
+	this->m_PortalLight.plRange = 20;
+
+	int lightIndex = this->createLight(this->m_PortalLight);
+	this->createLight(this->m_PortalLight.plPosition, this->m_PortalLight.plRange, this->m_PortalLight.plAmbient, this->m_PortalLight.plDiffuse, this->m_PortalLight.att);
 
 
 }
