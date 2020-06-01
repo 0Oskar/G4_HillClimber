@@ -358,6 +358,12 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 	// Crosshair
 	this->m_spriteBatch = std::make_unique<DirectX::SpriteBatch>(this->m_deviceContext.Get());
 
+	// Map
+	this->m_spriteBatch = std::make_unique<DirectX::SpriteBatch>(this->m_deviceContext.Get());
+
+	// Map Player
+	this->m_spriteBatch = std::make_unique<DirectX::SpriteBatch>(this->m_deviceContext.Get());
+
 	// Primitive Batch
 	this->m_states = std::make_unique< DirectX::CommonStates >(this->m_device.Get());
 	this->m_batch = std::make_unique< DirectX::PrimitiveBatch<DirectX::VertexPositionColor> >(this->m_deviceContext.Get());
@@ -538,7 +544,7 @@ void ViewLayer::render(iGameState* gameState)
 	this->m_spriteFont16->DrawString(this->m_spriteBatch.get(), this->m_fpsString.c_str(), DirectX::XMFLOAT2((float)this->m_options->width - 110.f, 10.f), DirectX::Colors::White, 0.f, DirectX::XMFLOAT2(0.f, 0.f));
 	this->m_statusTextHandler->render(this->m_spriteFont32.get(), this->m_spriteBatch.get());
 	this->m_spriteBatch->End();
-	
+
 	// Swap Frames
 	this->m_swapChain->Present(0, 0);
 }
