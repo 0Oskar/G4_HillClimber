@@ -24,7 +24,7 @@ public:
 
 	void init(bool colidable, int modelIndex, int wvpCBufferIndex, Model* mdl);
 	void onPlayerColide();
-	void activateLever();
+	void toggleActivateLever();
 	bool getLeverValue();
 	bool getCanUseLever();
 	void setPlayerBoundingBox(DirectX::BoundingBox* boundingBox);

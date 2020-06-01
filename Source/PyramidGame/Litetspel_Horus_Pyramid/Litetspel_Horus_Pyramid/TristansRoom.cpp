@@ -78,7 +78,7 @@ void TristansRoom::createSceneObjects()
 	this->m_gameObjects.back()->getMoveCompPtr()->rotation = XMVectorZero();
 	this->leverGrip.emplace_back(dynamic_cast<Lever*>(m_gameObjects.back()));
 	this->leverGrip[0]->setPlayerBoundingBox(this->m_player->getAABBPtr());
-	leverGrip[0]->activateLever();
+	//leverGrip[0]->toggleActivateLever();
 
 	//Back Lever Grip 1
 	pos = DirectX::XMVectorSet(15, 48.8f, 73.25f, 1); // World pos
@@ -86,6 +86,7 @@ void TristansRoom::createSceneObjects()
 	this->m_gameObjects.back()->getMoveCompPtr()->rotation = XMVectorZero();
 	this->leverGrip.emplace_back(dynamic_cast<Lever*>(m_gameObjects.back()));
 	this->leverGrip[1]->setPlayerBoundingBox(this->m_player->getAABBPtr());
+	this->leverGrip[1]->toggleActivateLever();
 
 	//Back Lever Grip 2
 	pos = DirectX::XMVectorSet(0, 48.8f, 73.25f, 1); // World pos
@@ -93,6 +94,7 @@ void TristansRoom::createSceneObjects()
 	this->m_gameObjects.back()->getMoveCompPtr()->rotation = XMVectorZero();
 	this->leverGrip.emplace_back(dynamic_cast<Lever*>(m_gameObjects.back()));
 	this->leverGrip[2]->setPlayerBoundingBox(this->m_player->getAABBPtr());
+	this->leverGrip[2]->toggleActivateLever();
 
 	//Back Lever Grip 3
 	pos = DirectX::XMVectorSet(-15, 48.8f, 73.25f, 1); // World pos
@@ -100,6 +102,7 @@ void TristansRoom::createSceneObjects()
 	this->m_gameObjects.back()->getMoveCompPtr()->rotation = XMVectorZero();
 	this->leverGrip.emplace_back(dynamic_cast<Lever*>(m_gameObjects.back()));
 	this->leverGrip[3]->setPlayerBoundingBox(this->m_player->getAABBPtr());
+	this->leverGrip[3]->toggleActivateLever();
 }
 
 void TristansRoom::onCompleted()
@@ -142,7 +145,7 @@ void TristansRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& act
 			this->canPullLever0 = false;
 			this->moveLever0 = true;
 
-			leverGrip[0]->activateLever();
+			//leverGrip[0]->toggleActivateLever();
 			
 			OutputDebugString(L"LEVER PULLED\n");
 			

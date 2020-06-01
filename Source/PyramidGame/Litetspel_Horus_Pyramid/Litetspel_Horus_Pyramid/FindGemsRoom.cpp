@@ -69,8 +69,8 @@ void FindGemsRoom::createSceneObjects()
 	pos = m_PreFixedSpawnpoints.at(m_SpawnIndex[0]);
 	++nrOfCurrentLModels;
 	this->addLeverToRoom(nrOfCurrentLModels, &m_models->at(nrOfCurrentLModels), pos, rot, XMFLOAT3(2.5f, 3.5f, 2.5f)); // fix bounding box so it match the gems
-	this->m_Gems.emplace_back(dynamic_cast<Lever*>(this->m_gameObjects.back())); //Add to buttons array
-	this->m_Gems.at(0)->setPlayerBoundingBox(this->m_player->getAABBPtr()); //Create BB
+	this->m_Gems.emplace_back(dynamic_cast<Lever*>(this->m_gameObjects.back())); 
+	this->m_Gems.at(0)->setPlayerBoundingBox(this->m_player->getAABBPtr());
 
 	//DirectX::XMFLOAT3 gemPos;
 	//XMStoreFloat3(&gemPos, this->m_Gems.at(0)->getPosition());  // FIX
@@ -81,61 +81,61 @@ void FindGemsRoom::createSceneObjects()
 	pos = m_PreFixedSpawnpoints.at(m_SpawnIndex[1]);
 	++nrOfCurrentLModels;
 	this->addLeverToRoom(nrOfCurrentLModels, &m_models->at(nrOfCurrentLModels), pos, rot, XMFLOAT3(2.5f, 3.5f, 2.5f)); // fix bounding box so it match the gems
-	this->m_Gems.emplace_back(dynamic_cast<Lever*>(this->m_gameObjects.back())); //Add to buttons array
-	this->m_Gems.at(1)->setPlayerBoundingBox(this->m_player->getAABBPtr()); //Create BB
+	this->m_Gems.emplace_back(dynamic_cast<Lever*>(this->m_gameObjects.back())); 
+	this->m_Gems.at(1)->setPlayerBoundingBox(this->m_player->getAABBPtr());
 
 	// Gem 3
 	pos = m_PreFixedSpawnpoints.at(m_SpawnIndex[2]);
 	++nrOfCurrentLModels;
 	this->addLeverToRoom(nrOfCurrentLModels, &m_models->at(nrOfCurrentLModels), pos, rot, XMFLOAT3(2.5f, 3.5f, 2.5f)); // fix bounding box so it match the gems
-	this->m_Gems.emplace_back(dynamic_cast<Lever*>(this->m_gameObjects.back())); //Add to buttons array
-	this->m_Gems.at(2)->setPlayerBoundingBox(this->m_player->getAABBPtr()); //Create BB
+	this->m_Gems.emplace_back(dynamic_cast<Lever*>(this->m_gameObjects.back())); 
+	this->m_Gems.at(2)->setPlayerBoundingBox(this->m_player->getAABBPtr());
 
 	// Gem 4
 	pos = m_PreFixedSpawnpoints.at(m_SpawnIndex[3]);
 	++nrOfCurrentLModels;
 	this->addLeverToRoom(nrOfCurrentLModels, &m_models->at(nrOfCurrentLModels), pos, rot, XMFLOAT3(2.5f, 3.5f, 2.5f)); // fix bounding box so it match the gems
-	this->m_Gems.emplace_back(dynamic_cast<Lever*>(this->m_gameObjects.back())); //Add to buttons array
-	this->m_Gems.at(3)->setPlayerBoundingBox(this->m_player->getAABBPtr()); //Create BB
+	this->m_Gems.emplace_back(dynamic_cast<Lever*>(this->m_gameObjects.back())); 
+	this->m_Gems.at(3)->setPlayerBoundingBox(this->m_player->getAABBPtr()); 
 
 	// Gem 5
 	pos = m_PreFixedSpawnpoints.at(m_SpawnIndex[4]);
 	++nrOfCurrentLModels;
 	this->addLeverToRoom(nrOfCurrentLModels, &m_models->at(nrOfCurrentLModels), pos, rot, XMFLOAT3(2.5f, 3.5f, 2.5f)); // fix bounding box so it match the gems
-	this->m_Gems.emplace_back(dynamic_cast<Lever*>(this->m_gameObjects.back())); //Add to buttons array
-	this->m_Gems.at(4)->setPlayerBoundingBox(this->m_player->getAABBPtr()); //Create BB
+	this->m_Gems.emplace_back(dynamic_cast<Lever*>(this->m_gameObjects.back())); 
+	this->m_Gems.at(4)->setPlayerBoundingBox(this->m_player->getAABBPtr()); 
 
 	// Gem Slots
 	/* */
 	pos = DirectX::XMVectorSet(0.8f, 3.f, 2.5f, 1.f);
 	this->addLeverToRoom(nrOfCurrentLModels, &m_models->at(nrOfCurrentLModels), pos, rot, XMFLOAT3(2.f, 2.f, 4.f)); // fix bounding box so it match the gems
-	this->m_gemSlots.emplace_back(dynamic_cast<Lever*>(this->m_gameObjects.back())); //Add to buttons array
-	this->m_gemSlots.at(0)->setPlayerBoundingBox(this->m_player->getAABBPtr()); //Create BB
+	this->m_gemSlots.emplace_back(dynamic_cast<Lever*>(this->m_gameObjects.back())); 
+	this->m_gemSlots.at(0)->setPlayerBoundingBox(this->m_player->getAABBPtr()); 
 	this->m_gemSlots.at(0)->setScale(DirectX::XMVectorSet(0.01f, 0.01f, 0.01f, 1.f)); // 0.01
 
 	pos = DirectX::XMVectorSet(-0.8f, 1.2f, -2.5f, 1.f);
 	this->addLeverToRoom(nrOfCurrentLModels, &m_models->at(nrOfCurrentLModels), pos, rot, XMFLOAT3(2, 2, 4)); // fix bounding box so it match the gems
-	this->m_gemSlots.emplace_back(dynamic_cast<Lever*>(this->m_gameObjects.back())); //Add to buttons array
-	this->m_gemSlots.at(1)->setPlayerBoundingBox(this->m_player->getAABBPtr()); //Create BB
-	this->m_gemSlots.at(1)->setScale(DirectX::XMVectorSet(0.01f, 0.01f, 0.01f, 1.f)); // 0.01
+	this->m_gemSlots.emplace_back(dynamic_cast<Lever*>(this->m_gameObjects.back())); 
+	this->m_gemSlots.at(1)->setPlayerBoundingBox(this->m_player->getAABBPtr()); 
+	this->m_gemSlots.at(1)->setScale(DirectX::XMVectorSet(0.01f, 0.01f, 0.01f, 1.f)); 
 
 	pos = DirectX::XMVectorSet(2.5f, 1.f, -1.9f, 1.f);
 	this->addLeverToRoom(nrOfCurrentLModels, &m_models->at(nrOfCurrentLModels), pos, rot, XMFLOAT3(4, 2, 2)); // fix bounding box so it match the gems
-	this->m_gemSlots.emplace_back(dynamic_cast<Lever*>(this->m_gameObjects.back())); //Add to buttons array
-	this->m_gemSlots.at(2)->setPlayerBoundingBox(this->m_player->getAABBPtr()); //Create BB
-	this->m_gemSlots.at(2)->setScale(DirectX::XMVectorSet(0.01f, 0.01f, 0.01f, 1.f)); // 0.01
+	this->m_gemSlots.emplace_back(dynamic_cast<Lever*>(this->m_gameObjects.back())); 
+	this->m_gemSlots.at(2)->setPlayerBoundingBox(this->m_player->getAABBPtr()); 
+	this->m_gemSlots.at(2)->setScale(DirectX::XMVectorSet(0.01f, 0.01f, 0.01f, 1.f)); 
 
 	pos = DirectX::XMVectorSet(2.5f, 4.7f, 0.8f, 1.f);
 	this->addLeverToRoom(nrOfCurrentLModels, &m_models->at(nrOfCurrentLModels), pos, rot, XMFLOAT3(4.f, 2.f, 2.f)); // fix bounding box so it match the gems
-	this->m_gemSlots.emplace_back(dynamic_cast<Lever*>(this->m_gameObjects.back())); //Add to buttons array
-	this->m_gemSlots.at(3)->setPlayerBoundingBox(this->m_player->getAABBPtr()); //Create BB
-	this->m_gemSlots.at(3)->setScale(DirectX::XMVectorSet(0.01f, 0.01f, 0.01f, 1.f)); // 0.01
+	this->m_gemSlots.emplace_back(dynamic_cast<Lever*>(this->m_gameObjects.back())); 
+	this->m_gemSlots.at(3)->setPlayerBoundingBox(this->m_player->getAABBPtr()); 
+	this->m_gemSlots.at(3)->setScale(DirectX::XMVectorSet(0.01f, 0.01f, 0.01f, 1.f)); 
 
 	pos = DirectX::XMVectorSet(-2.5f, 3.f, -0.85f, 1.f);
 	this->addLeverToRoom(nrOfCurrentLModels, &m_models->at(nrOfCurrentLModels), pos, rot, XMFLOAT3(4, 2, 2)); // fix bounding box so it match the gems
-	this->m_gemSlots.emplace_back(dynamic_cast<Lever*>(this->m_gameObjects.back())); //Add to buttons array
-	this->m_gemSlots.at(4)->setPlayerBoundingBox(this->m_player->getAABBPtr()); //Create BB
-	this->m_gemSlots.at(4)->setScale(DirectX::XMVectorSet(0.01f, 0.01f, 0.01f, 1.f)); // 0.01
+	this->m_gemSlots.emplace_back(dynamic_cast<Lever*>(this->m_gameObjects.back())); 
+	this->m_gemSlots.at(4)->setPlayerBoundingBox(this->m_player->getAABBPtr()); 
+	this->m_gemSlots.at(4)->setScale(DirectX::XMVectorSet(0.01f, 0.01f, 0.01f, 1.f)); 
 	// */
 
 	// Pedistal for gems
@@ -319,8 +319,8 @@ void FindGemsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& act
 void FindGemsRoom::onEntrance()
 {
 	//this->m_portal->setActive(false);
+	StatusTextHandler::get().sendText("Find and return all five gems", 5);
 }
-
 
 std::wstring FindGemsRoom::getRoomUITexturePath()
 {
@@ -377,7 +377,7 @@ void FindGemsRoom::init()
 	m_PreFixedSpawnpoints.push_back(DirectX::XMVectorSet(25, -2, 28.7f, 1));		  // Front right moat
 	m_PreFixedSpawnpoints.push_back(DirectX::XMVectorSet(-28.2f, -2, 26, 1));        // Front left moat
 
-			// Gem UI - Test  
+	// Gem UI - Test  
 	this->m_gemUI0_SRV = Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>(this->resourceHandler->getTexture(L"Textures/GemsUI_null.png"));
 	this->m_gemUI1_SRV = Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>(this->resourceHandler->getTexture(L"Textures/GemsUI_1.png"));
 	this->m_gemUI2_SRV = Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>(this->resourceHandler->getTexture(L"Textures/GemsUI_2.png"));

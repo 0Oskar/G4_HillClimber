@@ -6,7 +6,7 @@ Lever::Lever()
 {
 	m_theTexture = L" ";
 	m_sound = L" ";
-	activated = false;
+	activated = true;
 	canUseLever = false;
 	//defaultLever L"Models/Lever.obj";
 	m_audioComponent = new AudioComponent();
@@ -22,7 +22,7 @@ void Lever::onPlayerColide()
 	canUseLever = true;
 }
 
-void Lever::activateLever()
+void Lever::toggleActivateLever()
 {
 	if (this->activated == false)
 	{
