@@ -70,7 +70,7 @@ void FindGemsRoom::createSceneObjects()
 	++nrOfCurrentLModels;
 	this->addLeverToRoom(nrOfCurrentLModels, &m_models->at(nrOfCurrentLModels), pos, rot, XMFLOAT3(2.5f, 3.5f, 2.5f)); // fix bounding box so it match the gems
 	this->m_Gems.emplace_back(dynamic_cast<Lever*>(this->m_gameObjects.back())); 
-	this->m_Gems.at(0)->setPlayerBoundingBox(this->m_player->getAABBPtr()); 
+	this->m_Gems.at(0)->setPlayerBoundingBox(this->m_player->getAABBPtr());
 
 	//DirectX::XMFLOAT3 gemPos;
 	//XMStoreFloat3(&gemPos, this->m_Gems.at(0)->getPosition());  // FIX
@@ -82,14 +82,14 @@ void FindGemsRoom::createSceneObjects()
 	++nrOfCurrentLModels;
 	this->addLeverToRoom(nrOfCurrentLModels, &m_models->at(nrOfCurrentLModels), pos, rot, XMFLOAT3(2.5f, 3.5f, 2.5f)); // fix bounding box so it match the gems
 	this->m_Gems.emplace_back(dynamic_cast<Lever*>(this->m_gameObjects.back())); 
-	this->m_Gems.at(1)->setPlayerBoundingBox(this->m_player->getAABBPtr()); 
+	this->m_Gems.at(1)->setPlayerBoundingBox(this->m_player->getAABBPtr());
 
 	// Gem 3
 	pos = m_PreFixedSpawnpoints.at(m_SpawnIndex[2]);
 	++nrOfCurrentLModels;
 	this->addLeverToRoom(nrOfCurrentLModels, &m_models->at(nrOfCurrentLModels), pos, rot, XMFLOAT3(2.5f, 3.5f, 2.5f)); // fix bounding box so it match the gems
 	this->m_Gems.emplace_back(dynamic_cast<Lever*>(this->m_gameObjects.back())); 
-	this->m_Gems.at(2)->setPlayerBoundingBox(this->m_player->getAABBPtr()); 
+	this->m_Gems.at(2)->setPlayerBoundingBox(this->m_player->getAABBPtr());
 
 	// Gem 4
 	pos = m_PreFixedSpawnpoints.at(m_SpawnIndex[3]);
@@ -377,7 +377,7 @@ void FindGemsRoom::init()
 	m_PreFixedSpawnpoints.push_back(DirectX::XMVectorSet(25, -2, 28.7f, 1));		  // Front right moat
 	m_PreFixedSpawnpoints.push_back(DirectX::XMVectorSet(-28.2f, -2, 26, 1));        // Front left moat
 
-			// Gem UI - Test  
+	// Gem UI - Test  
 	this->m_gemUI0_SRV = Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>(this->resourceHandler->getTexture(L"Textures/GemsUI_null.png"));
 	this->m_gemUI1_SRV = Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>(this->resourceHandler->getTexture(L"Textures/GemsUI_1.png"));
 	this->m_gemUI2_SRV = Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>(this->resourceHandler->getTexture(L"Textures/GemsUI_2.png"));

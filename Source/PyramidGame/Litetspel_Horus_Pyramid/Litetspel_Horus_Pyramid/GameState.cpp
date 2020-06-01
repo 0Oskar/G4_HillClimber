@@ -572,12 +572,13 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_rooms.emplace_back(new FindGemsRoom());
 	this->m_rooms.back()->initialize(m_device, m_dContext, m_modelsPtr, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, -300, 1), audioEngine, &this->m_gameTime, options);
 	dynamic_cast<FindGemsRoom*>(this->m_rooms.back())->init();
-	m_activeRoom = m_rooms.back();
+	
 
 	//Kevin Room [2]
 	this->m_rooms.emplace_back(new KevinsRoom());
 	this->m_rooms.back()->initialize(m_device, m_dContext, m_modelsPtr, &this->m_wvpCBuffers, &m_player, XMVectorSet(100, 2, 100, 1), audioEngine, &this->m_gameTime, options);
 	dynamic_cast<KevinsRoom*>(this->m_rooms.back())->init();
+	m_activeRoom = m_rooms.back();
 
 	//Edvin Room [3]
 	this->m_rooms.emplace_back(new EdvinsRoom());
