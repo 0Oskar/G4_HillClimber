@@ -47,6 +47,8 @@ private:
 	Microsoft::WRL::ComPtr< ID3D11DepthStencilState > m_disabledDepthState;
 	void CreateRandomTex(ID3D11Device* device);
 
+	Particle m_Particle;
+
 
 public:
 	ParticleSystem();

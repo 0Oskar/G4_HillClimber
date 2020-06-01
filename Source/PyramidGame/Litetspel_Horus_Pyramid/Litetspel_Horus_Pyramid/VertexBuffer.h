@@ -37,18 +37,14 @@ public:
 		if(immutable)
 			vertexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
 		else 
-			vertexBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+			vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
 
 		if(streamOutput)
 			vertexBufferDesc.BindFlags = D3D11_BIND_STREAM_OUTPUT | D3D11_BIND_VERTEX_BUFFER;
 		else
 			vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 		
-		if (immutable)
-			vertexBufferDesc.CPUAccessFlags = 0;
-		else
-			vertexBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-		
+		vertexBufferDesc.CPUAccessFlags = 0;
 		vertexBufferDesc.MiscFlags = 0;
 
 

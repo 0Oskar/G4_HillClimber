@@ -59,6 +59,12 @@ ParticleSystem::ParticleSystem()
 	this->m_partBuffer.EmitDirection = XMFLOAT3(0.0f, 0.0f, 0.0f);
 
 	this->m_ParticleLifetime = 0.0f;
+
+	this->m_Particle.Position = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	this->m_Particle.Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	this->m_Particle.Size = 0;
+	this->m_Particle.ParticleLifetime = 0;
+	this->m_Particle.Type = 0;
 }
 
 ParticleSystem::~ParticleSystem()
