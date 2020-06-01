@@ -499,7 +499,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_rooms.emplace_back(new PyramidRoom());
 	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, 0, 1), audioEngine, &this->m_gameTime);
 	dynamic_cast<PyramidRoom*>(this->m_rooms.back())->init(&m_pyramidOBB);
-	//m_activeRoom = m_rooms.back();
+	m_activeRoom = m_rooms.back();
 
 	//Template Room [1] //Up for grabs
 	this->m_rooms.emplace_back(new TemplateRoom());
@@ -520,7 +520,6 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_rooms.emplace_back(new TristansRoom());
 	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, -200, 1), audioEngine, &this->m_gameTime);
 	dynamic_cast<TristansRoom*>(this->m_rooms.back())->init();
-	m_activeRoom = m_rooms.back();
 
 
 	// final Room [5]

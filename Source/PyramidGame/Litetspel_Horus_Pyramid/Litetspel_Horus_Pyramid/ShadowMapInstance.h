@@ -2,6 +2,15 @@
 
 #include "ConstantBuffer.h"
 #include "Shaders.h"
+#include "ConstantBuffer.h"
+
+struct VS_SHADOW_C_BUFFER
+{
+	XMMATRIX lightViewMatrix;
+	XMMATRIX lightProjectionMatrix;
+	XMMATRIX textureTransformMatrix;
+	XMVECTOR lightPosition;
+};
 
 class ShadowMapInstance
 {
@@ -14,12 +23,14 @@ private:
 	UINT m_height;
 
 	// Resources
+	Microsoft::WRL::ComPtr< ID3D11Texture2D > m_shadowMapTexture;
 	Microsoft::WRL::ComPtr< ID3D11ShaderResourceView > m_shadowMapSRV;
 	Microsoft::WRL::ComPtr< ID3D11DepthStencilView > m_shadowMapDSV;
 
 	// Pipeline States
+	Microsoft::WRL::ComPtr< ID3D11DepthStencilState > m_depthStencilState;
 	Microsoft::WRL::ComPtr< ID3D11RasterizerState > m_rasterizerState;
-	Microsoft::WRL::ComPtr< ID3D11SamplerState > m_samplerState;
+	Microsoft::WRL::ComPtr< ID3D11SamplerState > m_comparisonSampler;
 
 	// Render Target
 	ID3D11RenderTargetView* m_rendertarget[1] = {0};
@@ -34,6 +45,7 @@ private:
 	BoundingSphere m_worldBoundingSphere;
 
 	// Constant Buffer
+	ConstBuffer<VS_SHADOW_C_BUFFER> m_shadowCBuffer;
 	XMMATRIX m_lightViewMatrix;
 	XMMATRIX m_lightProjectionMatrix;
 	XMMATRIX m_shadowTranformMatrix;
@@ -50,6 +62,7 @@ public:
 	void update();
 
 	// Render
-	ID3D11ShaderResourceView* getShadowMapSRV();
+	ID3D11ShaderResourceView* const* getShadowMapSRV();
 	void bindViewsAndRenderTarget();
+	void setLightMatrixConstantBuffer();
 };

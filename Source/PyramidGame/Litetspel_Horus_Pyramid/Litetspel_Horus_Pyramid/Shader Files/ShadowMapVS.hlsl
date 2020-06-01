@@ -9,7 +9,15 @@ struct VS_IN
 cbuffer constantBuffer : register(b0)
 {
     matrix wvp;
+    matrix wMatrix;
+};
+
+cbuffer lightSpaceMatrices : register(b1)
+{
+    matrix lightViewMatrix;
+    matrix lightProjectionMatrix;
     matrix textureTransformMatrix;
+    float4 lightPosition;
 };
 
 struct VS_OUT
@@ -22,7 +30,15 @@ VS_OUT main(VS_IN input)
 {
     VS_OUT output;
 
-    output.pos = mul(float4(input.pos, 1.0f), wvp);
+    float4 pos = float4(input.pos, 1.0f);
+
+    // Transform the vertex position into projected space.
+    pos = mul(pos, wMatrix);
+    pos = mul(pos, lightViewMatrix);
+    pos = mul(pos, lightProjectionMatrix);
+    output.pos = pos;
+    
+    //output.pos = mul(float4(input.pos, 1.0f), wMatrix * lightViewMatrix * lightProjectionMatrix);
     output.outTextureCord = mul(float4(input.inTextureCord, 0.0f, 1.0f), textureTransformMatrix).xy;
 
     return output;

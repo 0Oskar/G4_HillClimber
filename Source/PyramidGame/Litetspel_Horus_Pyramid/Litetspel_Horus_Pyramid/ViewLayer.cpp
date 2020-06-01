@@ -140,7 +140,7 @@ void ViewLayer::initShaders()
 
 	CD3D11_RASTERIZER_DESC rastDesc(
 		D3D11_FILL_SOLID, 
-		D3D11_CULL_NONE, 
+		D3D11_CULL_BACK, 
 		FALSE,
 		D3D11_DEFAULT_DEPTH_BIAS, 
 		D3D11_DEFAULT_DEPTH_BIAS_CLAMP,
@@ -428,7 +428,7 @@ void ViewLayer::renderScene()
 			int wvpIndex = gObject->getWvpCBufferIndex();
 			int mIndex = gObject->getModelIndex();
 			// Set Constant buffer
-			this->m_deviceContext->VSSetConstantBuffers(0, 1, this->m_wvpCBufferFromState->at(wvpIndex).GetAdressOf());
+			this->m_deviceContext->VSSetConstantBuffers(0, 1, this->m_wvpCBufferFromState->at(wvpIndex).GetAddressOf());
 			// Draw Model
 			this->m_modelsFromState->at(mIndex).m_material.setTexture(gObject->getTexturePath().c_str());
 			this->m_modelsFromState->at(mIndex).draw(viewPMtrx);
@@ -446,7 +446,7 @@ void ViewLayer::renderScene()
 				int wvpIndex = gObject->getWvpCBufferIndex();
 				int mIndex = gObject->getModelIndex();
 				// Set Constant buffer
-				this->m_deviceContext->VSSetConstantBuffers(0, 1, this->m_wvpCBufferFromState->at(wvpIndex).GetAdressOf());
+				this->m_deviceContext->VSSetConstantBuffers(0, 1, this->m_wvpCBufferFromState->at(wvpIndex).GetAddressOf());
 				// Draw Model
 				this->m_modelsFromState->at(mIndex).m_material.setTexture(gObject->getTexturePath().c_str());
 				this->m_modelsFromState->at(mIndex).draw(viewPMtrx);
@@ -457,33 +457,37 @@ void ViewLayer::renderScene()
 
 void ViewLayer::render()
 {
+	// Clear Render Target
+	this->m_deviceContext->ClearRenderTargetView(this->m_outputRTV.Get(), clearColor);
+	this->m_deviceContext->PSSetSamplers(0, 1, this->m_samplerState.GetAddressOf());
+
 	// Render Shadow Map
 	this->m_shadowInstance.bindViewsAndRenderTarget();
 
 	this->renderScene();
 
-	this->m_deviceContext->RSSetState(0);
-
-	// Set Render Target
+	// Set Render Target and states for Output Rendering
 	this->m_deviceContext->OMSetRenderTargets(1, this->m_outputRTV.GetAddressOf(), this->m_depthStencilView.Get());
 	this->m_deviceContext->OMSetDepthStencilState(this->m_depthStencilState.Get(), 0);
 	this->m_deviceContext->RSSetState(this->m_states->CullClockwise());
 	this->m_deviceContext->RSSetViewports(1, &this->m_viewport);
 
-	// Clear Frame
-	this->m_deviceContext->ClearRenderTargetView(this->m_outputRTV.Get(), clearColor);
+	// Clear Depth buffer
 	this->m_deviceContext->ClearDepthStencilView(this->m_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 	// Set Shaders
 	this->m_shaders.setShaders();
 
-	this->m_deviceContext->PSSetSamplers(0, 1, this->m_samplerState.GetAddressOf());
+	// Set Shader Resource Views
+	this->m_deviceContext->PSSetShaderResources(1, 1, this->m_shadowInstance.getShadowMapSRV());
 
 	// Set Constant Buffer
-	this->m_deviceContext->PSSetConstantBuffers(1, 1, this->m_lightBuffer.GetAdressOf());
-	this->m_deviceContext->PSSetConstantBuffers(2, 1, this->m_dirLightBuffer.GetAdressOf());
+	this->m_shadowInstance.setLightMatrixConstantBuffer();
 
-	this->m_deviceContext->PSSetConstantBuffers(3, 1, this->m_fogBuffer.GetAdressOf());
+	this->m_deviceContext->PSSetConstantBuffers(1, 1, this->m_lightBuffer.GetAddressOf());
+	this->m_deviceContext->PSSetConstantBuffers(2, 1, this->m_dirLightBuffer.GetAddressOf());
+
+	this->m_deviceContext->PSSetConstantBuffers(3, 1, this->m_fogBuffer.GetAddressOf());
 
 	// Draw
 	this->renderScene();
@@ -492,7 +496,7 @@ void ViewLayer::render()
 	if (this->m_drawPrimitives)
 	{
 		this->m_deviceContext->OMSetBlendState(m_states->Opaque(), nullptr, 0xFFFFFFFF);
-		this->m_deviceContext->OMSetDepthStencilState(m_states->DepthNone(), 0);
+		//this->m_deviceContext->OMSetDepthStencilState(m_states->DepthNone(), 0);
 		this->m_deviceContext->RSSetState(m_states->CullNone());
 		this->m_deviceContext->IASetInputLayout(this->m_batchInputLayout.Get());
 

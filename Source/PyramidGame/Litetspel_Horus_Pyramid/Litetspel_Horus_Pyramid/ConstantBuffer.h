@@ -54,7 +54,7 @@ public:
 	}
 
 	ID3D11Buffer* Get(){ return buffer.Get(); }
-	ID3D11Buffer* const* GetAdressOf() const { return buffer.GetAddressOf(); }
+	ID3D11Buffer* const* GetAddressOf() const { return buffer.GetAddressOf(); }
 	HRESULT init(ID3D11Device* device, ID3D11DeviceContext* dContext)
 	{
 		this->dContextPtr = dContext;

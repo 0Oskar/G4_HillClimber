@@ -40,7 +40,7 @@ public:
 			this->m_texture = this->resourceHandler->getTexture(texturePath);
 		}
 
-		dContext->PSSetConstantBuffers(0, 1, this->m_materialBuffer.GetAdressOf());
+		dContext->PSSetConstantBuffers(0, 1, this->m_materialBuffer.GetAddressOf());
 		
 	}
 
@@ -51,7 +51,7 @@ public:
 
 	void upd(ID3D11DeviceContext* dContext)
 	{
-		dContext->PSSetConstantBuffers(0, 1, this->m_materialBuffer.GetAdressOf());
+		dContext->PSSetConstantBuffers(0, 1, this->m_materialBuffer.GetAddressOf());
 		if(m_texture != nullptr)
 			dContext->PSSetShaderResources(0, 1, &m_texture);
 
