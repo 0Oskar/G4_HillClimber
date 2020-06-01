@@ -437,7 +437,6 @@ void FindGemsRoom::portals()
 
 void FindGemsRoom::drawUI(DirectX::SpriteBatch* spriteBatchPtr, DirectX::SpriteFont* spriteFontPtr)
 {
-
 	if (this->m_currentRoomUIPath == L"GemsUI_null") {
 		spriteBatchPtr->Draw(this->m_gemUI0_SRV.Get(), this->m_gemUI_Position, nullptr, Colors::White, 0.f, XMFLOAT2(0.f, 0.f), XMFLOAT2(0.2f, 0.2f));
 	}
