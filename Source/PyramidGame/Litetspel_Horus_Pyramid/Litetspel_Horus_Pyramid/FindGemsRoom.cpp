@@ -300,7 +300,7 @@ void FindGemsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& act
 	{
 		this->m_Lever[0]->setPosition(DirectX::XMVectorSet(0, -1.5f, 43.1f, 1) + this->m_worldPosition + DirectX::XMVectorSet(-1.2f, 0, 0, 0));
 		this->m_Lever[0]->setRotation(DirectX::XMVectorSet(0.f, 0.f, pMath::convertDegreesToRadians(-45), 0.f));
-		//this->m_portal->setActive(false);  
+		this->m_portal->setActiveStatus(true);
 	}
 
 	// Move gate
@@ -318,7 +318,7 @@ void FindGemsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& act
 
 void FindGemsRoom::onEntrance()
 {
-	//this->m_portal->setActive(false);
+	//this->m_portal->setActiveStatus(false);
 	StatusTextHandler::get().sendText("Find and return all five gems", 5);
 }
 
@@ -416,6 +416,7 @@ void FindGemsRoom::portals()
 	this->addPortalToRoom(pos2, 10, &m_models->at(10), pos, scale, DirectX::XMFLOAT3(5, 6, 4), 0, true);
 	this->m_gameObjects.back()->getMoveCompPtr()->rotation = rot;
 	this->m_portal = dynamic_cast<Portal*>(this->m_gameObjects.back());
+	this->m_portal->setActiveStatus(false);
 	//this->addGameObjectToRoom(true, false, 1, 10, &m_models->at(10), pos, scale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
 }
 
