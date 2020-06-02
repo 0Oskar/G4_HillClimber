@@ -63,6 +63,31 @@ void MenuState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 
 	this->m_cameraMovementComponentPtr->position = { 0, 100, 0 };
 
+	// UI
+	this->m_resourceHandler = &ResourceHandler::get();	
+	this->m_titelImage = this->m_resourceHandler->getTexture(L"Textures/HorusPyramid_TitlePNG.png");
+	ID3D11Resource* titelImageTexture = 0;
+	this->m_titelImage->GetResource(&titelImageTexture);
+	ID3D11Texture2D* titelImageTexture2D = 0;
+	titelImageTexture->QueryInterface<ID3D11Texture2D>(&titelImageTexture2D);
+	D3D11_TEXTURE2D_DESC titelImageDesc;
+	titelImageTexture2D->GetDesc(&titelImageDesc);
+	int titelImageX = (this->m_gameOptions.width / 2) - (titelImageDesc.Width / 2);
+	int titelImageY = (this->m_gameOptions.height / 3) - (titelImageDesc.Height / 2);
+
+	this->m_titelImagePosition = DirectX::XMFLOAT2((float)titelImageX, (float)titelImageY);
+
+	this->m_infoImage = this->m_resourceHandler->getTexture(L"Textures/HorusPyramid_StartPNG.png");
+	ID3D11Resource* infoImageTexture = 0;
+	this->m_infoImage->GetResource(&infoImageTexture);
+	ID3D11Texture2D* infoImageTexture2D = 0;
+	titelImageTexture->QueryInterface<ID3D11Texture2D>(&infoImageTexture2D);
+	D3D11_TEXTURE2D_DESC infoImageDesc;
+	infoImageTexture2D->GetDesc(&infoImageDesc);
+	int infoImageX = (this->m_gameOptions.width / 2) - (infoImageDesc.Width*3 / 10);
+	int infoImageY = (this->m_gameOptions.height*8 / 10);
+
+	this->m_infoImagePosition = DirectX::XMFLOAT2((float)infoImageX, (float)infoImageY);
 }
 
 
@@ -429,8 +454,12 @@ XMFLOAT3 MenuState::getCameraPos()
 
 void MenuState::drawUI(DirectX::SpriteBatch* spriteBatchPtr, DirectX::SpriteFont* spriteFontPtr)
 {
-	std::string helpText = "Press -Enter- key to continiue.";
-	std::string titleName = "HORUS PYRAMID";
-	spriteFontPtr->DrawString(spriteBatchPtr, helpText.c_str(), DirectX::XMFLOAT2((float)this->m_gameOptions.width / 2, (float)this->m_gameOptions.height / 2), DirectX::Colors::Green, 0.f, DirectX::XMFLOAT2(100.f, 0.f));
-	spriteFontPtr->DrawString(spriteBatchPtr, titleName.c_str(), DirectX::XMFLOAT2((float)this->m_gameOptions.width / 2, (float)this->m_gameOptions.height / 10), DirectX::Colors::Yellow, 0.f, DirectX::XMFLOAT2(70.f, 0.f));
+	//std::string helpText = "Press -Enter- key to continiue.";
+	//std::string titleName = "HORUS PYRAMID";
+
+	spriteBatchPtr->Draw(this->m_titelImage, this->m_titelImagePosition);
+	spriteBatchPtr->Draw(this->m_infoImage, this->m_infoImagePosition);
+	
+	//spriteFontPtr->DrawString(spriteBatchPtr, helpText.c_str(), DirectX::XMFLOAT2((float)this->m_gameOptions.width / 2, (float)this->m_gameOptions.height / 2), DirectX::Colors::Green, 0.f, DirectX::XMFLOAT2(100.f, 0.f));
+	//spriteFontPtr->DrawString(spriteBatchPtr, titleName.c_str(), DirectX::XMFLOAT2((float)this->m_gameOptions.width / 2, (float)this->m_gameOptions.height / 10), DirectX::Colors::Yellow, 0.f, DirectX::XMFLOAT2(70.f, 0.f));
 }
