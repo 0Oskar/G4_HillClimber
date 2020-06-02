@@ -117,10 +117,6 @@ void PyramidRoom::portals()
 	//Portals Level 5 finalRoom
 	vec = DirectX::XMVectorSet(0.7f, 580.f, 610.f, 1.f); 
 	this->addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 22, &m_models->at(22), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 5);
-
-	vec = DirectX::XMVectorSet(0.f, 300.f, 315.f, 1.f);
-	vec2 = DirectX::XMVectorSet(-400.f, 0, -10.f, 1.f);
-	this->addPortalToRoom(vec, 22, &m_models->at(22), vec2, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), -1);
 }
 
 std::vector<DirectX::BoundingBox*> PyramidRoom::getBBForHook()
@@ -732,12 +728,6 @@ void PyramidRoom::createSceneObjects()
 
 
 	////////////////////
-
-	// platform 12 final
-	vec = DirectX::XMVectorSet(-400.f, 285.f, 315.f, 1.f);
-	this->addGameObjectToRoom(false, true, 0, 3, &m_models->at(3), vec, {7.f, 0.5f, 7.0f }, DirectX::XMFLOAT3(23, 1, 23));
-	/*vec = DirectX::XMVectorSet(5.f, 1.f, 5.f, 1.f);
-	this->m_gameObjects.back()->setScale(vec);*/
 
 	// Checkpoints
 
