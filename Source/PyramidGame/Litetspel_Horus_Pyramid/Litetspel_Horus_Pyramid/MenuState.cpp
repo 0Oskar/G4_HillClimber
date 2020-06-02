@@ -417,6 +417,11 @@ void MenuState::loadModels()
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
 	this->m_models[47].loadVertexFromOBJ(m_device, m_dContext, L"Models/Entrence.obj", mat, L"Textures/ColorTexture.png");
 
+	//48. Clouds
+	this->m_models.emplace_back();
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
+	this->m_models[48].loadVertexFromOBJ(m_device, m_dContext, L"Models/Clouds.obj", mat, L"Textures/ColorTexture.png");
+
 }
 
 
