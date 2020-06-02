@@ -23,7 +23,28 @@ GameState::GameState()
 	this->m_gameOver = false;
 }
 
-GameState::~GameState() {}
+GameState::~GameState() 
+{
+	for (int i = 0; i < nrOfGameObjects; i++)
+	{
+		if (m_gameObjects.at(i) != nullptr)
+		{
+			delete m_gameObjects.at(i);
+			this->m_gameObjects.at(i) = nullptr;
+		}
+	}
+
+	for (int i = 0; i < m_rooms.size(); i++)
+	{
+		if (m_rooms.at(i) != nullptr)
+		{
+			delete m_rooms.at(i);
+			this->m_rooms.at(i) = nullptr;
+		}
+	}
+	this->m_rooms.clear();
+	this->m_gameObjects.clear();
+}
 
 DirectX::XMMATRIX* GameState::getViewMatrix() const
 {
@@ -85,7 +106,8 @@ std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* GameState::getWvpCBuffersPtr()
 constantBufferData* GameState::getConstantBufferData()
 {
 	return &this->m_constantbufferData;
-}
+}	
+
 
 PS_DIR_BUFFER GameState::getActiveRoomDirectionalLight()
 {
@@ -470,6 +492,11 @@ void GameState::drawUI(DirectX::SpriteBatch* spriteBatchPtr, DirectX::SpriteFont
 	this->m_activeRoom->drawUI(spriteBatchPtr, spriteFontPtr);
 }
 
+void GameState::onPop()
+{
+	iGameState::onPop();
+}
+
 void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext, GameOptions options, std::shared_ptr<DirectX::AudioEngine> audioEngine)
 {
 	GameObject* hook = nullptr;
@@ -601,11 +628,11 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	dynamic_cast<PyramidRoom*>(this->m_rooms.back())->init(&m_pyramidOBB);
 	m_activeRoom = m_rooms.back();
 
-
 	//Template Room [1] Viktor
 	this->m_rooms.emplace_back(new FindGemsRoom());
 	this->m_rooms.back()->initialize(m_device, m_dContext, m_modelsPtr, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, -300, 1), audioEngine, &this->m_gameTime, options);
 	dynamic_cast<FindGemsRoom*>(this->m_rooms.back())->init();
+	m_activeRoom = m_rooms.back();
 	
 
 	//Kevin Room [2]
@@ -617,7 +644,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_rooms.emplace_back(new EdvinsRoom());
 	this->m_rooms.back()->initialize(m_device, m_dContext, m_modelsPtr, &this->m_wvpCBuffers, &m_player, XMVectorSet(-200, 0, 200, 1), audioEngine, &this->m_gameTime, options);
 	dynamic_cast<EdvinsRoom*>(this->m_rooms.back())->init();
-
+	
 
 	// Tristan Room [4]
 	this->m_rooms.emplace_back(new TristansRoom());
@@ -688,6 +715,9 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 
 void GameState::update(float dt)
 {
+	this->m_constantbufferData.dirBuffer = m_activeRoom->getDirectionalLight();
+	this->m_constantbufferData.fogBuffer = m_activeRoom->getFogData();
+	this->m_constantbufferData.lightBuffer = m_activeRoom->getLightData();
 	
 	// Player
 	this->m_player.update(dt);

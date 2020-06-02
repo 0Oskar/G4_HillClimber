@@ -33,6 +33,7 @@ protected:
 	ResourceHandler* m_resourceHandler;
 
 public:
+	virtual ~iGameState() {};
 	virtual void update(float dt) = 0;
 	virtual states handleInput(Keyboard* keyboard, Mouse* mouePointer, float dt) = 0;
 	virtual std::vector<Model>* getModelsPtr() = 0;

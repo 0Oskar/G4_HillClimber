@@ -9,6 +9,22 @@ MenuState::MenuState()
 	this->m_audioComponent = nullptr;
 }
 
+MenuState::~MenuState()
+{
+	if (this->m_audioComponent != nullptr)
+	{
+		this->m_audioComponent->stopSound(0);
+		delete this->m_audioComponent;
+		this->m_audioComponent = nullptr;
+	}
+
+	if (this->m_cameraMovementComponentPtr != nullptr)
+	{
+		delete this->m_cameraMovementComponentPtr;
+	}
+
+}
+
 void MenuState::setupLight()
 {
 	this->m_constantbufferData.dirBuffer.lightColor = { 1, 1, 1, 1 };
@@ -322,7 +338,7 @@ void MenuState::loadModels()
 
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
-	this->m_models[++nrOfCurrentLModels].initializeModelBff(m_device, m_dContext, "vRoom_New.bff", mat, L"Textures/ColorTexture.png");
+	this->m_models[++nrOfCurrentLModels].initializeModelBff(m_device, m_dContext, "vRoom_New2.bff", mat, L"Textures/ColorTexture.png");
 
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);

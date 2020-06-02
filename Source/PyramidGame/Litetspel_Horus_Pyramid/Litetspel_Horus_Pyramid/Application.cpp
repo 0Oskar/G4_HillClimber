@@ -253,6 +253,7 @@ void Application::pushNewState(states state)
 	case states::PAUSE:
 		break;
 	case states::POP:
+		delete this->m_gameStateStack.top();
 		this->m_gameStateStack.pop();
 		break;
 	case states::WON:

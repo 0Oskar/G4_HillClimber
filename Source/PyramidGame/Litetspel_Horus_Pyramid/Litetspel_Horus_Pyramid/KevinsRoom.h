@@ -48,6 +48,7 @@ private:
 	bool lifeTaken = false;
 
 	XMVECTOR scorpionBBPosition;
+	Portal* portalPtr;
 
 	
 

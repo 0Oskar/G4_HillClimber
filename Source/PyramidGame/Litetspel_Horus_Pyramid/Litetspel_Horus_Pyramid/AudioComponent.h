@@ -17,6 +17,21 @@ public:
 		this->playerMovementComp = nullptr;
 		this->resourceHandler = &ResourceHandler::get();
 	};
+	~AudioComponent()
+	{
+		this->playerMovementComp = nullptr;
+		for (int i = 0; i < m_effect.size(); i++)
+		{
+			if (m_effect.at(i).get() != nullptr)
+			{
+				if (m_effect.at(i)->GetState() == DirectX::SoundState::PLAYING)
+				{
+					m_effect.at(i)->Stop();
+				}
+				m_effect.at(i).release();
+			}
+		}
+	}
 	void init(std::shared_ptr<DirectX::AudioEngine> audioEngine, MovementComponent* playerMovementComponent, size_t nrOfChannels = 1)
 	{
 		this->m_audioEngine = audioEngine;

@@ -3,6 +3,7 @@
 
 void FindGemsRoom::createBoundingBoxes()
 {
+	this->addBoundingBox({ 0.f, -1.f, 0.f, 1.f }, DirectX::XMFLOAT3(30.f, 1.f, 55.f));   // Ground
 	this->addBoundingBox({ 30.5f, 0.f, 0.f, 1.f }, DirectX::XMFLOAT3(2.f, 15.f, 35.f));   // Right wall
 	this->addBoundingBox({ -30.5f, 0.f, 0.f, 1.f }, DirectX::XMFLOAT3(2.f, 15.f, 35.f));  // Left wall
 
@@ -15,6 +16,7 @@ void FindGemsRoom::createBoundingBoxes()
 	this->addBoundingBox({ -20.f, 0.f, 31.f, 1.f }, DirectX::XMFLOAT3(13.f, 15.f, 2.f));   // Front wall left
 
 	this->addBoundingBox({ 0.f, 4.f, 50.f, 1.f }, DirectX::XMFLOAT3(10.f, 6.f, 2.f));      // Small room back wall
+	this->addBoundingBox({ 0.f, 10.f, 45.f, 1.f }, DirectX::XMFLOAT3(10.f, 1.f, 10.f));      // Small room roof
 	this->addBoundingBox({ 9.5f, 2.f, 41, 1.f }, DirectX::XMFLOAT3(2.f, 7.f, 10.f));    // Small room right wall
 	this->addBoundingBox({ -9.5f, 2.f, 41.f, 1.f }, DirectX::XMFLOAT3(2.f, 7.f, 10.f));   // Small room left wall
 
@@ -179,7 +181,6 @@ void FindGemsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& act
 		this->m_gemInPlace = 0;
 	}
 
-
 	// Pick up gem
 	//if(m_Gems[0]->collidable())
 	this->m_Gems[0]->collidesWithPlayer();
@@ -244,7 +245,7 @@ void FindGemsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& act
 	if (this->m_gemSlots[1]->getCanUseLever() == true && this->m_player->getinUse() == true && this->m_holdingGem == true && this->m_GameSlotFilled_1 == false)
 	{
 		this->m_Gems[(int)this->m_gemInPlace - 1]->setPosition(m_gemSlots[1]->getPosition());
-		this->m_Gems[(int)this->m_gemInPlace - 1]->setRotation(DirectX::XMVectorSet(pMath::convertDegreesToRadians(180), pMath::convertDegreesToRadians(180), pMath::convertDegreesToRadians(180), 0.f));
+		this->m_Gems[(int)this->m_gemInPlace - 1]->setRotation(DirectX::XMVectorSet(pMath::convertDegreesToRadians(-90), pMath::convertDegreesToRadians(180), pMath::convertDegreesToRadians(180), 0.f));
 		this->m_Gems[(int)this->m_gemInPlace - 1]->setBoundingBox(DirectX::XMFLOAT3(0.1f, 0.1f, 0.1f));
 		this->m_Gems[(int)this->m_gemInPlace - 1]->setIfCollidable(false);
 		this->m_Gems[(int)this->m_gemInPlace - 1]->setCnaUseLever(false);
@@ -300,7 +301,7 @@ void FindGemsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& act
 	{
 		this->m_Lever[0]->setPosition(DirectX::XMVectorSet(0, -1.5f, 43.1f, 1) + this->m_worldPosition + DirectX::XMVectorSet(-1.2f, 0, 0, 0));
 		this->m_Lever[0]->setRotation(DirectX::XMVectorSet(0.f, 0.f, pMath::convertDegreesToRadians(-45), 0.f));
-		//this->m_portal->setActive(false);  
+		this->m_portal->setActiveStatus(true);
 	}
 
 	// Move gate
@@ -314,12 +315,15 @@ void FindGemsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& act
 			this->m_GateBB->Center.y = XMVectorGetY(this->gatePos);
 		}
 	}
+
+	m_currentRoomUIPath = getRoomUITexturePath();
+
 }
 
 void FindGemsRoom::onEntrance()
 {
-	//this->m_portal->setActive(false);
-	StatusTextHandler::get().sendText("Find and return all five gems", 5);
+	//this->m_portal->setActiveStatus(false);
+	StatusTextHandler::get().sendText("Find and return all five gems \n       Press E to interact", 5);
 }
 
 std::wstring FindGemsRoom::getRoomUITexturePath()
@@ -399,7 +403,18 @@ void FindGemsRoom::init()
 	m_Gems[3]->setCnaUseLever(true);
 	m_Gems[4]->setCnaUseLever(true);
 	
+	
+	XMFLOAT3 Pos;
+	XMStoreFloat3(&Pos, (this->m_worldPosition + DirectX::XMVectorSet(0, 0, -20 ,0)));
+	this->m_PortalLight.plPosition = (Pos);
+	this->m_PortalLight.att = { 1, 0, 0.5 };
+	this->m_PortalLight.plDiffuse = { 0,1,0,0 };
+	this->m_PortalLight.plAmbient = { 0,0,0,1 };
 
+	this->m_PortalLight.plRange = 20;
+
+	int lightIndex = this->createLight(this->m_PortalLight);
+	this->createLight(this->m_PortalLight.plPosition, this->m_PortalLight.plRange, this->m_PortalLight.plAmbient, this->m_PortalLight.plDiffuse, this->m_PortalLight.att);
 
 
 }
@@ -416,6 +431,7 @@ void FindGemsRoom::portals()
 	this->addPortalToRoom(pos2, 10, &m_models->at(10), pos, scale, DirectX::XMFLOAT3(5, 6, 4), 0, true);
 	this->m_gameObjects.back()->getMoveCompPtr()->rotation = rot;
 	this->m_portal = dynamic_cast<Portal*>(this->m_gameObjects.back());
+	this->m_portal->setActiveStatus(false);
 	//this->addGameObjectToRoom(true, false, 1, 10, &m_models->at(10), pos, scale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
 }
 

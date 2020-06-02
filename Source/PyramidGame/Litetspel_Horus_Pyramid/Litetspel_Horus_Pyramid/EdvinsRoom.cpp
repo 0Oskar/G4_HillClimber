@@ -200,7 +200,7 @@ EdvinsRoom::EdvinsRoom()
 	rightLight.plPosition = { -264, 4, 204 };
 	rightLight.plDiffuse = { 1, 0, 0, 1 };
 	rightLight.plAmbient = { 0.0, 0.0, 0.0, 1 };
-	rightLight.plRange = 0;
+	rightLight.plRange = 50;
 	rightLight.att = { 1, 0, 0.05 };
 
 	lightID = this->createLight(rightLight); //1
@@ -210,7 +210,7 @@ EdvinsRoom::EdvinsRoom()
 	leftLight.plPosition = { -264, 4, 196 };
 	leftLight.plDiffuse = { 1, 0, 0, 1 };
 	leftLight.plAmbient = { 0.0, 0.0, 0.0, 1 };
-	leftLight.plRange = 0;
+	leftLight.plRange = 50;
 	leftLight.att = { 1, 0, 0.05 };
 
 	lightID = this->createLight(leftLight); //2
