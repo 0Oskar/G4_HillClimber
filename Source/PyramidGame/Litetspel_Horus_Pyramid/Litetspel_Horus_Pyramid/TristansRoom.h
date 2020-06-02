@@ -22,7 +22,6 @@ private:
 
 	int randNr;
 
-	bool isMoving;
 	XMVECTOR leverStartRot;
 	XMVECTOR leverEndRot;
 
@@ -41,11 +40,6 @@ private:
 	bool moveLeverAgain2 = false;
 	bool moveLeverAgain3 = false;
 
-	bool tempLever0 = false;
-	bool tempLever1 = false;
-	bool tempLever2 = false;
-	bool tempLever3 = false;
-
 	bool bellsShallRase = false;
 	bool bellsShallLower = false;
 	bool isAnimationGoing = false;
@@ -62,15 +56,12 @@ public:
 	void init();
 	void portals();
 
-	//int randomNr();
 
 	void moveBellsUp();
 	void moveBellsDown(float startTime);
 	void Bellmove1(float startTime);
 	void Bellmove2(float startTime);
 	void Bellmove3(float startTime);
-
-	void rotateLeverDown(int Index);
 
 	void onWin();
 	void onFail();
