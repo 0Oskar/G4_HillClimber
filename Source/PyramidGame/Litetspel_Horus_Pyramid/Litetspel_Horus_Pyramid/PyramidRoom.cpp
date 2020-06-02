@@ -10,18 +10,6 @@ PyramidRoom::PyramidRoom()
 	this->m_fogData.fogColor = { 0.5, 0.5f, 0.5f };
 	//this->m_fogData.fogColor = { 0.79f, 0.67f, 0.42f };
 
-	PointLight pLight;
-	pLight.plPosition = { 0, 10, 0 };
-	pLight.plDiffuse = { 0.3, 0.3, 0.3, 1 };
-	pLight.plAmbient = { 0.0, 0.0, 0.0, 1 };
-	pLight.plRange = 50;
-	pLight.att = { 1, 0, 0 };
-
-	int lightID = this->createLight(pLight); //Create light passing pointlight struct, index return position in array;
-	this->getLight(lightID)->plRange = 50; //Using lightID to getLight pointer, change range to 10;
-	this->createLight({ -10, 10, -10 }, 50, { 0.0f, 0.0f, 0.1f, 1.f }, { 0.5f, 0.f, 0.f, 1.f }); //Create light passing parameters
-	this->m_lightData.lightColor = { 1, 1, 1, };
-	this->m_lightData.strength = 0.2f;
 }
 PyramidRoom::~PyramidRoom()
 {
@@ -110,34 +98,34 @@ void PyramidRoom::portals()
 	
 	//Portals Level 2
 	vec = DirectX::XMVectorSet(-220.7f, 190.f, 210.f, 1.f); 
-	this->addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 22, &m_models->at(22), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 3);
+	this->addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 22, &m_models->at(22), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 2);
 
 	vec = DirectX::XMVectorSet(-30.7f, 190.f, 210.f, 1.f);
-	this->addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 22, &m_models->at(22), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 3);
+	this->addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 22, &m_models->at(22), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 2);
 
 	vec = DirectX::XMVectorSet(175.f, 190.f, 210.f, 1.f);
-	this->addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 22, &m_models->at(22), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 3);
+	this->addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 22, &m_models->at(22), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 2);
 
 	vec = DirectX::XMVectorSet(360.f, 190.f, 210.f, 1.f);
-	this->addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 22, &m_models->at(22), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 3);
+	this->addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 22, &m_models->at(22), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 2);
 	
 	//Portals Level 3
 
 	vec = DirectX::XMVectorSet(-310.f, 265.f, 289.f, 1.f);
-	this->addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 22, &m_models->at(22), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 4);
+	this->addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 22, &m_models->at(22), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 3);
 
 	vec = DirectX::XMVectorSet(-100.f, 265.f, 289.f, 1.f);
-	this->addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 22, &m_models->at(22), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 4); 
+	this->addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 22, &m_models->at(22), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 3); 
 
 	vec = DirectX::XMVectorSet(30.f, 265.f, 289.f, 1.f);
-	this->addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 22, &m_models->at(22), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 4); 
+	this->addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 22, &m_models->at(22), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 3); 
 
 	vec = DirectX::XMVectorSet(330.f, 265.f, 289.f, 1.f);
-	this->addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 22, &m_models->at(22), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 4);
+	this->addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 22, &m_models->at(22), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 3);
 
 	//Portals Level 4
 	vec = DirectX::XMVectorSet(0.7f, 430.f, 458.f, 1.f);
-	this->addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 22, &m_models->at(22), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 2);
+	this->addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 22, &m_models->at(22), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 4);
 
 	//Portals Level 5 finalRoom
 	vec = DirectX::XMVectorSet(0.7f, 580.f, 610.f, 1.f); 
@@ -853,8 +841,8 @@ void PyramidRoom::createSceneObjects()
 		{
 			castToPlatform->setPlayerBoundingBox(this->m_player->getAABBPtr());
 			castToPlatform->initAudioComponent(audioEngine, m_player->getMoveCompPtr());
-			//if (XMVectorGetY(castToPlatform->getPosition()) >= XMVectorGetY(this->m_checkpointHandler.getIndexPosAt(0).second))
-				//castToPlatform->pushToLocation(castToPlatform->getPosition() - this->platformPush);
+			if (XMVectorGetY(castToPlatform->getPosition()) >= XMVectorGetY(this->m_checkpointHandler.getIndexPosAt(0).second))
+				castToPlatform->pushToLocation(castToPlatform->getPosition() - this->platformPush);
 		}
 	}
 }
