@@ -85,7 +85,8 @@ std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* GameState::getWvpCBuffersPtr()
 constantBufferData* GameState::getConstantBufferData()
 {
 	return &this->m_constantbufferData;
-}
+}	
+
 
 PS_DIR_BUFFER GameState::getActiveRoomDirectionalLight()
 {
@@ -689,6 +690,9 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 
 void GameState::update(float dt)
 {
+	this->m_constantbufferData.dirBuffer = m_activeRoom->getDirectionalLight();
+	this->m_constantbufferData.fogBuffer = m_activeRoom->getFogData();
+	this->m_constantbufferData.lightBuffer = m_activeRoom->getLightData();
 	
 	// Player
 	this->m_player.update(dt);
