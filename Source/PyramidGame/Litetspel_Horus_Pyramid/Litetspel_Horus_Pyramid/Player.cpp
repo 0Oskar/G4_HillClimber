@@ -93,6 +93,11 @@ void Player::flyDown(float speed)
 	this->m_physicsComp->addForceDir(Direction::DOWN, speed);
 }
 
+bool Player::getQAMode() const
+{
+	return this->m_QAmode;
+}
+
 void Player::update(float dt)
 {
 	if (this->m_hookHand.shouldFly())

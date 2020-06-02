@@ -14,7 +14,7 @@ void TristansRoom::createBoundingBoxes()
 
 	this->addBoundingBox({ 0, 45, 90 }, DirectX::XMFLOAT3(100, 1, 30)); //Floor 1
 	this->addBoundingBox({ 0, 45, -52 }, DirectX::XMFLOAT3(100, 1, 50)); //Floor 2
-	this->addBoundingBox({ 0, 45, 0 }, DirectX::XMFLOAT3(50, 1, 100)); //Floor TEMP
+	//this->addBoundingBox({ 0, 45, 0 }, DirectX::XMFLOAT3(50, 1, 100)); //Floor TEMP
 
 	this->addBoundingBox({ 0, 46, 89 }, DirectX::XMFLOAT3(1, 4, 1)); //Front Lever
 	//Back Levers
@@ -138,36 +138,6 @@ void TristansRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& act
 			this->m_player->getMoveCompPtr()->position = this->getRelativePosition(DirectX::XMVectorSet(0, 55, 95, 1));
 		}
 	}
-	
-	//if (this->moveTimer.timeElapsed() >= startTime && this->moveTimer.timeElapsed() <= startTime + 1.f)
-	
-	//Rotera lever om den �r aktiverad
-	//for (int i = 0; i < 4; i++)
-	//{
-	//	if (this->leverGrip[i]->getLeverValue() == true)
-	//	{
-	//		//this->leverTimer[i].restart();
-	//		/*if (this->leverTimer[i].timeElapsed() >= 0 && this->leverTimer[i].timeElapsed() <= 1)
-	//		{
-	//			if (XMVectorGetX(this->leverGrip[i]->getRotation()) < 90)
-	//			{
-	//				this->leverGrip[i]->getMoveCompPtr()->rotation += DirectX::XMVectorSet(pMath::convertDegreesToRadians(90) * dt, 0, 0 , 10);
-	//			}
-	//		}*/
-	//		rotateLeverDown(i);
-	//	}
-	//	if (this->leverGrip[i]->getLeverValue() == false)
-	//	{
-	//		/*if (this->leverTimer[i].timeElapsed() >= 0 && this->leverTimer[i].timeElapsed() <= 1)
-	//		{
-	//			if (XMVectorGetX(this->leverGrip[i]->getRotation()) > 0)
-	//			{
-	//				this->leverGrip[i]->getMoveCompPtr()->rotation -= DirectX::XMVectorSet(pMath::convertDegreesToRadians(90) * dt, 0, 0, 10);
-	//			}
-	//		}*/
-	//	}
-	//}
-
 
 	//Front Lever
 	this->leverGrip[0]->collidesWithPlayer();
@@ -660,13 +630,13 @@ void TristansRoom::Bellmove1(float startTime)
 			OutputDebugString(L"Step 12 \n");
 		}
 	}
-	if (this->moveTimer.timeElapsed() >= startTime + 12.f)
+	if (this->moveTimer.timeElapsed() >= startTime + 12.2f)
 	{
 		this->diamond->setPosition(DirectX::XMVectorSet(30.f, 50.f, -30.f, 1) + this->m_worldPosition);
 	}
 	if (moveTimer.isActive())
 	{
-		if (this->moveTimer.timeElapsed() > 13.f)
+		if (this->moveTimer.timeElapsed() > 13.2f)
 		{
 			for (int i = 0; i < 4; i++)
 			{
@@ -828,13 +798,13 @@ void TristansRoom::Bellmove2(float startTime)
 			//this->diamond->setPosition(DirectX::XMVectorSet(0.f, 50.f, -30.f, 1.f) + this->m_worldPosition);
 		}
 	}
-	if (this->moveTimer.timeElapsed() >= startTime + 12.f)
+	if (this->moveTimer.timeElapsed() >= startTime + 12.2f)
 	{
 		this->diamond->setPosition(DirectX::XMVectorSet(0.f, 50.f, -30.f, 1.f) + this->m_worldPosition);
 	}
 	if (moveTimer.isActive())
 	{
-		if (this->moveTimer.timeElapsed() > 13.f)
+		if (this->moveTimer.timeElapsed() > 13.2f)
 		{
 			for (int i = 0; i < 4; i++)
 			{
@@ -996,13 +966,13 @@ void TristansRoom::Bellmove3(float startTime)
 			//this->diamond->setPosition(DirectX::XMVectorSet(-30.f, 50.f, -30.f, 1) + this->m_worldPosition);
 		}
 	}
-	if (this->moveTimer.timeElapsed() >= startTime + 12.f)
+	if (this->moveTimer.timeElapsed() >= startTime + 12.2f)
 	{
 		this->diamond->setPosition(DirectX::XMVectorSet(-30.f, 50.f, -30.f, 1) + this->m_worldPosition);
 	}
 	if (moveTimer.isActive())
 	{
-		if (this->moveTimer.timeElapsed() > 13.f)
+		if (this->moveTimer.timeElapsed() > 13.2f)
 		{
 			for (int i = 0; i < 4; i++)
 			{
@@ -1014,34 +984,37 @@ void TristansRoom::Bellmove3(float startTime)
 	}
 }
 
-void TristansRoom::rotateLeverDown(int Index)
-{
-	/*for (int i = 0; i < 4; i++)
-	{*/
-		this->leverStartRot = this->leverGrip[Index]->getRotation();
-		XMVECTOR moveRot = XMVectorSet(pMath::convertDegreesToRadians(90), 0, 0, 0);
-		this->leverEndRot = this->leverStartRot + moveRot;
-
-		if (!XMVector3Equal(leverStartRot, leverEndRot))
-		{
-			XMVECTOR rotationDelta = this->leverEndRot - this->leverStartRot;
-			XMVECTOR currentleverRot = this->leverGrip[Index]->getRotation();
-			this->leverGrip[Index]->setRotation(this->leverStartRot + (rotationDelta * leverTimer->timeElapsed()));
-			if (this->leverTimer[Index].timeElapsed() > 1)
-			{
-				this->leverStartRot = this->leverEndRot;
-				this->leverGrip[Index]->setRotation(this->leverEndRot);
-			}
-		}
-	//}
-}
+//void TristansRoom::rotateLeverDown(int Index)
+//{
+//	/*for (int i = 0; i < 4; i++)
+//	{*/
+//		this->leverStartRot = this->leverGrip[Index]->getRotation();
+//		XMVECTOR moveRot = XMVectorSet(pMath::convertDegreesToRadians(90), 0, 0, 0);
+//		this->leverEndRot = this->leverStartRot + moveRot;
+//
+//		if (!XMVector3Equal(leverStartRot, leverEndRot))
+//		{
+//			XMVECTOR rotationDelta = this->leverEndRot - this->leverStartRot;
+//			XMVECTOR currentleverRot = this->leverGrip[Index]->getRotation();
+//			this->leverGrip[Index]->setRotation(this->leverStartRot + (rotationDelta * leverTimer->timeElapsed()));
+//			if (this->leverTimer[Index].timeElapsed() > 1)
+//			{
+//				this->leverStartRot = this->leverEndRot;
+//				this->leverGrip[Index]->setRotation(this->leverEndRot);
+//			}
+//		}
+//	//}
+//}
 
 void TristansRoom::onWin()
 {
-	StatusTextHandler::get().sendText("You guessed right!\n       Portal activated", 5);
+	StatusTextHandler::get().sendText("You guessed right!\n  Portal activated", 5);
 	//this->portal->setPosition(XMVectorSet(0, 48.8f, 113, 1));
 	this->portal->setActiveStatus(true);
 	moveTimer.stop();
+	leverGrip[1]->toggleActivateLever();
+	leverGrip[2]->toggleActivateLever();
+	leverGrip[3]->toggleActivateLever();
 }
 
 void TristansRoom::onFail()
@@ -1071,6 +1044,6 @@ void TristansRoom::onFail()
 	this->diamond->setPosition(DirectX::XMVectorSet(0.f, 50.f, -30.f, 1.f) + this->m_worldPosition);
 	moveTimer.stop();
 
-	StatusTextHandler::get().sendText("You guessed wrong!\n     5 sec added to timer", 5);
+	StatusTextHandler::get().sendText("You guessed wrong!\n5 sec added to timer", 5);
 	this->m_gameTimerPointer->addTime(5);
 }

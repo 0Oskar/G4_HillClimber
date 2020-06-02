@@ -112,6 +112,9 @@
     <ClCompile Include="FindGemsRoom.cpp">
       <Filter>Source\Game Logic\Rooms</Filter>
     </ClCompile>
+    <ClCompile Include="circleAroundObject.cpp">
+      <Filter>Source\RotationalFiles</Filter>
+    </ClCompile>
     <ClCompile Include="WinState.cpp">
       <Filter>Source\Game Logic\GameStates</Filter>
     </ClCompile>
@@ -249,6 +252,9 @@
     <ClInclude Include="FindGemsRoom.h">
       <Filter>Header\Game Logic\Rooms</Filter>
     </ClInclude>
+    <ClInclude Include="circleAroundObject.h">
+      <Filter>Header\RotationalFiles</Filter>
+    </ClInclude>
     <ClInclude Include="WinState.h">
       <Filter>Header\Game Logic\GameStates</Filter>
     </ClInclude>
@@ -310,6 +316,12 @@
     </Filter>
     <Filter Include="Source\Game Logic\GameStates">
       <UniqueIdentifier>{5813678a-7fa9-4e91-a54f-a52102af6a53}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header\RotationalFiles">
+      <UniqueIdentifier>{b9f5b7d6-3b6b-4417-9e0c-9b47009f3868}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\RotationalFiles">
+      <UniqueIdentifier>{823bbb62-e776-430f-b6d9-1f4bee21286c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

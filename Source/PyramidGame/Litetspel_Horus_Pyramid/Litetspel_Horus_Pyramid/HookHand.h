@@ -68,10 +68,10 @@ private:
 	DirectX::XMVECTOR m_shootDirection;
 	DirectX::XMVECTOR m_platformCenter;
 	bool colide();
-	bool canFire();
-	bool canRecall();
-	void updateHandModel(float dt);
-	DirectX::XMVECTOR invertX(DirectX::XMVECTOR VectorToInvertX);
+	bool canFire() const;
+	bool canRecall() const;
+	void updateHandModel(const float dt);
+	DirectX::XMVECTOR invertX(const DirectX::XMVECTOR VectorToInvertX);
 
 public:
 	HookHand();
@@ -80,8 +80,8 @@ public:
 	void init(GameObject* gObject, MovementComponent* plyMoveComp, PhysicsComponent* physicsComponent, std::vector<DirectX::BoundingBox*>* bb, GameObject* hookGun, GameObject* hookGem, GameObject* hookHandLeftWing, GameObject* hookHandRightWing, std::vector<GameObject*>* chainGObjects, std::shared_ptr<DirectX::AudioEngine> audioEngine, std::vector<DirectX::BoundingBox*> platformBB);
 	void setBB(std::vector<DirectX::BoundingBox*> platformBB);
 	
-	void update(float dt);
-	bool shouldFly();
+	void update(const float dt);
+	bool shouldFly() const;
 	void fire();
 	void retract();
 

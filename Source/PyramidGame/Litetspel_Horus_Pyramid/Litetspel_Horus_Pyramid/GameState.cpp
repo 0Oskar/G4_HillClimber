@@ -23,7 +23,28 @@ GameState::GameState()
 	this->m_gameOver = false;
 }
 
-GameState::~GameState() {}
+GameState::~GameState() 
+{
+	for (int i = 0; i < nrOfGameObjects; i++)
+	{
+		if (m_gameObjects.at(i) != nullptr)
+		{
+			delete m_gameObjects.at(i);
+			this->m_gameObjects.at(i) = nullptr;
+		}
+	}
+
+	for (int i = 0; i < m_rooms.size(); i++)
+	{
+		if (m_rooms.at(i) != nullptr)
+		{
+			delete m_rooms.at(i);
+			this->m_rooms.at(i) = nullptr;
+		}
+	}
+	this->m_rooms.clear();
+	this->m_gameObjects.clear();
+}
 
 DirectX::XMMATRIX* GameState::getViewMatrix() const
 {
@@ -471,6 +492,11 @@ void GameState::drawUI(DirectX::SpriteBatch* spriteBatchPtr, DirectX::SpriteFont
 	this->m_activeRoom->drawUI(spriteBatchPtr, spriteFontPtr);
 }
 
+void GameState::onPop()
+{
+	iGameState::onPop();
+}
+
 void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext, GameOptions options, std::shared_ptr<DirectX::AudioEngine> audioEngine)
 {
 	GameObject* hook = nullptr;
@@ -602,18 +628,16 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	dynamic_cast<PyramidRoom*>(this->m_rooms.back())->init(&m_pyramidOBB);
 	m_activeRoom = m_rooms.back();
 
-
 	//Template Room [1] Viktor
 	this->m_rooms.emplace_back(new FindGemsRoom());
 	this->m_rooms.back()->initialize(m_device, m_dContext, m_modelsPtr, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, -300, 1), audioEngine, &this->m_gameTime, options);
 	dynamic_cast<FindGemsRoom*>(this->m_rooms.back())->init();
-	
 
 	//Kevin Room [2]
 	this->m_rooms.emplace_back(new KevinsRoom());
 	this->m_rooms.back()->initialize(m_device, m_dContext, m_modelsPtr, &this->m_wvpCBuffers, &m_player, XMVectorSet(100, 2, 100, 1), audioEngine, &this->m_gameTime, options);
 	dynamic_cast<KevinsRoom*>(this->m_rooms.back())->init();
-
+	
 	//Edvin Room [3]
 	this->m_rooms.emplace_back(new EdvinsRoom());
 	this->m_rooms.back()->initialize(m_device, m_dContext, m_modelsPtr, &this->m_wvpCBuffers, &m_player, XMVectorSet(-200, 0, 200, 1), audioEngine, &this->m_gameTime, options);
@@ -623,14 +647,12 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_rooms.emplace_back(new TristansRoom());
 	this->m_rooms.back()->initialize(m_device, m_dContext, m_modelsPtr, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, -200, 1), audioEngine, &this->m_gameTime, options);
 	dynamic_cast<TristansRoom*>(this->m_rooms.back())->init();
-	
 
 	// final Room [5]
 	this->m_rooms.emplace_back(new finalRoom());
 	this->m_rooms.back()->initialize(m_device, m_dContext, m_modelsPtr, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, -200, 1), audioEngine, &this->m_gameTime, options);
 	dynamic_cast<finalRoom*>(this->m_rooms.back())->init();
 	
-
 	this->m_player.getphysicsCompPtr()->setVelocity({ 0, 0, 0 });
 	this->m_player.setPosition(this->m_activeRoom->getEntrancePosition());
 	this->m_player.getphysicsCompPtr()->setVelocity({ 0, 0, 0 });
@@ -795,7 +817,13 @@ states GameState::handleInput(Keyboard* keyboard, Mouse* mousePtr, float dt)
 			this->m_player.movePlayer(Direction::RIGHT, dt);
 
 		if (keyboard->isKeyPressed(' ')) // Space
-			this->m_player.jump(dt);
+		{
+			if (this->m_player.getQAMode())
+				this->m_player.movePlayer(Direction::UP, dt);
+			else
+				this->m_player.jump(dt);
+		}
+			
 
 		if (keyboard->isKeyPressed((unsigned char)16)) // Shift
 			this->m_player.flyDown(dt);
@@ -851,8 +879,8 @@ states GameState::handleInput(Keyboard* keyboard, Mouse* mousePtr, float dt)
 void GameState::highScoreCheck()
 {
 	fstream fileStream;
-	fileStream.open(fileToRead);
-	int currentTimeElapsed = this->m_gameTime.timeElapsed();
+	fileStream.open(m_fileToRead);
+	int currentTimeElapsed = (int)this->m_gameTime.timeElapsed();
 	int time;
 	std::string name;
 	std::pair<std::string, int> score[10];
@@ -882,7 +910,7 @@ void GameState::highScoreCheck()
 
 		if (change)
 		{
-			submitHighScore(this->fileToRead, score, nrOf);
+			submitHighScore(this->m_fileToRead, score, nrOf);
 		}
 	}
 }
@@ -905,7 +933,10 @@ void submitHighScore(std::string fileToWriteTo, std::pair<std::string, int>* sco
 	}
 }
 
-XMFLOAT3 GameState::getCameraPos()
+XMFLOAT3 GameState::getCameraPos() const
 {
-	return this->m_player.getMoveCompPtr()->getPositionF3();
+	XMFLOAT3 temp;
+	XMStoreFloat3(&temp, m_player.getPosition());
+
+	return temp;
 }

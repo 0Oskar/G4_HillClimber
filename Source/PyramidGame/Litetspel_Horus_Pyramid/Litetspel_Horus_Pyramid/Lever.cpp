@@ -12,6 +12,15 @@ Lever::Lever()
 	m_audioComponent = new AudioComponent();
 }
 
+Lever::~Lever()
+{
+	if (m_audioComponent != nullptr)
+	{
+		delete m_audioComponent;
+		m_audioComponent = nullptr;
+	}
+}
+
 void Lever::init(bool colidable, int modelIndex, int wvpCBufferIndex, Model* mdl)
 {
 	this->initializeStatic(colidable, modelIndex, wvpCBufferIndex, mdl);

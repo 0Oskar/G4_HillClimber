@@ -62,7 +62,7 @@ public:
 		}
 	}
 
-	void loadAudio(std::wstring sound, std::shared_ptr<DirectX::AudioEngine> m_audioEngine)
+	void loadAudio(const std::wstring sound, const std::shared_ptr<DirectX::AudioEngine> m_audioEngine)
 	{
 		if (audioMap[sound] == nullptr)
 		{
@@ -70,7 +70,7 @@ public:
 		}
 	}
 
-	DirectX::SoundEffect* getAudio(std::wstring sound)
+	DirectX::SoundEffect* getAudio(const std::wstring sound)
 	{
 		if (audioMap[sound] == nullptr)
 		{

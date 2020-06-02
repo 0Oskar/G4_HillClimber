@@ -4,7 +4,7 @@
 void WinState::readHighScoreFromFile()
 {
 	std::ifstream inStream;
-	inStream.open(this->fileToRead);
+	inStream.open(this->m_fileToRead);
 
 	int score = 0;
 	std::string name = "";
@@ -33,6 +33,20 @@ WinState::WinState()
 	this->m_cameraMovementComponentPtr = nullptr;
 	this->m_audioComponent = nullptr;
 	this->ownTime = 0;
+}
+
+WinState::~WinState()
+{
+	if (this->m_audioComponent != nullptr)
+	{
+		delete this->m_audioComponent;
+		this->m_audioComponent = nullptr;
+	}
+	if (this->m_cameraMovementComponentPtr)
+	{
+		delete this->m_cameraMovementComponentPtr;
+		this->m_cameraMovementComponentPtr = nullptr;
+	}
 }
 
 void WinState::setupLight()
@@ -166,7 +180,7 @@ DirectX::XMMATRIX* WinState::getProjectionMatrix() const
 }
 
 
-XMFLOAT3 WinState::getCameraPos()
+XMFLOAT3 WinState::getCameraPos() const
 {
 	XMFLOAT3 camPos;
 	XMStoreFloat3(&camPos, this->m_cameraMovementComponentPtr->position);
@@ -197,7 +211,5 @@ void WinState::drawUI(DirectX::SpriteBatch* spriteBatchPtr, DirectX::SpriteFont*
 		spriteFontPtr->DrawString(spriteBatchPtr, this->score[i].first.c_str(), DirectX::XMFLOAT2((float)this->m_gameOptions.width / 3, 150 + i * 30), DirectX::Colors::Yellow, 0.f, DirectX::XMFLOAT2(70.f, 0.f));
 		spriteFontPtr->DrawString(spriteBatchPtr, std::to_string(this->score[i].second).c_str(), DirectX::XMFLOAT2((float)this->m_gameOptions.width / 1.5 - (int)std::to_string(this->score[i].second).size() * 12, 150 + i * 30), DirectX::Colors::Yellow, 0.f, DirectX::XMFLOAT2(70.f, 0.f));
 		spriteFontPtr->DrawString(spriteBatchPtr, L"seconds", DirectX::XMFLOAT2((float)this->m_gameOptions.width / 1.5 + 8, 150 + i * 30), DirectX::Colors::Yellow, 0.f, DirectX::XMFLOAT2(70.f, 0.f));
-
-
 	}
 }

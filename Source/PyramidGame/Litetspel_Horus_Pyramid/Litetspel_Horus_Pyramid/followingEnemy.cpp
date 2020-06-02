@@ -117,7 +117,7 @@ void followingEnemy::followPlayer(float dt)
 
 		else 
 		{
-			this->getMoveCompPtr()->position += (walkBackDirection * dt * 13);
+			this->getMoveCompPtr()->position += (walkBackDirection * dt * 9);
 
 			float targetRotation = (float)atan2((double)(walkBackDirection.m128_f32[0]), (double)(walkBackDirection.m128_f32[2])) + XM_PI;
 
