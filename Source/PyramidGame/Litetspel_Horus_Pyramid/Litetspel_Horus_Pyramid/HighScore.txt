@@ -5,6 +5,6 @@ Player1 10
 Player1 17
 Player1 54
 Player1 54
+Player1 59
 Player1 68
 Player1 88
-Oskar 100
