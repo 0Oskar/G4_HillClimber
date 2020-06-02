@@ -10,7 +10,6 @@ private:
 	void createSceneObjects();
 	void onCompleted();
 
-
 	// Lever
 	std::vector<DirectX::BoundingBox*> m_LeverBB;
 	std::vector<Lever*> m_Lever;
@@ -52,7 +51,7 @@ private:
 	Portal* m_portal;
 	
 	// Light
-	PointLight m_PortalLight;
+	//PointLight m_PortalLight;
 
 public:
 	FindGemsRoom();
