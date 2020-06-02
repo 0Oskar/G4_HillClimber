@@ -63,6 +63,7 @@ void KevinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 	if (scorpionBB->Intersects(this->m_player->getAABB()))
 	{
 		this->m_player->respawn();
+		this->m_player->setPosition(this->getEntrancePosition());
 		StatusTextHandler::get().sendText("The scorpion caught you!\n    5 sec added to timer", 5);
 		this->m_gameTimerPointer->addTime(5);
 	}
@@ -73,6 +74,7 @@ void KevinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 		{
 			void looseLife();
 			this->m_player->respawn();
+			this->m_player->setPosition(this->getEntrancePosition());
 			StatusTextHandler::get().sendText("You fell on the spikes!\n 5 sec added to timer", 5);
 			this->m_gameTimerPointer->addTime(5);
 		}
@@ -84,6 +86,7 @@ void KevinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 		{
 			void looseLife();
 			this->m_player->respawn();
+			this->m_player->setPosition(this->getEntrancePosition());
 			//Add Time
 			StatusTextHandler::get().sendText("You got hit by a dart trap!\n   5 sec added to timer", 5);
 			this->m_gameTimerPointer->addTime(5);

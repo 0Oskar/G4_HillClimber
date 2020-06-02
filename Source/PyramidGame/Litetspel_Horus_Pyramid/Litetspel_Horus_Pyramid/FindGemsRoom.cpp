@@ -290,6 +290,7 @@ void FindGemsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& act
 		this->m_Lever[0]->setPosition(DirectX::XMVectorSet(0, -1.5f, 43.1f, 1) + this->m_worldPosition + DirectX::XMVectorSet(-1.2f, 0, 0, 0));
 		this->m_Lever[0]->setRotation(DirectX::XMVectorSet(0.f, 0.f, pMath::convertDegreesToRadians(-45), 0.f));
 		this->m_portal->setActiveStatus(true);
+		StatusTextHandler::get().sendText("You hear distant rumbles...", 4);
 	}
 
 	// Move gate
