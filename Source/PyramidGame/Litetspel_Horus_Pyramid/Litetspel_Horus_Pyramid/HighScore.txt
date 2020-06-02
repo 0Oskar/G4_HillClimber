@@ -7,4 +7,4 @@ Player1 76
 Player1 88
 Oskar 100
 Bengt 120
-Player1 144
+Player1 125
