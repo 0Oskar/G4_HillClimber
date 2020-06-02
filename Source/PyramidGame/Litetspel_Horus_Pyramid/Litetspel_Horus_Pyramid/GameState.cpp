@@ -876,8 +876,8 @@ states GameState::handleInput(Keyboard* keyboard, Mouse* mousePtr, float dt)
 void GameState::highScoreCheck()
 {
 	fstream fileStream;
-	fileStream.open(fileToRead);
-	int currentTimeElapsed = this->m_gameTime.timeElapsed();
+	fileStream.open(m_fileToRead);
+	int currentTimeElapsed = (int)this->m_gameTime.timeElapsed();
 	int time;
 	std::string name;
 	std::pair<std::string, int> score[10];
@@ -907,7 +907,7 @@ void GameState::highScoreCheck()
 
 		if (change)
 		{
-			submitHighScore(this->fileToRead, score, nrOf);
+			submitHighScore(this->m_fileToRead, score, nrOf);
 		}
 	}
 }
@@ -930,7 +930,10 @@ void submitHighScore(std::string fileToWriteTo, std::pair<std::string, int>* sco
 	}
 }
 
-XMFLOAT3 GameState::getCameraPos()
+XMFLOAT3 GameState::getCameraPos() const
 {
-	return this->m_player.getMoveCompPtr()->getPositionF3();
+	XMFLOAT3 temp;
+	XMStoreFloat3(&temp, m_player.getPosition());
+
+	return temp;
 }

@@ -14,11 +14,12 @@ Application::Application()
 	this->m_gameOptions.name = "undefined";
 	this->m_deltaTime = 0.f;
 	this->m_resetAudio = false;
+	this->m_shouldQuit = false;
 }
 
 Application::~Application()
 {
-	if (m_audioEngine) this->m_audioEngine->Suspend();
+		
 }
 
 void Application::stateChange()
@@ -218,14 +219,13 @@ void Application::applicationLoop()
 			fetchedState = this->m_gameStateStack.top()->handleInput(this->m_input.getKeyboard(), this->m_input.getMouse(), this->m_deltaTime);
 			if (fetchedState != states::NONE)
 				pushNewState(fetchedState);
-			if(this->m_gameStateStack.size() > 0)
+			if (!m_shouldQuit)
+			{
 				this->m_gameStateStack.top()->update(this->m_deltaTime);
 			
-			//this->m_input.readBuffers();
-			this->audioUpdate();
+				//this->m_input.readBuffers();
+				this->audioUpdate();
 
-			if (this->m_gameStateStack.size() > 0)
-			{
 				this->m_viewLayerPtr->update(this->m_deltaTime, this->m_gameStateStack.top()->getCameraPos());
 				this->m_viewLayerPtr->render(this->m_gameStateStack.top());
 			}
@@ -272,7 +272,10 @@ void Application::pushNewState(states state)
 		this->m_gameStateStack.top()->initlialize(this->m_viewLayerPtr->getDevice(), this->m_viewLayerPtr->getContextDevice(), this->m_gameOptions, this->m_audioEngine);
 	}
 	if (this->m_gameStateStack.size() <= 0)
+	{
 		PostQuitMessage(-1);
+		this->m_shouldQuit = true;
+	}
 	else
 	{
 		stateChange();

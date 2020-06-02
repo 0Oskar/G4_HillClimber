@@ -420,7 +420,7 @@ constantBufferData* MenuState::getConstantBufferData()
 	return &this->m_constantbufferData;
 }
 
-std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* MenuState::getWvpCBuffersPtr()
+std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* MenuState::getWvpCBuffersPtr() 
 {
 	return &this->m_wvpCBuffers;
 }
@@ -436,7 +436,7 @@ DirectX::XMMATRIX* MenuState::getProjectionMatrix() const
 }
 
 
-XMFLOAT3 MenuState::getCameraPos()
+XMFLOAT3 MenuState::getCameraPos() const
 {
 	XMFLOAT3 camPos;
 	XMStoreFloat3(&camPos, this->m_cameraMovementComponentPtr->position);

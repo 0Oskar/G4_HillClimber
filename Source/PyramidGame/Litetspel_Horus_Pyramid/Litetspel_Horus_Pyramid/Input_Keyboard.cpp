@@ -44,21 +44,21 @@ Keyboard::Keyboard()
 	}
 }
 
-void Keyboard::onKeyPressed(unsigned char key)
+void Keyboard::onKeyPressed(const unsigned char key)
 {
 	this->keyStatus[key] = true;
 	this->keyBuffer.push(KeyboardEvent(Event::Pressed, key));
 }
-void Keyboard::onRelease(unsigned char key)
+void Keyboard::onRelease(const unsigned char key)
 {
 	this->keyStatus[key] = false;
 	this->keyBuffer.push(KeyboardEvent(Event::Released, key));
 }
-bool Keyboard::isKeyPressed(unsigned char key)
+bool Keyboard::isKeyPressed(const unsigned char key) const
 {
 	return this->keyStatus[key];
 }
-bool Keyboard::empty()
+bool Keyboard::empty() const
 {
 	return this->keyBuffer.empty();
 }

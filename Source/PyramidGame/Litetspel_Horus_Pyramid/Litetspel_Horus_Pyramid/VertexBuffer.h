@@ -19,7 +19,7 @@ public:
 
 	~VertexBuffer() {}
 
-	HRESULT initialize(ID3D11Device* device, T* data, int nrOfVertices)
+	HRESULT initialize(ID3D11Device* device, T* data, const int nrOfVertices)
 	{
 		this->m_nrOf = nrOfVertices;
 		this->m_stride = UINT(sizeof(T));

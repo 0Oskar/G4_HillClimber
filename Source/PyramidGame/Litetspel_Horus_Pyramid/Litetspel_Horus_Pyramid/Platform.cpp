@@ -7,8 +7,8 @@ Platform::Platform()
 	this->m_playerBoundingBox = nullptr;
 	this->m_hasColided = false;
 	this->m_pyramidBoundingBox = nullptr;
-	this->canCheckColision = false;
-	this->currentTime = -1;
+	this->m_canCheckColision = false;
+	this->m_currentTime = -1;
 	this->m_audioComponent = new AudioComponent();
 
 }
@@ -53,13 +53,13 @@ void Platform::update(float dt)
 			}
 		}
 		int time = (int)(this->m_destructionTimer.timeElapsed() * 2);
-		if (currentTime != time)
+		if (m_currentTime != time)
 		{
 			if (time < m_nrOfTextures)
 			{
-				this->currentTime = time;
+				this->m_currentTime = time;
 				this->m_texturePath = m_textures[time].c_str();
-				m_audioComponent->emitSound(m_crackSounds[time % nrOfCracKSounds], this->m_movementComp->position);
+				m_audioComponent->emitSound(m_crackSounds[time % m_nrOfCracKSounds], this->m_movementComp->position);
 			}
 		}
 	}
@@ -86,15 +86,15 @@ void Platform::destroy()
 void Platform::setPlayerBoundingBox(DirectX::BoundingBox* boundingBox)
 {
 	this->m_playerBoundingBox = boundingBox;
-	this->platformTriggerBox = this->getAABB();
-	this->platformTriggerBox.Center.y = this->platformTriggerBox.Center.y + 3;
-	this->canCheckColision = true;
+	this->m_platformTriggerBox = this->getAABB();
+	this->m_platformTriggerBox.Center.y = this->m_platformTriggerBox.Center.y + 3;
+	this->m_canCheckColision = true;
 }
 
 void Platform::initAudioComponent(std::shared_ptr<DirectX::AudioEngine> audioEngine, MovementComponent* playerMovementComponent)
 {
 	this->m_audioComponent->init(audioEngine, playerMovementComponent);
-	for (int i = 0; i < nrOfCracKSounds; i++)
+	for (int i = 0; i < m_nrOfCracKSounds; i++)
 	{
 		this->m_audioComponent->loadSound(m_crackSounds[i]);
 	}
@@ -105,17 +105,17 @@ void Platform::pushToLocation(XMVECTOR position)
 	XMFLOAT3 pos;
 	XMStoreFloat3(&pos, position);
 	this->setPosition(position);
-	this->platformTriggerBox = this->getAABB();
-	this->platformTriggerBox.Center.y += 3;
+	this->m_platformTriggerBox = this->getAABB();
+	this->m_platformTriggerBox.Center.y += 3;
 }
 
 void Platform::colidesWithPlayer()
 {
 	if (this->m_playerBoundingBox == nullptr)
 		return;
-	if (!this->canCheckColision)
+	if (!this->m_canCheckColision)
 		return;
-	if (this->platformTriggerBox.Intersects(*m_playerBoundingBox))
+	if (this->m_platformTriggerBox.Intersects(*m_playerBoundingBox))
 	{
 		this->onPlayerColide();
 	}

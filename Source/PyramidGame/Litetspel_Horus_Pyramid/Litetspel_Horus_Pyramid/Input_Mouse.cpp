@@ -13,24 +13,24 @@ MouseEvent::MouseEvent(Event evnt, int x, int y)
 	this->mousePos.x = x;
 	this->mousePos.y = y;
 }
-int MouseEvent::getPosX()
+int MouseEvent::getPosX() const
 {
 	return this->mousePos.x;
 }
-int MouseEvent::getPosY()
+int MouseEvent::getPosY()const
 {
 	return this->mousePos.y;
 }
-Event MouseEvent::getEvent()
+Event MouseEvent::getEvent() const
 {
 	return this->eventType;
 }
-MousePos MouseEvent::getPos()
+MousePos MouseEvent::getPos() const
 {
 
 	return this->mousePos;
 }
-bool MouseEvent::isValid()
+bool MouseEvent::isValid() const
 {
 	return this->eventType != Event::Invalid;
 }
@@ -58,7 +58,7 @@ MouseEvent Mouse::readEvent()
 	return evnt;
 }
 
-bool Mouse::empty()
+bool Mouse::empty() const
 {
 	return this->m_events.empty();
 }
@@ -111,27 +111,27 @@ void Mouse::onWheelDown(MousePos pos)
 	this->m_events.push(MouseEvent(Event::MouseWheelDown, pos.x, pos.y));
 }
 
-bool Mouse::isLDown()
+bool Mouse::isLDown() const
 {
 	return this->m_LDown;
 }
-bool Mouse::isRDown()
+bool Mouse::isRDown() const
 {
 	return this->m_RDown;
 }
-bool Mouse::isMDown()
+bool Mouse::isMDown() const
 {
 	return this->m_MDown;
 }
-int Mouse::getPosx()
+int Mouse::getPosx() const
 {
 	return this->m_mousePos.x;
 }
-int Mouse::getPosY()
+int Mouse::getPosY() const
 {
 	return this->m_mousePos.y;
 }
-MousePos Mouse::getPos()
+MousePos Mouse::getPos() const
 {
 	return this->m_mousePos;
 }
