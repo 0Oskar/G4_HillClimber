@@ -181,7 +181,6 @@ void FindGemsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& act
 		this->m_gemInPlace = 0;
 	}
 
-
 	// Pick up gem
 	//if(m_Gems[0]->collidable())
 	this->m_Gems[0]->collidesWithPlayer();
@@ -323,7 +322,7 @@ void FindGemsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& act
 void FindGemsRoom::onEntrance()
 {
 	//this->m_portal->setActiveStatus(false);
-	StatusTextHandler::get().sendText("Find and return all five gems", 5);
+	StatusTextHandler::get().sendText("Find and return all five gems \n       Press E to interact", 5);
 }
 
 std::wstring FindGemsRoom::getRoomUITexturePath()
