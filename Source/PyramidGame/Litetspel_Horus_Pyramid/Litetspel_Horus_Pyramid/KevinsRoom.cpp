@@ -22,7 +22,9 @@ void KevinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 
 	XMFLOAT3 scorpionPos = XMFLOAT3(scorpionX, scorpionY, scorpionZ);
 
-
+	
+	
+	/////////////////////////////////////////
 
 	if (triggerBB[0].Intersects(this->m_player->getAABB()))
 	{
@@ -261,6 +263,7 @@ void KevinsRoom::createSceneObjects()
 	this->addGameObjectToRoom(false, false, 2, 6, &m_models->at(6), vec, DirectX::XMVectorSet(1, 1, 1, 1), DirectX::XMFLOAT3(1.f, 1.f, 1.f));
 	this->m_gameObjects.back()->setRotation({ 0.0f, XMConvertToRadians(180), 0.0f, 0.f });
 	
+
 	//platform
 	vec = DirectX::XMVectorSet(-9.f, 23.5f, -88.5f + 140.f, 1.f);
 	this->addPlatformToRoom(3, &m_models->at(3), vec, DirectX::XMFLOAT3(4.f, 0.5f, 2.5f));

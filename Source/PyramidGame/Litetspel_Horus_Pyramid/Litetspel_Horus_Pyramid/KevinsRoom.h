@@ -17,6 +17,7 @@ private:
 	followingEnemy *scorpion;
 	followingEnemy *scorpion2;
 
+	////////////////
 	std::vector<GameObject*> expandingBridge;
 	std::vector<GameObject*> scorpionObject;
 	std::vector<GameObject*> dartTrap;
@@ -32,6 +33,8 @@ private:
 
 	DirectX::BoundingOrientedBox* scorpionBB;
 	
+	
+
 	bool dartFly1 = false;
 	bool dartFly2 = false;
 	float dartPosition1 = 40.f;

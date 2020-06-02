@@ -43,6 +43,9 @@ public:
 	void resetVelocity();
 	void flyDown(float speed);
 
+	// Getters
+	bool getQAMode() const;
+
 	// Setters
 	void setSpawnPosition(XMVECTOR position);
 

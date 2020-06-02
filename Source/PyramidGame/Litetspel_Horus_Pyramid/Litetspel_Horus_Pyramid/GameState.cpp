@@ -565,7 +565,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_rooms.emplace_back(new KevinsRoom());
 	this->m_rooms.back()->initialize(m_device, m_dContext, m_modelsPtr, &this->m_wvpCBuffers, &m_player, XMVectorSet(100, 2, 100, 1), audioEngine, &this->m_gameTime, options);
 	dynamic_cast<KevinsRoom*>(this->m_rooms.back())->init();
-
+	
 	//Edvin Room [3]
 	this->m_rooms.emplace_back(new EdvinsRoom());
 	this->m_rooms.back()->initialize(m_device, m_dContext, m_modelsPtr, &this->m_wvpCBuffers, &m_player, XMVectorSet(-200, 0, 200, 1), audioEngine, &this->m_gameTime, options);
@@ -576,11 +576,11 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_rooms.back()->initialize(m_device, m_dContext, m_modelsPtr, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, -200, 1), audioEngine, &this->m_gameTime, options);
 	dynamic_cast<TristansRoom*>(this->m_rooms.back())->init();
 	
-
 	// final Room [5]
 	this->m_rooms.emplace_back(new finalRoom());
 	this->m_rooms.back()->initialize(m_device, m_dContext, m_modelsPtr, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, -200, 1), audioEngine, &this->m_gameTime, options);
 	dynamic_cast<finalRoom*>(this->m_rooms.back())->init();
+	
 
 
 	//Otaget rum [4] -
@@ -732,7 +732,13 @@ states GameState::handleInput(Keyboard* keyboard, Mouse* mousePtr, float dt)
 			this->m_player.movePlayer(Direction::RIGHT, dt);
 
 		if (keyboard->isKeyPressed(' ')) // Space
-			this->m_player.jump(dt);
+		{
+			if (this->m_player.getQAMode())
+				this->m_player.movePlayer(Direction::UP, dt);
+			else
+				this->m_player.jump(dt);
+		}
+			
 
 		if (keyboard->isKeyPressed((unsigned char)16)) // Shift
 			this->m_player.flyDown(dt);
