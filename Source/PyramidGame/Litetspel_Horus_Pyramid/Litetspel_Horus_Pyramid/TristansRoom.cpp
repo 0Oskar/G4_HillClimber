@@ -12,6 +12,10 @@ void TristansRoom::createBoundingBoxes()
 	this->addBoundingBox({ 0, 4.5f, 110 }, DirectX::XMFLOAT3(100, 75, 1)); //Back Wall
 	this->addBoundingBox({ 0, 4.5f, -100 }, DirectX::XMFLOAT3(100, 75, 1)); //Front Wall
 
+	this->addBoundingBox({ 50, 4.5f, 92 }, DirectX::XMFLOAT3(10, 75, 10)); //LeftCorner
+
+
+
 	this->addBoundingBox({ 0, 45, 90 }, DirectX::XMFLOAT3(100, 1, 30)); //Floor 1
 	this->addBoundingBox({ 0, 45, -52 }, DirectX::XMFLOAT3(100, 1, 50)); //Floor 2
 
@@ -25,6 +29,8 @@ void TristansRoom::createBoundingBoxes()
 	SpikesBB.emplace_back();
 	this->addTriggerBB({ 0, 20, 0 }, DirectX::XMFLOAT3(100, 1, 200));
 	SpikesBB.back() = this->m_triggerBoundingBoxes.back();
+
+
 
 }
 
