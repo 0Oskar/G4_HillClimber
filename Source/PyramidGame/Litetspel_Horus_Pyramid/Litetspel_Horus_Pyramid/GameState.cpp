@@ -2,6 +2,7 @@
 #include "GameState.h"
 
 using namespace DirectX;
+void submitHighScore(std::string fileToWriteTo, std::pair<std::string, int>* scoreToWrite, int nrOfScore);
 
 GameState::GameState() 
 {
