@@ -51,7 +51,8 @@ private:
 	BoundingBox* m_PortalBB;
 	Portal* m_portal;
 	
-	//
+	// Light
+	PointLight m_PortalLight;
 
 public:
 	FindGemsRoom();
