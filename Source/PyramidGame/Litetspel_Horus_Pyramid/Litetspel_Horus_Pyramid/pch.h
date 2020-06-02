@@ -67,6 +67,7 @@ struct GameOptions
 	int height;
 	float fov;
 	float mouseSensitivity;
+	std::string name;
 };
 
 

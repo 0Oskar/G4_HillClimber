@@ -9,6 +9,7 @@ enum class states
 	NONE,
 	MENU,
 	GAME,
+	WON,
 	PAUSE,
 	POP,
 };
@@ -23,6 +24,8 @@ protected:
 	std::vector<ConstBuffer<VS_CONSTANT_BUFFER>> m_wvpCBuffers;
 	constantBufferData m_constantbufferData;
 	GameOptions m_gameOptions;
+	const std::string fileToRead = "HighScore.txt";
+
 
 	ID3D11Device* m_device;
 	ID3D11DeviceContext* m_dContext;

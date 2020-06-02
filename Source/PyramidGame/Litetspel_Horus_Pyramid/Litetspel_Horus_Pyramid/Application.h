@@ -7,6 +7,7 @@
 #include <Dbt.h>
 #include "GameState.h"
 #include "MenuState.h"
+#include"WinState.h"
 
 class Application
 {

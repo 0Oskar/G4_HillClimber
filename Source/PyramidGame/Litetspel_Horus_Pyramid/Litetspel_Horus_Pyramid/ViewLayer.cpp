@@ -414,6 +414,14 @@ void ViewLayer::update(float dt, XMFLOAT3 cameraPos)
 	this->clearColor[1] = this->m_fogBuffer.m_data.fogColor.y;
 	this->clearColor[2] = this->m_fogBuffer.m_data.fogColor.z;
 
+	this->m_lightBuffer.m_data = m_constantBufferDataFromStatePtr->lightBuffer;
+	this->m_dirLightBuffer.m_data = m_constantBufferDataFromStatePtr->dirBuffer;
+	this->m_dirLight = m_constantBufferDataFromStatePtr->dirBuffer;
+	this->m_fogBuffer.m_data = m_constantBufferDataFromStatePtr->fogBuffer;
+	this->m_dirLightBuffer.upd();
+	this->m_fogBuffer.upd();
+	this->m_lightBuffer.upd();
+
 	this->m_statusTextHandler->update(dt);
 }
 
