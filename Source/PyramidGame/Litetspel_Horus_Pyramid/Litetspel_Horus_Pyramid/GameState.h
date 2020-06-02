@@ -22,6 +22,15 @@ using namespace std;
 class GameState : public iGameState
 {
 private:
+	//Edvin stuff for map
+	float playerHeight;
+	float pyramidHeight;
+	float playerPosY;
+	float markerTop;
+	float markerBottom;
+	float difference;
+	float markerPosY;
+
 	Player m_player;
 	Timer m_gameTime;
 	DirectX::BoundingOrientedBox m_pyramidOBB;
@@ -38,6 +47,13 @@ private:
 	//UI Stuff
 	ID3D11ShaderResourceView* m_crossHairSRV;
 	DirectX::XMFLOAT2 m_crosshairPosition;
+
+	ID3D11ShaderResourceView* m_map;
+	DirectX::XMFLOAT2 m_mapPosition;
+
+	ID3D11ShaderResourceView* m_mapPlayer;
+	DirectX::XMFLOAT2 m_mapPlayerPosition;
+
 	std::string m_timerString;
 public:
 	GameState();
