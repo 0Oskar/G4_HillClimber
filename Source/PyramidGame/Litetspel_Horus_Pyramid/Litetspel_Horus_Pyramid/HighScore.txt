@@ -1,10 +1,2 @@
-Player1 8
-Player1 10
-Player1 10
-Player1 10
-Player1 17
-Player1 76
-Player1 88
-Oskar 100
-Bengt 120
-Player1 125
+Bengt 200
+Player1 210
