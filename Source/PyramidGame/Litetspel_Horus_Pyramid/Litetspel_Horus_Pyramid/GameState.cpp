@@ -2,6 +2,7 @@
 #include "GameState.h"
 
 using namespace DirectX;
+void submitHighScore(std::string fileToWriteTo, std::pair<std::string, int>* scoreToWrite, int nrOfScore);
 
 GameState::GameState() 
 {
@@ -15,6 +16,7 @@ GameState::GameState()
 	this->m_crosshairPosition = DirectX::XMFLOAT2();
 	this->m_resourceHandler = &ResourceHandler::get();
 	this->m_timerString = "";
+	this->m_gameOver = false;
 }
 
 GameState::~GameState() {}
@@ -595,6 +597,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_rooms.emplace_back(new finalRoom());
 	this->m_rooms.back()->initialize(m_device, m_dContext, m_modelsPtr, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, -200, 1), audioEngine, &this->m_gameTime, options);
 	dynamic_cast<finalRoom*>(this->m_rooms.back())->init();
+	
 
 
 	//Otaget rum [4] -
@@ -778,17 +781,83 @@ states GameState::handleInput(Keyboard* keyboard, Mouse* mousePtr, float dt)
 			this->m_player.getMoveCompPtr()->position = DirectX::XMVectorSet(0.f, 6.f, -1.f, 1.f);
 			this->m_player.resetVelocity(); // Reset Velocity
 		}
+
+		if (this->m_activeRoom == this->m_rooms[5]) //In final room
+		{
+			finalRoom* fRoom = dynamic_cast<finalRoom*>(this->m_activeRoom);
+			if (fRoom != nullptr && fRoom->wonGame)
+			{
+				if (!m_gameOver)
+				{
+					this->highScoreCheck();
+					changeStateTo = states::WON;
+					m_gameOver = true;
+				}
+				else
+				{
+					changeStateTo = states::POP;
+				}
+			}
+		}
 	return changeStateTo;
 }
 
-//void GameState::updateCustomViewLayerVariables(ViewLayer* viewLayer)
-//{
-//	viewLayer->setgameObjectsFromActiveRoom(this->getActiveRoomGameObjectsPtr());
-//	viewLayer->setBoundingBoxesFromActiveRoom(this->getActiveRoomBoundingBoxsPtr());
-//	viewLayer->setOrientedBoundingBoxesFromActiveRoom(this->getActiveRoomOrientedBoundingBoxPtr());
-//	viewLayer->setTriggerBoxFromActiveRoom(this->getActiveRoomTriggerBox());
-//	viewLayer->setGameTimePtr(this->getGameTimerPtr());
-//}
+void GameState::highScoreCheck()
+{
+	fstream fileStream;
+	fileStream.open(fileToRead);
+	int currentTimeElapsed = this->m_gameTime.timeElapsed();
+	int time;
+	std::string name;
+	std::pair<std::string, int> score[10];
+	int nrOf = 0;
+	bool change = false;
+	if (fileStream.is_open())
+	{
+		while (!fileStream.eof() && nrOf < 10)
+		{
+			fileStream >> name;
+			fileStream >> time;
+			if ((time > currentTimeElapsed) && (!change))
+			{
+				score[nrOf].first = this->m_gameOptions.name;
+				score[nrOf++].second = currentTimeElapsed;
+				change = true;
+			}
+			
+			if (nrOf < 10 && name != "")
+			{
+				score[nrOf].first = name;
+				score[nrOf++].second = time;
+			}
+			
+		}
+		fileStream.close();
+
+		if (change)
+		{
+			submitHighScore(this->fileToRead, score, nrOf);
+		}
+	}
+}
+
+void submitHighScore(std::string fileToWriteTo, std::pair<std::string, int>* scoreToWrite, int nrOfScore)
+{
+	std::ofstream outputStream;
+	outputStream.open(fileToWriteTo); //File to write
+	if (outputStream.is_open())
+	{
+		for (int i = 0; i < nrOfScore; i++) //Print out all the node names
+		{
+			outputStream << scoreToWrite[i].first << " ";
+			outputStream << std::to_string(scoreToWrite[i].second);
+			if (i + 1 < nrOfScore)
+			{
+				outputStream << "\n";
+			}
+		}
+	}
+}
 
 XMFLOAT3 GameState::getCameraPos()
 {

@@ -32,6 +32,7 @@ private:
 
 	std::vector<DirectX::BoundingBox*> platformBB;
 	std::vector<GameObject*>* m_chainGObjects;
+	bool m_gameOver;
 	
 
 	//UI Stuff
@@ -68,6 +69,7 @@ public:
 	// Update
 	void update(float dt);
 	states handleInput(Keyboard* keyboard, Mouse* mouePointer, float dt);
+	void highScoreCheck();
 	//void updateCustomViewLayerVariables(ViewLayer* viewLayer);
 	XMFLOAT3 getCameraPos();
 
