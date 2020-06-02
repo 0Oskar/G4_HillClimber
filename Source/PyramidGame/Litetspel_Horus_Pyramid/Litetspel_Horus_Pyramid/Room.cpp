@@ -8,7 +8,28 @@ Room::Room()
 
 Room::~Room()
 {
+	this->m_player = nullptr;
+	this->m_dContext = nullptr;
+	this->m_device = nullptr;
+	this->m_gameTimerPointer = nullptr;
+	this->m_models = nullptr;
+	
+	this->m_wvpCBuffers = nullptr;
+	int i = 0;
+	for (auto p : this->m_gameObjects)
+	{
+		i++;
+		if (p != nullptr)
+		{
+			delete p;
+		}
+	}
+	this->m_gameObjects.clear();
 
+	for (int i = 0; i < this->m_rooms.size(); i++) //Not created here. Will release in gamestate
+	{
+		this->m_rooms.at(i) = nullptr;
+	}
 }
 
 void Room::initialize(ID3D11Device* device, ID3D11DeviceContext* dContext, std::vector<Model>* models, std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* cBuffer, Player* player, XMVECTOR position, std::shared_ptr<DirectX::AudioEngine> audioEngine, Timer* gameTimer, GameOptions option)

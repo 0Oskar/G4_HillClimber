@@ -18,6 +18,7 @@ Platform::~Platform()
 	if (this->m_audioComponent)
 	{
 		delete m_audioComponent;
+		m_audioComponent = nullptr;
 	}
 }
 

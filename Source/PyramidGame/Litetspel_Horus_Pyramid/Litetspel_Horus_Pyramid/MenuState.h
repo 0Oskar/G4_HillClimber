@@ -20,7 +20,7 @@ private:
 	const std::wstring menuSound = L"Sounds/MainMenu.wav";
 public:
 	MenuState();
-
+	~MenuState();
 	void initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext, GameOptions options, std::shared_ptr<DirectX::AudioEngine> audioEngine);
 	void update(float dt);
 	void afterChange();

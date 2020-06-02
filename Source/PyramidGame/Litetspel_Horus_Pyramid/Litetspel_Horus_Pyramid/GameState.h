@@ -93,4 +93,5 @@ public:
 	Timer* getGameTimerPtr();
 	void afterChange();
 	void drawUI(DirectX::SpriteBatch* spriteBatchPtr, DirectX::SpriteFont* spriteFontPtr);
+	void onPop();
 };

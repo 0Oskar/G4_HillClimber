@@ -9,6 +9,22 @@ MenuState::MenuState()
 	this->m_audioComponent = nullptr;
 }
 
+MenuState::~MenuState()
+{
+	if (this->m_audioComponent != nullptr)
+	{
+		this->m_audioComponent->stopSound(0);
+		delete this->m_audioComponent;
+		this->m_audioComponent = nullptr;
+	}
+
+	if (this->m_cameraMovementComponentPtr != nullptr)
+	{
+		delete this->m_cameraMovementComponentPtr;
+	}
+
+}
+
 void MenuState::setupLight()
 {
 	this->m_constantbufferData.dirBuffer.lightColor = { 1, 1, 1, 1 };

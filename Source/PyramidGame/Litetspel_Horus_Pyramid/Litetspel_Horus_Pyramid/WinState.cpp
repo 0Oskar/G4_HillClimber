@@ -35,6 +35,20 @@ WinState::WinState()
 	this->ownTime = 0;
 }
 
+WinState::~WinState()
+{
+	if (this->m_audioComponent != nullptr)
+	{
+		delete this->m_audioComponent;
+		this->m_audioComponent = nullptr;
+	}
+	if (this->m_cameraMovementComponentPtr)
+	{
+		delete this->m_cameraMovementComponentPtr;
+		this->m_cameraMovementComponentPtr = nullptr;
+	}
+}
+
 void WinState::setupLight()
 {
 	this->m_constantbufferData.dirBuffer.lightColor = { 1, 1, 1, 1 };

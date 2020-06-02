@@ -23,7 +23,28 @@ GameState::GameState()
 	this->m_gameOver = false;
 }
 
-GameState::~GameState() {}
+GameState::~GameState() 
+{
+	for (int i = 0; i < nrOfGameObjects; i++)
+	{
+		if (m_gameObjects.at(i) != nullptr)
+		{
+			delete m_gameObjects.at(i);
+			this->m_gameObjects.at(i) = nullptr;
+		}
+	}
+
+	for (int i = 0; i < m_rooms.size(); i++)
+	{
+		if (m_rooms.at(i) != nullptr)
+		{
+			delete m_rooms.at(i);
+			this->m_rooms.at(i) = nullptr;
+		}
+	}
+	this->m_rooms.clear();
+	this->m_gameObjects.clear();
+}
 
 DirectX::XMMATRIX* GameState::getViewMatrix() const
 {
@@ -469,6 +490,11 @@ void GameState::drawUI(DirectX::SpriteBatch* spriteBatchPtr, DirectX::SpriteFont
 	spriteFontPtr->DrawString(spriteBatchPtr, std::to_string(this->m_gameTime.timeElapsed()).c_str(), DirectX::XMFLOAT2(70.f, 10.f), DirectX::Colors::Green, 0.f, DirectX::XMFLOAT2(0.f, 0.f));
 
 	this->m_activeRoom->drawUI(spriteBatchPtr, spriteFontPtr);
+}
+
+void GameState::onPop()
+{
+	iGameState::onPop();
 }
 
 void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext, GameOptions options, std::shared_ptr<DirectX::AudioEngine> audioEngine)
