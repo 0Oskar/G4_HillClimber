@@ -129,7 +129,7 @@ void Room::addPortalToRoom(XMVECTOR teleportLocation, int mdlIndx, Model* mdl, D
 	XMVECTOR pos = m_worldPosition + teleportLocation;
 	this->m_gameObjects.emplace_back(new Portal());
 	if(room != -1)
-		dynamic_cast<Portal*>(this->m_gameObjects.back())->initialize(mdlIndx, (int)m_wvpCBuffers->size() - 1, mdl, this->m_rooms[room]->getEntrancePosition(), this->m_player, room, oneTimeUse);
+		dynamic_cast<Portal*>(this->m_gameObjects.back())->initialize(mdlIndx, (int)m_wvpCBuffers->size() - 1, mdl, this->m_rooms[room]->getEntrancePosition() + XMVectorSet(0.f, this->m_player->getAABB().Extents.y + 0.1f, 0, 0), this->m_player, room, oneTimeUse);
 	else
 		dynamic_cast<Portal*>(this->m_gameObjects.back())->initialize(mdlIndx, (int)m_wvpCBuffers->size() - 1, mdl, pos, this->m_player, room, oneTimeUse);
 
@@ -177,12 +177,10 @@ std::vector<BoundingOrientedBox>* Room::getOrientedBoundingBoxPtr()
 	return &this->m_orientedBoundingBoxes;
 }
 
-
 std::vector<BoundingBox>* Room::getTriggerBoxes()
 {
 	return &this->m_triggerBoundingBoxes;
 }
-
 
 void Room::addBoundingBox(XMVECTOR position, XMFLOAT3 extends)
 {
@@ -200,6 +198,11 @@ void Room::addOrientedBoundingBox(XMVECTOR position, XMFLOAT3 extends, XMVECTOR 
 	XMStoreFloat4(&rot, rotationVector);
 	this->m_orientedBoundingBoxes.emplace_back(roomPos, extends, rot);
 
+}
+
+void Room::addOrientedBoundingBox(BoundingOrientedBox OBB)
+{
+	this->m_orientedBoundingBoxes.emplace_back(OBB);
 }
 
 void Room::addTriggerBB(XMVECTOR position, XMFLOAT3 extends)

@@ -84,6 +84,7 @@ public:
 	bool shouldFly();
 	void fire();
 	void retract();
+	void reset();
 
 	DirectX::XMVECTOR m_toHeadDir;
 };

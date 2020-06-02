@@ -27,9 +27,11 @@ public:
 	void loadModels();
 	states handleInput(Keyboard* keyboard, Mouse* mousePtr, float dt);
 
-	//Get
+	// Getters
 	std::vector<Model>* getModelsPtr();
 	std::vector<GameObject*>* getGameObjectsPtr();
+	std::vector<BoundingBox>* getActiveRoomBoundingBoxesPtr(); // Empty
+	std::vector<BoundingOrientedBox>* getActiveRoomOrientedBoundingBoxesPtr(); // Empty
 	constantBufferData* getConstantBufferData();
 	std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* getWvpCBuffersPtr();
 	DirectX::XMMATRIX* getViewMatrix() const;

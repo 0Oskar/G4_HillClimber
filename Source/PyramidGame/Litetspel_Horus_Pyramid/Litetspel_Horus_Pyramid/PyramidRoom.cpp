@@ -61,7 +61,7 @@ void PyramidRoom::init(DirectX::BoundingOrientedBox* pyramidBB)
 	this->createSceneObjects();
 	this->createBoundingBoxes();
 
-	this->m_entrencePosition = { -25, 0, -20 };
+	this->m_entrencePosition = XMVectorSet(0.f, 2.f, -1.f, 1.f);
 }
 
 void PyramidRoom::portals()
@@ -71,14 +71,14 @@ void PyramidRoom::portals()
 	DirectX::XMVECTOR vec2 = DirectX::XMVectorSet(0.f, -10.f, 0.f, 1.f);
 	DirectX::XMVECTOR rotation = DirectX::XMVectorSet(0.f, 0.f, 0.f, 1.f);
 
-	//Portals Level 1
+	// Portals Level 1
 	vec = DirectX::XMVectorSet(-160.3f, 105.f, 124.f, 1.f);
 	this->addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 22, &m_models->at(22), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 2);
 
 	vec = DirectX::XMVectorSet(208.3f, 105.f, 124.f, 1.f);
 	this->addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 22, &m_models->at(22), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 2);
 	
-	//Portals Level 2
+	// Portals Level 2
 	vec = DirectX::XMVectorSet(-220.7f, 190.f, 210.f, 1.f); 
 	this->addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 22, &m_models->at(22), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 3);
 
@@ -91,8 +91,7 @@ void PyramidRoom::portals()
 	vec = DirectX::XMVectorSet(360.f, 190.f, 210.f, 1.f);
 	this->addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 22, &m_models->at(22), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 3);
 	
-	//Portals Level 3
-
+	// Portals Level 3
 	vec = DirectX::XMVectorSet(-310.f, 265.f, 289.f, 1.f);
 	this->addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 22, &m_models->at(22), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 4);
 
@@ -105,17 +104,13 @@ void PyramidRoom::portals()
 	vec = DirectX::XMVectorSet(330.f, 265.f, 289.f, 1.f);
 	this->addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 22, &m_models->at(22), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 4);
 
-	//Portals Level 4
+	// Portals Level 4
 	vec = DirectX::XMVectorSet(0.7f, 430.f, 458.f, 1.f);
-	this->addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 22, &m_models->at(22), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 2);
+	this->addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 22, &m_models->at(22), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 1);
 
-	//Portals Level 5 finalRoom
+	// Portals Level 5 finalRoom
 	vec = DirectX::XMVectorSet(0.7f, 580.f, 610.f, 1.f); 
 	this->addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 22, &m_models->at(22), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 5);
-
-	vec = DirectX::XMVectorSet(0.f, 300.f, 315.f, 1.f);
-	vec2 = DirectX::XMVectorSet(-400.f, 0, -10.f, 1.f);
-	this->addPortalToRoom(vec, 22, &m_models->at(22), vec2, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), -1);
 }
 
 std::vector<DirectX::BoundingBox*> PyramidRoom::getBBForHook()
@@ -127,12 +122,20 @@ void PyramidRoom::onEntrance()
 {
 	Room::onEntrance();
 	this->m_gameTimerPointer->start();
+	// Set respawn with current checkpoint
+	std::pair<int, XMVECTOR> checkpoint = this->m_checkpointHandler.getCurrent();
+	if (checkpoint.first != -1)
+	{
+		BoundingBox checkpointAABB = this->m_gameObjects[checkpoint.first]->getAABB();
+		this->m_player->setSpawnPosition(checkpoint.second + XMVectorSet(0.f, checkpointAABB.Extents.y + 5, 0.f, 0.f));
+	}
 	this->m_player->respawn();
+
 	completedRooms++;
 	XMVECTOR currentPos = this->m_checkpointHandler.getCurrentpos();
 	XMVECTOR nextPos;
 	float yValue;
-	//Push all platforms that are between current and next checpoint out.
+	//Push all platforms that are between current and next checkpoint out.
 	if (this->completedRooms < this->m_checkpointHandler.size() )
 		nextPos = this->m_checkpointHandler.getIndexPosAt(completedRooms).second;
 	else
@@ -154,7 +157,7 @@ void PyramidRoom::onEntrance()
 
 void PyramidRoom::createBoundingBoxes()
 {
-	//this->addOrientedBoundingBox({ -10, 5, -10 }, { 10, 5, 2 }, { 0, 1, 0, 0 });
+	this->addOrientedBoundingBox(this->m_pyramidOOB);
 }
 
 void PyramidRoom::createSceneObjects()

@@ -47,7 +47,7 @@ std::vector<GameObject*>* GameState::getActiveRoomGameObjectsPtr()
 		return nullptr;
 }
 
-std::vector<BoundingBox>* GameState::getActiveRoomBoundingBoxsPtr()
+std::vector<BoundingBox>* GameState::getActiveRoomBoundingBoxesPtr()
 {
 	if (this->m_activeRoom != nullptr)
 		return this->m_activeRoom->getBoundingBoxPtr();
@@ -55,7 +55,7 @@ std::vector<BoundingBox>* GameState::getActiveRoomBoundingBoxsPtr()
 		return nullptr;
 }
 
-std::vector<BoundingOrientedBox>* GameState::getActiveRoomOrientedBoundingBoxPtr()
+std::vector<BoundingOrientedBox>* GameState::getActiveRoomOrientedBoundingBoxesPtr()
 {
 	if (this->m_activeRoom != nullptr)
 		return this->m_activeRoom->getOrientedBoundingBoxPtr();
@@ -411,10 +411,9 @@ void GameState::roomChangeInit()
 	platformBB.clear();
 	this->m_gameObjects.resize(this->nrOfGameObjects);
 	this->m_player.clearAABB();
-	//Gedddwt active room platforms to send to hookHand.
+	//Get active room platforms to send to hookHand.
 	for (size_t i = 0; this->m_activeRoom && i < this->m_activeRoom->getGameObjectsPtr()->size(); i++)
 	{
-		
 		Platform* castToPlatform = dynamic_cast<Platform*>(this->m_activeRoom->getGameObjectsPtr()->at(i));
 		if (castToPlatform != nullptr)
 		{
@@ -559,17 +558,16 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 
 	// Player
 	this->m_player.initialize(-1, -1, 60.f, DirectX::XMFLOAT3(20.f, 20.f, 20.f), DirectX::XMFLOAT3(.01f, .01f, .01f), hook, hookHand, hookGem, hookHandLeftWing, hookHandRightWing, this->m_chainGObjects, audioEngine, platformBB);
-    this->m_player.setSpawnPosition(DirectX::XMVectorSet(0.f, 10.f, -1.f, 1.f));
-	this->m_player.respawn();
-	
-	//Room creation
-	//Pyramid Room - [0]
+	this->m_player.setPosition(XMVectorSet(0.f, 8.f, 0.f, 0.f));
+
+	// Room creation
+	// Pyramid Room - [0]
 	this->m_rooms.emplace_back(new PyramidRoom());
 	this->m_rooms.back()->initialize(m_device, m_dContext, m_modelsPtr, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, 0, 1), audioEngine, &this->m_gameTime, options);
 	dynamic_cast<PyramidRoom*>(this->m_rooms.back())->init(&m_pyramidOBB);
-	m_activeRoom = m_rooms.back();
+	this->m_activeRoom = m_rooms.back();
 
-	//Template Room [1] Viktor
+	// Viktor Room [1]
 	this->m_rooms.emplace_back(new FindGemsRoom());
 	this->m_rooms.back()->initialize(m_device, m_dContext, m_modelsPtr, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, -300, 1), audioEngine, &this->m_gameTime, options);
 	dynamic_cast<FindGemsRoom*>(this->m_rooms.back())->init();
@@ -588,22 +586,14 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_rooms.emplace_back(new TristansRoom());
 	this->m_rooms.back()->initialize(m_device, m_dContext, m_modelsPtr, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, -200, 1), audioEngine, &this->m_gameTime, options);
 	dynamic_cast<TristansRoom*>(this->m_rooms.back())->init();
-	
 
 	// final Room [5]
 	this->m_rooms.emplace_back(new finalRoom());
 	this->m_rooms.back()->initialize(m_device, m_dContext, m_modelsPtr, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, -200, 1), audioEngine, &this->m_gameTime, options);
 	dynamic_cast<finalRoom*>(this->m_rooms.back())->init();
 
-
-	//Otaget rum [4] -
-	/*this->m_rooms.emplace_back(new NamnRoom());
-	this->m_rooms.back()->initialize(m_device, m_dContext, m_modelsPtr, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, -100, 1), audioEngine, &this->m_gameTime);
-	dynamic_cast<NamnRoom*>(this->m_rooms.back())->init();*/
-
-	this->m_player.getphysicsCompPtr()->setVelocity({ 0, 0, 0 });
-	this->m_player.setPosition(this->m_activeRoom->getEntrancePosition());
-	this->m_player.getphysicsCompPtr()->setVelocity({ 0, 0, 0 });
+	this->m_player.setSpawnPosition(m_activeRoom->getEntrancePosition());
+	this->m_player.respawn();
 
 	//Get active room platforms to send to hookHand.
 	for (size_t i = 0; this->m_activeRoom && i < this->m_activeRoom->getGameObjectsPtr()->size(); i++)
@@ -659,7 +649,6 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 
 void GameState::update(float dt)
 {
-	
 	// Player
 	this->m_player.update(dt);
 
@@ -732,51 +721,57 @@ states GameState::handleInput(Keyboard* keyboard, Mouse* mousePtr, float dt)
 	}
 
 	// Controls
-		if (keyboard->isKeyPressed('W'))
-			this->m_player.movePlayer(Direction::FORWARD, dt);
+	if (keyboard->isKeyPressed('W'))
+		this->m_player.movePlayer(Direction::FORWARD, dt);
 
-		if (keyboard->isKeyPressed('S'))
-			this->m_player.movePlayer(Direction::BACKWARD, dt);
+	if (keyboard->isKeyPressed('S'))
+		this->m_player.movePlayer(Direction::BACKWARD, dt);
 
-		if (keyboard->isKeyPressed('A'))
-			this->m_player.movePlayer(Direction::LEFT, dt);
+	if (keyboard->isKeyPressed('A'))
+		this->m_player.movePlayer(Direction::LEFT, dt);
 
-		if (keyboard->isKeyPressed('D'))
-			this->m_player.movePlayer(Direction::RIGHT, dt);
+	if (keyboard->isKeyPressed('D'))
+		this->m_player.movePlayer(Direction::RIGHT, dt);
 
-		if (keyboard->isKeyPressed(' ')) // Space
-			this->m_player.jump(dt);
-
-		if (keyboard->isKeyPressed((unsigned char)16)) // Shift
-			this->m_player.flyDown(dt);
-
-		if (keyboard->isKeyPressed('E'))
-		{
-			this->m_player.setUse(true);
-		}
+	if (keyboard->isKeyPressed(' ')) // Space
+	{
+		if (this->m_player.getQAMode())
+			this->m_player.movePlayer(Direction::UP, dt);
 		else
-		{
-			this->m_player.setUse(false);
-		}
+			this->m_player.jump(dt);
+	}
 
-		// QA Toggle
-		if (keyboard->isKeyPressed('P'))
-		{
-			this->m_player.setQAMode(false);
-			StatusTextHandler::get().sendText("QA Mode OFF!", 0.5);
-		}
-		if (keyboard->isKeyPressed('O'))
-		{
-			this->m_player.setQAMode(true);
-			StatusTextHandler::get().sendText("QA Mode ON!", 0.5);
-		}
+	if (keyboard->isKeyPressed((unsigned char)16)) // Shift
+		this->m_player.flyDown(dt);
 
-		// For Debugging purposes
-		if (keyboard->isKeyPressed('R'))
-		{
-			this->m_player.getMoveCompPtr()->position = DirectX::XMVectorSet(0.f, 6.f, -1.f, 1.f);
-			this->m_player.resetVelocity(); // Reset Velocity
-		}
+	if (keyboard->isKeyPressed('E'))
+	{
+		this->m_player.setUse(true);
+	}
+	else
+	{
+		this->m_player.setUse(false);
+	}
+
+	// QA Toggle
+	if (keyboard->isKeyPressed('P'))
+	{
+		this->m_player.setQAMode(false);
+		StatusTextHandler::get().sendText("QA Mode OFF!", 0.5);
+	}
+	if (keyboard->isKeyPressed('O'))
+	{
+		this->m_player.setQAMode(true);
+		StatusTextHandler::get().sendText("QA Mode ON!", 0.5);
+	}
+
+	// For Debugging purposes
+	if (keyboard->isKeyPressed('R'))
+	{
+		//this->m_player.respawn();
+		this->m_player.getMoveCompPtr()->position = XMVectorSet(0.f, 6.f, -1.f, 1.f);
+		this->m_player.resetVelocity(); // Reset Velocity
+	}
 	return changeStateTo;
 }
 

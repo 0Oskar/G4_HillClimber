@@ -399,6 +399,16 @@ std::vector<GameObject*>* MenuState::getGameObjectsPtr()
 	return m_pyramidRoom.getGameObjectsPtr();
 }
 
+std::vector<BoundingBox>* MenuState::getActiveRoomBoundingBoxesPtr()
+{
+	return nullptr;
+}
+
+std::vector<BoundingOrientedBox>* MenuState::getActiveRoomOrientedBoundingBoxesPtr()
+{
+	return nullptr;
+}
+
 constantBufferData* MenuState::getConstantBufferData()
 {
 	return &this->m_constantbufferData;

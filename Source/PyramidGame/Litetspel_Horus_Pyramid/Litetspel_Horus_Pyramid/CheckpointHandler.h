@@ -18,5 +18,6 @@ public:
 	int size() const;
 	int getCurrentIndex() const;
 	XMVECTOR getCurrentpos() const;
+	std::pair<int, XMVECTOR> getCurrent() const;
 	std::pair<int, XMVECTOR> getIndexPosAt(int index) const;
 };
