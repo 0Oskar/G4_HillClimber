@@ -407,20 +407,20 @@ void MenuState::loadModels()
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
 	this->m_models[++nrOfCurrentLModels].initializeModelBff(m_device, m_dContext, "vRamp_New.bff", mat, L"Textures/ColorTexture.png");
 
-	//46. Cactus
-	this->m_models.emplace_back();
-	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
-	this->m_models[46].loadVertexFromOBJ(m_device, m_dContext, L"Models/cactus2.obj", mat, L"Textures/ColorTexture.png");
-
 	//47. Cactus
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
-	this->m_models[47].loadVertexFromOBJ(m_device, m_dContext, L"Models/Entrence.obj", mat, L"Textures/ColorTexture.png");
+	this->m_models[++nrOfCurrentLModels].loadVertexFromOBJ(m_device, m_dContext, L"Models/cactus2.obj", mat, L"Textures/ColorTexture.png");
 
-	//48. Clouds
+	//48. Pillar?
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
-	this->m_models[48].loadVertexFromOBJ(m_device, m_dContext, L"Models/Clouds.obj", mat, L"Textures/ColorTexture.png");
+	this->m_models[++nrOfCurrentLModels].loadVertexFromOBJ(m_device, m_dContext, L"Models/Entrence.obj", mat, L"Textures/ColorTexture.png");
+
+	//49. Clouds
+	this->m_models.emplace_back();
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
+	this->m_models[++nrOfCurrentLModels].loadVertexFromOBJ(m_device, m_dContext, L"Models/Clouds.obj", mat, L"Textures/ColorTexture.png");
 
 }
 

@@ -212,13 +212,14 @@ void PyramidRoom::createSceneObjects()
 
 	addPalmTrees();
 	addCactais();
+	// Pillars
 	vec = DirectX::XMVectorSet(-25, -1.5, -50, 1.f);
-	this->addGameObjectToRoom(false, false, 0, 47, &m_models->at(47), vec, NormalScale);
+	this->addGameObjectToRoom(false, false, 0, 48, &m_models->at(48), vec, NormalScale);
 
 	// Clouds
 	vec = DirectX::XMVectorSet(0.f, 300.f, 315.f, 1.f);
 	NormalScale = DirectX::XMVectorSet(0.3f, 0.3f, 0.3f, 1.f);
-	this->addGameObjectToRoom(false, true, 0, 48, &m_models->at(48), vec, NormalScale);
+	this->addGameObjectToRoom(false, true, 0, 49, &m_models->at(49), vec, NormalScale);
 	this->m_gameObjects.back()->getMoveCompPtr()->rotation = DirectX::XMVectorSet(0, rand() % 360, 0, 1);
 	this->clouds = this->m_gameObjects.back();
 
@@ -973,7 +974,7 @@ void PyramidRoom::addCactais()
 		pos = DirectX::XMVectorSet(posXNumber - 400, 0, posZNumber - 400 - 100, 1);
 		rot = DirectX::XMVectorSet(0, Rotnumber, 0, 1);
 		scale = DirectX::XMVectorSet(scaleNumber * 0.5, scaleNumber * 0.5, scaleNumber * 0.5, 1);
-		this->addGameObjectToRoom(false, false, 0, 46, &m_models->at(46), pos, scale);
+		this->addGameObjectToRoom(false, false, 0, 47, &m_models->at(47), pos, scale);
 		this->m_gameObjects.back()->getMoveCompPtr()->rotation = rot;
 	}
 
