@@ -19,7 +19,7 @@ Application::Application()
 
 Application::~Application()
 {
-	if (m_audioEngine) this->m_audioEngine->Suspend();
+		
 }
 
 void Application::stateChange()

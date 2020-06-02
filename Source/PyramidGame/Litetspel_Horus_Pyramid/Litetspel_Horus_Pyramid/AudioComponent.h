@@ -19,7 +19,7 @@ public:
 	};
 	~AudioComponent()
 	{
-		this->playerMovementComp = nullptr;
+		//this->playerMovementComp = nullptr;
 		for (int i = 0; i < m_effect.size(); i++)
 		{
 			if (m_effect.at(i) != nullptr)

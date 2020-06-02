@@ -230,7 +230,7 @@ void Room::addTriggerBB(XMVECTOR position, XMFLOAT3 extends)
 	this->m_triggerBoundingBoxes.emplace_back(roomPos, extends);
 }
 
-DirectX::XMVECTOR Room::getEntrancePosition()
+DirectX::XMVECTOR Room::getEntrancePosition() const
 {
 	if (m_player == nullptr) return XMVectorZero();
 	return (this->m_worldPosition + this->m_entrencePosition + XMVectorSet(0.f, m_player->getAABB().Extents.y + 0.1f, 0, 0));
@@ -308,23 +308,23 @@ PointLight* Room::getLight(int index)
 	return &m_lightData.pointLights[index];
 }
 
-DirectX::XMVECTOR Room::getRelativePosition(DirectX::XMVECTOR pos)
+DirectX::XMVECTOR Room::getRelativePosition(DirectX::XMVECTOR pos) const
 {
 	XMVECTOR temp = this->m_worldPosition + pos;
 	return temp;
 }
 
-PS_DIR_BUFFER Room::getDirectionalLight()
+PS_DIR_BUFFER Room::getDirectionalLight() const
 {
 	return this->m_dirLight;
 }
 
-PS_FOG_BUFFER Room::getFogData()
+PS_FOG_BUFFER Room::getFogData() const
 {
 	return this->m_fogData;
 }
 
-PS_LIGHT_BUFFER Room::getLightData()
+PS_LIGHT_BUFFER Room::getLightData() const
 {
 	return this->m_lightData;
 }

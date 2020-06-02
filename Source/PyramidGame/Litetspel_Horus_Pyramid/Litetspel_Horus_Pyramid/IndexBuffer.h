@@ -13,7 +13,7 @@ public:
 		this->size = 0;
 	}
 
-	HRESULT init(ID3D11Device* device, DWORD* data, UINT nrOf)
+	HRESULT init(ID3D11Device* device, DWORD* data, const UINT nrOf)
 	{
 		this->size = nrOf;
 
@@ -31,7 +31,7 @@ public:
 		HRESULT hr = device->CreateBuffer(&bufferDesc, &bufferData, this->indexBufferPtr.GetAddressOf());
 		return hr;
 	}
-	UINT getSize()
+	UINT getSize() const
 	{
 		return this->size;
 	}

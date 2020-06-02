@@ -238,7 +238,7 @@ void Model::initializeModelBff(ID3D11Device* device, ID3D11DeviceContext* dConte
 	//printBffModel(myModel); //For testing
 }
 
-void Model::printBffModel(ModelBFF model)
+void Model::printBffModel(ModelBFF model) const
 {
 for (unsigned int i = 0; i < model.mesh.nrOfVertex; i++)
 {

@@ -24,7 +24,7 @@ protected:
 	std::vector<ConstBuffer<VS_CONSTANT_BUFFER>> m_wvpCBuffers;
 	constantBufferData m_constantbufferData;
 	GameOptions m_gameOptions;
-	const std::string fileToRead = "HighScore.txt";
+	const std::string m_fileToRead = "HighScore.txt";
 
 
 	ID3D11Device* m_device;
@@ -34,16 +34,16 @@ protected:
 
 public:
 	virtual ~iGameState() {};
-	virtual void update(float dt) = 0;
-	virtual states handleInput(Keyboard* keyboard, Mouse* mouePointer, float dt) = 0;
+	virtual void update(const float dt) = 0;
+	virtual states handleInput(Keyboard* keyboard, Mouse* mouePointer, const float dt) = 0;
 	virtual std::vector<Model>* getModelsPtr() = 0;
 	virtual std::vector<GameObject*>* getGameObjectsPtr() = 0;
 	virtual constantBufferData* getConstantBufferData() = 0;
 	virtual std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* getWvpCBuffersPtr() = 0;
 	virtual DirectX::XMMATRIX* getViewMatrix() const = 0;
 	virtual DirectX::XMMATRIX* getProjectionMatrix() const = 0;
-	virtual void initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext, GameOptions options, std::shared_ptr<DirectX::AudioEngine> audioEngine) = 0;
-	virtual XMFLOAT3 getCameraPos() = 0;
+	virtual void initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext, const GameOptions options, std::shared_ptr<DirectX::AudioEngine> audioEngine) = 0;
+	virtual XMFLOAT3 getCameraPos() const = 0;
 	virtual void afterChange() = 0;
 	virtual void drawUI(DirectX::SpriteBatch* spriteBatchPtr, DirectX::SpriteFont* spriteFontPtr) = 0;
 	virtual void onEntry() {};
@@ -60,7 +60,7 @@ public:
 				delete m_gameObjects.at(i);
 		}
 	};
-	virtual void addGameObjectToWorld(bool dynamic, bool colide, float weight, int mdlIndx, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR scale3D, DirectX::XMFLOAT3 boundingBoxSize = DirectX::XMFLOAT3(0, 0, 0), DirectX::XMFLOAT3 acceleration = DirectX::XMFLOAT3(1, 1, 1), DirectX::XMFLOAT3 deceleration = DirectX::XMFLOAT3(1, 1, 1))
+	virtual void addGameObjectToWorld(const bool dynamic, const bool colide, const float weight, const int mdlIndx, Model* mdl, const DirectX::XMVECTOR position, const DirectX::XMVECTOR scale3D, const DirectX::XMFLOAT3 boundingBoxSize = DirectX::XMFLOAT3(0, 0, 0), const DirectX::XMFLOAT3 acceleration = DirectX::XMFLOAT3(1, 1, 1), const DirectX::XMFLOAT3 deceleration = DirectX::XMFLOAT3(1, 1, 1))
 	{
 		this->m_gameObjects.emplace_back(new GameObject());
 		GameObject* gObject = this->m_gameObjects.back();
