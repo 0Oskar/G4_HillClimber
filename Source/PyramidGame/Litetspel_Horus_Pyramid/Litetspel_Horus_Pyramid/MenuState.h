@@ -18,6 +18,13 @@ private:
 
 	//Sound
 	const std::wstring menuSound = L"Sounds/MainMenu.wav";
+
+	// UI
+	ID3D11ShaderResourceView* m_titelImage;
+	ID3D11ShaderResourceView* m_infoImage;
+	DirectX::XMFLOAT2 m_titelImagePosition;
+	DirectX::XMFLOAT2 m_infoImagePosition;
+
 public:
 	MenuState();
 	~MenuState();
