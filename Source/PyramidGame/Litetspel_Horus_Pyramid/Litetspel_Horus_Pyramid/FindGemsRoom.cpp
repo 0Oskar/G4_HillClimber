@@ -4,6 +4,7 @@
 void FindGemsRoom::createBoundingBoxes()
 {
 	this->addBoundingBox({ 0.f, -1.f, 0.f, 1.f }, DirectX::XMFLOAT3(30.f, 1.f, 55.f));	    // Ground
+	this->addBoundingBox({ 0.f, 18.f, 0.f, 1.f }, DirectX::XMFLOAT3(34.f, 1.f, 55.f));	    // 
 	this->addBoundingBox({ 30.5f, 0.f, 0.f, 1.f }, DirectX::XMFLOAT3(2.f, 15.f, 35.f));     // Right wall
 	this->addBoundingBox({ -30.5f, 0.f, 0.f, 1.f }, DirectX::XMFLOAT3(2.f, 15.f, 35.f));    // Left wall
 
@@ -21,8 +22,8 @@ void FindGemsRoom::createBoundingBoxes()
 	this->addBoundingBox({ -9.5f, 2.f, 41.f, 1.f }, DirectX::XMFLOAT3(2.f, 7.f, 10.f));     // Small room left wall
 
 	this->addBoundingBox({ 0.f, 5.f, 0.f, 1.f }, DirectX::XMFLOAT3(4.5, 7.f, 4.5f));        // Center pillar
-	this->addBoundingBox({ 15.f, 1.f, 0.f, 1.f }, DirectX::XMFLOAT3(2.f, 2.f, 4.5f));       // Sarcophagus right
-	this->addBoundingBox({ -15, 1.f, 0.f, 1.f }, DirectX::XMFLOAT3(2.f, 2.f, 4.5f));        // Sarcophagus left
+	this->addBoundingBox({ 15.f, 1.2f, 0.f, 1.f }, DirectX::XMFLOAT3(2.f, 2.4f, 4.5f));       // Sarcophagus right
+	this->addBoundingBox({ -15, 1.2f, 0.f, 1.f }, DirectX::XMFLOAT3(2.f, 2.4f, 4.5f));        // Sarcophagus left
 
 	this->addBoundingBox({ 14.6f, 6.f, 22.2f, 1.f }, DirectX::XMFLOAT3(2.f, 12.f, 2.f));    // Pillar front right
 	this->addBoundingBox({ -14.6f, 6.f, 22.2f, 1.f }, DirectX::XMFLOAT3(2.f, 12.f, 2.f));   // Pillar front left
@@ -289,6 +290,7 @@ void FindGemsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& act
 		this->m_Lever[0]->setPosition(DirectX::XMVectorSet(0, -1.5f, 43.1f, 1) + this->m_worldPosition + DirectX::XMVectorSet(-1.2f, 0, 0, 0));
 		this->m_Lever[0]->setRotation(DirectX::XMVectorSet(0.f, 0.f, pMath::convertDegreesToRadians(-45), 0.f));
 		this->m_portal->setActiveStatus(true);
+		StatusTextHandler::get().sendText("You hear distant rumbles...", 4);
 	}
 
 	// Move gate
@@ -357,7 +359,7 @@ void FindGemsRoom::init()
 	}
 	
 	// Init Gems spawns, 8
-	m_PreFixedSpawnpoints.push_back(DirectX::XMVectorSet(18.5f, -0.8f, -23.5f, 1));  // Chest
+	m_PreFixedSpawnpoints.push_back(DirectX::XMVectorSet(18.5f, -0.7f, -23.5f, 1));  // Chest
 	m_PreFixedSpawnpoints.push_back(DirectX::XMVectorSet(17.5f, -0.4f, 22.5f, 1));   // Front Right Pillar
 	m_PreFixedSpawnpoints.push_back(DirectX::XMVectorSet(-13, -0.8f, 19.6f, 1));     // Front Left Pillar
 	m_PreFixedSpawnpoints.push_back(DirectX::XMVectorSet(-17.5f, -0.4f, -3, 1));     // Left Sarcophagus
