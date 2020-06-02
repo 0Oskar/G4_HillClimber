@@ -22,6 +22,7 @@ private:
 	void audioUpdate();
 	std::shared_ptr<DirectX::AudioEngine> m_audioEngine;
 	std::stack<iGameState*> m_gameStateStack;
+	bool m_shouldQuit;
 
 
 public:
