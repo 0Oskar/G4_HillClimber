@@ -560,9 +560,9 @@ void PyramidRoom::createSceneObjects()
 	vec = DirectX::XMVectorSet(105.3f, 59.f, 76.5f, 1.f);
 	this->addPlatformToRoom(3, &m_models->at(3), vec, DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f), &this->m_pyramidOOB);//Corrected
 
-	//// platform 1
-	vec = DirectX::XMVectorSet(85.3f, 49.f, 66.2f, 1.f);
-	this->addPlatformToRoom(3, &m_models->at(3), vec, DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f), &this->m_pyramidOOB);//Corrected
+	//// platform 1   On the same pos as the one two above
+	//vec = DirectX::XMVectorSet(85.3f, 49.f, 66.2f, 1.f);
+	//this->addPlatformToRoom(3, &m_models->at(3), vec, DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f), &this->m_pyramidOOB);//Corrected
 
 	//// platform 1
 	vec = DirectX::XMVectorSet(125.3f, 64.f, 81.f, 1.f);
