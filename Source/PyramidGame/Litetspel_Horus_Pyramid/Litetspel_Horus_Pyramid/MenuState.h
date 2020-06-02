@@ -18,6 +18,13 @@ private:
 
 	//Sound
 	const std::wstring menuSound = L"Sounds/MainMenu.wav";
+
+	// UI
+	ID3D11ShaderResourceView* m_titelImage;
+	ID3D11ShaderResourceView* m_infoImage;
+	DirectX::XMFLOAT2 m_titelImagePosition;
+	DirectX::XMFLOAT2 m_infoImagePosition;
+
 public:
 	MenuState();
 	~MenuState();
@@ -27,9 +34,11 @@ public:
 	void loadModels();
 	states handleInput(Keyboard* keyboard, Mouse* mousePtr, const float dt);
 
-	//Get
+	// Getters
 	std::vector<Model>* getModelsPtr();
 	std::vector<GameObject*>* getGameObjectsPtr();
+	std::vector<BoundingBox>* getActiveRoomBoundingBoxesPtr(); // Empty
+	std::vector<BoundingOrientedBox>* getActiveRoomOrientedBoundingBoxesPtr(); // Empty
 	constantBufferData* getConstantBufferData();
 	std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* getWvpCBuffersPtr();
 	DirectX::XMMATRIX* getViewMatrix() const;

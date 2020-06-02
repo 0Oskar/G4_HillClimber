@@ -39,3 +39,8 @@ XMVECTOR CheckpointHandler::getCurrentpos() const
 {
 	return this->m_current.second;
 }
+
+std::pair<int, XMVECTOR> CheckpointHandler::getCurrent() const
+{
+	return this->m_current;
+}

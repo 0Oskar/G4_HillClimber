@@ -337,7 +337,7 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 	this->m_fogBuffer.m_data = fogBuffer;
 	this->m_fogBuffer.upd();
 
-	// Pyramid Frustum for drawing only(Seperate from)
+	// Pyramid Oriented Bounding Box for drawing only(Seperate from box in gamestate)
 	DirectX::XMFLOAT3 center(0.f, 62.f, 80.f);
 	DirectX::XMFLOAT3 extents(450.f, 550.f, 1.f);
 	float rotationX = XMConvertToRadians(46.f);
@@ -537,8 +537,7 @@ void ViewLayer::render(iGameState* gameState)
 				DX::Draw(m_batch.get(), this->m_triggerBoxes->at(i), DirectX::Colors::DarkTurquoise);
 			}
 		}
-		DX::Draw(m_batch.get(), this->m_pyramidOBB, DirectX::Colors::Blue);
-
+		//DX::Draw(m_batch.get(), this->m_pyramidOBB, DirectX::Colors::Blue);
 
 		m_batch->End();
 	}

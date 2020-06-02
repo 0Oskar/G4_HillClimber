@@ -29,6 +29,8 @@ void Application::stateChange()
 	this->m_viewLayerPtr->setProjectionMatrix(gameState->getProjectionMatrix());
 	this->m_viewLayerPtr->setModelsFromState(gameState->getModelsPtr());
 	this->m_viewLayerPtr->setgameObjectsFromState(gameState->getGameObjectsPtr());
+	this->m_viewLayerPtr->setBoundingBoxesFromActiveRoom(gameState->getActiveRoomBoundingBoxesPtr());
+	this->m_viewLayerPtr->setOrientedBoundingBoxesFromActiveRoom(gameState->getActiveRoomOrientedBoundingBoxesPtr());
 	this->m_viewLayerPtr->setWvpCBufferFromState(gameState->getWvpCBuffersPtr());
 	this->m_viewLayerPtr->setConstantBuffersFromGameState(gameState->getConstantBufferData());
 	gameState->onEntry();

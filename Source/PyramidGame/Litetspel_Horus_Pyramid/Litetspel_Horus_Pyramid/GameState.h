@@ -7,14 +7,14 @@
 #include "ViewLayer.h"
 #include "Lever.h"
 #include "Portal.h"
-#include"TemplateRoom.h"
-#include"finalRoom.h"
-#include"PyramidRoom.h"
-#include"KevinsRoom.h"
-#include"EdvinsRoom.h"
+#include "TemplateRoom.h"
+#include "finalRoom.h"
+#include "PyramidRoom.h"
+#include "KevinsRoom.h"
+#include "EdvinsRoom.h"
 #include "TristansRoom.h"
 #include "FindGemsRoom.h"
-#include"iGameState.h"
+#include "iGameState.h"
 
 
 using namespace std;
@@ -65,8 +65,8 @@ public:
 	std::vector<Model>* getModelsPtr();
 	std::vector<GameObject*>* getGameObjectsPtr();
 	std::vector<GameObject*>* getActiveRoomGameObjectsPtr();
-	std::vector<BoundingBox>* getActiveRoomBoundingBoxsPtr();
-	std::vector<BoundingOrientedBox>* getActiveRoomOrientedBoundingBoxPtr();
+	std::vector<BoundingBox>* getActiveRoomBoundingBoxesPtr();
+	std::vector<BoundingOrientedBox>* getActiveRoomOrientedBoundingBoxesPtr();
 	std::vector<BoundingBox>* getActiveRoomTriggerBox();
 	std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* getWvpCBuffersPtr();
 	constantBufferData* getConstantBufferData();

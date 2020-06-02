@@ -37,6 +37,7 @@ protected:
 	virtual void onCompleted() {};
 	void addBoundingBox(XMVECTOR position, XMFLOAT3 extends);
 	void addOrientedBoundingBox(XMVECTOR position, XMFLOAT3 extends, XMVECTOR rotation);
+	void addOrientedBoundingBox(BoundingOrientedBox OBB);
 	void addTriggerBB(XMVECTOR position, XMFLOAT3 extends);
 public:
 	Room();

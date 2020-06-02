@@ -38,6 +38,8 @@ public:
 	virtual states handleInput(Keyboard* keyboard, Mouse* mouePointer, const float dt) = 0;
 	virtual std::vector<Model>* getModelsPtr() = 0;
 	virtual std::vector<GameObject*>* getGameObjectsPtr() = 0;
+	virtual std::vector<BoundingBox>* getActiveRoomBoundingBoxesPtr() = 0;
+	virtual std::vector<BoundingOrientedBox>* getActiveRoomOrientedBoundingBoxesPtr() = 0;
 	virtual constantBufferData* getConstantBufferData() = 0;
 	virtual std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* getWvpCBuffersPtr() = 0;
 	virtual DirectX::XMMATRIX* getViewMatrix() const = 0;

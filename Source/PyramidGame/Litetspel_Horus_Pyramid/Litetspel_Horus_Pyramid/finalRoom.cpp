@@ -4,7 +4,7 @@
 finalRoom::finalRoom()
 {
 	Room::initParent();
-	this->m_entrencePosition = XMVectorSet(-14.9f, 10.f, -66.f, 0.0f);
+	this->m_entrencePosition = XMVectorSet(-13.f, 0.f, -60.f, 1.0f);
 }
 finalRoom::~finalRoom()
 {
@@ -15,13 +15,12 @@ void finalRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& active
 {
 	Room::update(dt, camera, activeRoom, activeRoomChanged);
 
-
 	////Making the axe swing + Orientedhitboxes
 
 	//Respawn player on death
 	if (this->respawn == true)
 	{
-		this->m_player->getMoveCompPtr()->position = XMVectorSet(-13.f, 2.f, -260.f, 0.0f);
+		this->m_player->getMoveCompPtr()->position = XMVectorSet(-13.f, 2.f, -260.f, 1.0f);
 		respawn = false;
 		this->m_player->getMoveCompPtr()->rotation = this->spawnRotation;
 	}

@@ -20,7 +20,7 @@ void Player::initialize(int modelIndex, int wvpCBufferIndex, float mass, DirectX
 
 	XMFLOAT3 boundingbox(1.f, 4.f, 1.f);
 	this->m_movementComp = new MovementComponent();
-	this->m_spawnPosition = XMVectorSet(0.f, boundingbox.y, 0.f, 1.f);
+	this->m_spawnPosition = XMVectorSet(0.f, boundingbox.y + 0.1f, 0.f, 1.f);
 	this->m_physicsComp = new PhysicsComponent();
 	this->m_physicsComp->initialize(this->m_movementComp, mass, acceleration, deceleration);
 	this->m_physicsComp->setBoundingBox(this->m_movementComp->getPositionF3(), boundingbox);
@@ -64,7 +64,7 @@ void Player::addPyramidOBB(DirectX::BoundingOrientedBox* obb)
 
 void Player::setSpawnPosition(XMVECTOR position)
 {
-	this->m_spawnPosition = position + XMVectorSet(0.f, this->getAABB().Extents.y, 0.f, 0.f);
+	this->m_spawnPosition = position + XMVectorSet(0.f, (*this->m_physicsComp->getAABBPtr()).Extents.y + 0.1f, 0, 0);
 }
 
 void Player::respawn()
@@ -76,6 +76,7 @@ void Player::respawn()
 	this->m_physicsComp->setIsJumping(false);
 	this->m_physicsComp->setIsFalling(true);
 	this->m_lastFly = false;
+	this->m_hookHand.reset();
 }
 
 bool Player::getinUse()
@@ -110,32 +111,39 @@ void Player::update(float dt)
 	}
 	else
 	{
-		// Gravity
-
-		if (!this->m_QAmode)
-			this->m_physicsComp->addGravity(dt);
-
 		// Update lastGroundPos
 		if (this->m_lastFly || !this->m_physicsComp->getIsFalling())
 		{
 			this->m_lastOnGroundYPos = XMVectorGetY(this->m_movementComp->position);
-			//OutputDebugString(L"lastOnGroundYPos updated!\n");
 		}
 		this->m_lastFly = false;
 
 		// Fail State
 		if (!this->m_QAmode && this->m_lastOnGroundYPos != -1 && this->m_lastOnGroundYPos > XMVectorGetY(this->m_movementComp->position) + this->m_failThreshold)
 		{
-			//this->respawn();
+			this->respawn();
 		}
 
 		// Handle Collisions
-		this->m_physicsComp->handleCollision(this->m_collidableAABBoxes, this->m_pyramidOBB, dt, this->m_collidableOrientedBoxes);
+		if (this->m_QAmode) // Pyramid intersection turned off in QA Mode
+		{
+			BoundingOrientedBox QAPyramidOBB = this->m_pyramidOBB;
+			QAPyramidOBB.Extents = XMFLOAT3(0.f, 0.f, 0.f);
+			this->m_physicsComp->handleCollision(this->m_collidableAABBoxes, QAPyramidOBB, dt, this->m_collidableOrientedBoxes);
+		}
+		else
+			this->m_physicsComp->handleCollision(this->m_collidableAABBoxes, this->m_pyramidOBB, dt, this->m_collidableOrientedBoxes);
 	}
 
 	this->m_physicsComp->updatePosition(dt, true); // If Camera is not following player, remove last argument( Only dt)
+
+	// Gravity or Flying Deceleration
 	if (this->m_QAmode)
 		this->m_physicsComp->addYDecel(dt);
+	else
+		this->m_physicsComp->addGravity(dt);
+
+	// Hook Update
 	this->m_hookHand.update(dt);
 }
 
@@ -158,7 +166,7 @@ bool Player::canMove()
 void Player::jump(float dt)
 {
 	if(this->canMove())
-		this->m_physicsComp->jump(3.f, dt);
+		this->m_physicsComp->jump(2.f, dt);
 }
 
 void Player::setUse(bool isUsing)

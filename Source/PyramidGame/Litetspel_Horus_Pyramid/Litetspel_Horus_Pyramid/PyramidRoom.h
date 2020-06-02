@@ -10,6 +10,7 @@ private:
 	void createSceneObjects();
 	void onCompleted();
 	void addPalmTrees();
+	void addCactais();
 
 
 	std::vector<GameObject*> rotateObjects;

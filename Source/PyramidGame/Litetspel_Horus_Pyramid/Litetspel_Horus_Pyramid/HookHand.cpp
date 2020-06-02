@@ -80,6 +80,15 @@ void HookHand::retract()
 	}
 }
 
+void HookHand::reset()
+{
+	float hookSpeedForward = 100.f;
+	this->hookSpeedRetract = 100.f;
+	/*this->m_hookState = hookState::idle;
+	this->m_hookGameObject->getMoveCompPtr()->rotation = this->m_playerMovement->rotation + this->hookRotOffsetConst;
+	this->m_hookGameObject->getMoveCompPtr()->position = DirectX::XMVectorAdd(this->m_gunGameObject->getMoveCompPtr()->position, hookPosOffset);*/
+}
+
 bool HookHand::colide()
 {
 	bool colided = false;
@@ -244,7 +253,6 @@ void HookHand::update(const float dt)
 	}
 	else
 	{
-		this->hookSpeedRetract = 40;
 		this->m_audioComponent->stopSound(1);
 		if (this->m_hookState == hookState::waiting)
 		{
@@ -258,6 +266,9 @@ void HookHand::update(const float dt)
 
 		// Wing rotation
 		this->m_wingsOpen = false;
+		// Reset speed for when this->reset() is used
+		this->hookSpeedForward = 40.f;
+		this->hookSpeedRetract = 40.f;
 	}
 
 	this->m_chain.update(dt);

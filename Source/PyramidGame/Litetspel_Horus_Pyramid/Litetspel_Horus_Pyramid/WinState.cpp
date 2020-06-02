@@ -159,6 +159,16 @@ std::vector<GameObject*>* WinState::getGameObjectsPtr()
 	return &this->m_gameObjects;
 }
 
+std::vector<BoundingBox>* WinState::getActiveRoomBoundingBoxesPtr()
+{
+	return nullptr;
+}
+
+std::vector<BoundingOrientedBox>* WinState::getActiveRoomOrientedBoundingBoxesPtr()
+{
+	return nullptr;
+}
+
 constantBufferData* WinState::getConstantBufferData()
 {
 	return &this->m_constantbufferData;
