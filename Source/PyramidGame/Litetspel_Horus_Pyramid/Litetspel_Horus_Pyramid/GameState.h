@@ -73,21 +73,21 @@ public:
 	PS_DIR_BUFFER getActiveRoomDirectionalLight();
 	PS_FOG_BUFFER getActiveRoomFogData();
 	PS_LIGHT_BUFFER getActiveRoomLightData();
-	void addGameObjectToWorld(bool dynamic, bool colide, float weight, int mdlIndx, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR scale3D, DirectX::XMFLOAT3 boundingBoxSize, DirectX::XMFLOAT3 acceleration, DirectX::XMFLOAT3 deceleration);
-	void addPlatformToWorld(int mdlIndex, DirectX::BoundingOrientedBox* pyramid, Model* mdl, DirectX::XMVECTOR position, DirectX::XMFLOAT3 platformBoundingBox);
-	void addLeverToWorld(int mdlIndex, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation, DirectX::XMFLOAT3 leverBB);
-	void addPortalToWorld(XMVECTOR teleportLocation, int mdlIndx, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR scale3D, DirectX::XMFLOAT3 boundingBoxSize, int room);
-	void looseALife(bool looseLife);
+	void addGameObjectToWorld(const bool dynamic, const bool colide, const float weight, const int mdlIndx, Model* mdl, const DirectX::XMVECTOR position, const DirectX::XMVECTOR scale3D, const DirectX::XMFLOAT3 boundingBoxSize, const DirectX::XMFLOAT3 acceleration, const DirectX::XMFLOAT3 deceleration);
+	void addPlatformToWorld(const int mdlIndex, DirectX::BoundingOrientedBox* pyramid, Model* mdl, const DirectX::XMVECTOR position, const DirectX::XMFLOAT3 platformBoundingBox);
+	void addLeverToWorld(const int mdlIndex, Model* mdl, const DirectX::XMVECTOR position, const DirectX::XMVECTOR rotation, const DirectX::XMFLOAT3 leverBB);
+	void addPortalToWorld(const XMVECTOR teleportLocation, const int mdlIndx, Model* mdl, const DirectX::XMVECTOR position, const DirectX::XMVECTOR scale3D, const DirectX::XMFLOAT3 boundingBoxSize, const int room);
+	void looseALife(const bool looseLife);
 	std::wstring getRoomUITexturePath();
 
 	// Initialization
-	void initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext, GameOptions options, std::shared_ptr<DirectX::AudioEngine> audioEngine);
+	void initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext, const GameOptions options, std::shared_ptr<DirectX::AudioEngine> audioEngine);
 	// Update
-	void update(float dt);
-	states handleInput(Keyboard* keyboard, Mouse* mouePointer, float dt);
+	void update(const float dt);
+	states handleInput(Keyboard* keyboard, Mouse* mouePointer, const float dt);
 	void highScoreCheck();
 	//void updateCustomViewLayerVariables(ViewLayer* viewLayer);
-	XMFLOAT3 getCameraPos();
+	XMFLOAT3 getCameraPos() const;
 
 	void roomChangeInit();
 	Timer* getGameTimerPtr();
