@@ -246,7 +246,7 @@ void FindGemsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& act
 	if (this->m_gemSlots[1]->getCanUseLever() == true && this->m_player->getinUse() == true && this->m_holdingGem == true && this->m_GameSlotFilled_1 == false)
 	{
 		this->m_Gems[(int)this->m_gemInPlace - 1]->setPosition(m_gemSlots[1]->getPosition());
-		this->m_Gems[(int)this->m_gemInPlace - 1]->setRotation(DirectX::XMVectorSet(pMath::convertDegreesToRadians(180), pMath::convertDegreesToRadians(180), pMath::convertDegreesToRadians(180), 0.f));
+		this->m_Gems[(int)this->m_gemInPlace - 1]->setRotation(DirectX::XMVectorSet(pMath::convertDegreesToRadians(-90), pMath::convertDegreesToRadians(180), pMath::convertDegreesToRadians(180), 0.f));
 		this->m_Gems[(int)this->m_gemInPlace - 1]->setBoundingBox(DirectX::XMFLOAT3(0.1f, 0.1f, 0.1f));
 		this->m_Gems[(int)this->m_gemInPlace - 1]->setIfCollidable(false);
 		this->m_Gems[(int)this->m_gemInPlace - 1]->setCnaUseLever(false);
@@ -258,7 +258,7 @@ void FindGemsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& act
 	if (this->m_gemSlots[2]->getCanUseLever() == true && this->m_player->getinUse() == true && this->m_holdingGem == true && this->m_GameSlotFilled_2 == false)
 	{
 		this->m_Gems[(int)this->m_gemInPlace - 1]->setPosition(m_gemSlots[2]->getPosition());
-		this->m_Gems[(int)this->m_gemInPlace - 1]->setRotation(DirectX::XMVectorSet(pMath::convertDegreesToRadians(75), pMath::convertDegreesToRadians(180), 0.f, 1.f));
+		this->m_Gems[(int)this->m_gemInPlace - 1]->setRotation(DirectX::XMVectorSet(pMath::convertDegreesToRadians(75), pMath::convertDegreesToRadians(90), 0.f, 1.f));
 		this->m_Gems[(int)this->m_gemInPlace - 1]->setBoundingBox(DirectX::XMFLOAT3(0.1f, 0.1f, 0.1f));
 		this->m_Gems[(int)this->m_gemInPlace - 1]->setIfCollidable(false);
 		this->m_Gems[(int)this->m_gemInPlace - 1]->setCnaUseLever(false);
