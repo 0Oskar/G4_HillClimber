@@ -11,13 +11,15 @@ Application::Application()
 	this->m_gameOptions.width = 600;
 	this->m_gameOptions.fov = 40;
 	this->m_gameOptions.mouseSensitivity = 0.1f;
+	this->m_gameOptions.name = "undefined";
 	this->m_deltaTime = 0.f;
 	this->m_resetAudio = false;
+	this->m_shouldQuit = false;
 }
 
 Application::~Application()
 {
-	if (m_audioEngine) this->m_audioEngine->Suspend();
+		
 }
 
 void Application::stateChange()
@@ -184,6 +186,7 @@ bool Application::loadGameOptions(std::string fileName)
 		this->m_gameOptions.width = std::stoi(optionsMap.at("Width"));
 		this->m_gameOptions.fov = std::stof(optionsMap.at("FOV"));
 		this->m_gameOptions.mouseSensitivity = std::stof(optionsMap.at("mouseSensitivity"));
+		this->m_gameOptions.name = optionsMap.at("name");
 	}
 
 	return result;
@@ -218,19 +221,23 @@ void Application::applicationLoop()
 			fetchedState = this->m_gameStateStack.top()->handleInput(this->m_input.getKeyboard(), this->m_input.getMouse(), this->m_deltaTime);
 			if (fetchedState != states::NONE)
 				pushNewState(fetchedState);
-			this->m_gameStateStack.top()->update(this->m_deltaTime);
+			if (!m_shouldQuit)
+			{
+				this->m_gameStateStack.top()->update(this->m_deltaTime);
 			
-			//this->m_input.readBuffers();
-			this->audioUpdate();
+				//this->m_input.readBuffers();
+				this->audioUpdate();
 
-			this->m_viewLayerPtr->update(this->m_deltaTime, this->m_gameStateStack.top()->getCameraPos());
-			this->m_viewLayerPtr->render(this->m_gameStateStack.top());
+				this->m_viewLayerPtr->update(this->m_deltaTime, this->m_gameStateStack.top()->getCameraPos());
+				this->m_viewLayerPtr->render(this->m_gameStateStack.top());
+			}
 		}
 	}
 }
 
 void Application::pushNewState(states state)
 {
+	int gameTime = 0;
 	//If we enter this function we always push or pop something
 	bool newState = false;
 	std::vector<Model>* mdlPointer = this->m_gameStateStack.top()->getModelsPtr();
@@ -248,7 +255,14 @@ void Application::pushNewState(states state)
 	case states::PAUSE:
 		break;
 	case states::POP:
+		delete this->m_gameStateStack.top();
 		this->m_gameStateStack.pop();
+		break;
+	case states::WON:
+		gameTime = (int)dynamic_cast<GameState*>(this->m_gameStateStack.top())->getGameTimerPtr()->timeElapsed();
+		this->m_gameStateStack.push(new WinState);
+		dynamic_cast<WinState*>(this->m_gameStateStack.top())->setGameTime(gameTime);
+		newState = true;
 		break;
 	default:
 		break;
@@ -260,7 +274,10 @@ void Application::pushNewState(states state)
 		this->m_gameStateStack.top()->initlialize(this->m_viewLayerPtr->getDevice(), this->m_viewLayerPtr->getContextDevice(), this->m_gameOptions, this->m_audioEngine);
 	}
 	if (this->m_gameStateStack.size() <= 0)
+	{
 		PostQuitMessage(-1);
+		this->m_shouldQuit = true;
+	}
 	else
 	{
 		stateChange();

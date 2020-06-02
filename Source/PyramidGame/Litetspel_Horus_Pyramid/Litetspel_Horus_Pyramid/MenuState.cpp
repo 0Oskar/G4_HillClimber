@@ -9,6 +9,22 @@ MenuState::MenuState()
 	this->m_audioComponent = nullptr;
 }
 
+MenuState::~MenuState()
+{
+	if (this->m_audioComponent != nullptr)
+	{
+		this->m_audioComponent->stopSound(0);
+		delete this->m_audioComponent;
+		this->m_audioComponent = nullptr;
+	}
+
+	if (this->m_cameraMovementComponentPtr != nullptr)
+	{
+		delete this->m_cameraMovementComponentPtr;
+	}
+
+}
+
 void MenuState::setupLight()
 {
 	this->m_constantbufferData.dirBuffer.lightColor = { 1, 1, 1, 1 };
@@ -63,6 +79,31 @@ void MenuState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 
 	this->m_cameraMovementComponentPtr->position = { 0, 100, 0 };
 
+	// UI
+	this->m_resourceHandler = &ResourceHandler::get();	
+	this->m_titelImage = this->m_resourceHandler->getTexture(L"Textures/HorusPyramid_TitlePNG.png");
+	ID3D11Resource* titelImageTexture = 0;
+	this->m_titelImage->GetResource(&titelImageTexture);
+	ID3D11Texture2D* titelImageTexture2D = 0;
+	titelImageTexture->QueryInterface<ID3D11Texture2D>(&titelImageTexture2D);
+	D3D11_TEXTURE2D_DESC titelImageDesc;
+	titelImageTexture2D->GetDesc(&titelImageDesc);
+	int titelImageX = (this->m_gameOptions.width / 2) - (titelImageDesc.Width / 2);
+	int titelImageY = (this->m_gameOptions.height / 3) - (titelImageDesc.Height / 2);
+
+	this->m_titelImagePosition = DirectX::XMFLOAT2((float)titelImageX, (float)titelImageY);
+
+	this->m_infoImage = this->m_resourceHandler->getTexture(L"Textures/HorusPyramid_StartPNG.png");
+	ID3D11Resource* infoImageTexture = 0;
+	this->m_infoImage->GetResource(&infoImageTexture);
+	ID3D11Texture2D* infoImageTexture2D = 0;
+	titelImageTexture->QueryInterface<ID3D11Texture2D>(&infoImageTexture2D);
+	D3D11_TEXTURE2D_DESC infoImageDesc;
+	infoImageTexture2D->GetDesc(&infoImageDesc);
+	int infoImageX = (this->m_gameOptions.width / 2) - (infoImageDesc.Width*3 / 10);
+	int infoImageY = (this->m_gameOptions.height*8 / 10);
+
+	this->m_infoImagePosition = DirectX::XMFLOAT2((float)infoImageX, (float)infoImageY);
 }
 
 
@@ -317,12 +358,18 @@ void MenuState::loadModels()
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
 	this->m_models[35].loadVertexFromOBJ(m_device, m_dContext, L"Models/PalmTree.obj", mat, L"Textures/ColorTexture.png");
 
+	//35. Hawk (36 temporarily)
+	this->m_models.emplace_back();
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
+	this->m_models[36].loadVertexFromOBJ(m_device, m_dContext, L"Models/Falcon2.obj", mat, L"Textures/ColorTexture.png");
+
+
 	//LastNumber. Room (Viktor)
-	int nrOfCurrentLModels = 35;
+	int nrOfCurrentLModels = 36;
 
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
-	this->m_models[++nrOfCurrentLModels].initializeModelBff(m_device, m_dContext, "vRoom_New.bff", mat, L"Textures/ColorTexture.png");
+	this->m_models[++nrOfCurrentLModels].initializeModelBff(m_device, m_dContext, "vRoom_New2.bff", mat, L"Textures/ColorTexture.png");
 
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
@@ -360,10 +407,15 @@ void MenuState::loadModels()
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
 	this->m_models[++nrOfCurrentLModels].initializeModelBff(m_device, m_dContext, "vRamp_New.bff", mat, L"Textures/ColorTexture.png");
 
-	//45. PalmTree
+	//46. Cactus
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
-	this->m_models[46].loadVertexFromOBJ(m_device, m_dContext, L"Models/Clouds.obj", mat, L"Textures/ColorTexture.png");
+	this->m_models[46].loadVertexFromOBJ(m_device, m_dContext, L"Models/cactus2.obj", mat, L"Textures/ColorTexture.png");
+
+	//47. Cactus
+	this->m_models.emplace_back();
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
+	this->m_models[47].loadVertexFromOBJ(m_device, m_dContext, L"Models/Entrence.obj", mat, L"Textures/ColorTexture.png");
 
 }
 
@@ -414,7 +466,7 @@ constantBufferData* MenuState::getConstantBufferData()
 	return &this->m_constantbufferData;
 }
 
-std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* MenuState::getWvpCBuffersPtr()
+std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* MenuState::getWvpCBuffersPtr() 
 {
 	return &this->m_wvpCBuffers;
 }
@@ -430,7 +482,7 @@ DirectX::XMMATRIX* MenuState::getProjectionMatrix() const
 }
 
 
-XMFLOAT3 MenuState::getCameraPos()
+XMFLOAT3 MenuState::getCameraPos() const
 {
 	XMFLOAT3 camPos;
 	XMStoreFloat3(&camPos, this->m_cameraMovementComponentPtr->position);
@@ -439,8 +491,12 @@ XMFLOAT3 MenuState::getCameraPos()
 
 void MenuState::drawUI(DirectX::SpriteBatch* spriteBatchPtr, DirectX::SpriteFont* spriteFontPtr)
 {
-	std::string helpText = "Press -Enter- key to continiue.";
-	std::string titleName = "HORUS PYRAMID";
-	spriteFontPtr->DrawString(spriteBatchPtr, helpText.c_str(), DirectX::XMFLOAT2((float)this->m_gameOptions.width / 2, (float)this->m_gameOptions.height / 2), DirectX::Colors::Green, 0.f, DirectX::XMFLOAT2(100.f, 0.f));
-	spriteFontPtr->DrawString(spriteBatchPtr, titleName.c_str(), DirectX::XMFLOAT2((float)this->m_gameOptions.width / 2, (float)this->m_gameOptions.height / 10), DirectX::Colors::Yellow, 0.f, DirectX::XMFLOAT2(70.f, 0.f));
+	//std::string helpText = "Press -Enter- key to continiue.";
+	//std::string titleName = "HORUS PYRAMID";
+
+	spriteBatchPtr->Draw(this->m_titelImage, this->m_titelImagePosition);
+	spriteBatchPtr->Draw(this->m_infoImage, this->m_infoImagePosition);
+	
+	//spriteFontPtr->DrawString(spriteBatchPtr, helpText.c_str(), DirectX::XMFLOAT2((float)this->m_gameOptions.width / 2, (float)this->m_gameOptions.height / 2), DirectX::Colors::Green, 0.f, DirectX::XMFLOAT2(100.f, 0.f));
+	//spriteFontPtr->DrawString(spriteBatchPtr, titleName.c_str(), DirectX::XMFLOAT2((float)this->m_gameOptions.width / 2, (float)this->m_gameOptions.height / 10), DirectX::Colors::Yellow, 0.f, DirectX::XMFLOAT2(70.f, 0.f));
 }

@@ -13,7 +13,7 @@ KevinsRoom::~KevinsRoom()
 void KevinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activeRoomChanged)
 {
 	Room::update(dt, camera, activeRoom, activeRoomChanged);
-	//Så boundingBoxen följer skorpionen.w
+	//Så boundingBoxen följer skorpionen.
 
 	float scorpionX = XMVectorGetX(this->scorpion->getPosition());
 	float scorpionY = XMVectorGetY(this->scorpion->getPosition());
@@ -22,7 +22,9 @@ void KevinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 
 	XMFLOAT3 scorpionPos = XMFLOAT3(scorpionX, scorpionY, scorpionZ);
 
-
+	
+	
+	/////////////////////////////////////////
 
 	if (triggerBB[0].Intersects(this->m_player->getAABB()))
 	{
@@ -57,10 +59,12 @@ void KevinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 	{
 		this->scorpion->setReachedEdge(true);
 	}
-
+	bool doOnce = false;
 	if (scorpionBB->Intersects(this->m_player->getAABB()))
 	{
 		this->m_player->respawn();
+		StatusTextHandler::get().sendText("The scorpion caught you!\n    5 sec added to timer", 5);
+		this->m_gameTimerPointer->addTime(5);
 	}
 	
 	for (int i = 0; i < deathTrapBB.size(); i++)
@@ -69,6 +73,8 @@ void KevinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 		{
 			void looseLife();
 			this->m_player->respawn();
+			StatusTextHandler::get().sendText("You fell on the spikes!\n 5 sec added to timer", 5);
+			this->m_gameTimerPointer->addTime(5);
 		}
 	}
 
@@ -78,6 +84,9 @@ void KevinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 		{
 			void looseLife();
 			this->m_player->respawn();
+			//Add Time
+			StatusTextHandler::get().sendText("You got hit by a dart trap!\n   5 sec added to timer", 5);
+			this->m_gameTimerPointer->addTime(5);
 		}
 	}
 
@@ -176,14 +185,16 @@ void KevinsRoom::portals()
 	//Add portals here
 	vec = DirectX::XMVectorSet(-9.f, 8.f, -29.f, 1.f);
 	XMVECTOR vecScale = DirectX::XMVectorSet(1.3f, 1.3f, -1.3f, 1.f);
-	this->addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 10, &m_models->at(10), vec, NormalScale, XMFLOAT3(3.f, 8.f, 0.6f), 0, false);
-	this->m_gameObjects.back()->setRotation(XMVectorSet(0.0f, XMConvertToRadians(180), 0.0f, 0.0f));
+	this->addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 10, &m_models->at(10), vec, NormalScale, DirectX::XMFLOAT3(3.f, 8.f, 0.6f), 0, false);
+	m_gameObjects.back()->setRotation(XMVectorSet(0.0f, XMConvertToRadians(180), 0.0f, 0.0f));
+	this->portalPtr = dynamic_cast<Portal*>(m_gameObjects.back());
 }
 
 void KevinsRoom::onEntrance()
 {
 	Room::onEntrance();
 	this->m_player->setSpawnPosition(this->m_entrencePosition);
+	portalPtr->setActiveStatus(false);
 }
 void KevinsRoom::createBoundingBoxes()
 {
@@ -259,6 +270,7 @@ void KevinsRoom::createSceneObjects()
 	this->addGameObjectToRoom(false, false, 2, 6, &m_models->at(6), vec, DirectX::XMVectorSet(1, 1, 1, 1), DirectX::XMFLOAT3(1.f, 1.f, 1.f));
 	this->m_gameObjects.back()->setRotation({ 0.0f, XMConvertToRadians(180), 0.0f, 0.f });
 	
+
 	//platform
 	vec = DirectX::XMVectorSet(-9.f, 23.5f, -88.5f + 140.f, 1.f);
 	this->addPlatformToRoom(3, &m_models->at(3), vec, DirectX::XMFLOAT3(4.f, 0.5f, 2.5f));
@@ -356,5 +368,5 @@ void KevinsRoom::onCompleted()
 	this->m_player->getphysicsCompPtr()->setVelocity({0, 0, 0 });
 	this->m_player->getMoveCompPtr()->position = this->getEntrancePosition();
 	this->m_player->getphysicsCompPtr()->setVelocity({ 0, 0, 0 });
-
+	portalPtr->setActiveStatus(true);
 }

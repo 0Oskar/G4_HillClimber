@@ -358,6 +358,12 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 	// Crosshair
 	this->m_spriteBatch = std::make_unique<DirectX::SpriteBatch>(this->m_deviceContext.Get());
 
+	// Map
+	this->m_spriteBatch = std::make_unique<DirectX::SpriteBatch>(this->m_deviceContext.Get());
+
+	// Map Player
+	this->m_spriteBatch = std::make_unique<DirectX::SpriteBatch>(this->m_deviceContext.Get());
+
 	// Primitive Batch
 	this->m_states = std::make_unique< DirectX::CommonStates >(this->m_device.Get());
 	this->m_batch = std::make_unique< DirectX::PrimitiveBatch<DirectX::VertexPositionColor> >(this->m_deviceContext.Get());
@@ -402,11 +408,18 @@ void ViewLayer::update(float dt, XMFLOAT3 cameraPos)
 		this->m_fps = 0;
 	}
 
-	this->m_fogBuffer.m_data.cameraPos = cameraPos;
-	this->m_fogBuffer.upd();
 	this->clearColor[0] = this->m_fogBuffer.m_data.fogColor.x;
 	this->clearColor[1] = this->m_fogBuffer.m_data.fogColor.y;
 	this->clearColor[2] = this->m_fogBuffer.m_data.fogColor.z;
+
+	this->m_lightBuffer.m_data = m_constantBufferDataFromStatePtr->lightBuffer;
+	this->m_dirLightBuffer.m_data = m_constantBufferDataFromStatePtr->dirBuffer;
+	this->m_dirLight = m_constantBufferDataFromStatePtr->dirBuffer;
+	this->m_fogBuffer.m_data = m_constantBufferDataFromStatePtr->fogBuffer;
+	this->m_dirLightBuffer.upd();
+	this->m_fogBuffer.m_data.cameraPos = cameraPos;
+	this->m_fogBuffer.upd();
+	this->m_lightBuffer.upd();
 
 	this->m_statusTextHandler->update(dt);
 }
@@ -537,7 +550,7 @@ void ViewLayer::render(iGameState* gameState)
 	this->m_spriteFont16->DrawString(this->m_spriteBatch.get(), this->m_fpsString.c_str(), DirectX::XMFLOAT2((float)this->m_options->width - 110.f, 10.f), DirectX::Colors::White, 0.f, DirectX::XMFLOAT2(0.f, 0.f));
 	this->m_statusTextHandler->render(this->m_spriteFont32.get(), this->m_spriteBatch.get());
 	this->m_spriteBatch->End();
-	
+
 	// Swap Frames
 	this->m_swapChain->Present(0, 0);
 }

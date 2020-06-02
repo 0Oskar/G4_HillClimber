@@ -81,7 +81,7 @@ int main(int argc, char** argv)
 
 	if( lFilePath.IsEmpty() )
 	{
-        lFilePath = "../vRamp_New.fbx";
+        lFilePath = "../vRoom_New2.fbx";
 		lResult = LoadScene(lSdkManager, lScene, lFilePath.Buffer());
 	}
 	else

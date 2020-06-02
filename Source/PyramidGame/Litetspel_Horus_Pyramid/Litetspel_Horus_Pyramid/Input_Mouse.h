@@ -13,12 +13,12 @@ private:
 	MousePos mousePos;
 public:
 	MouseEvent();
-	MouseEvent(Event evnt, int x, int y);
-	int getPosX();
-	int getPosY();
-	Event getEvent();
-	MousePos getPos();
-	bool isValid();
+	MouseEvent(const Event evnt, const int x, const int y);
+	int getPosX() const;
+	int getPosY() const;
+	Event getEvent() const;
+	MousePos getPos() const;
+	bool isValid() const;
 };
 
 
@@ -35,23 +35,23 @@ private:
 public:
 	Mouse();
 	MouseEvent readEvent();
-	bool empty();
+	bool empty() const;
 
-	void onMove(MousePos pos);
-	void onRawMove(MousePos pos);
-	void onLeftPress(MousePos pos);
-	void onRightPress(MousePos pos);
-	void onMiddlePress(MousePos pos);
-	void onLeftRelease(MousePos pos);
-	void onRightRelease(MousePos pos);
-	void onMiddleRelease(MousePos pos);
-	void onWheelUp(MousePos pos);
-	void onWheelDown(MousePos pos);
+	void onMove(const MousePos pos);
+	void onRawMove(const MousePos pos);
+	void onLeftPress(const MousePos pos);
+	void onRightPress(const MousePos pos);
+	void onMiddlePress(const MousePos pos);
+	void onLeftRelease(const MousePos pos);
+	void onRightRelease(const MousePos pos);
+	void onMiddleRelease(const MousePos pos);
+	void onWheelUp(const MousePos pos);
+	void onWheelDown(const MousePos pos);
 
-	bool isLDown();
-	bool isRDown();
-	bool isMDown();
-	int getPosx();
-	int getPosY();
-	MousePos getPos();
+	bool isLDown() const;
+	bool isRDown() const;
+	bool isMDown() const;
+	int getPosx() const;
+	int getPosY() const;
+	MousePos getPos() const;
 };

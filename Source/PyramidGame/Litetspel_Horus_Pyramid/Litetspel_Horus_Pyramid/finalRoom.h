@@ -36,7 +36,6 @@ private:
 
 	bool flipDirection = false;
 
-	bool wonGame = false;
 
 	Lever* m_objectTest;
 public:
@@ -46,4 +45,6 @@ public:
 	void onEntrance();
 	void init();
 	void portals();
+
+	bool wonGame = false;
 };

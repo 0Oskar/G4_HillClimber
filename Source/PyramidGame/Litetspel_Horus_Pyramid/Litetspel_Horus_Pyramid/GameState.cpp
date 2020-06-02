@@ -14,11 +14,37 @@ GameState::GameState()
 	this->m_gameTime = Timer(true);
 	this->m_crossHairSRV = nullptr;
 	this->m_crosshairPosition = DirectX::XMFLOAT2();
+	this->m_map = nullptr;
+	this->m_mapPosition = DirectX::XMFLOAT2();
+	this->m_mapPlayer = nullptr;
+	this->m_mapPlayerPosition = DirectX::XMFLOAT2();
 	this->m_resourceHandler = &ResourceHandler::get();
 	this->m_timerString = "";
+	this->m_gameOver = false;
 }
 
-GameState::~GameState() {}
+GameState::~GameState() 
+{
+	for (int i = 0; i < nrOfGameObjects; i++)
+	{
+		if (m_gameObjects.at(i) != nullptr)
+		{
+			delete m_gameObjects.at(i);
+			this->m_gameObjects.at(i) = nullptr;
+		}
+	}
+
+	for (int i = 0; i < m_rooms.size(); i++)
+	{
+		if (m_rooms.at(i) != nullptr)
+		{
+			delete m_rooms.at(i);
+			this->m_rooms.at(i) = nullptr;
+		}
+	}
+	this->m_rooms.clear();
+	this->m_gameObjects.clear();
+}
 
 DirectX::XMMATRIX* GameState::getViewMatrix() const
 {
@@ -80,7 +106,8 @@ std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* GameState::getWvpCBuffersPtr()
 constantBufferData* GameState::getConstantBufferData()
 {
 	return &this->m_constantbufferData;
-}
+}	
+
 
 PS_DIR_BUFFER GameState::getActiveRoomDirectionalLight()
 {
@@ -453,10 +480,20 @@ void GameState::afterChange()
 void GameState::drawUI(DirectX::SpriteBatch* spriteBatchPtr, DirectX::SpriteFont* spriteFontPtr)
 {
 	spriteBatchPtr->Draw(this->m_crossHairSRV, this->m_crosshairPosition);
+	if (m_activeRoom == m_rooms[0])
+	{
+		spriteBatchPtr->Draw(this->m_map, this->m_mapPosition);
+		spriteBatchPtr->Draw(this->m_mapPlayer, this->m_mapPlayerPosition);
+	}
 	spriteFontPtr->DrawString(spriteBatchPtr, this->m_timerString.c_str(), DirectX::XMFLOAT2(10.f, 10.f), this->m_gameTime.isActive() ? DirectX::Colors::White : DirectX::Colors::Green, 0.f, DirectX::XMFLOAT2(0.f, 0.f));
 	spriteFontPtr->DrawString(spriteBatchPtr, std::to_string(this->m_gameTime.timeElapsed()).c_str(), DirectX::XMFLOAT2(70.f, 10.f), DirectX::Colors::Green, 0.f, DirectX::XMFLOAT2(0.f, 0.f));
 
 	this->m_activeRoom->drawUI(spriteBatchPtr, spriteFontPtr);
+}
+
+void GameState::onPop()
+{
+	iGameState::onPop();
 }
 
 void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext, GameOptions options, std::shared_ptr<DirectX::AudioEngine> audioEngine)
@@ -489,9 +526,30 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	int crosshairX = (this->m_gameOptions.width / 2) - (desc.Width / 2);
 	int crosshairY = (this->m_gameOptions.height / 2) - (desc.Height / 2);
 	this->m_crosshairPosition = DirectX::XMFLOAT2((float)crosshairX, (float)crosshairY);
+	
+	// Map
+	this->m_map = this->m_resourceHandler->getTexture(L"Textures/map.png");
+	ID3D11Resource* mapTexture = 0;
+	this->m_map->GetResource(&mapTexture);
+	ID3D11Texture2D* mapTexture2D = 0;
+	mapTexture->QueryInterface<ID3D11Texture2D>(&mapTexture2D);
+	mapTexture2D->GetDesc(&desc);
+	int mapPositionX = this->m_gameOptions.width - 170;
+	int mapPositionY = 50;
+	this->m_mapPosition = DirectX::XMFLOAT2((float)mapPositionX, (float)mapPositionY);
+
+	// MapPlayer
+	this->m_mapPlayer = this->m_resourceHandler->getTexture(L"Textures/mapPlayerPos.png");
+	ID3D11Resource* mapPlayerTexture = 0;
+	this->m_mapPlayer->GetResource(&mapPlayerTexture);
+	ID3D11Texture2D* mapPlayerTexture2D = 0;
+	mapPlayerTexture->QueryInterface<ID3D11Texture2D>(&mapPlayerTexture2D);
+	mapTexture2D->GetDesc(&desc);
+	int mapPlayerPositionX = this->m_gameOptions.width - 73;
+	int mapPlayerPositionY = 108;
+	this->m_mapPlayerPosition = DirectX::XMFLOAT2((float)mapPlayerPositionX, (float)mapPlayerPositionY);
 
 	//-UI END-
-
 	DirectX::XMVECTOR NormalScale = DirectX::XMVectorSet(1, 1, 1, 1);
 	DirectX::XMVECTOR vec = DirectX::XMVectorSet(0.f, -10.f, 0.f, 1.f);
 	DirectX::XMVECTOR rotation = DirectX::XMVectorSet(0.f, 0.f, 0.f, 1.f);
@@ -577,7 +635,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_rooms.emplace_back(new KevinsRoom());
 	this->m_rooms.back()->initialize(m_device, m_dContext, m_modelsPtr, &this->m_wvpCBuffers, &m_player, XMVectorSet(100, 2, 100, 1), audioEngine, &this->m_gameTime, options);
 	dynamic_cast<KevinsRoom*>(this->m_rooms.back())->init();
-
+	
 	//Edvin Room [3]
 	this->m_rooms.emplace_back(new EdvinsRoom());
 	this->m_rooms.back()->initialize(m_device, m_dContext, m_modelsPtr, &this->m_wvpCBuffers, &m_player, XMVectorSet(-200, 0, 200, 1), audioEngine, &this->m_gameTime, options);
@@ -650,6 +708,10 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 
 void GameState::update(float dt)
 {
+	this->m_constantbufferData.dirBuffer = m_activeRoom->getDirectionalLight();
+	this->m_constantbufferData.fogBuffer = m_activeRoom->getFogData();
+	this->m_constantbufferData.lightBuffer = m_activeRoom->getLightData();
+	
 	// Player
 	this->m_player.update(dt);
 
@@ -689,6 +751,23 @@ void GameState::update(float dt)
 
 	if(m_activeRoom != nullptr)
 		this->m_activeRoom->update(dt, &m_camera, this->m_activeRoom, m_majorChange);
+
+
+	DirectX::XMFLOAT3 playerPos;
+	XMStoreFloat3(&playerPos, this->m_player.getPosition());
+	this->playerHeight = 4;
+	this->pyramidHeight = 585 - playerHeight;
+	this->playerPosY = (playerPos.y - playerHeight) / pyramidHeight;		//0 - 1
+	
+	if (playerPosY >= 1)
+		playerPosY = 1;
+	if (playerPosY <= 0)
+		playerPosY = 0;
+
+	this->markerTop = 108;
+	this->markerBottom = 601;
+	this->difference = markerBottom - markerTop;		//493
+	this->m_mapPlayerPosition.y = markerBottom - (playerPosY * difference);
 
 }
 
@@ -769,23 +848,91 @@ states GameState::handleInput(Keyboard* keyboard, Mouse* mousePtr, float dt)
 	// For Debugging purposes
 	if (keyboard->isKeyPressed('R'))
 	{
-		//this->m_player.respawn();
-		this->m_player.getMoveCompPtr()->position = XMVectorSet(-25.f, 6.f, -70.f, 1.f);
+		this->m_player.getMoveCompPtr()->position = DirectX::XMVectorSet(-25.f, 6.f, -70.f, 1.f);
 		this->m_player.resetVelocity(); // Reset Velocity
+	}
+
+	if (this->m_activeRoom == this->m_rooms[5]) //In final room
+	{
+		finalRoom* fRoom = dynamic_cast<finalRoom*>(this->m_activeRoom);
+		if (fRoom != nullptr && fRoom->wonGame)
+		{
+			if (!m_gameOver)
+			{
+				this->highScoreCheck();
+				changeStateTo = states::WON;
+				m_gameOver = true;
+			}
+			else
+			{
+				changeStateTo = states::POP;
+			}
+		}
 	}
 	return changeStateTo;
 }
 
-//void GameState::updateCustomViewLayerVariables(ViewLayer* viewLayer)
-//{
-//	viewLayer->setgameObjectsFromActiveRoom(this->getActiveRoomGameObjectsPtr());
-//	viewLayer->setBoundingBoxesFromActiveRoom(this->getActiveRoomBoundingBoxsPtr());
-//	viewLayer->setOrientedBoundingBoxesFromActiveRoom(this->getActiveRoomOrientedBoundingBoxPtr());
-//	viewLayer->setTriggerBoxFromActiveRoom(this->getActiveRoomTriggerBox());
-//	viewLayer->setGameTimePtr(this->getGameTimerPtr());
-//}
-
-XMFLOAT3 GameState::getCameraPos()
+void GameState::highScoreCheck()
 {
-	return this->m_player.getMoveCompPtr()->getPositionF3();
+	fstream fileStream;
+	fileStream.open(m_fileToRead);
+	int currentTimeElapsed = (int)this->m_gameTime.timeElapsed();
+	int time;
+	std::string name;
+	std::pair<std::string, int> score[10];
+	int nrOf = 0;
+	bool change = false;
+	if (fileStream.is_open())
+	{
+		while (!fileStream.eof() && nrOf < 10)
+		{
+			fileStream >> name;
+			fileStream >> time;
+			if ((time > currentTimeElapsed) && (!change))
+			{
+				score[nrOf].first = this->m_gameOptions.name;
+				score[nrOf++].second = currentTimeElapsed;
+				change = true;
+			}
+			
+			if (nrOf < 10 && name != "")
+			{
+				score[nrOf].first = name;
+				score[nrOf++].second = time;
+			}
+			
+		}
+		fileStream.close();
+
+		if (change)
+		{
+			submitHighScore(this->m_fileToRead, score, nrOf);
+		}
+	}
+}
+
+void submitHighScore(std::string fileToWriteTo, std::pair<std::string, int>* scoreToWrite, int nrOfScore)
+{
+	std::ofstream outputStream;
+	outputStream.open(fileToWriteTo); //File to write
+	if (outputStream.is_open())
+	{
+		for (int i = 0; i < nrOfScore; i++) //Print out all the node names
+		{
+			outputStream << scoreToWrite[i].first << " ";
+			outputStream << std::to_string(scoreToWrite[i].second);
+			if (i + 1 < nrOfScore)
+			{
+				outputStream << "\n";
+			}
+		}
+	}
+}
+
+XMFLOAT3 GameState::getCameraPos() const
+{
+	XMFLOAT3 temp;
+	XMStoreFloat3(&temp, m_player.getPosition());
+
+	return temp;
 }

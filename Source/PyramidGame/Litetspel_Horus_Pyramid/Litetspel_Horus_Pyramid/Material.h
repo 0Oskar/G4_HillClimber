@@ -24,7 +24,7 @@ public:
 		this->resourceHandler = &ResourceHandler::get();
 		this->m_texture = nullptr;
 	}
-	void init(ID3D11Device* device, ID3D11DeviceContext* dContext, MaterialData mat, const WCHAR* texturePath = nullptr)
+	void init(ID3D11Device* device, ID3D11DeviceContext* dContext, const MaterialData mat, const WCHAR* texturePath = nullptr)
 	{
 		if (this->resourceHandler->m_device == nullptr)
 		{

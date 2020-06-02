@@ -18,14 +18,21 @@ private:
 
 	//Sound
 	const std::wstring menuSound = L"Sounds/MainMenu.wav";
+
+	// UI
+	ID3D11ShaderResourceView* m_titelImage;
+	ID3D11ShaderResourceView* m_infoImage;
+	DirectX::XMFLOAT2 m_titelImagePosition;
+	DirectX::XMFLOAT2 m_infoImagePosition;
+
 public:
 	MenuState();
-
-	void initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext, GameOptions options, std::shared_ptr<DirectX::AudioEngine> audioEngine);
-	void update(float dt);
+	~MenuState();
+	void initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext, const GameOptions options, std::shared_ptr<DirectX::AudioEngine> audioEngine);
+	void update(const float dt);
 	void afterChange();
 	void loadModels();
-	states handleInput(Keyboard* keyboard, Mouse* mousePtr, float dt);
+	states handleInput(Keyboard* keyboard, Mouse* mousePtr, const float dt);
 
 	// Getters
 	std::vector<Model>* getModelsPtr();
@@ -36,12 +43,11 @@ public:
 	std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* getWvpCBuffersPtr();
 	DirectX::XMMATRIX* getViewMatrix() const;
 	DirectX::XMMATRIX* getProjectionMatrix() const;
-	XMFLOAT3 getCameraPos();
+	XMFLOAT3 getCameraPos() const;
 
 	void drawUI(DirectX::SpriteBatch* spriteBatchPtr, DirectX::SpriteFont* spriteFontPtr);
 	void onEntry();
 	void onLeave();
 	void onPop();
-
 
 };
