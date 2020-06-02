@@ -9,6 +9,7 @@ private:
 	void createSceneObjects();
 	void onCompleted();
 	void addPalmTrees();
+	void addCactais();
 
 
 	GameObject* clouds;

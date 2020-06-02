@@ -57,10 +57,13 @@ void KevinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 	{
 		this->scorpion->setReachedEdge(true);
 	}
-
+	bool doOnce = false;
 	if (scorpionBB->Intersects(this->m_player->getAABB()))
 	{
 		this->m_player->getMoveCompPtr()->position = this->getRelativePosition(DirectX::XMVectorSet(-12.f, 15.f, -155.f + 140.f, 1.f));
+		//Add Time
+		StatusTextHandler::get().sendText("The scorpion caught you!\n    5 sec added to timer", 5);
+		this->m_gameTimerPointer->addTime(5);
 	}
 	
 	for (int i = 0; i < deathTrapBB.size(); i++)
@@ -68,8 +71,10 @@ void KevinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 		if (deathTrapBB[i].Intersects(this->m_player->getAABB()))
 		{
 			void looseLife();
-			//this->m_player->resetVelocity();
 			this->m_player->getMoveCompPtr()->position = this->getRelativePosition(DirectX::XMVectorSet(-12.f, 20.f, -155.f + 140.f, 1.f));
+			//Add Time
+			StatusTextHandler::get().sendText("You fell on the spikes!\n 5 sec added to timer", 5);
+			this->m_gameTimerPointer->addTime(5);
 		}
 	}
 
@@ -80,6 +85,9 @@ void KevinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 			void looseLife();
 			//this->m_player->resetVelocity();
 			this->m_player->getMoveCompPtr()->position = this->getRelativePosition(DirectX::XMVectorSet(-12.f, -20.f, -155.f + 140.f, 1.f));
+			//Add Time
+			StatusTextHandler::get().sendText("You got hit by a dart trap!\n   5 sec added to timer", 5);
+			this->m_gameTimerPointer->addTime(5);
 		}
 	}
 

@@ -66,7 +66,7 @@ void PyramidRoom::init(DirectX::BoundingOrientedBox* pyramidBB)
 	this->createSceneObjects();
 	this->createBoundingBoxes();
 
-	this->m_entrencePosition = { -25, 0, -20 };
+	this->m_entrencePosition = { -25, 0, -70 };
 }
 
 void PyramidRoom::portals()
@@ -165,6 +165,9 @@ void PyramidRoom::createSceneObjects()
 	DirectX::XMVECTOR rotation = DirectX::XMVectorSet(0.f, 0.f, 0.f, 1.f);
 
 	addPalmTrees();
+	addCactais();
+	vec = DirectX::XMVectorSet(-25, -1.5, -50, 1.f);
+	this->addGameObjectToRoom(false, false, 0, 47, &m_models->at(47), vec, NormalScale);
 
 	// Clouds
 	vec = DirectX::XMVectorSet(0.f, 300.f, 315.f, 1.f);
@@ -814,6 +817,7 @@ void PyramidRoom::createSceneObjects()
 		}
 	}
 }
+
 void PyramidRoom::onCompleted()
 {
 
@@ -870,12 +874,70 @@ void PyramidRoom::addPalmTrees()
 		this->m_gameObjects.back()->getMoveCompPtr()->rotation = rot;
 	}
 
-
 	// Small Pyramid
-	pos = DirectX::XMVectorSet(0, 0, -500, 1);
+	pos = DirectX::XMVectorSet(450, 0, -650, 1);
 	rot = DirectX::XMVectorSet(0, 45, 0, 1);
 	scale = DirectX::XMVectorSet(0.10, 0.10, 0.10, 1);
 	this->addGameObjectToRoom(false, true, 0, 1, &m_models->at(1), pos, scale);
 	this->m_gameObjects.back()->getMoveCompPtr()->rotation = rot;
+
+	// Small Pyramid
+	pos = DirectX::XMVectorSet(500, 0, -500, 1);
+	rot = DirectX::XMVectorSet(0, 90, 0, 1);
+	scale = DirectX::XMVectorSet(0.12, 0.12, 0.12, 1);
+	this->addGameObjectToRoom(false, true, 0, 1, &m_models->at(1), pos, scale);
+	this->m_gameObjects.back()->getMoveCompPtr()->rotation = rot;
+}
+
+void PyramidRoom::addCactais()
+{
+	DirectX::XMVECTOR pos;
+	DirectX::XMVECTOR rot;
+	DirectX::XMVECTOR scale;
+
+	//Infront section
+	for (int i = 0; i < 4; i++)
+	{
+		int posXNumber = rand() % 800;
+		int posZNumber = rand() % 400;
+		int Rotnumber = rand() % 360;
+		float scaleNumber = rand() % 2;
+
+		pos = DirectX::XMVectorSet(posXNumber - 400, 0, posZNumber - 400 - 100, 1);
+		rot = DirectX::XMVectorSet(0, Rotnumber, 0, 1);
+		scale = DirectX::XMVectorSet(scaleNumber * 0.5, scaleNumber * 0.5, scaleNumber * 0.5, 1);
+		this->addGameObjectToRoom(false, false, 0, 46, &m_models->at(46), pos, scale);
+		this->m_gameObjects.back()->getMoveCompPtr()->rotation = rot;
+	}
+
+	//Right section
+	for (int i = 0; i < 4; i++)
+	{
+		int posXNumber = rand() % 300;
+		int posZNumber = rand() % 1200;
+		int Rotnumber = rand() % 360;
+		int scaleNumber = rand() % 2 + 2;
+
+		pos = DirectX::XMVectorSet(posXNumber + 300 + 100, 0, posZNumber - 300, 1);
+		rot = DirectX::XMVectorSet(0, Rotnumber, 0, 1);
+		scale = DirectX::XMVectorSet(scaleNumber * 0.5, scaleNumber * 0.5, scaleNumber * 0.5, 1);
+		this->addGameObjectToRoom(false, false, 0, 46, &m_models->at(46), pos, scale);
+		this->m_gameObjects.back()->getMoveCompPtr()->rotation = rot;
+	}
+
+	//Left section
+	for (int i = 0; i < 4; i++)
+	{
+		int posXNumber = rand() % 300;
+		int posZNumber = rand() % 1200;
+		int Rotnumber = rand() % 360;
+		int scaleNumber = rand() % 2 + 2;
+
+		pos = DirectX::XMVectorSet((posXNumber * -1) - 400, 0, posZNumber - 300, 1);
+		rot = DirectX::XMVectorSet(0, Rotnumber, 0, 1);
+		scale = DirectX::XMVectorSet(scaleNumber * 0.5, scaleNumber * 0.5, scaleNumber * 0.5, 1);
+		this->addGameObjectToRoom(false, false, 0, 46, &m_models->at(46), pos, scale);
+		this->m_gameObjects.back()->getMoveCompPtr()->rotation = rot;
+	}
 }
 

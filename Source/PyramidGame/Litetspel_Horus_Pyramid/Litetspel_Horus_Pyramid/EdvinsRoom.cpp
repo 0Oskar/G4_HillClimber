@@ -133,8 +133,6 @@ void EdvinsRoom::onWin()
 	this->getLight(1)->plRange = 50;
 	this->getLight(2)->plRange = 50;
 	
-
-	
 	//Activate particalas
 
 }
@@ -200,8 +198,8 @@ EdvinsRoom::EdvinsRoom()
 	rightLight.plPosition = { -264, 4, 204 };
 	rightLight.plDiffuse = { 1, 0, 0, 1 };
 	rightLight.plAmbient = { 0.0, 0.0, 0.0, 1 };
-	rightLight.plRange = 50;
-	rightLight.att = { 1, 0, 0.05 };
+	rightLight.plRange = 5;
+	rightLight.att = { 1, 0, 0.3 };
 
 	lightID = this->createLight(rightLight); //1
 
@@ -210,8 +208,8 @@ EdvinsRoom::EdvinsRoom()
 	leftLight.plPosition = { -264, 4, 196 };
 	leftLight.plDiffuse = { 1, 0, 0, 1 };
 	leftLight.plAmbient = { 0.0, 0.0, 0.0, 1 };
-	leftLight.plRange = 50;
-	leftLight.att = { 1, 0, 0.05 };
+	leftLight.plRange = 5;
+	leftLight.att = { 1, 0, 0.2 };
 
 	lightID = this->createLight(leftLight); //2
 }
