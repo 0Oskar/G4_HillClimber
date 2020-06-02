@@ -623,7 +623,6 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_rooms.emplace_back(new TristansRoom());
 	this->m_rooms.back()->initialize(m_device, m_dContext, m_modelsPtr, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, -200, 1), audioEngine, &this->m_gameTime, options);
 	dynamic_cast<TristansRoom*>(this->m_rooms.back())->init();
-	
 
 	// final Room [5]
 	this->m_rooms.emplace_back(new finalRoom());
