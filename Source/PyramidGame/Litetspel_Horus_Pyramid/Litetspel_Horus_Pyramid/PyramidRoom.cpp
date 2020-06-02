@@ -78,10 +78,10 @@ void PyramidRoom::portals()
 
 	//Portals Level 1
 	vec = DirectX::XMVectorSet(-160.3f, 105.f, 124.f, 1.f);
-	this->addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 22, &m_models->at(22), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 2);
+	this->addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 22, &m_models->at(22), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 1);
 
 	vec = DirectX::XMVectorSet(208.3f, 105.f, 124.f, 1.f);
-	this->addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 22, &m_models->at(22), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 2);
+	this->addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 22, &m_models->at(22), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 1);
 	
 	//Portals Level 2
 	vec = DirectX::XMVectorSet(-220.7f, 190.f, 210.f, 1.f); 

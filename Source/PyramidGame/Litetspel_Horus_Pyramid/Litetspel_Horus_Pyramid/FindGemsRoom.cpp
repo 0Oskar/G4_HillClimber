@@ -314,6 +314,8 @@ void FindGemsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& act
 			this->m_GateBB->Center.y = XMVectorGetY(this->gatePos);
 		}
 	}
+
+	m_currentRoomUIPath = getRoomUITexturePath();
 }
 
 void FindGemsRoom::onEntrance()
