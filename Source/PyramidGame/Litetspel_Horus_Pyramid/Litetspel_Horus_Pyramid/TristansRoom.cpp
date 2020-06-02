@@ -984,27 +984,27 @@ void TristansRoom::Bellmove3(float startTime)
 	}
 }
 
-void TristansRoom::rotateLeverDown(int Index)
-{
-	/*for (int i = 0; i < 4; i++)
-	{*/
-		this->leverStartRot = this->leverGrip[Index]->getRotation();
-		XMVECTOR moveRot = XMVectorSet(pMath::convertDegreesToRadians(90), 0, 0, 0);
-		this->leverEndRot = this->leverStartRot + moveRot;
-
-		if (!XMVector3Equal(leverStartRot, leverEndRot))
-		{
-			XMVECTOR rotationDelta = this->leverEndRot - this->leverStartRot;
-			XMVECTOR currentleverRot = this->leverGrip[Index]->getRotation();
-			this->leverGrip[Index]->setRotation(this->leverStartRot + (rotationDelta * leverTimer->timeElapsed()));
-			if (this->leverTimer[Index].timeElapsed() > 1)
-			{
-				this->leverStartRot = this->leverEndRot;
-				this->leverGrip[Index]->setRotation(this->leverEndRot);
-			}
-		}
-	//}
-}
+//void TristansRoom::rotateLeverDown(int Index)
+//{
+//	/*for (int i = 0; i < 4; i++)
+//	{*/
+//		this->leverStartRot = this->leverGrip[Index]->getRotation();
+//		XMVECTOR moveRot = XMVectorSet(pMath::convertDegreesToRadians(90), 0, 0, 0);
+//		this->leverEndRot = this->leverStartRot + moveRot;
+//
+//		if (!XMVector3Equal(leverStartRot, leverEndRot))
+//		{
+//			XMVECTOR rotationDelta = this->leverEndRot - this->leverStartRot;
+//			XMVECTOR currentleverRot = this->leverGrip[Index]->getRotation();
+//			this->leverGrip[Index]->setRotation(this->leverStartRot + (rotationDelta * leverTimer->timeElapsed()));
+//			if (this->leverTimer[Index].timeElapsed() > 1)
+//			{
+//				this->leverStartRot = this->leverEndRot;
+//				this->leverGrip[Index]->setRotation(this->leverEndRot);
+//			}
+//		}
+//	//}
+//}
 
 void TristansRoom::onWin()
 {
@@ -1012,6 +1012,9 @@ void TristansRoom::onWin()
 	//this->portal->setPosition(XMVectorSet(0, 48.8f, 113, 1));
 	this->portal->setActiveStatus(true);
 	moveTimer.stop();
+	leverGrip[1]->toggleActivateLever();
+	leverGrip[2]->toggleActivateLever();
+	leverGrip[3]->toggleActivateLever();
 }
 
 void TristansRoom::onFail()
