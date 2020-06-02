@@ -3,8 +3,8 @@ Player1 10
 Player1 10
 Player1 10
 Player1 17
+Player1 68
 Player1 88
 Oskar 100
 Bengt 120
 Jan 1010
-Kalle 1100
