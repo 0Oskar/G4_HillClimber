@@ -770,7 +770,7 @@ states GameState::handleInput(Keyboard* keyboard, Mouse* mousePtr, float dt)
 	if (keyboard->isKeyPressed('R'))
 	{
 		//this->m_player.respawn();
-		this->m_player.getMoveCompPtr()->position = XMVectorSet(0.f, 6.f, -1.f, 1.f);
+		this->m_player.getMoveCompPtr()->position = XMVectorSet(-25.f, 6.f, -70.f, 1.f);
 		this->m_player.resetVelocity(); // Reset Velocity
 	}
 	return changeStateTo;

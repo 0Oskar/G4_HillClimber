@@ -61,7 +61,7 @@ void PyramidRoom::init(DirectX::BoundingOrientedBox* pyramidBB)
 	this->createSceneObjects();
 	this->createBoundingBoxes();
 
-	this->m_entrencePosition = XMVectorSet(0.f, 2.f, -1.f, 1.f);
+	this->m_entrencePosition = XMVectorSet(-25.f, 2.f, -70.f, 1.f);
 }
 
 void PyramidRoom::portals()
