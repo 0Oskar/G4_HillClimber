@@ -146,9 +146,19 @@ void PyramidRoom::onEntrance()
 	XMVECTOR currentPos = this->m_checkpointHandler.getCurrentpos();
 	XMVECTOR nextPos;
 	float yValue;
+	int checkpointsPerLevel[]
+	{
+		0,
+		2,
+		6,
+		10,
+		11,
+		12
+
+	};
 	//Push all platforms that are between current and next checpoint out.
 	if (this->completedRooms < this->m_checkpointHandler.size() )
-		nextPos = this->m_checkpointHandler.getIndexPosAt(completedRooms).second;
+		nextPos = this->m_checkpointHandler.getIndexPosAt(checkpointsPerLevel[this->completedRooms]).second;
 	else
 		nextPos = { 0, 999999, 0 };
 
