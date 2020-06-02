@@ -11,21 +11,25 @@ private:
 	Portal* portal;
 	std::vector<DirectX::BoundingBox> SpikesBB;
 
+	GameObject* diamond;
+
 	Bell* bell1;
 	Bell* bell2;
 	Bell* bell3;
 
-	const float bellOffset = 30;
+	Timer moveTimer;
+	Timer RaiseBellTimer;
 
-	bool animationIsFinnished;
+	int randNr;
+
+	bool isMoving;
+	XMVECTOR leverStartRot;
+	XMVECTOR leverEndRot;
 
 	std::vector<DirectX::BoundingBox*> LeverBB;
 	std::vector<Lever*> leverGrip;
 	Timer leverTimer[4];
-	bool canPullLever0 = true;
-	bool canPullLever1 = true;
-	bool canPullLever2 = true;
-	bool canPullLever3 = true;
+	
 
 	bool moveLever0 = false;
 	bool moveLever1 = false;
@@ -42,17 +46,11 @@ private:
 	bool tempLever2 = false;
 	bool tempLever3 = false;
 
-	//void moveBellForward(GameObject * bell, float dt);
-	//void moveBellForward2(GameObject* bell, float dt);
+	bool bellsShallRase = false;
+	bool bellsShallLower = false;
+	bool isAnimationGoing = false;
 
-	//void moveBellBackward(GameObject* bell, float dt);
-	//void moveBellBackward2(GameObject* bell, float dt);
-
-	//void moveBellLeft(GameObject* bell, float dt);
-	//void moveBellLeft2(GameObject* bell, float dt);
-
-	//void moveBellRight(GameObject* bell, float dt);
-	//void moveBellRight2(GameObject* bell, float dt);
+	bool guessedRight;
 
 public:
 
@@ -64,4 +62,16 @@ public:
 	void init();
 	void portals();
 
+	//int randomNr();
+
+	void moveBellsUp();
+	void moveBellsDown(float startTime);
+	void Bellmove1(float startTime);
+	void Bellmove2(float startTime);
+	void Bellmove3(float startTime);
+
+	void rotateLeverDown(int Index);
+
+	void onWin();
+	void onFail();
 };

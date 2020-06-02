@@ -14,6 +14,7 @@ HookHand::~HookHand()
 	if (this->m_audioComponent)
 	{
 		delete m_audioComponent;
+		m_audioComponent = nullptr;
 	}
 }
 
@@ -45,11 +46,11 @@ void HookHand::setBB(std::vector<DirectX::BoundingBox*> platformBB)
 	this->m_platformsBB = new std::vector<DirectX::BoundingBox*>(platformBB);
 }
 
-bool HookHand::canFire()
+bool HookHand::canFire() const
 {
 	return m_hookState == hookState::idle;
 }
-bool HookHand::canRecall()
+bool HookHand::canRecall() const
 {
 	return m_hookState == hookState::shooting || m_hookState == hookState::flyYouFool;
 }
@@ -184,7 +185,7 @@ DirectX::XMVECTOR HookHand::invertX(DirectX::XMVECTOR VectorToInvertX)
 	return returnVector;
 }
 
-void HookHand::update(float dt)
+void HookHand::update(const float dt)
 {
 	this->updateHandModel(dt);
 	if (m_hookState == hookState::shooting)
@@ -262,7 +263,7 @@ void HookHand::update(float dt)
 	this->m_chain.update(dt);
 }
 
-bool HookHand::shouldFly()
+bool HookHand::shouldFly() const
 {
 	bool shouldFly = false;
 	if (this->m_hookState == hookState::flyYouFool)

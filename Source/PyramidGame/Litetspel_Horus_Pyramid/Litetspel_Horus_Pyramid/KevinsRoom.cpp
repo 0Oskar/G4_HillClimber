@@ -13,7 +13,7 @@ KevinsRoom::~KevinsRoom()
 void KevinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activeRoomChanged)
 {
 	Room::update(dt, camera, activeRoom, activeRoomChanged);
-	//Så boundingBoxen följer skorpionen.w
+	//Så boundingBoxen följer skorpionen.
 
 	float scorpionX = XMVectorGetX(this->scorpion->getPosition());
 	float scorpionY = XMVectorGetY(this->scorpion->getPosition());
@@ -182,11 +182,13 @@ void KevinsRoom::portals()
 	XMVECTOR vecScale = DirectX::XMVectorSet(1.3f, 1.3f, -1.3f, 1.f);
 	this->addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 10, &m_models->at(10), vec, NormalScale, DirectX::XMFLOAT3(3.f, 8.f, 0.6f), 0, false);
 	m_gameObjects.back()->setRotation(XMVectorSet(0.0f, XMConvertToRadians(180), 0.0f, 0.0f));
+	this->portalPtr = dynamic_cast<Portal*>(m_gameObjects.back());
 }
 
 void KevinsRoom::onEntrance()
 {
 	Room::onEntrance();
+	portalPtr->setActiveStatus(false);
 	//What should happen when player enter room
 }
 void KevinsRoom::createBoundingBoxes()
@@ -361,5 +363,5 @@ void KevinsRoom::onCompleted()
 	this->m_player->getphysicsCompPtr()->setVelocity({0, 0, 0 });
 	this->m_player->getMoveCompPtr()->position = this->getEntrancePosition();
 	this->m_player->getphysicsCompPtr()->setVelocity({ 0, 0, 0 });
-
+	portalPtr->setActiveStatus(true);
 }

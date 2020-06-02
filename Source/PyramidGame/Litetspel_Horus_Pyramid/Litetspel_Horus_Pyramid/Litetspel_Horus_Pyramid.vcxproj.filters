@@ -115,6 +115,9 @@
     <ClCompile Include="circleAroundObject.cpp">
       <Filter>Source\RotationalFiles</Filter>
     </ClCompile>
+    <ClCompile Include="WinState.cpp">
+      <Filter>Source\Game Logic\GameStates</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -251,6 +254,9 @@
     </ClInclude>
     <ClInclude Include="circleAroundObject.h">
       <Filter>Header\RotationalFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="WinState.h">
+      <Filter>Header\Game Logic\GameStates</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

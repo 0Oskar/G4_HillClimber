@@ -18,6 +18,8 @@
 #include <queue>
 #include <string>
 #include <sstream>
+#include <ctime>
+
 #include <math.h>
 #include <fstream>
 #include<stack>
@@ -65,6 +67,7 @@ struct GameOptions
 	int height;
 	float fov;
 	float mouseSensitivity;
+	std::string name;
 };
 
 

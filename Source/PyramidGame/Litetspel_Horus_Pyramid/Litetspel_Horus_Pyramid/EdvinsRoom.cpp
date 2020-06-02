@@ -29,7 +29,6 @@ void EdvinsRoom::createSceneObjects()
 	DirectX::XMVECTOR pos = DirectX::XMVectorSet(0.f, -10.f, 0.f, 1.f);
 	DirectX::XMVECTOR rot = DirectX::XMVectorSet(0.f, 0.f, 0.f, 1.f);
 
-
 	// PuzzleRoom 
 	pos = DirectX::XMVectorSet(0, 3, 0, 1); //world pos
 	this->addGameObjectToRoom(true, false, 1, 8, &m_models->at(8), pos, scale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
@@ -130,6 +129,12 @@ void EdvinsRoom::onWin()
 	StatusTextHandler::get().sendText("You guessed the correct order!\n           Portal activated", 5);
 	this->roomPortal->setPosition(XMVectorSet(-270, 0, 200, 1));
 
+	//Activate Portal Lights
+	this->getLight(1)->plRange = 50;
+	this->getLight(2)->plRange = 50;
+	
+
+	
 	//Activate particalas
 
 }
@@ -178,6 +183,37 @@ EdvinsRoom::EdvinsRoom()
 {
 	Room::initParent();
 	this->m_entrencePosition = { -60, -3, -1, 1 };
+
+	
+	//Green light from portal
+	PointLight light;
+	light.plPosition = { -268.5, 4, 200 };
+	light.plDiffuse = { 0, 1, 0, 1 };
+	light.plAmbient = { 0.0, 0.0, 0.0, 1 };
+	light.plRange = 50;
+	light.att = { 1, 0, 0.05 };
+
+	int lightID = this->createLight(light); //0
+
+	// Right:
+	PointLight rightLight;
+	rightLight.plPosition = { -264, 4, 204 };
+	rightLight.plDiffuse = { 1, 0, 0, 1 };
+	rightLight.plAmbient = { 0.0, 0.0, 0.0, 1 };
+	rightLight.plRange = 50;
+	rightLight.att = { 1, 0, 0.05 };
+
+	lightID = this->createLight(rightLight); //1
+
+	//Left:
+	PointLight leftLight;
+	leftLight.plPosition = { -264, 4, 196 };
+	leftLight.plDiffuse = { 1, 0, 0, 1 };
+	leftLight.plAmbient = { 0.0, 0.0, 0.0, 1 };
+	leftLight.plRange = 50;
+	leftLight.att = { 1, 0, 0.05 };
+
+	lightID = this->createLight(leftLight); //2
 }
 
 EdvinsRoom::~EdvinsRoom()

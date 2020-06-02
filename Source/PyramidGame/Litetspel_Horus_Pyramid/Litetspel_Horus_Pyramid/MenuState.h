@@ -20,12 +20,12 @@ private:
 	const std::wstring menuSound = L"Sounds/MainMenu.wav";
 public:
 	MenuState();
-
-	void initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext, GameOptions options, std::shared_ptr<DirectX::AudioEngine> audioEngine);
-	void update(float dt);
+	~MenuState();
+	void initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext, const GameOptions options, std::shared_ptr<DirectX::AudioEngine> audioEngine);
+	void update(const float dt);
 	void afterChange();
 	void loadModels();
-	states handleInput(Keyboard* keyboard, Mouse* mousePtr, float dt);
+	states handleInput(Keyboard* keyboard, Mouse* mousePtr, const float dt);
 
 	//Get
 	std::vector<Model>* getModelsPtr();
@@ -34,12 +34,11 @@ public:
 	std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* getWvpCBuffersPtr();
 	DirectX::XMMATRIX* getViewMatrix() const;
 	DirectX::XMMATRIX* getProjectionMatrix() const;
-	XMFLOAT3 getCameraPos();
+	XMFLOAT3 getCameraPos() const;
 
 	void drawUI(DirectX::SpriteBatch* spriteBatchPtr, DirectX::SpriteFont* spriteFontPtr);
 	void onEntry();
 	void onLeave();
 	void onPop();
-
 
 };

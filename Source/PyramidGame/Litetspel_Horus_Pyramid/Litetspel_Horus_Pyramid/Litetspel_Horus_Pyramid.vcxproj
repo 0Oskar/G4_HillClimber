@@ -199,6 +199,7 @@
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="TristansRoom.cpp" />
     <ClCompile Include="ViewLayer.cpp" />
+    <ClCompile Include="WinState.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -259,6 +260,7 @@
     <ClInclude Include="TristansRoom.h" />
     <ClInclude Include="VertexBuffer.h" />
     <ClInclude Include="ViewLayer.h" />
+    <ClInclude Include="WinState.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Importer\Importer.vcxproj">

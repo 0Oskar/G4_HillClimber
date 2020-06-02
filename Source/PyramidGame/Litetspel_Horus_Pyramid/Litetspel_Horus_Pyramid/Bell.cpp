@@ -26,9 +26,9 @@ XMVECTOR Bell::getEndPos()
 	return endPos;
 }
 
-float Bell::getBellOffset()
+bool Bell::GetAnimating()
 {
-	return bellOffset;
+	return this->isAnimating;
 }
 
 void Bell::setStartPos(XMVECTOR pos)
@@ -43,48 +43,126 @@ void Bell::setEndPos(XMVECTOR pos)
 
 void Bell::moveBellForward()
 {
-	XMVECTOR movePos = XMVectorSet(0, 0, -bellOffset, 0);
+	this->isAnimating = true;
+	startPos = this->getPosition();
+	animationTimer.restart();
+	XMVECTOR movePos = XMVectorSet(0, 0, -BELL_OFFSET, 0);
 	endPos = startPos + movePos;
+	//OutputDebugString(L"MOVE FORWARD");
+	std::wstring test(std::to_wstring(XMVectorGetX(this->getPosition())) + L", " + std::to_wstring(XMVectorGetY(this->getPosition())) + L", " + std::to_wstring(XMVectorGetZ(this->getPosition())));
+	OutputDebugString(test.c_str());
+	OutputDebugString(L"\n");
 }
 
 void Bell::moveBellForward2()
 {
-	XMVECTOR movePos = XMVectorSet(0, 0, -bellOffset * 2, 0);
+	this->isAnimating = true;
+	startPos = this->getPosition();
+	animationTimer.restart();
+	XMVECTOR movePos = XMVectorSet(0, 0, -BELL_OFFSET * 2, 0);
 	endPos = startPos + movePos;
+	//OutputDebugString(L"MOVE FORWARD");
 }
 
 void Bell::moveBellBackward()
 {
-	XMVECTOR movePos = XMVectorSet(0, 0, bellOffset, 0);
+	this->isAnimating = true;
+	startPos = this->getPosition();
+	animationTimer.restart();
+	XMVECTOR movePos = XMVectorSet(0, 0, BELL_OFFSET, 0);
 	endPos = startPos + movePos;
+	//OutputDebugString(L"MOVE Backward");
 }
 
 void Bell::moveBellBackward2()
 {
-	XMVECTOR movePos = XMVectorSet(0, 0, bellOffset * 2, 0);
+	this->isAnimating = true;
+	startPos = this->getPosition();
+	animationTimer.restart();
+	XMVECTOR movePos = XMVectorSet(0, 0, BELL_OFFSET * 2, 0);
 	endPos = startPos + movePos;
+	//OutputDebugString(L"MOVE Backward");
 }
 
 void Bell::moveBellLeft()
 {
-	XMVECTOR movePos = XMVectorSet(bellOffset, 0, 0, 0);
+	this->isAnimating = true;
+	startPos = this->getPosition();
+	animationTimer.restart();
+	XMVECTOR movePos = XMVectorSet(BELL_OFFSET, 0, 0, 0);
 	endPos = startPos + movePos;
+	//OutputDebugString(L"MOVE Left");
+
 }
 
 void Bell::moveBellLeft2()
 {
-	XMVECTOR movePos = XMVectorSet(bellOffset * 2, 0, 0, 0);
+	this->isAnimating = true;
+	startPos = this->getPosition();
+	animationTimer.restart();
+	XMVECTOR movePos = XMVectorSet(BELL_OFFSET * 2, 0, 0, 0);
 	endPos = startPos + movePos;
+	//OutputDebugString(L"MOVE Left");
+
 }
 
 void Bell::moveBellRight()
 {
-	XMVECTOR movePos = XMVectorSet(-bellOffset, 0, 0, 0);
+	this->isAnimating = true;
+	startPos = this->getPosition();
+	animationTimer.restart();
+	XMVECTOR movePos = XMVectorSet(-BELL_OFFSET, 0, 0, 0);
 	endPos = startPos + movePos;
+	//OutputDebugString(L"MOVE Right");
+
 }
 
 void Bell::moveBellRight2()
 {
-	XMVECTOR movePos = XMVectorSet(-bellOffset * 2, 0, 0, 0);
+	this->isAnimating = true;
+	startPos = this->getPosition();
+	animationTimer.restart();
+	XMVECTOR movePos = XMVectorSet(-BELL_OFFSET * 2, 0, 0, 0);
 	endPos = startPos + movePos;
+	//OutputDebugString(L"MOVE Right");
+
+}
+
+void Bell::raiseBell()
+{
+	this->isAnimating = true;
+	startPos = this->getPosition();
+	animationTimer.restart();
+	XMVECTOR movePos = XMVectorSet(0, BELL_OFFSET, 0, 0);
+	endPos = startPos + movePos;
+	//OutputDebugString(L"MOVE Up");
+
+}
+
+void Bell::lowerBell()
+{
+	this->isAnimating = true;
+	startPos = this->getPosition();
+	animationTimer.restart();
+	XMVECTOR movePos = XMVectorSet(0, -BELL_OFFSET, 0, 0);
+	endPos = startPos + movePos;
+	//OutputDebugString(L"MOVE Down");
+}
+
+void Bell::update(float dt)
+{
+	if (!XMVector3Equal(startPos, endPos))
+	{
+		XMVECTOR positionDelta = this->endPos - this->startPos;
+		XMVECTOR currentPos = this->getPosition();
+		this->setPosition(startPos + (positionDelta * animationTimer.timeElapsed()));
+		//if (XMVector3Equal(XMVector3Cross(this->startPos - this->endPos, startPos - this->getPosition()), XMVectorZero()))
+		if (animationTimer.timeElapsed() > 1)
+		{
+			this->isAnimating = false;
+			startPos = endPos;
+			this->setPosition(endPos);
+			OutputDebugString(L"Animation Ended\n");
+		}
+	}
 }

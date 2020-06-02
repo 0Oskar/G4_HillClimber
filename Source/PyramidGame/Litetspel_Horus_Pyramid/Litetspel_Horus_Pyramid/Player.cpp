@@ -4,7 +4,7 @@
 Player::Player() : GameObject()
 {
 	this->m_lastFly = false;
-	this->m_QAmode = true;
+	this->m_QAmode = false;
 	this->m_lastOnGroundYPos = -1.f;
 	this->m_failThreshold = 10.f;
 }
