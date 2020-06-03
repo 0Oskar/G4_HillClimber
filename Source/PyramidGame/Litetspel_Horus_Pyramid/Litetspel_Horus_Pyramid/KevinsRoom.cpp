@@ -50,9 +50,29 @@ void KevinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 			this->expandingBridge[0]->getMoveCompPtr()->position = this->expandingBridge[0]->getMoveCompPtr()->position + (XMVectorSet(0.0f, 0.f, 3 * dt, 0.f));
 		}
 
-		if (triggerBB[4].Intersects(this->m_player->getAABB()))
+	//Scorpion walking bounds
+	if (triggerBB[2].Intersects(*scorpionBB) || triggerBB[5].Intersects(*scorpionBB))
+	{
+		this->scorpion->setReachedEdge(true);
+	}
+	bool doOnce = false;
+	if (scorpionBB->Intersects(this->m_player->getAABB()))
+	{
+		this->m_player->respawn();
+		this->m_player->setPosition(this->getEntrancePosition());
+		StatusTextHandler::get().sendText("The scorpion caught you!\n    5 sec added to timer", 5);
+		this->m_gameTimerPointer->addTime(5);
+	}
+	
+	for (int i = 0; i < deathTrapBB.size(); i++)
+	{
+		if (deathTrapBB[i].Intersects(this->m_player->getAABB()))
 		{
-			this->scorpion->setReachedEdge(false);
+			void looseLife();
+			this->m_player->respawn();
+			this->m_player->setPosition(this->getEntrancePosition());
+			StatusTextHandler::get().sendText("You fell on the spikes!\n 5 sec added to timer", 5);
+			this->m_gameTimerPointer->addTime(5);
 		}
 
 
@@ -65,8 +85,9 @@ void KevinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 		if (scorpionBB->Intersects(this->m_player->getAABB()))
 		{
 			this->m_player->respawn();
-			this->m_player->setPosition(getEntrancePosition());
+			this->m_player->setPosition(this->getEntrancePosition());
 			StatusTextHandler::get().sendText("The scorpion caught you!\n    5 sec added to timer", 5);
+      //Add Time
 			this->m_gameTimerPointer->addTime(5);
 		}
 

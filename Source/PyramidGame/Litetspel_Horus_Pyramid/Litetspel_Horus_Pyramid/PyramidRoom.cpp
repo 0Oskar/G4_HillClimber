@@ -188,8 +188,8 @@ void PyramidRoom::createBoundingBoxes()
 	this->addOrientedBoundingBox(this->m_pyramidOOB);
 
 	// Invis walls
-	this->addBoundingBox({ -27, 50, -81, 0 }, { 25 , 100, 1 }); // Back
-	this->addBoundingBox({ -3, 50, -20, 0 }, { 1 , 100, 60 }); // Right
+	this->addBoundingBox({ -27, 50, -81, 0 }, { 25 , 100, 1 });	// Back
+	this->addBoundingBox({ -3, 50, -20, 0 }, { 1 , 100, 60 });	// Right
 	this->addBoundingBox({ -51, 50, -20, 0 }, { 1 , 100, 60 }); // Left
 
 	// (Right)
@@ -198,10 +198,10 @@ void PyramidRoom::createBoundingBoxes()
 	this->addBoundingBox({ -48, 5, -20, 0 }, { 2 , 10, 2 }); // Pillar 3
 
 	// (Left)
-	this->addBoundingBox({ -7, 1, -77, 0 }, { 7 , 2, 6 }); // Pillar 1
-	this->addBoundingBox({ -7, 5, -56, 0 }, { 2 , 10, 2 }); // Pillar 2
-	this->addBoundingBox({ -8, 17, -56, 0 }, { 3 , 2, 2.5 }); // Pillar 2 top
-	this->addBoundingBox({ -7, 5, -20, 0 }, { 2 , 10, 2 }); // Pillar 3
+	this->addBoundingBox({ -7, 1, -77, 0 }, { 7 , 2, 6 });		// Pillar 1
+	this->addBoundingBox({ -7, 5, -56, 0 }, { 2 , 10, 2 });		// Pillar 2
+	this->addBoundingBox({ -8, 17, -56, 0 }, { 3 , 2, 2.5 });	// Pillar 2 top
+	this->addBoundingBox({ -7, 5, -20, 0 }, { 2 , 10, 2 });		// Pillar 3
 }
 
 void PyramidRoom::createSceneObjects()
@@ -212,13 +212,14 @@ void PyramidRoom::createSceneObjects()
 
 	addPalmTrees();
 	addCactais();
+	// Pillars
 	vec = DirectX::XMVectorSet(-25, -1.5, -50, 1.f);
-	this->addGameObjectToRoom(false, false, 0, 47, &m_models->at(47), vec, NormalScale);
+	this->addGameObjectToRoom(false, false, 0, 48, &m_models->at(48), vec, NormalScale);
 
 	// Clouds
 	vec = DirectX::XMVectorSet(0.f, 300.f, 315.f, 1.f);
 	NormalScale = DirectX::XMVectorSet(0.3f, 0.3f, 0.3f, 1.f);
-	this->addGameObjectToRoom(false, true, 0, 48, &m_models->at(48), vec, NormalScale);
+	this->addGameObjectToRoom(false, true, 0, 49, &m_models->at(49), vec, NormalScale);
 	this->m_gameObjects.back()->getMoveCompPtr()->rotation = DirectX::XMVectorSet(0, rand() % 360, 0, 1);
 	this->clouds = this->m_gameObjects.back();
 
@@ -559,9 +560,9 @@ void PyramidRoom::createSceneObjects()
 	vec = DirectX::XMVectorSet(105.3f, 59.f, 76.5f, 1.f);
 	this->addPlatformToRoom(3, &m_models->at(3), vec, DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f), &this->m_pyramidOOB);//Corrected
 
-	//// platform 1
-	vec = DirectX::XMVectorSet(85.3f, 49.f, 66.2f, 1.f);
-	this->addPlatformToRoom(3, &m_models->at(3), vec, DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f), &this->m_pyramidOOB);//Corrected
+	//// platform 1   On the same pos as the one two above
+	//vec = DirectX::XMVectorSet(85.3f, 49.f, 66.2f, 1.f);
+	//this->addPlatformToRoom(3, &m_models->at(3), vec, DirectX::XMFLOAT3(2.5f, 0.5f, 2.5f), &this->m_pyramidOOB);//Corrected
 
 	//// platform 1
 	vec = DirectX::XMVectorSet(125.3f, 64.f, 81.f, 1.f);
@@ -973,7 +974,7 @@ void PyramidRoom::addCactais()
 		pos = DirectX::XMVectorSet(posXNumber - 400, 0, posZNumber - 400 - 100, 1);
 		rot = DirectX::XMVectorSet(0, Rotnumber, 0, 1);
 		scale = DirectX::XMVectorSet(scaleNumber * 0.5, scaleNumber * 0.5, scaleNumber * 0.5, 1);
-		this->addGameObjectToRoom(false, false, 0, 46, &m_models->at(46), pos, scale);
+		this->addGameObjectToRoom(false, false, 0, 47, &m_models->at(47), pos, scale);
 		this->m_gameObjects.back()->getMoveCompPtr()->rotation = rot;
 	}
 

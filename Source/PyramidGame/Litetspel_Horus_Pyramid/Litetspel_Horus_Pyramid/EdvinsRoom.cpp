@@ -9,16 +9,43 @@ void EdvinsRoom::createBoundingBoxes()
 {
 	this->addBoundingBox({ -35, -1, 0, 1 }, DirectX::XMFLOAT3(35, 1, 30)); //Floor
 
-	this->addBoundingBox({ 0, 6, 0, 1 }, DirectX::XMFLOAT3(1, 12, 20)); //Back Wall
-	this->addBoundingBox({ -69, 6, 0, 1 }, DirectX::XMFLOAT3(1, 12, 6)); //Portal Wall
+	this->addBoundingBox({ 0, 6, 0, 1 }, DirectX::XMFLOAT3(1, 12, 19)); //Back Wall
+	this->addBoundingBox({ -69, 6, 0, 1 }, DirectX::XMFLOAT3(1, 12, 5)); //Portal Wall
 
-	this->addOrientedBoundingBox({ -64, 6, -13, 1 }, XMFLOAT3(8, 12, 1), { 0, pMath::convertDegreesToRadians(60), 0, 1 }); //Portal right wall
-	this->addOrientedBoundingBox({ -35, 6, -25, 1 }, XMFLOAT3(25, 12, 1), { 0, pMath::convertDegreesToRadians(11), 0, 1 }); //Right wall
-	this->addOrientedBoundingBox({ -5, 6, -25, 1 }, XMFLOAT3(7, 12, 1), { 0, pMath::convertDegreesToRadians(-42), 0, 1 }); //Right corner
+	// (Left)
+	this->addBoundingBox({ -66, 6, 6, 1 }, DirectX::XMFLOAT3(2, 12, 1));
+	this->addBoundingBox({ -67, 6, 9, 1 }, DirectX::XMFLOAT3(1, 12, 2));
+	this->addBoundingBox({ -65, 6, 12, 1 }, DirectX::XMFLOAT3(1, 12, 1));
+	this->addBoundingBox({ -63, 6, 14, 1 }, DirectX::XMFLOAT3(1, 12, 1));
+	this->addBoundingBox({ -61, 6, 16, 1 }, DirectX::XMFLOAT3(1, 12, 1));
+	this->addBoundingBox({ -59, 6, 19, 1 }, DirectX::XMFLOAT3(1, 12, 2));
+	this->addBoundingBox({ -56, 6, 22, 1 }, DirectX::XMFLOAT3(3, 12, 1));
+	this->addBoundingBox({ -46, 6, 24, 1 }, DirectX::XMFLOAT3(7, 12, 1));
+	this->addBoundingBox({ -35, 6, 26, 1 }, DirectX::XMFLOAT3(4, 12, 1));
+	this->addBoundingBox({ -26, 6, 28, 1 }, DirectX::XMFLOAT3(5, 12, 1));
+	this->addBoundingBox({ -18, 6, 30, 1 }, DirectX::XMFLOAT3(3, 12, 1));
+	this->addBoundingBox({ -12, 6, 28, 1 }, DirectX::XMFLOAT3(3, 12, 1));
+	this->addBoundingBox({ -7, 6, 26, 1 }, DirectX::XMFLOAT3(2, 12, 1));
+	this->addBoundingBox({ -4, 6, 24, 1 }, DirectX::XMFLOAT3(1, 12, 1));
+	this->addBoundingBox({ -2, 6, 21, 1 }, DirectX::XMFLOAT3(1, 12, 2));
 
-	this->addOrientedBoundingBox({ -64, 6, 13, 1 }, XMFLOAT3(8, 12, 1), { 0, pMath::convertDegreesToRadians(-60), 0, 1 }); //Portal left wall
-	this->addOrientedBoundingBox({ -35, 6, 25, 1 }, XMFLOAT3(25, 12, 1), { 0, pMath::convertDegreesToRadians(-11), 0, 1 }); //Left wall
-	this->addOrientedBoundingBox({ -5, 6, 25, 1 }, XMFLOAT3(7, 12, 1), { 0, pMath::convertDegreesToRadians(42), 0, 1 }); //Left corner
+	// (Right)
+	this->addBoundingBox({ -66, 6, -6, 1 }, DirectX::XMFLOAT3(2, 12, 1));
+	this->addBoundingBox({ -67, 6, -9, 1 }, DirectX::XMFLOAT3(1, 12, 2));
+	this->addBoundingBox({ -65, 6, -12, 1 }, DirectX::XMFLOAT3(1, 12, 1));
+	this->addBoundingBox({ -63, 6, -14, 1 }, DirectX::XMFLOAT3(1, 12, 1));
+	this->addBoundingBox({ -61, 6, -16, 1 }, DirectX::XMFLOAT3(1, 12, 1));
+	this->addBoundingBox({ -59, 6, -19, 1 }, DirectX::XMFLOAT3(1, 12, 2));
+	this->addBoundingBox({ -56, 6, -22, 1 }, DirectX::XMFLOAT3(3, 12, 1));
+	this->addBoundingBox({ -46, 6, -24, 1 }, DirectX::XMFLOAT3(7, 12, 1));
+	this->addBoundingBox({ -35, 6, -26, 1 }, DirectX::XMFLOAT3(4, 12, 1));
+	this->addBoundingBox({ -26, 6, -28, 1 }, DirectX::XMFLOAT3(5, 12, 1));
+	this->addBoundingBox({ -18, 6, -30, 1 }, DirectX::XMFLOAT3(3, 12, 1));
+	this->addBoundingBox({ -12, 6, -28, 1 }, DirectX::XMFLOAT3(3, 12, 1));
+	this->addBoundingBox({ -7, 6, -26, 1 }, DirectX::XMFLOAT3(2, 12, 1));
+	this->addBoundingBox({ -4, 6, -24, 1 }, DirectX::XMFLOAT3(1, 12, 1));
+	this->addBoundingBox({ -2, 6, -21, 1 }, DirectX::XMFLOAT3(1, 12, 2));
+
 
 	this->addBoundingBox({ -45, 0, 0, 1 }, DirectX::XMFLOAT3(1.5, 2, 1.5)); //Pedistal
 }
