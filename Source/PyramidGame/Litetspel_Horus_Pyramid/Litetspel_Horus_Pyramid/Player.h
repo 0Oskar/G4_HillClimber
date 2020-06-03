@@ -6,6 +6,7 @@
 #include "Input.h"
 #include "HookHand.h"
 #include "StatusTextHandler.h"
+#include "Transition.h"
 
 class Player : public GameObject
 {
@@ -24,6 +25,8 @@ private:
 
 	bool m_QAmode;
 	bool canMove();
+
+	bool m_spawning;
 
 public:
 	Player();
@@ -45,6 +48,7 @@ public:
 
 	// Getters
 	bool getQAMode() const;
+	bool getIsSpawning() const;
 
 	// Setters
 	void setSpawnPosition(XMVECTOR position);

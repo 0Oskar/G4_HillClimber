@@ -7,6 +7,12 @@
     <FxCompile Include="Shader Files\PixelShader.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
+    <FxCompile Include="Shader Files\TransitionPS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shader Files\TransitionVS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp">
@@ -257,6 +263,9 @@
     </ClInclude>
     <ClInclude Include="WinState.h">
       <Filter>Header\Game Logic\GameStates</Filter>
+    </ClInclude>
+    <ClInclude Include="Transition.h">
+      <Filter>Header\View</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

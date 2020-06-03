@@ -13,106 +13,101 @@ finalRoom::~finalRoom()
 
 void finalRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activeRoomChanged)
 {
-	Room::update(dt, camera, activeRoom, activeRoomChanged);
-
-	////Making the axe swing + Orientedhitboxes
-
-	//Respawn player on death
-	if (this->respawn == true)
+	if (!this->m_player->getIsSpawning())
 	{
-		this->m_player->getMoveCompPtr()->position = XMVectorSet(-13.f, 2.f, -260.f, 1.0f);
-		respawn = false;
-		this->m_player->getMoveCompPtr()->rotation = this->spawnRotation;
-	}
+		Room::update(dt, camera, activeRoom, activeRoomChanged);
 
-	timesHitString = std::to_string(timesHit);
+		////Making the axe swing + Orientedhitboxes
 
-	//Jewel object activation
-	lever->collidesWithPlayer();
-	if (this->lever->getCanUseLever() == true)
-	{
-		if (this->m_player->getinUse() == true)
+		timesHitString = std::to_string(timesHit);
+
+		//Jewel object activation
+		lever->collidesWithPlayer();
+		if (this->lever->getCanUseLever() == true)
 		{
-			this->wonGame = true;
-			OutputDebugStringA("WON");
-			OutputDebugStringA("\n");
-		}
-	}
-			
-				
-	//Do once to correct the positioning of the axes due to them being rotated differently at export
-
-	if (doOnceAtStart != 1)
-	{
-		if (rotationSwap < 130.0f)
-		{
-			rotationSwap += dt * swingingSpeed;
-			
-			swingingAxes[0]->getMoveCompPtr()->rotation -= XMVectorSet(0.0f, 0.0f, XMConvertToRadians(dt * swingingSpeed), 0.0f);
-
-			swingingAxes[2]->getMoveCompPtr()->rotation -= XMVectorSet(0.0f, 0.0f, XMConvertToRadians(dt * swingingSpeed), 0.0f);
-			
-			if (rotationSwap > 30.0f)
+			if (this->m_player->getinUse() == true)
 			{
-				swingingAxes[1]->getMoveCompPtr()->rotation += XMVectorSet(0.0f, 0.0f, XMConvertToRadians(dt * swingingSpeed), 0.0f);
+				this->wonGame = true;
+				OutputDebugStringA("WON");
+				OutputDebugStringA("\n");
+			}
+		}
+
+
+		//Do once to correct the positioning of the axes due to them being rotated differently at export
+
+		if (doOnceAtStart != 1)
+		{
+			if (rotationSwap < 130.0f)
+			{
+				rotationSwap += dt * swingingSpeed;
+
+				swingingAxes[0]->getMoveCompPtr()->rotation -= XMVectorSet(0.0f, 0.0f, XMConvertToRadians(dt * swingingSpeed), 0.0f);
+
+				swingingAxes[2]->getMoveCompPtr()->rotation -= XMVectorSet(0.0f, 0.0f, XMConvertToRadians(dt * swingingSpeed), 0.0f);
+
+				if (rotationSwap > 30.0f)
+				{
+					swingingAxes[1]->getMoveCompPtr()->rotation += XMVectorSet(0.0f, 0.0f, XMConvertToRadians(dt * swingingSpeed), 0.0f);
+
+				}
 
 			}
-			
+			if (rotationSwap >= 130.0f)
+			{
+				doOnceAtStart = 1;
+			}
 		}
-		if (rotationSwap >= 130.0f)
+
+		if (doOnceAtStart == 1 && flipDirection == false)
 		{
-			doOnceAtStart = 1;
-		}
-	}
-	
-	if (doOnceAtStart == 1 && flipDirection == false)
-	{
-		rotationSwap -= dt * swingingSpeed;
-		
-		swingingAxes[0]->getMoveCompPtr()->rotation += XMVectorSet(0.0f, 0.0f, XMConvertToRadians(dt * swingingSpeed), 0.0f);
-		swingingAxes[2]->getMoveCompPtr()->rotation += XMVectorSet(0.0f, 0.0f, XMConvertToRadians(dt * swingingSpeed), 0.0f);
-		swingingAxes[1]->getMoveCompPtr()->rotation -= XMVectorSet(0.0f, 0.0f, XMConvertToRadians(dt * swingingSpeed), 0.0f);
+			rotationSwap -= dt * swingingSpeed;
 
-		if (rotationSwap <= 30.0f)
+			swingingAxes[0]->getMoveCompPtr()->rotation += XMVectorSet(0.0f, 0.0f, XMConvertToRadians(dt * swingingSpeed), 0.0f);
+			swingingAxes[2]->getMoveCompPtr()->rotation += XMVectorSet(0.0f, 0.0f, XMConvertToRadians(dt * swingingSpeed), 0.0f);
+			swingingAxes[1]->getMoveCompPtr()->rotation -= XMVectorSet(0.0f, 0.0f, XMConvertToRadians(dt * swingingSpeed), 0.0f);
+
+			if (rotationSwap <= 30.0f)
+			{
+				flipDirection = true;
+			}
+		}
+		else if (doOnceAtStart == 1 && flipDirection == true)
 		{
-			flipDirection = true;
-		}
-	}
-	else if (doOnceAtStart == 1 && flipDirection == true)
-	{
-		rotationSwap += dt * swingingSpeed;
-		
-		swingingAxes[0]->getMoveCompPtr()->rotation -= XMVectorSet(0.0f, 0.0f, XMConvertToRadians(dt * swingingSpeed), 0.0f);
-		swingingAxes[2]->getMoveCompPtr()->rotation -= XMVectorSet(0.0f, 0.0f, XMConvertToRadians(dt * swingingSpeed), 0.0f);
-		swingingAxes[1]->getMoveCompPtr()->rotation += XMVectorSet(0.0f, 0.0f, XMConvertToRadians(dt * swingingSpeed), 0.0f);
-		
+			rotationSwap += dt * swingingSpeed;
 
-		if (rotationSwap >= 130.0f)
+			swingingAxes[0]->getMoveCompPtr()->rotation -= XMVectorSet(0.0f, 0.0f, XMConvertToRadians(dt * swingingSpeed), 0.0f);
+			swingingAxes[2]->getMoveCompPtr()->rotation -= XMVectorSet(0.0f, 0.0f, XMConvertToRadians(dt * swingingSpeed), 0.0f);
+			swingingAxes[1]->getMoveCompPtr()->rotation += XMVectorSet(0.0f, 0.0f, XMConvertToRadians(dt * swingingSpeed), 0.0f);
+
+
+			if (rotationSwap >= 130.0f)
+			{
+				flipDirection = false;
+			}
+		}
+		//Axe collisions
+		for (int i = 0; i < 3; i++)
 		{
-			flipDirection = false;
+			if (axeBB[i].Intersects(this->m_player->getAABB()))
+			{
+				timesHit++;
+				this->m_player->respawn();
+				OutputDebugStringA(timesHitString.c_str());
+				OutputDebugStringA("\n");
+			}
 		}
-	}
-	//Axe collisions
-	for (int i = 0; i < 3; i++)
-	{
-		if (axeBB[i].Intersects(this->m_player->getAABB()))
+
+		//Make sure bounding boxes rotate with the axes
+		for (int i = 0; i < 3; i++)
 		{
-			timesHit++;
-			respawn = true;
-			OutputDebugStringA(timesHitString.c_str());	
-			OutputDebugStringA("\n");
+			aRotation = XMQuaternionRotationRollPitchYawFromVector(swingingAxes[i]->getMoveCompPtr()->rotation + XMVectorSet(0.0f, 0.0f, XMConvertToRadians(77.0f), 0.0f));
+
+			XMStoreFloat4(&rot, aRotation);
+
+			this->axeBB[i].Orientation = rot;
+			m_orientedBoundingBoxes[i].Orientation = rot;
 		}
-	}
-
-	//Make sure bounding boxes rotate with the axes
-	for (int i = 0; i < 3; i++)
-	{
-		aRotation = XMQuaternionRotationRollPitchYawFromVector(swingingAxes[i]->getMoveCompPtr()->rotation + XMVectorSet(0.0f, 0.0f, XMConvertToRadians(77.0f), 0.0f));
-
-		XMStoreFloat4(&rot, aRotation);
-
-		this->axeBB[i].Orientation = rot;
-		m_orientedBoundingBoxes[i].Orientation = rot;
 	}
 }
 
@@ -138,6 +133,7 @@ void finalRoom::portals()
 void finalRoom::onEntrance()
 {
 	//What should happen when player enter room
+	this->m_player->setSpawnPosition(this->getEntrancePosition());
 }
 void finalRoom::createBoundingBoxes()
 {

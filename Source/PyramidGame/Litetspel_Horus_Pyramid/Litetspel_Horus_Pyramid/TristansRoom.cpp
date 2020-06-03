@@ -121,7 +121,7 @@ void TristansRoom::onCompleted()
 TristansRoom::TristansRoom()
 {
 	Room::initParent();
-	this->m_entrencePosition = { 0, 55, 95, 1};
+	this->m_entrencePosition = { 0, 50, 95, 1};
 	srand((unsigned)time(0));
 	isAnimationGoing = false;
 }
@@ -133,134 +133,137 @@ TristansRoom::~TristansRoom()
 
 void TristansRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activeRoomChanged)
 {
-	Room::update(dt, camera, activeRoom, activeRoomChanged);
-	//Spikes
-	for (int i = 0; i < SpikesBB.size(); i++)
+	if (!this->m_player->getIsSpawning())
 	{
-		if (SpikesBB[i].Intersects(this->m_player->getAABB()))
+		Room::update(dt, camera, activeRoom, activeRoomChanged);
+		//Spikes
+		for (int i = 0; i < SpikesBB.size(); i++)
 		{
-			this->m_player->getMoveCompPtr()->position = this->getRelativePosition(DirectX::XMVectorSet(0, 55, 95, 1));
-		}
-	}
-
-	//Front Lever
-	this->leverGrip[0]->collidesWithPlayer();
-	if (this->leverGrip[0]->getCanUseLever() == true)
-	{
-		if (this->m_player->getinUse() == true) //press E
-		{
-			this->leverTimer[0].restart();
-			this->moveLever0 = true;
-
-			
-			OutputDebugString(L"LEVER PULLED\n");
-			
-			this->bellsShallLower = true;
-		}
-	}
-
-	if (this->bellsShallLower == true)
-	{
-		moveTimer.restart();
-		bellsShallLower = false;
-		moveBellsDown(0);
-		StatusTextHandler::get().sendText("Keep an eye on where the diamond is!", 5);
-	}
-	if (this->moveTimer.isActive())
-	{
-		if (isAnimationGoing == false)
-		{
-			isAnimationGoing = true;
-			randNr = (rand() % 3);
-			OutputDebugString(L" randNr choosen \n ");
-			OutputDebugStringA(std::to_string(randNr).c_str());
-			OutputDebugString(L"\n ");
-			if (randNr == 0)
+			if (SpikesBB[i].Intersects(this->m_player->getAABB()))
 			{
-				Bellmove1(1);
-			}
-			if (randNr == 1)
-			{
-				Bellmove2(1);
-			}
-			if (randNr == 2)
-			{
-				Bellmove3(1);
+				//this->m_player->getMoveCompPtr()->position = this->getRelativePosition(DirectX::XMVectorSet(0, 55, 95, 1));
+				this->m_player->respawn();
+				this->m_player->setPosition(getEntrancePosition());
 			}
 		}
-		else
+
+		//Front Lever
+		this->leverGrip[0]->collidesWithPlayer();
+		if (this->leverGrip[0]->getCanUseLever() == true)
 		{
-			if (randNr == 0)
+			if (this->m_player->getinUse() == true) //press E
 			{
-				OutputDebugString(L" ranNr 01 \n ");
-				Bellmove1(1);
-				OutputDebugString(L" ranNr 02 \n ");
-			}
-			if (randNr == 1)
-			{
-				OutputDebugString(L" ranNr 11 \n ");
-				Bellmove2(1);
-				OutputDebugString(L" ranNr 12 \n ");
-			}
-			if (randNr == 2)
-			{
-				OutputDebugString(L" ranNr 21 \n ");
-				Bellmove3(1);
-				OutputDebugString(L" ranNr 22 \n ");
+				this->leverTimer[0].restart();
+				this->moveLever0 = true;
 			}
 		}
-	}
+
+		if (this->bellsShallLower == true)
+    {
+      moveTimer.restart();
+      bellsShallLower = false;
+      moveBellsDown(0);
+      StatusTextHandler::get().sendText("Keep an eye on where the diamond is!", 5);
+    }
+    if (this->moveTimer.isActive())
+    {
+      if (isAnimationGoing == false)
+      {
+        isAnimationGoing = true;
+        randNr = (rand() % 3);
+        OutputDebugString(L" randNr choosen \n ");
+        OutputDebugStringA(std::to_string(randNr).c_str());
+        OutputDebugString(L"\n ");
+        if (randNr == 0)
+        {
+          Bellmove1(1);
+        }
+        if (randNr == 1)
+        {
+          Bellmove2(1);
+        }
+        if (randNr == 2)
+        {
+          Bellmove3(1);
+				}
+			}
+			else
+			{
+				if (randNr == 0)
+				{
+					OutputDebugString(L" ranNr 01 \n ");
+					Bellmove1(1);
+					OutputDebugString(L" ranNr 02 \n ");
+				}
+				if (randNr == 1)
+				{
+					OutputDebugString(L" ranNr 11 \n ");
+					Bellmove2(1);
+					OutputDebugString(L" ranNr 12 \n ");
+				}
+				if (randNr == 2)
+				{
+					OutputDebugString(L" ranNr 21 \n ");
+					Bellmove3(1);
+					OutputDebugString(L" ranNr 22 \n ");
+				}
+			}
+		}
 
 
-	if (this->leverTimer[0].timeElapsed() < 1)
-	{
-		if (this->moveLever0 == true)
+		if (this->leverTimer[0].timeElapsed() < 1)
 		{
 			this->leverGrip[0]->getMoveCompPtr()->rotation += DirectX::XMVectorSet(pMath::convertDegreesToRadians(90) * dt, 0, 0 , 10);
 		}
-	}
-	if (this->leverTimer[0].timeElapsed() >= 1)
-	{
-		this->moveLever0 = false;
-	}
+    if (this->leverTimer[0].timeElapsed() >= 1)
+    {
+      this->moveLever0 = false;
+    }
 
-	//Back Lever 1
-	this->leverGrip[1]->collidesWithPlayer();
-	if (this->leverGrip[1]->getCanUseLever() == true)
-	{
-		if (this->m_player->getinUse() == true) //press E
+		//Back Lever 1
+		this->leverGrip[1]->collidesWithPlayer();
+		if (this->leverGrip[1]->getCanUseLever() == true)
 		{
-
-			this->leverTimer[1].restart();
-			this->moveLever1 = true;
-
-
-			OutputDebugString(L"LEVER PULLED\n");
-
-			this->bellsShallRase = true;
-			if (randNr == 0)
+			if (this->m_player->getinUse() == true) //press E
 			{
-				//guessedRight = true;
-				onWin();
-			}
-			if(randNr != 0)
-			{
-				//guessedRight = false;
-				onFail();
+
+				this->leverTimer[1].restart();
+				this->moveLever1 = true;
+
+
+				OutputDebugString(L"LEVER PULLED\n");
+
+				this->bellsShallRase = true;
+				if (randNr == 0)
+				{
+					//guessedRight = true;
+					onWin();
+				}
+				if (randNr != 0)
+				{
+					//guessedRight = false;
+					onFail();
+				}
 			}
 		}
-	}
-	if (this->bellsShallRase == true)
-	{
-		RaiseBellTimer.restart();
-		bellsShallRase = false;
-		moveBellsUp();
-	}
-
-	if (this->leverTimer[1].timeElapsed() < 1)
-	{
-		if (this->moveLever1 == true)
+		if (this->bellsShallRase == true)
 		{
+			RaiseBellTimer.restart();
+			bellsShallRase = false;
+			moveBellsUp();
+		}
+
+		if (this->leverTimer[1].timeElapsed() < 1)
+		{
+			if (this->moveLever1 == true)
+			{
+				this->leverGrip[1]->getMoveCompPtr()->rotation += DirectX::XMVectorSet(pMath::convertDegreesToRadians(90) * dt, 0, 0, 10);//__________________________________________
+			}
+		}
+
+		if (this->leverTimer[1].timeElapsed() >= 1)
+		{
+
 			this->leverGrip[1]->getMoveCompPtr()->rotation += DirectX::XMVectorSet(pMath::convertDegreesToRadians(90) * dt, 0, 0, 10);
 		}
 	}
@@ -269,38 +272,43 @@ void TristansRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& act
 	{
 		this->moveLever1 = false;
 	}
-	
+	/*
 	//Back Lever 2
 	this->leverGrip[2]->collidesWithPlayer();
 	if (this->leverGrip[2]->getCanUseLever() == true)
 	{
 		if (this->m_player->getinUse() == true ) //press E
+
 		{
-			this->leverTimer[2].restart();
-			this->moveLever2 = true;
-			
-			this->bellsShallRase = true;
-			if (randNr == 1)
+			if (this->moveLeverAgain1 == true)
 			{
-				//guessedRight = true;
-				onWin();
-			}
-			if (randNr != 1)
-			{
-				//guessedRight = false;
-				onFail();
+				this->leverGrip[1]->getMoveCompPtr()->rotation += DirectX::XMVectorSet(pMath::convertDegreesToRadians(-90) * dt, 0, 0, 10);
 			}
 		}
-	}
-	if (this->bellsShallRase == true)
-	{
-		RaiseBellTimer.restart();
-		bellsShallRase = false;
-		moveBellsUp();
-	}
-	if (this->leverTimer[2].timeElapsed() < 1)
-	{
-		if (this->moveLever2 == true)
+		*/
+		//Back Lever 2
+		this->leverGrip[2]->collidesWithPlayer();
+		if (this->leverGrip[2]->getCanUseLever() == true)
+		{
+			if (this->m_player->getinUse() == true) //press E
+			{
+				this->leverTimer[2].restart();
+				this->moveLever2 = true;
+
+				this->bellsShallRase = true;
+				if (randNr == 1)
+				{
+					//guessedRight = true;
+					onWin();
+				}
+				if (randNr != 1)
+				{
+					//guessedRight = false;
+					onFail();
+				}
+			}
+		}
+		if (this->bellsShallRase == true)
 		{
 			this->leverGrip[2]->getMoveCompPtr()->rotation += DirectX::XMVectorSet(pMath::convertDegreesToRadians(90) * dt, 0, 0, 10);
 		}
@@ -319,17 +327,59 @@ void TristansRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& act
 		{
 			this->leverTimer[3].restart();
 			this->moveLever3 = true;
+    }
 
-			this->bellsShallRase = true;
-			if (randNr == 2)
+		if (this->leverTimer[2].timeElapsed() >= 1)
+		{
+			this->moveLever2 = false;
+		}
+		/*
+		if (this->leverTimer[2].timeElapsed() >= 3)
+		{
+			this->moveLeverAgain2 = true;
+		}
+		if (this->leverTimer[2].timeElapsed() < 4)
+		{
+			if (this->moveLeverAgain2 == true)
 			{
-				//guessedRight = true;
-				onWin();
+				this->leverGrip[2]->getMoveCompPtr()->rotation += DirectX::XMVectorSet(pMath::convertDegreesToRadians(-90) * dt, 0, 0, 10);
 			}
-			if (randNr != 2)
+		}
+		*/
+		//Back Lever 3
+		this->leverGrip[3]->collidesWithPlayer();
+		if (this->leverGrip[3]->getCanUseLever() == true)
+		{
+			if (this->m_player->getinUse() == true) //press E
 			{
-				//guessedRight = false;
-				onFail();
+				this->leverTimer[3].restart();
+				this->moveLever3 = true;
+
+				this->bellsShallRase = true;
+				if (randNr == 2)
+				{
+					//guessedRight = true;
+					onWin();
+				}
+				if (randNr != 2)
+				{
+					//guessedRight = false;
+					onFail();
+				}
+			}
+		}
+		if (this->bellsShallRase == true)
+		{
+			RaiseBellTimer.restart();
+			bellsShallRase = false;
+			isMoving = true;//--------------------------------------------------------------
+			moveBellsUp();
+		}
+		if (this->leverTimer[3].timeElapsed() < 1)
+		{
+			if (this->moveLever3 == true)
+			{
+				this->leverGrip[3]->getMoveCompPtr()->rotation += DirectX::XMVectorSet(pMath::convertDegreesToRadians(90) * dt, 0, 0, 10);//__________________________________________
 			}
 		}
 	}
@@ -355,6 +405,8 @@ void TristansRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& act
 void TristansRoom::onEntrance()
 {
 	Room::onEntrance();
+	this->m_player->setSpawnPosition(this->getEntrancePosition());
+	this->m_player->setRotation({ 0.f, XM_PI, 0.f, 1.f });
 }
 
 void TristansRoom::init()
@@ -917,7 +969,8 @@ void TristansRoom::onWin()
 void TristansRoom::onFail()
 {
 	//Reset Player
-	this->m_player->getMoveCompPtr()->position = { 0, 55, -95, 1 };
+	this->m_player->respawn();
+	this->m_player->setPosition(getEntrancePosition());
 
 	for (int i = 0; i < 4; i++)
 	{
