@@ -108,7 +108,6 @@ constantBufferData* GameState::getConstantBufferData()
 	return &this->m_constantbufferData;
 }	
 
-
 PS_DIR_BUFFER GameState::getActiveRoomDirectionalLight()
 {
 	if (this->m_activeRoom != nullptr)
@@ -464,7 +463,7 @@ void GameState::roomChangeInit()
 	{
 		this->m_gameObjects.emplace_back(this->m_activeRoom->getGameObjectsPtr()->at(i));
 	}
-
+	Transition::get().fadeOut();
 }
 
 Timer* GameState::getGameTimerPtr()
@@ -652,7 +651,8 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	dynamic_cast<finalRoom*>(this->m_rooms.back())->init();
 
 	this->m_player.setSpawnPosition(m_activeRoom->getEntrancePosition());
-	this->m_player.respawn();
+
+	this->m_player.setPosition(m_activeRoom->getEntrancePosition());
 
 	//Get active room platforms to send to hookHand.
 	for (size_t i = 0; this->m_activeRoom && i < this->m_activeRoom->getGameObjectsPtr()->size(); i++)
@@ -774,21 +774,6 @@ void GameState::update(float dt)
 states GameState::handleInput(Keyboard* keyboard, Mouse* mousePtr, float dt)
 {
 	states changeStateTo = states::NONE;
-	// Camera
-	while (!mousePtr->empty())
-	{
-		MouseEvent mEvent = mousePtr->readEvent();
-		if (mEvent.getEvent() == Event::MouseRAW_MOVE)
-			this->m_camera.update(mEvent, dt);
-		else if (mEvent.getEvent() == Event::MouseLPressed)
-		{
-			this->m_player.shoot();
-		}
-		else if (mEvent.getEvent() == Event::MouseRPressed)
-		{
-			this->m_player.retract();
-		}
-	}
 	while (!keyboard->empty())
 	{
 		KeyboardEvent keyboardEvent = keyboard->readKey();
@@ -796,60 +781,79 @@ states GameState::handleInput(Keyboard* keyboard, Mouse* mousePtr, float dt)
 		{
 			if (keyboardEvent.getKey() == (char)27)
 				changeStateTo = states::POP;
-			
+
 		}
 	}
 
-	// Controls
-	if (keyboard->isKeyPressed('W'))
-		this->m_player.movePlayer(Direction::FORWARD, dt);
-
-	if (keyboard->isKeyPressed('S'))
-		this->m_player.movePlayer(Direction::BACKWARD, dt);
-
-	if (keyboard->isKeyPressed('A'))
-		this->m_player.movePlayer(Direction::LEFT, dt);
-
-	if (keyboard->isKeyPressed('D'))
-		this->m_player.movePlayer(Direction::RIGHT, dt);
-
-	if (keyboard->isKeyPressed(' ')) // Space
+	if (!this->m_player.getIsSpawning())
 	{
-		if (this->m_player.getQAMode())
-			this->m_player.movePlayer(Direction::UP, dt);
+		// Camera
+		while (!mousePtr->empty())
+		{
+			MouseEvent mEvent = mousePtr->readEvent();
+			if (mEvent.getEvent() == Event::MouseRAW_MOVE)
+				this->m_camera.update(mEvent, dt);
+			else if (mEvent.getEvent() == Event::MouseLPressed)
+			{
+				this->m_player.shoot();
+			}
+			else if (mEvent.getEvent() == Event::MouseRPressed)
+			{
+				this->m_player.retract();
+			}
+		}
+
+		// Controls
+		if (keyboard->isKeyPressed('W'))
+			this->m_player.movePlayer(Direction::FORWARD, dt);
+
+		if (keyboard->isKeyPressed('S'))
+			this->m_player.movePlayer(Direction::BACKWARD, dt);
+
+		if (keyboard->isKeyPressed('A'))
+			this->m_player.movePlayer(Direction::LEFT, dt);
+
+		if (keyboard->isKeyPressed('D'))
+			this->m_player.movePlayer(Direction::RIGHT, dt);
+
+		if (keyboard->isKeyPressed(' ')) // Space
+		{
+			if (this->m_player.getQAMode())
+				this->m_player.movePlayer(Direction::UP, dt);
+			else
+				this->m_player.jump(dt);
+		}
+
+		if (keyboard->isKeyPressed((unsigned char)16)) // Shift
+			this->m_player.flyDown(dt);
+
+		if (keyboard->isKeyPressed('E'))
+		{
+			this->m_player.setUse(true);
+		}
 		else
-			this->m_player.jump(dt);
-	}
+		{
+			this->m_player.setUse(false);
+		}
 
-	if (keyboard->isKeyPressed((unsigned char)16)) // Shift
-		this->m_player.flyDown(dt);
+		// QA Toggle
+		if (keyboard->isKeyPressed('P'))
+		{
+			this->m_player.setQAMode(false);
+			StatusTextHandler::get().sendText("QA Mode OFF!", 0.5);
+		}
+		if (keyboard->isKeyPressed('O'))
+		{
+			this->m_player.setQAMode(true);
+			StatusTextHandler::get().sendText("QA Mode ON!", 0.5);
+		}
 
-	if (keyboard->isKeyPressed('E'))
-	{
-		this->m_player.setUse(true);
-	}
-	else
-	{
-		this->m_player.setUse(false);
-	}
-
-	// QA Toggle
-	if (keyboard->isKeyPressed('P'))
-	{
-		this->m_player.setQAMode(false);
-		StatusTextHandler::get().sendText("QA Mode OFF!", 0.5);
-	}
-	if (keyboard->isKeyPressed('O'))
-	{
-		this->m_player.setQAMode(true);
-		StatusTextHandler::get().sendText("QA Mode ON!", 0.5);
-	}
-
-	// For Debugging purposes
-	if (keyboard->isKeyPressed('R'))
-	{
-		this->m_player.getMoveCompPtr()->position = DirectX::XMVectorSet(-25.f, 6.f, -70.f, 1.f);
-		this->m_player.resetVelocity(); // Reset Velocity
+		// For Debugging purposes
+		if (keyboard->isKeyPressed('R'))
+		{
+			this->m_player.getMoveCompPtr()->position = DirectX::XMVectorSet(-25.f, 6.f, -70.f, 1.f);
+			this->m_player.resetVelocity(); // Reset Velocity
+		}
 	}
 
 	if (this->m_activeRoom == this->m_rooms[5]) //In final room

@@ -116,7 +116,7 @@ void TristansRoom::onCompleted()
 TristansRoom::TristansRoom()
 {
 	Room::initParent();
-	this->m_entrencePosition = { 0, 55, 95, 1};
+	this->m_entrencePosition = { 0, 50, 95, 1};
 	srand((unsigned)time(0));
 	isAnimationGoing = false;
 	isMoving = false;
@@ -129,298 +129,305 @@ TristansRoom::~TristansRoom()
 
 void TristansRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activeRoomChanged)
 {
-	Room::update(dt, camera, activeRoom, activeRoomChanged);
-	//Spikes
-	for (int i = 0; i < SpikesBB.size(); i++)
+	if (!this->m_player->getIsSpawning())
 	{
-		if (SpikesBB[i].Intersects(this->m_player->getAABB()))
+		Room::update(dt, camera, activeRoom, activeRoomChanged);
+		//Spikes
+		for (int i = 0; i < SpikesBB.size(); i++)
 		{
-			this->m_player->getMoveCompPtr()->position = this->getRelativePosition(DirectX::XMVectorSet(0, 55, 95, 1));
+			if (SpikesBB[i].Intersects(this->m_player->getAABB()))
+			{
+				//this->m_player->getMoveCompPtr()->position = this->getRelativePosition(DirectX::XMVectorSet(0, 55, 95, 1));
+				this->m_player->respawn();
+				this->m_player->setPosition(getEntrancePosition());
+			}
 		}
-	}
 
-	//Front Lever
-	this->leverGrip[0]->collidesWithPlayer();
-	if (this->leverGrip[0]->getCanUseLever() == true)
-	{
-		if (this->m_player->getinUse() == true) //press E
+		//Front Lever
+		this->leverGrip[0]->collidesWithPlayer();
+		if (this->leverGrip[0]->getCanUseLever() == true)
 		{
-			this->leverTimer[0].restart();
-			this->moveLever0 = true;
-
-			
-			OutputDebugString(L"LEVER PULLED\n");
-			
-			this->bellsShallLower = true;
-		}
-	}
-
-	if (this->bellsShallLower == true)
-	{
-		moveTimer.restart();
-		bellsShallLower = false;
-		moveBellsDown(0);
-	}
-	if (this->moveTimer.isActive())
-	{
-		if (isAnimationGoing == false)
-		{
-			isAnimationGoing = true;
-			randNr = (rand() % 3);
-			isMoving = true;
-			OutputDebugString(L" randNr choosen \n ");
-			OutputDebugStringA(std::to_string(randNr).c_str());
-			OutputDebugString(L"\n ");
-			if (randNr == 0)
+			if (this->m_player->getinUse() == true) //press E
 			{
-				Bellmove1(1);
-			}
-			if (randNr == 1)
-			{
-				Bellmove2(1);
-			}
-			if (randNr == 2)
-			{
-				Bellmove3(1);
-			}
-		}
-		else
-		{
-			if (randNr == 0)
-			{
-				OutputDebugString(L" ranNr 01 \n ");
-				Bellmove1(1);
-				OutputDebugString(L" ranNr 02 \n ");
-			}
-			if (randNr == 1)
-			{
-				OutputDebugString(L" ranNr 11 \n ");
-				Bellmove2(1);
-				OutputDebugString(L" ranNr 12 \n ");
-			}
-			if (randNr == 2)
-			{
-				OutputDebugString(L" ranNr 21 \n ");
-				Bellmove3(1);
-				OutputDebugString(L" ranNr 22 \n ");
-			}
-		}
-	}
+				this->leverTimer[0].restart();
+				this->moveLever0 = true;
 
 
-	if (this->leverTimer[0].timeElapsed() < 1)
-	{
-		if (this->moveLever0 == true)
-		{
-			this->leverGrip[0]->getMoveCompPtr()->rotation += DirectX::XMVectorSet(pMath::convertDegreesToRadians(90) * dt, 0, 0 , 10);//__________________________________________
-		}
-	}
-	if (this->leverTimer[0].timeElapsed() >= 1)
-	{
-		this->moveLever0 = false;
-	}
-	/*
-	if (this->leverTimer[0].timeElapsed() >= 3)
-	{
-		this->moveLeverAgain0 = true;
-	}
-	if (this->leverTimer[0].timeElapsed() < 4)
-	{
-		if (this->moveLeverAgain0 == true)
-		{
-			this->leverGrip[0]->getMoveCompPtr()->rotation += DirectX::XMVectorSet(pMath::convertDegreesToRadians(-90) * dt, 0, 0, 10);
-		}
-	}*/
-	//if (this->leverTimer[0].timeElapsed() >= 4)
-	//{
-	//	this->tempLever0 = false;
-	//	this->canPullLever0 = true;
-	//	this->moveLever0 = false;
-	//	this->leverGrip[0]->getCanUseLever() = true;
-	//	//this->leverTimer[0].
-	//}
+				OutputDebugString(L"LEVER PULLED\n");
 
-	//Back Lever 1
-	this->leverGrip[1]->collidesWithPlayer();
-	if (this->leverGrip[1]->getCanUseLever() == true)
-	{
-		if (this->m_player->getinUse() == true) //press E
-		{
-
-			this->leverTimer[1].restart();
-			this->moveLever1 = true;
-
-
-			OutputDebugString(L"LEVER PULLED\n");
-
-			this->bellsShallRase = true;
-			if (randNr == 0)
-			{
-				//guessedRight = true;
-				onWin();
-			}
-			if(randNr != 0)
-			{
-				//guessedRight = false;
-				onFail();
+				this->bellsShallLower = true;
 			}
 		}
-	}
-	if (this->bellsShallRase == true)
-	{
-		RaiseBellTimer.restart();
-		bellsShallRase = false;
-		moveBellsUp();
-	}
 
-	if (this->leverTimer[1].timeElapsed() < 1)
-	{
-		if (this->moveLever1 == true)
+		if (this->bellsShallLower == true)
 		{
-			this->leverGrip[1]->getMoveCompPtr()->rotation += DirectX::XMVectorSet(pMath::convertDegreesToRadians(90) * dt, 0, 0, 10);//__________________________________________
+			moveTimer.restart();
+			bellsShallLower = false;
+			moveBellsDown(0);
 		}
-	}
-	
-	if (this->leverTimer[1].timeElapsed() >= 1)
-	{
-		this->moveLever1 = false;
-	}
-	/*
-	if (this->leverTimer[1].timeElapsed() >= 3)
-	{
-		this->moveLeverAgain1 = true;
-	}
-	if (this->leverTimer[1].timeElapsed() < 4)
-	{
-		if (this->moveLeverAgain1 == true)
+		if (this->moveTimer.isActive())
 		{
-			this->leverGrip[1]->getMoveCompPtr()->rotation += DirectX::XMVectorSet(pMath::convertDegreesToRadians(-90) * dt, 0, 0, 10);
-		}
-	}
-	*/
-	//Back Lever 2
-	this->leverGrip[2]->collidesWithPlayer();
-	if (this->leverGrip[2]->getCanUseLever() == true)
-	{
-		if (this->m_player->getinUse() == true ) //press E
-		{
-			this->leverTimer[2].restart();
-			this->moveLever2 = true;
-			
-			this->bellsShallRase = true;
-			if (randNr == 1)
+			if (isAnimationGoing == false)
 			{
-				//guessedRight = true;
-				onWin();
+				isAnimationGoing = true;
+				randNr = (rand() % 3);
+				isMoving = true;
+				OutputDebugString(L" randNr choosen \n ");
+				OutputDebugStringA(std::to_string(randNr).c_str());
+				OutputDebugString(L"\n ");
+				if (randNr == 0)
+				{
+					Bellmove1(1);
+				}
+				if (randNr == 1)
+				{
+					Bellmove2(1);
+				}
+				if (randNr == 2)
+				{
+					Bellmove3(1);
+				}
 			}
-			if (randNr != 1)
+			else
 			{
-				//guessedRight = false;
-				onFail();
+				if (randNr == 0)
+				{
+					OutputDebugString(L" ranNr 01 \n ");
+					Bellmove1(1);
+					OutputDebugString(L" ranNr 02 \n ");
+				}
+				if (randNr == 1)
+				{
+					OutputDebugString(L" ranNr 11 \n ");
+					Bellmove2(1);
+					OutputDebugString(L" ranNr 12 \n ");
+				}
+				if (randNr == 2)
+				{
+					OutputDebugString(L" ranNr 21 \n ");
+					Bellmove3(1);
+					OutputDebugString(L" ranNr 22 \n ");
+				}
 			}
 		}
-	}
-	if (this->bellsShallRase == true)
-	{
-		RaiseBellTimer.restart();
-		bellsShallRase = false;
-		moveBellsUp();
-	}
-	if (this->leverTimer[2].timeElapsed() < 1)
-	{
-		if (this->moveLever2 == true)
-		{
-			this->leverGrip[2]->getMoveCompPtr()->rotation += DirectX::XMVectorSet(pMath::convertDegreesToRadians(90) * dt, 0, 0, 10);//__________________________________________
-		}
-	}
-	
-	if (this->leverTimer[2].timeElapsed() >= 1)
-	{
-		this->moveLever2 = false;
-	}
-	/*
-	if (this->leverTimer[2].timeElapsed() >= 3)
-	{
-		this->moveLeverAgain2 = true;
-	}
-	if (this->leverTimer[2].timeElapsed() < 4)
-	{
-		if (this->moveLeverAgain2 == true)
-		{
-			this->leverGrip[2]->getMoveCompPtr()->rotation += DirectX::XMVectorSet(pMath::convertDegreesToRadians(-90) * dt, 0, 0, 10);
-		}
-	}
-	*/
-	//Back Lever 3
-	this->leverGrip[3]->collidesWithPlayer();
-	if (this->leverGrip[3]->getCanUseLever() == true)
-	{
-		if (this->m_player->getinUse() == true) //press E
-		{
-			this->leverTimer[3].restart();
-			this->moveLever3 = true;
 
-			this->bellsShallRase = true;
-			if (randNr == 2)
+
+		if (this->leverTimer[0].timeElapsed() < 1)
+		{
+			if (this->moveLever0 == true)
 			{
-				//guessedRight = true;
-				onWin();
-			}
-			if (randNr != 2)
-			{
-				//guessedRight = false;
-				onFail();
+				this->leverGrip[0]->getMoveCompPtr()->rotation += DirectX::XMVectorSet(pMath::convertDegreesToRadians(90) * dt, 0, 0, 10);//__________________________________________
 			}
 		}
-	}
-	if (this->bellsShallRase == true)
-	{
-		RaiseBellTimer.restart();
-		bellsShallRase = false;
-		isMoving = true;//--------------------------------------------------------------
-		moveBellsUp();
-	}
-	if (this->leverTimer[3].timeElapsed() < 1)
-	{
-		if (this->moveLever3 == true)
+		if (this->leverTimer[0].timeElapsed() >= 1)
 		{
-			this->leverGrip[3]->getMoveCompPtr()->rotation += DirectX::XMVectorSet(pMath::convertDegreesToRadians(90) * dt, 0, 0, 10);//__________________________________________
+			this->moveLever0 = false;
 		}
-	}
-	if (this->leverTimer[3].timeElapsed() >= 1)
-	{
-		this->moveLever3 = false;
-	}
-	/*
-	if (this->leverTimer[3].timeElapsed() >= 3)
-	{
-		this->moveLeverAgain3 = true;
-	}
-	if (this->leverTimer[3].timeElapsed() < 4)
-	{
-		if (this->moveLeverAgain3 == true)
+		/*
+		if (this->leverTimer[0].timeElapsed() >= 3)
 		{
-			this->leverGrip[3]->getMoveCompPtr()->rotation += DirectX::XMVectorSet(pMath::convertDegreesToRadians(-90) * dt, 0, 0, 10);
+			this->moveLeverAgain0 = true;
 		}
-	}
-	*/
-	/*if (moveTimer.isActive())
-	{
-		if (this->moveTimer.timeElapsed() > 13.f)
+		if (this->leverTimer[0].timeElapsed() < 4)
 		{
-			for (int i = 0; i < 4; i++)
+			if (this->moveLeverAgain0 == true)
 			{
-				leverGrip[i]->toggleActivateLever();
-				isMoving = false;
+				this->leverGrip[0]->getMoveCompPtr()->rotation += DirectX::XMVectorSet(pMath::convertDegreesToRadians(-90) * dt, 0, 0, 10);
 			}
-			moveTimer.stop();
+		}*/
+		//if (this->leverTimer[0].timeElapsed() >= 4)
+		//{
+		//	this->tempLever0 = false;
+		//	this->canPullLever0 = true;
+		//	this->moveLever0 = false;
+		//	this->leverGrip[0]->getCanUseLever() = true;
+		//	//this->leverTimer[0].
+		//}
+
+		//Back Lever 1
+		this->leverGrip[1]->collidesWithPlayer();
+		if (this->leverGrip[1]->getCanUseLever() == true)
+		{
+			if (this->m_player->getinUse() == true) //press E
+			{
+
+				this->leverTimer[1].restart();
+				this->moveLever1 = true;
+
+
+				OutputDebugString(L"LEVER PULLED\n");
+
+				this->bellsShallRase = true;
+				if (randNr == 0)
+				{
+					//guessedRight = true;
+					onWin();
+				}
+				if (randNr != 0)
+				{
+					//guessedRight = false;
+					onFail();
+				}
+			}
 		}
-	}*/
+		if (this->bellsShallRase == true)
+		{
+			RaiseBellTimer.restart();
+			bellsShallRase = false;
+			moveBellsUp();
+		}
+
+		if (this->leverTimer[1].timeElapsed() < 1)
+		{
+			if (this->moveLever1 == true)
+			{
+				this->leverGrip[1]->getMoveCompPtr()->rotation += DirectX::XMVectorSet(pMath::convertDegreesToRadians(90) * dt, 0, 0, 10);//__________________________________________
+			}
+		}
+
+		if (this->leverTimer[1].timeElapsed() >= 1)
+		{
+			this->moveLever1 = false;
+		}
+		/*
+		if (this->leverTimer[1].timeElapsed() >= 3)
+		{
+			this->moveLeverAgain1 = true;
+		}
+		if (this->leverTimer[1].timeElapsed() < 4)
+		{
+			if (this->moveLeverAgain1 == true)
+			{
+				this->leverGrip[1]->getMoveCompPtr()->rotation += DirectX::XMVectorSet(pMath::convertDegreesToRadians(-90) * dt, 0, 0, 10);
+			}
+		}
+		*/
+		//Back Lever 2
+		this->leverGrip[2]->collidesWithPlayer();
+		if (this->leverGrip[2]->getCanUseLever() == true)
+		{
+			if (this->m_player->getinUse() == true) //press E
+			{
+				this->leverTimer[2].restart();
+				this->moveLever2 = true;
+
+				this->bellsShallRase = true;
+				if (randNr == 1)
+				{
+					//guessedRight = true;
+					onWin();
+				}
+				if (randNr != 1)
+				{
+					//guessedRight = false;
+					onFail();
+				}
+			}
+		}
+		if (this->bellsShallRase == true)
+		{
+			RaiseBellTimer.restart();
+			bellsShallRase = false;
+			moveBellsUp();
+		}
+		if (this->leverTimer[2].timeElapsed() < 1)
+		{
+			if (this->moveLever2 == true)
+			{
+				this->leverGrip[2]->getMoveCompPtr()->rotation += DirectX::XMVectorSet(pMath::convertDegreesToRadians(90) * dt, 0, 0, 10);//__________________________________________
+			}
+		}
+
+		if (this->leverTimer[2].timeElapsed() >= 1)
+		{
+			this->moveLever2 = false;
+		}
+		/*
+		if (this->leverTimer[2].timeElapsed() >= 3)
+		{
+			this->moveLeverAgain2 = true;
+		}
+		if (this->leverTimer[2].timeElapsed() < 4)
+		{
+			if (this->moveLeverAgain2 == true)
+			{
+				this->leverGrip[2]->getMoveCompPtr()->rotation += DirectX::XMVectorSet(pMath::convertDegreesToRadians(-90) * dt, 0, 0, 10);
+			}
+		}
+		*/
+		//Back Lever 3
+		this->leverGrip[3]->collidesWithPlayer();
+		if (this->leverGrip[3]->getCanUseLever() == true)
+		{
+			if (this->m_player->getinUse() == true) //press E
+			{
+				this->leverTimer[3].restart();
+				this->moveLever3 = true;
+
+				this->bellsShallRase = true;
+				if (randNr == 2)
+				{
+					//guessedRight = true;
+					onWin();
+				}
+				if (randNr != 2)
+				{
+					//guessedRight = false;
+					onFail();
+				}
+			}
+		}
+		if (this->bellsShallRase == true)
+		{
+			RaiseBellTimer.restart();
+			bellsShallRase = false;
+			isMoving = true;//--------------------------------------------------------------
+			moveBellsUp();
+		}
+		if (this->leverTimer[3].timeElapsed() < 1)
+		{
+			if (this->moveLever3 == true)
+			{
+				this->leverGrip[3]->getMoveCompPtr()->rotation += DirectX::XMVectorSet(pMath::convertDegreesToRadians(90) * dt, 0, 0, 10);//__________________________________________
+			}
+		}
+		if (this->leverTimer[3].timeElapsed() >= 1)
+		{
+			this->moveLever3 = false;
+		}
+		/*
+		if (this->leverTimer[3].timeElapsed() >= 3)
+		{
+			this->moveLeverAgain3 = true;
+		}
+		if (this->leverTimer[3].timeElapsed() < 4)
+		{
+			if (this->moveLeverAgain3 == true)
+			{
+				this->leverGrip[3]->getMoveCompPtr()->rotation += DirectX::XMVectorSet(pMath::convertDegreesToRadians(-90) * dt, 0, 0, 10);
+			}
+		}
+		*/
+		/*if (moveTimer.isActive())
+		{
+			if (this->moveTimer.timeElapsed() > 13.f)
+			{
+				for (int i = 0; i < 4; i++)
+				{
+					leverGrip[i]->toggleActivateLever();
+					isMoving = false;
+				}
+				moveTimer.stop();
+			}
+		}*/
+	}
 }
 
 void TristansRoom::onEntrance()
 {
 	Room::onEntrance();
+	this->m_player->setSpawnPosition(this->getEntrancePosition());
+	this->m_player->setRotation({ 0.f, XM_PI, 0.f, 1.f });
 }
 
 void TristansRoom::init()
@@ -1020,7 +1027,8 @@ void TristansRoom::onWin()
 void TristansRoom::onFail()
 {
 	//Reset Player
-	this->m_player->getMoveCompPtr()->position = { 0, 55, -95, 1 };
+	this->m_player->respawn();
+	this->m_player->setPosition(getEntrancePosition());
 
 	for (int i = 0; i < 4; i++)
 	{

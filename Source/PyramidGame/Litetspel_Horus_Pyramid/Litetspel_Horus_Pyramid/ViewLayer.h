@@ -8,6 +8,8 @@
 #include "ShadowMapInstance.h"
 #include "StatusTextHandler.h"
 #include "iGameState.h"
+#include "Transition.h"
+
 class ViewLayer
 {
 private:
@@ -34,10 +36,6 @@ private:
 
 	// Shaders
 	Shaders m_shaders;
-
-	// Shadow Mapping
-	static const int SHADOW_MAP_SIZE = 2048;
-	ShadowMapInstance m_shadowInstance;
 
 	// Constant Buffer
 	Microsoft::WRL::ComPtr< ID3D11Buffer > m_constantBuffer;
@@ -78,6 +76,9 @@ private:
 
 	DirectX::XMMATRIX* m_viewMatrix;
 	DirectX::XMMATRIX* m_projectionMatrix;
+
+	// Transition
+	Transition* m_transition;
 
 	// FPS Counter
 	Timer m_timer;

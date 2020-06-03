@@ -303,9 +303,6 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 	this->initShaders();
 	this->initConstantBuffer();
 
-	// Shadow Mapping
-	this->m_shadowInstance.initialize(this->m_device.Get(), this->m_deviceContext.Get(), 2048, 2048);
-
 	// Lights
 	PointLight pLight;
 	pLight.plPosition = { 0, 10, 0 };
@@ -385,12 +382,14 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 
 	assert(SUCCEEDED(hr) && "Error, failed to create input layout for primitives!");
 
+	// Transition
+	this->m_transition = &Transition::get();
+	this->m_transition->initialize(this->m_device.Get(), this->m_deviceContext.Get());
+
 	// FPS counter
 	this->m_spriteFont16 = std::make_unique<DirectX::SpriteFont>(this->m_device.Get(), L"Fonts\\jost_16_bold.spritefont");
 	this->m_spriteFont32 = std::make_unique<DirectX::SpriteFont>(this->m_device.Get(), L"Fonts\\jost_32_bold.spritefont");
 	this->m_fpsString = "FPS: NULL";
-
-
 
 	// Status Text Handler
 	this->m_statusTextHandler = &StatusTextHandler::get();
@@ -399,6 +398,9 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 
 void ViewLayer::update(float dt, XMFLOAT3 cameraPos)
 {
+	// Transition
+	this->m_transition->update(dt);
+
 	//FPS Counter
 	this->m_fps++;
 	if (1.0 < m_timer.timeElapsed())
@@ -483,6 +485,11 @@ void ViewLayer::render(iGameState* gameState)
 			}
 		}
 	}
+	// Draw Transition Quad
+	this->m_deviceContext->OMSetDepthStencilState(m_states->DepthNone(), 0);
+	this->m_transition->render();
+	this->m_deviceContext->OMSetDepthStencilState(m_states->DepthDefault(), 0);
+
 	// Draw Primitives
 	if (this->m_drawPrimitives)
 	{

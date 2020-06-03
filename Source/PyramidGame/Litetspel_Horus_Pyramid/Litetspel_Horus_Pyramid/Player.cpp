@@ -7,6 +7,7 @@ Player::Player() : GameObject()
 	this->m_QAmode = false;
 	this->m_lastOnGroundYPos = -1.f;
 	this->m_failThreshold = 10.f;
+	this->m_spawning = false;
 }
 
 Player::~Player() {}
@@ -69,14 +70,8 @@ void Player::setSpawnPosition(XMVECTOR position)
 
 void Player::respawn()
 {
-	this->m_movementComp->position = this->m_spawnPosition;
-	this->m_lastOnGroundYPos = XMVectorGetY(this->m_spawnPosition);
-	this->m_movementComp->rotation = { 0.f, 0.f, 0.f, 1.f };
-	this->m_physicsComp->setVelocity({ 0.f, 0.f, 0.f });
-	this->m_physicsComp->setIsJumping(false);
-	this->m_physicsComp->setIsFalling(true);
-	this->m_lastFly = false;
-	this->m_hookHand.reset();
+	Transition::get().fadeIn({ 0.f, 0.f, 0.f });
+	this->m_spawning = true;
 }
 
 bool Player::getinUse()
@@ -99,52 +94,76 @@ bool Player::getQAMode() const
 	return this->m_QAmode;
 }
 
+bool Player::getIsSpawning() const
+{
+	return this->m_spawning;
+}
+
 void Player::update(float dt)
 {
-	if (this->m_hookHand.shouldFly())
+	if (!this->m_spawning)
 	{
-		this->m_physicsComp->setVelocity(DirectX::XMFLOAT3(0, 0, 0));
-		this->m_lastFly = true;
-		DirectX::XMVECTOR normalziedAndDT = DirectX::XMVectorScale(DirectX::XMVector3Normalize(this->m_hookHand.m_toHeadDir), dt);
-		normalziedAndDT = DirectX::XMVectorScale(normalziedAndDT, 100);
-		this->m_movementComp->position = (DirectX::XMVectorAdd(this->m_movementComp->position, normalziedAndDT));
-	}
-	else
-	{
-		// Update lastGroundPos
-		if (this->m_lastFly || !this->m_physicsComp->getIsFalling())
+		if (this->m_hookHand.shouldFly())
 		{
-			this->m_lastOnGroundYPos = XMVectorGetY(this->m_movementComp->position);
-		}
-		this->m_lastFly = false;
-
-		// Fail State
-		if (!this->m_QAmode && this->m_lastOnGroundYPos != -1 && this->m_lastOnGroundYPos > XMVectorGetY(this->m_movementComp->position) + this->m_failThreshold)
-		{
-			this->respawn();
-		}
-
-		// Handle Collisions
-		if (this->m_QAmode) // Pyramid intersection turned off in QA Mode
-		{
-			BoundingOrientedBox QAPyramidOBB = this->m_pyramidOBB;
-			QAPyramidOBB.Extents = XMFLOAT3(0.f, 0.f, 0.f);
-			this->m_physicsComp->handleCollision(this->m_collidableAABBoxes, QAPyramidOBB, dt, this->m_collidableOrientedBoxes);
+			this->m_physicsComp->setVelocity(DirectX::XMFLOAT3(0, 0, 0));
+			this->m_lastFly = true;
+			DirectX::XMVECTOR normalziedAndDT = DirectX::XMVectorScale(DirectX::XMVector3Normalize(this->m_hookHand.m_toHeadDir), dt);
+			normalziedAndDT = DirectX::XMVectorScale(normalziedAndDT, 100);
+			this->m_movementComp->position = (DirectX::XMVectorAdd(this->m_movementComp->position, normalziedAndDT));
 		}
 		else
-			this->m_physicsComp->handleCollision(this->m_collidableAABBoxes, this->m_pyramidOBB, dt, this->m_collidableOrientedBoxes);
+		{
+			// Update lastGroundPos
+			if (this->m_lastFly || !this->m_physicsComp->getIsFalling())
+			{
+				this->m_lastOnGroundYPos = XMVectorGetY(this->m_movementComp->position);
+			}
+			this->m_lastFly = false;
+
+			// Fail State
+			if (!this->m_QAmode && this->m_lastOnGroundYPos != -1 && this->m_lastOnGroundYPos > XMVectorGetY(this->m_movementComp->position) + this->m_failThreshold)
+			{
+				this->respawn();
+			}
+
+			// Handle Collisions
+			if (this->m_QAmode) // Pyramid intersection turned off in QA Mode
+			{
+				BoundingOrientedBox QAPyramidOBB = this->m_pyramidOBB;
+				QAPyramidOBB.Extents = XMFLOAT3(0.f, 0.f, 0.f);
+				this->m_physicsComp->handleCollision(this->m_collidableAABBoxes, QAPyramidOBB, dt, this->m_collidableOrientedBoxes);
+			}
+			else
+				this->m_physicsComp->handleCollision(this->m_collidableAABBoxes, this->m_pyramidOBB, dt, this->m_collidableOrientedBoxes);
+		}
+
+		this->m_physicsComp->updatePosition(dt, true); // If Camera is not following player, remove last argument( Only dt)
+
+		// Gravity or Flying Deceleration
+		if (this->m_QAmode)
+			this->m_physicsComp->addYDecel(dt);
+		else
+			this->m_physicsComp->addGravity(dt);
+
+		// Hook Update
+		this->m_hookHand.update(dt);
 	}
-
-	this->m_physicsComp->updatePosition(dt, true); // If Camera is not following player, remove last argument( Only dt)
-
-	// Gravity or Flying Deceleration
-	if (this->m_QAmode)
-		this->m_physicsComp->addYDecel(dt);
 	else
-		this->m_physicsComp->addGravity(dt);
-
-	// Hook Update
-	this->m_hookHand.update(dt);
+	{
+		if (Transition::get().isAnimationDone())
+		{
+			this->m_movementComp->position = this->m_spawnPosition;
+			this->m_lastOnGroundYPos = XMVectorGetY(this->m_spawnPosition);
+			this->m_movementComp->rotation = { 0.f, 0.f, 0.f, 1.f };
+			this->m_physicsComp->setVelocity({ 0.f, 0.f, 0.f });
+			this->m_physicsComp->setIsJumping(false);
+			this->m_physicsComp->setIsFalling(true);
+			this->m_lastFly = false;
+			this->m_hookHand.reset();
+			Transition::get().fadeOut();
+			this->m_spawning = false;
+		}
+	}
 }
 
 void Player::shoot()

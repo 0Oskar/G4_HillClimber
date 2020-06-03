@@ -12,147 +12,156 @@ KevinsRoom::~KevinsRoom()
 
 void KevinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activeRoomChanged)
 {
-	Room::update(dt, camera, activeRoom, activeRoomChanged);
-	//Så boundingBoxen följer skorpionen.
-
-	float scorpionX = XMVectorGetX(this->scorpion->getPosition());
-	float scorpionY = XMVectorGetY(this->scorpion->getPosition());
-	float scorpionZ = XMVectorGetZ(this->scorpion->getPosition());
-	scorpionZ -= 0.6f;
-
-	XMFLOAT3 scorpionPos = XMFLOAT3(scorpionX, scorpionY, scorpionZ);
-
-	
-	
-	/////////////////////////////////////////
-
-	if (triggerBB[0].Intersects(this->m_player->getAABB()))
+	if (!this->m_player->getIsSpawning())
 	{
-		if (trapActive1 == true)
+		Room::update(dt, camera, activeRoom, activeRoomChanged);
+		//Så boundingBoxen följer skorpionen.
+
+		float scorpionX = XMVectorGetX(this->scorpion->getPosition());
+		float scorpionY = XMVectorGetY(this->scorpion->getPosition());
+		float scorpionZ = XMVectorGetZ(this->scorpion->getPosition());
+		scorpionZ -= 0.6f;
+
+		XMFLOAT3 scorpionPos = XMFLOAT3(scorpionX, scorpionY, scorpionZ);
+
+
+
+		/////////////////////////////////////////
+
+		if (triggerBB[0].Intersects(this->m_player->getAABB()))
 		{
-			dartFly1 = true;
+			if (trapActive1 == true)
+			{
+				dartFly1 = true;
+			}
 		}
-	}
 
-	if (triggerBB[1].Intersects(this->m_player->getAABB()))
-	{
-		if (trapActive2 == true)
+		if (triggerBB[1].Intersects(this->m_player->getAABB()))
 		{
-			dartFly2 = true;
+			if (trapActive2 == true)
+			{
+				dartFly2 = true;
+			}
 		}
-	}
 
-	if (triggerBB[3].Intersects(this->m_player->getAABB()) && bridgeStop > 0)
-	{
-		bridgeStop -= (3 * dt);
-		this->expandingBridge[0]->getMoveCompPtr()->position = this->expandingBridge[0]->getMoveCompPtr()->position + (XMVectorSet(0.0f, 0.f, 3 * dt, 0.f));
-	}
-
-	if (triggerBB[4].Intersects(this->m_player->getAABB()))
-	{
-		this->scorpion->setReachedEdge(false);
-	}
-	
-
-	//Scorpion walking bounds
-	if (triggerBB[2].Intersects(*scorpionBB) || triggerBB[5].Intersects(*scorpionBB))
-	{
-		this->scorpion->setReachedEdge(true);
-	}
-	bool doOnce = false;
-	if (scorpionBB->Intersects(this->m_player->getAABB()))
-	{
-		this->m_player->respawn();
-		StatusTextHandler::get().sendText("The scorpion caught you!\n    5 sec added to timer", 5);
-		this->m_gameTimerPointer->addTime(5);
-	}
-	
-	for (int i = 0; i < deathTrapBB.size(); i++)
-	{
-		if (deathTrapBB[i].Intersects(this->m_player->getAABB()))
+		if (triggerBB[3].Intersects(this->m_player->getAABB()) && bridgeStop > 0)
 		{
-			void looseLife();
+			bridgeStop -= (3 * dt);
+			this->expandingBridge[0]->getMoveCompPtr()->position = this->expandingBridge[0]->getMoveCompPtr()->position + (XMVectorSet(0.0f, 0.f, 3 * dt, 0.f));
+		}
+
+		if (triggerBB[4].Intersects(this->m_player->getAABB()))
+		{
+			this->scorpion->setReachedEdge(false);
+		}
+
+
+		//Scorpion walking bounds
+		if (triggerBB[2].Intersects(*scorpionBB) || triggerBB[5].Intersects(*scorpionBB))
+		{
+			this->scorpion->setReachedEdge(true);
+		}
+		bool doOnce = false;
+		if (scorpionBB->Intersects(this->m_player->getAABB()))
+		{
 			this->m_player->respawn();
-			StatusTextHandler::get().sendText("You fell on the spikes!\n 5 sec added to timer", 5);
+			this->m_player->setPosition(getEntrancePosition());
+			StatusTextHandler::get().sendText("The scorpion caught you!\n    5 sec added to timer", 5);
 			this->m_gameTimerPointer->addTime(5);
 		}
-	}
 
-	for (int i = 0; i < dartTrap.size(); i++)
+		for (int i = 0; i < deathTrapBB.size(); i++)
+		{
+			if (deathTrapBB[i].Intersects(this->m_player->getAABB()))
+			{
+				void looseLife();
+				this->m_player->respawn();
+				this->m_player->setPosition(getEntrancePosition());
+				StatusTextHandler::get().sendText("You fell on the spikes!\n 5 sec added to timer", 5);
+				this->m_gameTimerPointer->addTime(5);
+			}
+		}
+
+		for (int i = 0; i < dartTrap.size(); i++)
+		{
+			if (dartTrap[i]->getAABB().Intersects(this->m_player->getAABB()))
+			{
+				void looseLife();
+				this->m_player->respawn();
+				this->m_player->setPosition(getEntrancePosition());
+				//Add Time
+				StatusTextHandler::get().sendText("You got hit by a dart trap!\n   5 sec added to timer", 5);
+				this->m_gameTimerPointer->addTime(5);
+			}
+		}
+
+		if (dartFly1 == true)
+		{
+			if (dartPosition1 <= 0)
+			{
+				dartPosition1 = 110.f;
+				dartTrap[0]->getMoveCompPtr()->position = this->getRelativePosition(DirectX::XMVectorSet(10.f, 27, -80 + 140.f, 0.f));
+				dartFly1 = false;
+			}
+			else
+			{
+				dartTrap[0]->getMoveCompPtr()->position = dartTrap[0]->getMoveCompPtr()->position + DirectX::XMVectorSet(-110.f * dt, 0, 0, 0.f);
+				dartPosition1 -= 110.f * dt;
+			}
+		}
+
+		if (dartFly2 == true)
+		{
+			if (dartPosition2 <= 0)
+			{
+				dartPosition2 = 110.f;
+				dartTrap[1]->getMoveCompPtr()->position = this->getRelativePosition(DirectX::XMVectorSet(10.f, 27.f, -50.f + 140.f, 0.f));
+				dartFly2 = false;
+			}
+			else
+			{
+				dartTrap[1]->getMoveCompPtr()->position = dartTrap[1]->getMoveCompPtr()->position + DirectX::XMVectorSet(-110.f * dt, 0, 0, 0.f);
+				dartPosition2 -= 110.f * dt;
+			}
+		}
+
+		//Lever
+		this->lever[0]->collidesWithPlayer();
+
+		if (this->lever[0]->getCanUseLever() == true)
+		{
+			if (this->m_player->getinUse() == true && this->trapActive1 == true)
+			{
+				this->lever[0]->getMoveCompPtr()->rotation -= DirectX::XMVectorSet(XMConvertToRadians(180.f), 0.f, 0.f, 0.f);
+				trapActive1 = false;
+			}
+		}
+
+		this->lever[1]->collidesWithPlayer();
+		if (this->lever[1]->getCanUseLever() == true && this->trapActive2 == true)
+		{
+			if (this->m_player->getinUse() == true)
+			{
+				this->lever[1]->getMoveCompPtr()->rotation -= DirectX::XMVectorSet(XMConvertToRadians(180.f), 0.f, 0.f, 0.f);
+				trapActive2 = false;
+			}
+		}
+
+		this->wonPuzzleObject[0]->collidesWithPlayer();
+		if (this->wonPuzzleObject[0]->getCanUseLever() == true)
+		{
+
+			if (this->m_player->getinUse() == true)
+			{
+				if (!m_completed)
+					this->onCompleted();
+			}
+		}
+	}
+	else
 	{
-		if (dartTrap[i]->getAABB().Intersects(this->m_player->getAABB()))
-		{
-			void looseLife();
-			this->m_player->respawn();
-			//Add Time
-			StatusTextHandler::get().sendText("You got hit by a dart trap!\n   5 sec added to timer", 5);
-			this->m_gameTimerPointer->addTime(5);
-		}
+		this->m_player->setPosition(this->getEntrancePosition());
 	}
-
-	if (dartFly1 == true)
-	{
-		if (dartPosition1 <= 0)
-		{
-			dartPosition1 = 110.f;
-			dartTrap[0]->getMoveCompPtr()->position = this->getRelativePosition(DirectX::XMVectorSet(10.f, 27, -80 + 140.f, 0.f));
-			dartFly1 = false;
-		}
-		else
-		{
-			dartTrap[0]->getMoveCompPtr()->position = dartTrap[0]->getMoveCompPtr()->position + DirectX::XMVectorSet(-110.f * dt, 0, 0, 0.f);
-			dartPosition1 -= 110.f * dt;
-		}
-	}
-
-	if (dartFly2 == true)
-	{
-		if (dartPosition2 <= 0)
-		{
-			dartPosition2 = 110.f;
-			dartTrap[1]->getMoveCompPtr()->position = this->getRelativePosition(DirectX::XMVectorSet(10.f, 27.f, -50.f + 140.f, 0.f));
-			dartFly2 = false;
-		}
-		else
-		{
-			dartTrap[1]->getMoveCompPtr()->position = dartTrap[1]->getMoveCompPtr()->position + DirectX::XMVectorSet(-110.f * dt, 0, 0, 0.f);
-			dartPosition2 -= 110.f * dt;
-		}
-	}
-
-	//Lever
-	this->lever[0]->collidesWithPlayer();
-
-	if (this->lever[0]->getCanUseLever() == true)
-	{
-		if (this->m_player->getinUse() == true && this->trapActive1 == true)
-		{
-			this->lever[0]->getMoveCompPtr()->rotation -= DirectX::XMVectorSet(XMConvertToRadians(180.f), 0.f, 0.f, 0.f);
-			trapActive1 = false;
-		}
-	}
-
-	this->lever[1]->collidesWithPlayer();
-	if (this->lever[1]->getCanUseLever() == true && this->trapActive2 == true)
-	{
-		if (this->m_player->getinUse() == true)
-		{
-			this->lever[1]->getMoveCompPtr()->rotation -= DirectX::XMVectorSet(XMConvertToRadians(180.f), 0.f, 0.f, 0.f);
-			trapActive2 = false;
-		}
-	}
-
-	this->wonPuzzleObject[0]->collidesWithPlayer();
-	if (this->wonPuzzleObject[0]->getCanUseLever() == true)
-	{
-		
-		if (this->m_player->getinUse() == true)
-		{
-			if(!m_completed)
-				this->onCompleted();
-		}
-	}
-	
 }
 
 void KevinsRoom::looseLife()
@@ -193,7 +202,7 @@ void KevinsRoom::portals()
 void KevinsRoom::onEntrance()
 {
 	Room::onEntrance();
-	this->m_player->setSpawnPosition(this->m_entrencePosition);
+	this->m_player->setSpawnPosition(this->getEntrancePosition());
 	portalPtr->setActiveStatus(false);
 }
 void KevinsRoom::createBoundingBoxes()
