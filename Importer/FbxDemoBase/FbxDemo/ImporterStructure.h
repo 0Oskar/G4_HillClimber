@@ -78,15 +78,15 @@ struct AnimVertexBFF
 	float norm[3];
 	float biNorm[3];
 	float tan[3];
-	float boneIDs; // Vi kör med en istället för fyra
-	float boneWeights;
+	int boneIDs; // Vi kör med en istället för fyra
+	float boneWeights; // 0-1
 	JointBFF jointHierarchy;
 };
 
 struct JointBFF
 {
 	//joint children[];
-	int id;
+	int id; // index
 	float transform[16]; // make into 4x4 Matrix
 };
 
@@ -106,6 +106,7 @@ struct JointTransform
 {
 	float position[3];
 	float rotation[3]; // Quaternion
+	float scale[3]; // maybe
 };
 
 
