@@ -228,12 +228,12 @@ int main(int argc, char** argv)
             "Normal (" + std::to_string(controlPointData2[i].norm[0]) + ", " + std::to_string(controlPointData2[i].norm[1]) + ", " + std::to_string(controlPointData2[i].norm[2]) + ")\n" +
             "biNormal (" + std::to_string(controlPointData2[i].biNorm[0]) + ", " + std::to_string(controlPointData2[i].biNorm[1]) + ", " + std::to_string(controlPointData2[i].biNorm[2]) + ")\n" +
             "Tangent (" + std::to_string(controlPointData2[i].tan[0]) + ", " + std::to_string(controlPointData2[i].tan[1]) + ", " + std::to_string(controlPointData2[i].tan[2]) + ")\n" +
-            "\n"
-            //"Influenced by joint:" + std::to_string(controlPointData2[i].boneID[0]) + " (" + std::to_string(controlPointData2[i].boneWeight[0]) + "%)\n" +
-            //"Influenced by joint:" + std::to_string(controlPointData2[i].boneID[1]) + " (" + std::to_string(controlPointData2[i].boneWeight[1]) + "%)\n" +
-            //"Influenced by joint:" + std::to_string(controlPointData2[i].boneID[2]) + " (" + std::to_string(controlPointData2[i].boneWeight[2]) + "%)\n" +
-            //"Influenced by joint:" + std::to_string(controlPointData2[i].boneID[3]) + " (" + std::to_string(controlPointData2[i].boneWeight[3]) + "%)\n" +
-            //"\n\n"
+            "\n" +
+            "Influenced by joint:" + std::to_string(controlPointData2[i].boneID[0]) + " (" + std::to_string(controlPointData2[i].boneWeight[0]) + "%)\n" +
+            "Influenced by joint:" + std::to_string(controlPointData2[i].boneID[1]) + " (" + std::to_string(controlPointData2[i].boneWeight[1]) + "%)\n" +
+            "Influenced by joint:" + std::to_string(controlPointData2[i].boneID[2]) + " (" + std::to_string(controlPointData2[i].boneWeight[2]) + "%)\n" +
+            "Influenced by joint:" + std::to_string(controlPointData2[i].boneID[3]) + " (" + std::to_string(controlPointData2[i].boneWeight[3]) + "%)\n" +
+            "\n\n"
         );
         myFile5.writeToFile((const char*)&controlPointData2[i], sizeof(ControlPointBFF)); //Add to biFile
 

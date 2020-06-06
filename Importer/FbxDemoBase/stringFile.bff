@@ -1,128 +1,122 @@
-
-------------- Scene: 
-
+############ Scene ############
 NrOfLights: 0
 NrOfCameras: 0
 NrOfVertexAnimFrames: 0
-NrOfBlendShapes: 0
+NrOfBlendShapes: 2
 
 
-------------- Mesh: 
-
-Mesh Name: BasicJointTri
-NrOfVertex: 3
+############ Mesh ############
+Mesh Name: PlaneMesh
+NrOfControlPoints: 4
 NrOfJoints: 3
 
 
+############ Control Points ############
+
 ------ Index 0)
+Position (-0.500000, 0.000000, 0.500000)
+UV (0.000000, 0.000000)
 
-PosX: -0.500000
-PosY: 0.000000
-PosZ: -0.500000
+Normal (0.000000, 1.000000, 0.000000)
+biNormal (0.000000, 0.000000, -1.000000)
+Tangent (1.000000, -0.000000, 0.000000)
 
-U: 0.000000
-V: 1.000000
-
-NormX: 0.000000
-NormY: 1.000000
-NormZ: 0.000000
-
-biNormX: 0.000000
-biNormY: 0.000000
-biNormZ: -1.000000
-
-TanX: 1.000000
-TanY: -0.000000
-TanZ: 0.000000
+Influenced by joint:1 (0.000000%)
+Influenced by joint:1 (0.000000%)
+Influenced by joint:3 (0.000000%)
+Influenced by joint:0 (0.000000%)
 
 
 
 ------ Index 1)
+Position (0.500000, 0.000000, 0.500000)
+UV (1.000000, 0.000000)
 
-PosX: 0.500000
-PosY: -0.000000
-PosZ: 0.500000
+Normal (0.000000, 1.000000, 0.000000)
+biNormal (0.000000, 0.000000, -1.000000)
+Tangent (1.000000, 0.000000, 0.000000)
 
-U: 1.000000
-V: 0.000000
-
-NormX: 0.000000
-NormY: 1.000000
-NormZ: 0.000000
-
-biNormX: 0.000000
-biNormY: 0.000000
-biNormZ: -1.000000
-
-TanX: 1.000000
-TanY: -0.000000
-TanZ: 0.000000
+Influenced by joint:1 (0.000000%)
+Influenced by joint:1 (0.000000%)
+Influenced by joint:3 (0.000000%)
+Influenced by joint:0 (0.000000%)
 
 
 
 ------ Index 2)
+Position (-0.500000, 0.000000, -0.500000)
+UV (0.000000, 1.000000)
 
-PosX: 0.500000
-PosY: 0.000000
-PosZ: -0.500000
+Normal (0.000000, 1.000000, 0.000000)
+biNormal (0.000000, 0.000000, -1.000000)
+Tangent (1.000000, 0.000000, 0.000000)
 
-U: 1.000000
-V: 1.000000
-
-NormX: 0.000000
-NormY: 1.000000
-NormZ: 0.000000
-
-biNormX: 0.000000
-biNormY: 0.000000
-biNormZ: -1.000000
-
-TanX: 1.000000
-TanY: -0.000000
-TanZ: 0.000000
+Influenced by joint:1 (0.000000%)
+Influenced by joint:1 (0.000000%)
+Influenced by joint:3 (0.000000%)
+Influenced by joint:0 (0.000000%)
 
 
 
-------------- Material: 
+------ Index 3)
+Position (0.500000, 0.000000, -0.500000)
+UV (1.000000, 1.000000)
 
-DiffuseR: 0.500000
-DiffuseG: 0.500000
-DiffuseB: 0.500000
+Normal (0.000000, 1.000000, 0.000000)
+biNormal (0.000000, 0.000000, -1.000000)
+Tangent (1.000000, 0.000000, 0.000000)
 
-AmbientR: 0.000000
-AmbientG: 0.000000
-AmbientB: 0.000000
-
-Opacity: 0.000000
- 
-TexturePath: No texture found!
- 
-
-
-------------- Bone:
-
-Bone Name: joint1
-BindRotX: 0.000000
-BindRotY: 88.872910
-BindRotZ: 0.000000
+Influenced by joint:1 (0.000000%)
+Influenced by joint:1 (0.000000%)
+Influenced by joint:3 (0.000000%)
+Influenced by joint:0 (0.000000%)
 
 
 
 
-------------- Bone:
 
-Bone Name: joint2
-BindRotX: 0.000000
-BindRotY: 90.985596
-BindRotZ: 0.000000
+############ BlendShape ############
 
-
+------ Index 0)
+Position (-0.500000, 0.000000, 1.500000)
+Normals (0.000000, 1.000000, 0.000000)
 
 
-------------- Bone:
+------ Index 1)
+Position (0.500000, 0.000000, 1.500000)
+Normals (0.000000, 1.000000, 0.000000)
 
-Bone Name: joint3
-BindRotX: 0.000000
-BindRotY: 180.141495
-BindRotZ: 0.000000
+
+------ Index 2)
+Position (-0.500000, 0.000000, -1.500000)
+Normals (0.000000, 1.000000, 0.000000)
+
+
+------ Index 3)
+Position (0.500000, 0.000000, -1.500000)
+Normals (0.000000, 1.000000, 0.000000)
+
+
+
+
+############ BlendShape ############
+
+------ Index 0)
+Position (-1.000000, 0.000000, 0.500000)
+Normals (0.000000, 1.000000, 0.000000)
+
+
+------ Index 1)
+Position (1.000000, 0.000000, 0.500000)
+Normals (0.000000, 1.000000, 0.000000)
+
+
+------ Index 2)
+Position (-1.000000, 0.000000, -0.500000)
+Normals (0.000000, 1.000000, 0.000000)
+
+
+------ Index 3)
+Position (1.000000, 0.000000, -0.500000)
+Normals (0.000000, 1.000000, 0.000000)
 

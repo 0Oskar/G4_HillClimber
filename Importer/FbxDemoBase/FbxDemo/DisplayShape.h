@@ -16,7 +16,9 @@
 
 void DisplayShape(FbxGeometry* pGeometry);
 std::vector<std::vector<BlendShapesBFF>> GetBlendShapeDataArr();
+std::vector<std::vector<BlendshapeBFF>> GetNewBlendShapeData();
 int GetNrOfVertexInBlendShape();
+int GetNrOfControlPointsInBlendShape();
 int GetNrOfBlendShapes();
 
 #endif // #ifndef _DISPLAY_SHAPE_H
