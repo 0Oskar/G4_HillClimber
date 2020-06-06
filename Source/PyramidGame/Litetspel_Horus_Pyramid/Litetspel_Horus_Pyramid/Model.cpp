@@ -235,7 +235,7 @@ void Model::initializeModelBff(ID3D11Device* device, ID3D11DeviceContext* dConte
 	else
 		this->m_material.init(device, dContext, material);
 
-	//printBffModel(myModel); //For testing
+	printBffModel(myModel); //For testing
 }
 
 void Model::printBffModel(ModelBFF model) const
@@ -297,7 +297,7 @@ for (unsigned int i = 0; i < model.mesh.nrOfVertex; i++)
 
 
 
-	OutputDebugStringA((vtxNr + vtxPos + uv + normal + biNormal + tangent).c_str());
+	OutputDebugStringA((vtxNr + vtxPos + uv + normal + biNormal + tangent + pos + upVec + forwardVec + nearPlane + farPlane + FOV).c_str());
 }
 OutputDebugStringA(std::to_string(model.material.Diffuse[1]).c_str());
 }

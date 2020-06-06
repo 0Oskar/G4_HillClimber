@@ -209,7 +209,7 @@ void PyramidRoom::createSceneObjects()
 	DirectX::XMVECTOR NormalScale = DirectX::XMVectorSet(1, 1, 1, 1);
 	DirectX::XMVECTOR vec = DirectX::XMVectorSet(0.f, -10.f, 0.f, 1.f);
 	DirectX::XMVECTOR rotation = DirectX::XMVectorSet(0.f, 0.f, 0.f, 1.f);
-
+	
 	addPalmTrees();
 	addCactais();
 	// Pillars

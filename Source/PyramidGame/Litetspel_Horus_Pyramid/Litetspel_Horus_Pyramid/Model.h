@@ -17,8 +17,6 @@ private:
 	IndexBuffer m_indexBuffer;
 	ImporterBFF::Manager* myManager;
 
-
-
 	bool m_drawWithIndex;
 
 public:
