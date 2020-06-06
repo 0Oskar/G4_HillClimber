@@ -268,6 +268,35 @@ for (unsigned int i = 0; i < model.mesh.nrOfVertex; i++)
 		(std::to_string(model.vertexArr[i].tan[1])) + " " +
 		(std::to_string(model.vertexArr[i].tan[2]))) + "\n";
 
+
+
+	std::string pos = "Pos:    "+
+		(std::to_string(model.camera.pos[0]) + " " +
+		(std::to_string(model.camera.pos[1])) + " " +
+		(std::to_string(model.camera.pos[2]))) + "\n";
+
+	std::string upVec = "upVec:    " +
+		(std::to_string(model.camera.upVec[0]) + " " +
+		(std::to_string(model.camera.upVec[1])) + " " +
+		(std::to_string(model.camera.upVec[2]))) + "\n";
+
+	std::string forwardVec = "forwardVec:    " +
+		(std::to_string(model.camera.forwardVec[0]) + " " +
+		(std::to_string(model.camera.forwardVec[1])) + " " +
+		(std::to_string(model.camera.forwardVec[2]))) + "\n";
+
+	std::string nearPlane = "nearPlane:    " +
+		(std::to_string(model.camera.nearPlane) + "\n"); 
+
+
+	std::string farPlane = "farPlane:    " +
+		(std::to_string(model.camera.farPlane) + "\n");
+
+	std::string FOV = "FOV:    " +
+		(std::to_string(model.camera.FOV) + "\n");
+
+
+
 	OutputDebugStringA((vtxNr + vtxPos + uv + normal + biNormal + tangent).c_str());
 }
 OutputDebugStringA(std::to_string(model.material.Diffuse[1]).c_str());

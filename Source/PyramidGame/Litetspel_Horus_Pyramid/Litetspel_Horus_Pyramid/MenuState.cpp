@@ -363,6 +363,7 @@ void MenuState::loadModels()
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
 	this->m_models[36].loadVertexFromOBJ(m_device, m_dContext, L"Models/Falcon2.obj", mat, L"Textures/ColorTexture.png");
 
+	
 
 	//LastNumber. Room (Viktor)
 	int nrOfCurrentLModels = 36;

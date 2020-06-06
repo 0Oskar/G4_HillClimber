@@ -3,6 +3,7 @@
 #include"CheckpointHandler.h"
 #include"circleAroundObject.h"
 
+
 class PyramidRoom : public Room
 {
 private:

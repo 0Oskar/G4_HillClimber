@@ -75,7 +75,7 @@ void PyramidRoom::init(DirectX::BoundingOrientedBox* pyramidBB)
 
 	this->m_pyramidOOB = *pyramidBB; //DirectX::BoundingOrientedBox(*pyramidBB);
 
-
+	
 	this->createSceneObjects();
 	this->createBoundingBoxes();
 

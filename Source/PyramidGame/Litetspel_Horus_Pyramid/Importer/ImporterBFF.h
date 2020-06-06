@@ -1,5 +1,9 @@
 #pragma once
 #include "Model.h"
+#include <string>
+#include <Windows.h>
+
+using namespace std;
 
 namespace ImporterBFF
 {
@@ -10,6 +14,7 @@ namespace ImporterBFF
 			
 		std::map<std::string, ModelBFF> map; // name on mesh, type of object
 			
+
 			
 
 	public:
@@ -20,6 +25,8 @@ namespace ImporterBFF
 		const ModelBFF& LoadModel(const char* fileName);
 
 		
+
+		/*void printToConsole(const char* fileName);*/
 
 
 		~Manager();

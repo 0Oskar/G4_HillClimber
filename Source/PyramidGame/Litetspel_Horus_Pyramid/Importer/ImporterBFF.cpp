@@ -22,6 +22,7 @@ namespace ImporterBFF
 			model.vertexArr[i].norm[2] *= -1;
 			model.vertexArr[i].uv[1] *= -1;
 		}
+
 		MeshFile.read((char*)&model.material, sizeof(MaterialBFF));
 		MeshFile.read((char*)&model.camera, sizeof(CameraBFF));
 
@@ -63,6 +64,23 @@ namespace ImporterBFF
 
 		return map[fileName];
 	}
+
+	//void Manager::printToConsole(const char* fileName)
+	//{
+	//	// Check if insertion is successful or not
+	//	if (map.find(fileName) == map.end())
+	//	{
+	//		std::string fullFilePath = "../../../../Models/" + (std::string)fileName;
+
+	//		ModelBFF someModel;
+	//		someModel = LoadModelFromFile(fullFilePath.c_str());
+
+	//		std::wstring aString;
+	//		aString = to_wstring(someModel.camera.pos[0]);
+
+	//		OutputDebugStringW(aString.c_str());
+	//	}
+	//}
 
 	Manager::~Manager()
 	{
