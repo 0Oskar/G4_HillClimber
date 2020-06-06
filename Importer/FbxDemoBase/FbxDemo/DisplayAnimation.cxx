@@ -482,6 +482,7 @@ void DisplayChannels(FbxNode* pNode, FbxAnimLayer* pAnimLayer, void (*DisplayCur
                 {
                     //myStringFile4.writeToStringFile(
                     //"Hej\n");
+                    
                     lAnimCurve = lCurveNode->GetCurve(0U, c);
                     if (lAnimCurve)
                         DisplayListCurve(lAnimCurve, &lProperty);

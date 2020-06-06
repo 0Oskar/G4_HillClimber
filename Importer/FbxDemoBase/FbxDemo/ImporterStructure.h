@@ -50,7 +50,7 @@ struct CameraBFF
 	float FOV;
 };
 
-// Tristans
+// Tristans -----------------------------
 struct VertexAnimBFF
 {
 	int time;
@@ -64,10 +64,48 @@ struct BlendShapesBFF
 	float pos[3];
 	float norm[3];
 };
-
+// ------------------------------------------
 struct BonesBFF
 {
 	char name[64];
 	float bindRot[3];
 };
+
+struct AnimVertexBFF
+{
+	float pos[3];
+	float uv[2];
+	float norm[3];
+	float biNorm[3];
+	float tan[3];
+	float boneIDs; // Vi kör med en istället för fyra
+	float boneWeights;
+	JointBFF jointHierarchy;
+};
+
+struct JointBFF
+{
+	//joint children[];
+	int id;
+	float transform[16]; // make into 4x4 Matrix
+};
+
+//
+struct AnimationBFF
+{
+	KeyframeBFF frames[];
+};
+
+struct KeyframeBFF 
+{
+	JointTransform transforms[999]; // antal baserat på mängden joints
+	float timeStamp;
+};
+
+struct JointTransform 
+{
+	float position[3];
+	float rotation[3]; // Quaternion
+};
+
 
