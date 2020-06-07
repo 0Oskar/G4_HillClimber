@@ -239,7 +239,7 @@ void Model::initializeModelBff(ID3D11Device* device, ID3D11DeviceContext* dConte
 	printLight(myModel);
 	printCamera(myModel);
 
-	pointLights.emplace_back()
+	pointLights.emplace_back();//______________________________________________________
 
 }
 
@@ -306,7 +306,6 @@ void Model::printLight(const ModelBFF model) const
 				(std::to_string(model.light[i].intencity) + "\n");
 
 
-			pointLights.
 			OutputDebugStringA((type + color + dir + intencity).c_str());
 		}
 
