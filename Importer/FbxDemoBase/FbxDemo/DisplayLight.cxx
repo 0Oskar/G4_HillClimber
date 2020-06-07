@@ -16,6 +16,7 @@ FileWrite myStringFile3("../stringFile.bff");
 LightBFF lightData;
 
 void DisplayDefaultAnimationValues(FbxLight* pLight);
+//Gammal kod
 
 void DisplayLight(FbxNode* pNode)
 {
@@ -83,5 +84,4 @@ void DisplayDefaultAnimationValues(FbxLight* pLight)
     lightData.dir = pLight->OuterAngle.Get();
     DisplayDouble("        Default Fog: ", pLight->Fog.Get());
 }
-
 

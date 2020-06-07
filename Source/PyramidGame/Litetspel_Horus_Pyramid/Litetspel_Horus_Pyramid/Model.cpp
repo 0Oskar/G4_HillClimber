@@ -302,6 +302,33 @@ for (unsigned int i = 0; i < model.mesh.nrOfVertex; i++)
 OutputDebugStringA(std::to_string(model.material.Diffuse[1]).c_str());
 }
 
+void Model::printLight(const ModelBFF model) const
+{
+	/*for(unsigned int i = 0; i < )
+	std::string name = "Name:	" +
+		(std::to_string(model.light.name) + "\n");*/
+
+	std::string nameString(model.light.name);
+	std::string typeString(model.light.type);
+
+	std::string name = "Name:    " +
+		(nameString + "\n");
+
+	std::string type = "Type:    " +
+		(typeString + "\n");
+	
+	std::string color = "Color:    " +
+		(std::to_string(model.light.color[0]) + " " +
+		(std::to_string(model.light.color[1])) + " " +
+		(std::to_string(model.light.color[2]))) + " " + "\n";
+
+	std::string dir = "Direction:    " +
+		(std::to_string(model.light.dir) + "\n");
+
+	std::string intencity = "Intencity:    " +
+		(std::to_string(model.light.intencity) + "\n");
+}
+
 void Model::draw(DirectX::XMMATRIX& viewProjMtx)
 {
 	this->m_material.upd(this->m_deviceContextPtr);

@@ -9,4 +9,5 @@ class ModelBFF
 		VertexBFF* vertexArr;
 		MaterialBFF material;
 		CameraBFF camera;
+		LightBFF light;
 };

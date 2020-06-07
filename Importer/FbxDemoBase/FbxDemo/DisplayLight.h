@@ -14,7 +14,7 @@
 
 #include "DisplayCommon.h"
 
-void DisplayLight(FbxNode* pNode);
+void DisplayLightPositionAndOrientation(FbxLight* pLight, FbxNode* pTargetNode, FbxNode* pUpTargetNode);
 
 #endif // #ifndef _DISPLAY_LIGHT_H
 
