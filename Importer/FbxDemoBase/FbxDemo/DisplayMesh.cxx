@@ -214,6 +214,11 @@ int GetNrOfBlendShapes2()
 	return GetNrOfBlendShapes();
 }
 
+std::vector<JointBFF> GetJointData2(int nrOfJoints)
+{
+	return GetJointData(nrOfJoints);
+}
+
 
 
 
@@ -308,22 +313,6 @@ void DisplayControlsPoints(FbxMesh* pMesh)
 			controlPointData[c].biNorm[1] = biNormalArray[1];
 			controlPointData[c].biNorm[2] = biNormalArray[2];
 		}
-
-		//for (int i = 0; i < nrOfInfluences; ++i)
-		//{
-		//	//controlPointData[0].boneID[i] = nrOfInfluences;
-		//	cluster = ((FbxSkin*)pMesh->GetDeformer(0, FbxDeformer::eSkin))->GetCluster(i);
-		//	int* jointIndex = cluster->GetControlPointIndices();
-		//	int lIndexCount = cluster->GetControlPointIndicesCount();
-
-		//	for (int k = 0; k < lIndexCount; k++)
-		//	{
-		//		if (i <= 4)
-		//		{
-		//			controlPointData[c].boneID[i] = jointIndex[i];
-		//		}
-		//	}
-		//}
 	}
 
 

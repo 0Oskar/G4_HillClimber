@@ -63,6 +63,7 @@ std::vector<ControlPointBFF> controlPointData2;
 MaterialBFF materialData3;
 std::vector<LightBFF> lightData2;
 std::vector<CameraBFF> cameraData2;
+std::vector<JointBFF> jointData3;
 
 char* textureTempName;
 
@@ -104,7 +105,7 @@ int main(int argc, char** argv)
         //lFilePath = "../TriAnim.fbx";
 
 
-        lFilePath = "../Plane1__Blend2__Joint3.fbx";
+        lFilePath = "../Plane1__Blend2__Joint5.fbx";
 
 		lResult = LoadScene(lSdkManager, lScene, lFilePath.Buffer());
 	}
@@ -252,6 +253,37 @@ int main(int argc, char** argv)
                 "Normals (" + std::to_string(newBlendShapeData[i][v].norm[0]) + ", " + std::to_string(newBlendShapeData[i][v].norm[1]) + ", " + std::to_string(newBlendShapeData[i][v].norm[2]) + ")\n\n");
         }
     }
+
+    // ****************** Joints ****************** //
+    jointData3 = GetJointData2(getNrOfJoints());
+    myStringFile5.writeToStringFile("\n############ Joints ############\n");
+    for (int j = 0; j < getNrOfJoints(); j++)
+    {
+        myStringFile5.writeToStringFile(
+            "\n------ Index " + std::to_string(j) + ")\n" +
+            "Joint Index: " + std::to_string(jointData3[j].jointIndex) + "\n" +
+            "Matrix:\n" +
+            "Pos: (" + std::to_string(jointData3[j].matrix[0]) + ", " + std::to_string(jointData3[j].matrix[1]) + ", " + std::to_string(jointData3[j].matrix[2]) + ")\n" +
+            "Rot: (" + std::to_string(jointData3[j].matrix[4]) + ", " + std::to_string(jointData3[j].matrix[5]) + ", " + std::to_string(jointData3[j].matrix[6]) + ")\n" +
+            "Scale: (" + std::to_string(jointData3[j].matrix[7]) + ", " + std::to_string(jointData3[j].matrix[8]) + ", " + std::to_string(jointData3[j].matrix[9]) + ")\n" +
+            //"\n" +
+            //"Influences controlpoint: " + std::to_string(jointData3[j].influencedControlPoints[0]) + " (" + std::to_string(jointData3[j].boneWeight[0]) + "%)\n" +
+            //"Influences controlpoint: " + std::to_string(jointData3[j].influencedControlPoints[1]) + " (" + std::to_string(jointData3[j].boneWeight[1]) + "%)\n" +
+            //"Influences controlpoint: " + std::to_string(jointData3[j].influencedControlPoints[2]) + " (" + std::to_string(jointData3[j].boneWeight[2]) + "%)\n" +
+            //"Influences controlpoint: " + std::to_string(jointData3[j].influencedControlPoints[3]) + " (" + std::to_string(jointData3[j].boneWeight[3]) + "%)\n" +
+            "\n\n"
+        );
+    }
+
+
+
+
+
+
+
+
+
+
 
     // ****************** Material ****************** //
     /*

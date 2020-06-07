@@ -26,13 +26,13 @@ struct ControlPointBFF
 	float tan[3];
 
 	//int controlPointIndex;
-	int boneID[4];
+	int influencedByJoints[4];
 	float boneWeight[4];
 };
 
 struct JointBFF
 {
-	int index;
+	int jointIndex;
 	float matrix[16]; //4x4 matrix
 };
 

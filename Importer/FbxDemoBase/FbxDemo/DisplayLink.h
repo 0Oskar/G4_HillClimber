@@ -15,6 +15,7 @@
 #include "DisplayCommon.h"
 
 void DisplayLink(FbxGeometry* pGeometry);
+std::vector<JointBFF> GetJointData(int nrOfJoints);
 
 #endif // #ifndef _DISPLAY_LINK_H
 

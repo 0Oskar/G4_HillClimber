@@ -16,6 +16,8 @@
 #pragma GCC diagnostic ignored "-Wformat-security"
 #endif
 
+std::vector<JointBFF> jointData;
+
 void DisplayLink(FbxGeometry* pGeometry)
 {
     //Display cluster now
@@ -36,6 +38,7 @@ void DisplayLink(FbxGeometry* pGeometry)
     for(i=0; i!=lSkinCount; ++i)
     {
         lClusterCount = ((FbxSkin *) pGeometry->GetDeformer(i, FbxDeformer::eSkin))->GetClusterCount();
+        jointData.resize(lClusterCount);
         for (j = 0; j != lClusterCount; ++j)
         {
             DisplayInt("    Cluster ", i);
@@ -59,10 +62,13 @@ void DisplayLink(FbxGeometry* pGeometry)
             int* lIndices = lCluster->GetControlPointIndices();
             double* lWeights = lCluster->GetControlPointWeights();
 
+
             for(k = 0; k < lIndexCount; k++)
             {
                 lString1 += lIndices[k];
                 lString2 += (float) lWeights[k];
+
+
 
                 if (k < lIndexCount - 1)
                 {
@@ -70,6 +76,7 @@ void DisplayLink(FbxGeometry* pGeometry)
                     lString2 += ", ";
                 }
             }
+            //jointData[j].influencedControlPoints[0]
 
             lString1 += "\n";
             lString2 += "\n";
@@ -103,6 +110,52 @@ void DisplayLink(FbxGeometry* pGeometry)
             DisplayString("");
         }
     }
+
+    //EGET:
+    int nrOfControlPoints = pGeometry->GetControlPointsCount();
+    int nrOfJoints = ((FbxSkin*)pGeometry->GetDeformer(0, FbxDeformer::eSkin))->GetClusterCount();
+    int nrOfInfluencedControlPoints = 0;
+    std::vector<std::vector<int>> contolIndexList;
+    contolIndexList.resize(nrOfControlPoints);
+
+    for (int c = 0; c < nrOfControlPoints; c++)
+    {
+        for (int j = 0; j < nrOfJoints; j++)
+        {
+            lCluster = ((FbxSkin*)pGeometry->GetDeformer(0, FbxDeformer::eSkin))->GetCluster(j);
+            nrOfInfluencedControlPoints = lCluster->GetControlPointIndicesCount();
+            contolIndexList[c].resize(nrOfInfluencedControlPoints);
+            for (int i = 0; i < nrOfInfluencedControlPoints; i++)
+            {
+                int* indices = lCluster->GetControlPointIndices();
+                contolIndexList[c][i] == indices[i];
+                //if (indices[i] == c)
+                //{
+                //    
+                //}
+            }
+        }
+    }
+
+    int hej = 1;
 }
 
-
+std::vector<JointBFF> GetJointData(int nrOfJoints)
+{
+    return jointData;
+}
+/*
+for (alla controlPoints) c
+{
+    for (alla joints) j
+    {
+        for (alla controlpoint som är influerade) k
+        {
+            if (lIndices[k] == c)
+            {
+                Detta betyder att control point c blir influerad av denna jointen
+            }
+        }
+    }
+}
+*/
