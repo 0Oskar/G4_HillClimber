@@ -29,6 +29,8 @@ public:
 	void initializeModelBff(ID3D11Device* device, ID3D11DeviceContext* dContext, const std::string fileName, const MaterialData material, const std::wstring texturePath = L"");
 	void printBffModel(const ModelBFF model) const;
 	void printLight(const ModelBFF model) const;
+	void printCamera(const ModelBFF model) const;
+
 	Material m_material;
 
 	std::wstring m_originalTexture;

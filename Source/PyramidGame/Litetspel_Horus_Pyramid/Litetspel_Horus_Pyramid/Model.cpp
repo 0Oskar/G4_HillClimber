@@ -236,12 +236,16 @@ void Model::initializeModelBff(ID3D11Device* device, ID3D11DeviceContext* dConte
 		this->m_material.init(device, dContext, material);
 
 	printBffModel(myModel); //For testing
+	printCamera(myModel);
 }
 
 void Model::printBffModel(ModelBFF model) const
 {
 for (unsigned int i = 0; i < model.mesh.nrOfVertex; i++)
 {
+
+					////// Vertex //////	
+
 	std::string vtxNr = "\nvtx:		" + std::to_string(i) + "\n";
 
 	std::string vtxPos = "Pos:		" + 
@@ -267,26 +271,34 @@ for (unsigned int i = 0; i < model.mesh.nrOfVertex; i++)
 		(std::to_string(model.vertexArr[i].tan[0]) + " " +
 		(std::to_string(model.vertexArr[i].tan[1])) + " " +
 		(std::to_string(model.vertexArr[i].tan[2]))) + "\n";
+				
 
+	OutputDebugStringA((vtxNr + vtxPos + uv + normal + biNormal + tangent).c_str());
+}
+OutputDebugStringA(std::to_string(model.material.Diffuse[1]).c_str());
+}
 
+void Model::printCamera(const ModelBFF model) const
+{
+	////// Camera //////
 
-	std::string pos = "Pos:    "+
+	std::string pos = "Pos:    " +
 		(std::to_string(model.camera.pos[0]) + " " +
 		(std::to_string(model.camera.pos[1])) + " " +
-		(std::to_string(model.camera.pos[2]))) + "\n";
+			(std::to_string(model.camera.pos[2]))) + "\n";
 
 	std::string upVec = "upVec:    " +
 		(std::to_string(model.camera.upVec[0]) + " " +
 		(std::to_string(model.camera.upVec[1])) + " " +
-		(std::to_string(model.camera.upVec[2]))) + "\n";
+			(std::to_string(model.camera.upVec[2]))) + "\n";
 
 	std::string forwardVec = "forwardVec:    " +
 		(std::to_string(model.camera.forwardVec[0]) + " " +
 		(std::to_string(model.camera.forwardVec[1])) + " " +
-		(std::to_string(model.camera.forwardVec[2]))) + "\n";
+			(std::to_string(model.camera.forwardVec[2]))) + "\n";
 
 	std::string nearPlane = "nearPlane:    " +
-		(std::to_string(model.camera.nearPlane) + "\n"); 
+		(std::to_string(model.camera.nearPlane) + "\n");
 
 
 	std::string farPlane = "farPlane:    " +
@@ -295,12 +307,10 @@ for (unsigned int i = 0; i < model.mesh.nrOfVertex; i++)
 	std::string FOV = "FOV:    " +
 		(std::to_string(model.camera.FOV) + "\n");
 
-
-
-	OutputDebugStringA((vtxNr + vtxPos + uv + normal + biNormal + tangent + pos + upVec + forwardVec + nearPlane + farPlane + FOV).c_str());
+	OutputDebugStringA((pos + upVec + forwardVec + nearPlane + farPlane + FOV).c_str());
 }
-OutputDebugStringA(std::to_string(model.material.Diffuse[1]).c_str());
-}
+	
+
 
 void Model::printLight(const ModelBFF model) const
 {
