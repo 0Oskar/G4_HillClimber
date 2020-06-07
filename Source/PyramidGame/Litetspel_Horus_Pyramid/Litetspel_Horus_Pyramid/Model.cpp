@@ -242,6 +242,9 @@ void Model::printBffModel(ModelBFF model) const
 {
 for (unsigned int i = 0; i < model.mesh.nrOfVertex; i++)
 {
+
+					////// Vertex //////	
+
 	std::string vtxNr = "\nvtx:		" + std::to_string(i) + "\n";
 
 	std::string vtxPos = "Pos:		" + 
@@ -269,8 +272,9 @@ for (unsigned int i = 0; i < model.mesh.nrOfVertex; i++)
 		(std::to_string(model.vertexArr[i].tan[2]))) + "\n";
 
 
+					////// Camera //////
 
-	std::string pos = "Pos:    "+
+	std::string pos = "Pos:    " +
 		(std::to_string(model.camera.pos[0]) + " " +
 		(std::to_string(model.camera.pos[1])) + " " +
 		(std::to_string(model.camera.pos[2]))) + "\n";
