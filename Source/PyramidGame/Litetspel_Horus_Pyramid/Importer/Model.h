@@ -7,10 +7,11 @@ class ModelBFF
 	public:
 		SceneBFF scene;
 		MeshBFF mesh;
-		VertexBFF* vertexArr;
+		//VertexBFF* vertexArr;
+		ControlPointBFF* controlPointArr;
 		MaterialBFF material;
-		LightBFF light;
-		CameraBFF camera;
+		LightBFF* light;
+		CameraBFF* camera;
 		VertexAnimBFF vertexAnim;
 		BlendShapesBFF blendShapes;
 };

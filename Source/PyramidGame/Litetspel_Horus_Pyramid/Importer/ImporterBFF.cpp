@@ -13,15 +13,15 @@ namespace ImporterBFF
 
 		MeshFile.read((char*)&model.mesh, sizeof(MeshBFF));
 
-		model.vertexArr = new VertexBFF[model.mesh.nrOfVertex];
+		model.controlPointArr = new ControlPointBFF[model.mesh.nrOfControlPoints];
 
-		MeshFile.read((char*)model.vertexArr, model.mesh.nrOfVertex * sizeof(VertexBFF));
+		MeshFile.read((char*)model.controlPointArr, model.mesh.nrOfControlPoints * sizeof(ControlPointBFF));
 		// Flippa X axeln och V flr uv
-		for (size_t i = 0; i < model.mesh.nrOfVertex; i++)
+		for (size_t i = 0; i < model.mesh.nrOfControlPoints; i++)
 		{
-			model.vertexArr[i].pos[2] *= -1;
-			model.vertexArr[i].norm[2] *= -1;
-			model.vertexArr[i].uv[1] *= -1;
+			model.controlPointArr[i].pos[2] *= -1;
+			model.controlPointArr[i].norm[2] *= -1;
+			model.controlPointArr[i].uv[1] *= -1;
 		}
 		MeshFile.read((char*)&model.material, sizeof(MaterialBFF));
 		MeshFile.read((char*)&model.light, model.scene.nrOfLights * sizeof(LightBFF));

@@ -216,12 +216,12 @@ void Model::initializeModelBff(ID3D11Device* device, ID3D11DeviceContext* dConte
 	this->m_deviceContextPtr = dContext;
 
 	ModelBFF myModel = myManager->LoadModel(fileName.c_str());
-	m_vertices.resize(myModel.mesh.nrOfVertex);
-	for (int i = 0; i < myModel.mesh.nrOfVertex; i++)
+	m_vertices.resize(myModel.mesh.nrOfControlPoints);
+	for (int i = 0; i < myModel.mesh.nrOfControlPoints; i++)
 	{
-		m_vertices[i].position = XMFLOAT3(myModel.vertexArr[i].pos);
-		m_vertices[i].normal = XMFLOAT3(myModel.vertexArr[i].norm);
-		m_vertices[i].textureCoord = XMFLOAT2(myModel.vertexArr[i].uv);
+		m_vertices[i].position = XMFLOAT3(myModel.controlPointArr[i].pos);
+		m_vertices[i].normal = XMFLOAT3(myModel.controlPointArr[i].norm);
+		m_vertices[i].textureCoord = XMFLOAT2(myModel.controlPointArr[i].uv);
 	}
 
 	HRESULT hr = this->m_vertexBuffer.initialize(this->m_devicePtr, m_vertices.data(), (int)m_vertices.size());
@@ -235,104 +235,216 @@ void Model::initializeModelBff(ID3D11Device* device, ID3D11DeviceContext* dConte
 	else
 		this->m_material.init(device, dContext, material);
 
-	//printBffModel(myModel); //For testing
+	printBffModel(myModel); //For testing
+	printLight(myModel);
+	printCamera(myModel);
+
+	pointLights.emplace_back()
+
 }
 
 void Model::printBffModel(ModelBFF model)
 {
-for (int i = 0; i < model.mesh.nrOfVertex; i++)
+for (int i = 0; i < model.mesh.nrOfControlPoints; i++)
 {
 	std::string vtxNr = "\nvtx:		" + std::to_string(i) + "\n";
 
 	std::string vtxPos = "Pos:		" + 
-		(std::to_string(model.vertexArr[i].pos[0]) + " " +
-		(std::to_string(model.vertexArr[i].pos[1])) + " " +
-		(std::to_string(model.vertexArr[i].pos[2]))) + "\n";
+		(std::to_string(model.controlPointArr[i].pos[0]) + " " +
+		(std::to_string(model.controlPointArr[i].pos[1])) + " " +
+		(std::to_string(model.controlPointArr[i].pos[2]))) + "\n";
 
 	std::string uv = "uv:			" + 
-		(std::to_string(model.vertexArr[i].uv[0]) + " " +
-		(std::to_string(model.vertexArr[i].uv[1]))) + "\n";
+		(std::to_string(model.controlPointArr[i].uv[0]) + " " +
+		(std::to_string(model.controlPointArr[i].uv[1]))) + "\n";
 
 	std::string normal = "Normal:		" + 
-		(std::to_string(model.vertexArr[i].norm[0]) + " " +
-		(std::to_string(model.vertexArr[i].norm[1])) + " " +
-		(std::to_string(model.vertexArr[i].norm[2]))) + "\n";
+		(std::to_string(model.controlPointArr[i].norm[0]) + " " +
+		(std::to_string(model.controlPointArr[i].norm[1])) + " " +
+		(std::to_string(model.controlPointArr[i].norm[2]))) + "\n";
 
 	std::string biNormal = "Binormal:	" + 
-		(std::to_string(model.vertexArr[i].biNorm[0]) + " " +
-		(std::to_string(model.vertexArr[i].biNorm[1])) + " " +
-		(std::to_string(model.vertexArr[i].biNorm[2]))) + "\n";
+		(std::to_string(model.controlPointArr[i].biNorm[0]) + " " +
+		(std::to_string(model.controlPointArr[i].biNorm[1])) + " " +
+		(std::to_string(model.controlPointArr[i].biNorm[2]))) + "\n";
 
 	std::string tangent = "Tan:		" + 
-		(std::to_string(model.vertexArr[i].tan[0]) + " " +
-		(std::to_string(model.vertexArr[i].tan[1])) + " " +
-		(std::to_string(model.vertexArr[i].tan[2]))) + "\n";
+		(std::to_string(model.controlPointArr[i].tan[0]) + " " +
+		(std::to_string(model.controlPointArr[i].tan[1])) + " " +
+		(std::to_string(model.controlPointArr[i].tan[2]))) + "\n";
 
 	OutputDebugStringA((vtxNr + vtxPos + uv + normal + biNormal + tangent).c_str());
 }
 OutputDebugStringA(std::to_string(model.material.Diffuse[1]).c_str());
 }
 
-void Model::printCamera(const ModelBFF model) const
-{
-	////// Camera //////
-
-	std::string pos = "Pos:    " +
-		(std::to_string(model.camera.pos[0]) + " " +
-			(std::to_string(model.camera.pos[1])) + " " +
-			(std::to_string(model.camera.pos[2]))) + "\n";
-
-	std::string upVec = "upVec:    " +
-		(std::to_string(model.camera.upVec[0]) + " " +
-			(std::to_string(model.camera.upVec[1])) + " " +
-			(std::to_string(model.camera.upVec[2]))) + "\n";
-
-	std::string forwardVec = "forwardVec:    " +
-		(std::to_string(model.camera.forwardVec[0]) + " " +
-			(std::to_string(model.camera.forwardVec[1])) + " " +
-			(std::to_string(model.camera.forwardVec[2]))) + "\n";
-
-	std::string nearPlane = "nearPlane:    " +
-		(std::to_string(model.camera.nearPlane) + "\n");
-
-
-	std::string farPlane = "farPlane:    " +
-		(std::to_string(model.camera.farPlane) + "\n");
-
-	std::string FOV = "FOV:    " +
-		(std::to_string(model.camera.FOV) + "\n");
-
-	OutputDebugStringA((pos + upVec + forwardVec + nearPlane + farPlane + FOV).c_str());
-}
 
 
 
 void Model::printLight(const ModelBFF model) const
 {
-	/*for(unsigned int i = 0; i < )
-	std::string name = "Name:	" +
-		(std::to_string(model.light.name) + "\n");*/
+	for (int i = 0; i < model.scene.nrOfLights; i++)
+	{
+		std::string typeString = std::string(model.light[i].type);
 
-	std::string nameString(model.light.name);
-	std::string typeString(model.light.type);
+		if (std::string(model.light[i].type) == "Point")
+		{
+			std::string type = "Type:    " +
+				(std::string(model.light[i].type) + "\n");
 
-	std::string name = "Name:    " +
-		(nameString + "\n");
+			std::string color = "Color:    " +
+				(std::to_string(model.light[i].color[0]) + " " +
+					(std::to_string(model.light[i].color[1])) + " " +
+					(std::to_string(model.light[i].color[2]))) + " " + "\n";
 
-	std::string type = "Type:    " +
-		(typeString + "\n");
 
-	std::string color = "Color:    " +
-		(std::to_string(model.light.color[0]) + " " +
-			(std::to_string(model.light.color[1])) + " " +
-			(std::to_string(model.light.color[2]))) + " " + "\n";
 
-	std::string dir = "Direction:    " +
-		(std::to_string(model.light.dir) + "\n");
+			std::string dir = "Direction:    " +
+				(std::to_string(model.light[i].dir) + "\n");
 
-	std::string intencity = "Intencity:    " +
-		(std::to_string(model.light.intencity) + "\n");
+			std::string intencity = "Intencity:    " +
+				(std::to_string(model.light[i].intencity) + "\n");
+
+
+			pointLights.
+			OutputDebugStringA((type + color + dir + intencity).c_str());
+		}
+
+		else if (std::string(model.light[i].type) == "Spot")
+		{
+			std::string type = "Type:    " +
+				(std::string(model.light[i].type) + "\n");
+
+			std::string color = "Color:    " +
+				(std::to_string(model.light[i].color[0]) + " " +
+					(std::to_string(model.light[i].color[1])) + " " +
+					(std::to_string(model.light[i].color[2]))) + " " + "\n";
+
+			std::string dir = "Direction:    " +
+				(std::to_string(model.light[i].dir) + "\n");
+
+			std::string intencity = "Intencity:    " +
+				(std::to_string(model.light[i].intencity) + "\n");
+
+			OutputDebugStringA((type + color + dir + intencity).c_str());
+		}
+
+		else if (std::string(model.light[i].type) == "Directional")
+		{
+			std::string type = "Type:    " +
+				(std::string(model.light[i].type) + "\n");
+
+			std::string color = "Color:    " +
+				(std::to_string(model.light[i].color[0]) + " " +
+					(std::to_string(model.light[i].color[1])) + " " +
+					(std::to_string(model.light[i].color[2]))) + " " + "\n";
+
+			std::string dir = "Direction:    " +
+				(std::to_string(model.light[i].dir) + "\n");
+
+			std::string intencity = "Intencity:    " +
+				(std::to_string(model.light[i].intencity) + "\n");
+
+			OutputDebugStringA((type + color + dir + intencity).c_str());
+		}
+	}
 }
+//
+//void Model::printSpotLight(const ModelBFF model) const
+//{
+//	std::string typeString(model.light.type);
+//
+//	std::string type = "Type:    " +
+//		(typeString + "\n");
+//
+//	std::string color = "Color:    " +
+//		(std::to_string(model.light.color[0]) + " " +
+//			(std::to_string(model.light.color[1])) + " " +
+//			(std::to_string(model.light.color[2]))) + " " + "\n";
+//
+//	std::string dir = "Direction:    " +
+//		(std::to_string(model.light.dir) + "\n");
+//
+//	std::string intencity = "Intencity:    " +
+//		(std::to_string(model.light.intencity) + "\n");
+//
+//	OutputDebugStringA((type + color + dir + intencity).c_str());
+//}
+//
+//void Model::printDirectionalLight(const ModelBFF model) const
+//{
+//	std::string typeString(model.light.type);
+//
+//	std::string type = "Type:    " +
+//		(typeString + "\n");
+//
+//	std::string color = "Color:    " +
+//		(std::to_string(model.light.color[0]) + " " +
+//			(std::to_string(model.light.color[1])) + " " +
+//			(std::to_string(model.light.color[2]))) + " " + "\n";
+//
+//	std::string dir = "Direction:    " +
+//		(std::to_string(model.light.dir) + "\n");
+//
+//	std::string intencity = "Intencity:    " +
+//		(std::to_string(model.light.intencity) + "\n");
+//
+//	OutputDebugStringA((type + color + dir + intencity).c_str());
+//}
+
+void Model::printCamera(const ModelBFF model) const
+{
+	////// Camera //////
+	for (int i = 0; i < model.scene.nrOfCameras; i++)
+	{
+		std::string pos = "Pos:    " +
+			(std::to_string(model.camera[i].pos[0]) + " " +
+				(std::to_string(model.camera[i].pos[1])) + " " +
+				(std::to_string(model.camera[i].pos[2]))) + "\n";
+
+		std::string upVec = "upVec:    " +
+			(std::to_string(model.camera[i].upVec[0]) + " " +
+				(std::to_string(model.camera[i].upVec[1])) + " " +
+				(std::to_string(model.camera[i].upVec[2]))) + "\n";
+
+		std::string forwardVec = "forwardVec:    " +
+			(std::to_string(model.camera[i].forwardVec[0]) + " " +
+				(std::to_string(model.camera[i].forwardVec[1])) + " " +
+				(std::to_string(model.camera[i].forwardVec[2]))) + "\n";
+
+		std::string nearPlane = "nearPlane:    " +
+			(std::to_string(model.camera[i].nearPlane) + "\n");
+
+
+		std::string farPlane = "farPlane:    " +
+			(std::to_string(model.camera[i].farPlane) + "\n");
+
+		std::string FOV = "FOV:    " +
+			(std::to_string(model.camera[i].FOV) + "\n");
+		OutputDebugStringA((pos + upVec + forwardVec + nearPlane + farPlane + FOV).c_str());
+	}
+}
+
+
+
+//void Model::printLight(const ModelBFF model) const
+//{
+//	std::string typeString(model.light.type);
+//
+//	std::string type = "Type:    " +
+//		(typeString + "\n");
+//
+//	std::string color = "Color:    " +
+//		(std::to_string(model.light.color[0]) + " " +
+//			(std::to_string(model.light.color[1])) + " " +
+//			(std::to_string(model.light.color[2]))) + " " + "\n";
+//
+//	std::string dir = "Direction:    " +
+//		(std::to_string(model.light.dir) + "\n");
+//
+//	std::string intencity = "Intencity:    " +
+//		(std::to_string(model.light.intencity) + "\n");
+//}
 
 void Model::draw(DirectX::XMMATRIX& viewProjMtx)
 {
