@@ -34,7 +34,8 @@ public:
 	void printBffModel(ModelBFF model);
 
 	LightBFF getPointLight(int index);
-
+	LightBFF getSpotLight(int index);
+	LightBFF getDirectionalLight(int index);
 
 	void printLight(const ModelBFF model) const;
 	//void printSpotLight(const ModelBFF model) const;
