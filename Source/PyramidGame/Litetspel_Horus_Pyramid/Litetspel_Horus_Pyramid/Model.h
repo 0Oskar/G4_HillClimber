@@ -18,6 +18,8 @@ private:
 	ImporterBFF::Manager* myManager;
 
 	std::vector<LightBFF> pointLights;
+	std::vector<LightBFF> spotLights;
+	std::vector<LightBFF> directionalLights;
 
 	bool m_drawWithIndex;
 
@@ -31,6 +33,7 @@ public:
 	void initializeModelBff(ID3D11Device* device, ID3D11DeviceContext* dContext, std::string fileName, MaterialData material, std::wstring texturePath = L"");
 	void printBffModel(ModelBFF model);
 
+	LightBFF getPointLight(int index);
 
 
 	void printLight(const ModelBFF model) const;

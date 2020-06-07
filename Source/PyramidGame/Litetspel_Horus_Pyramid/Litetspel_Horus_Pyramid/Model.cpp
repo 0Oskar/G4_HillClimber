@@ -236,11 +236,117 @@ void Model::initializeModelBff(ID3D11Device* device, ID3D11DeviceContext* dConte
 		this->m_material.init(device, dContext, material);
 
 	printBffModel(myModel); //For testing
-	printLight(myModel);
+	//printLight(myModel);
 	printCamera(myModel);
+
+	for (int i = 0; i < myModel.scene.nrOfLights; i++)
+	{
+		std::string typeString = std::string(myModel.light[i].type);
+
+		if (std::string(myModel.light[i].type) == "Point")
+		{
+			LightBFF aPointLight;
+
+			aPointLight.color[0] = myModel.light[i].color[0];
+			aPointLight.color[1] = myModel.light[i].color[1];
+			aPointLight.color[2] = myModel.light[i].color[2];
+
+			aPointLight.intencity = myModel.light[i].intencity;
+
+			pointLights.emplace_back(aPointLight);
+
+			///// THIS IS FOR CONSOLE USE ONLY ///// 
+			/*std::string type = "Type:    " +
+				(std::string(myModel.light[i].type) + "\n");
+
+			std::string color = "Color:    " +
+				(std::to_string(myModel.light[i].color[0]) + " " +
+				(std::to_string(myModel.light[i].color[1])) + " " +
+					(std::to_string(myModel.light[i].color[2]))) + " " + "\n";
+
+
+
+			std::string dir = "Direction:    " +
+				(std::to_string(myModel.light[i].dir) + "\n");
+
+			std::string intencity = "Intencity:    " +
+				(std::to_string(myModel.light[i].intencity) + "\n");
+
+
+			OutputDebugStringA((type + color + dir + intencity).c_str());*/
+		}
+
+		else if (std::string(myModel.light[i].type) == "Spot")
+		{
+			LightBFF aSpotLight;
+
+			aSpotLight.color[0] = myModel.light[i].color[0];
+			aSpotLight.color[1] = myModel.light[i].color[1];
+			aSpotLight.color[2] = myModel.light[i].color[2];
+
+			aSpotLight.dir = myModel.light[i].dir;
+
+			aSpotLight.intencity = myModel.light[i].intencity;
+
+			spotLights.emplace_back(aSpotLight);
+
+			///// THIS IS FOR CONSOLE USE ONLY ///// 
+
+			//std::string type = "Type:    " +
+			//	(std::string(myModel.light[i].type) + "\n");
+
+			//std::string color = "Color:    " +
+			//	(std::to_string(myModel.light[i].color[0]) + " " +
+			//	(std::to_string(myModel.light[i].color[1])) + " " +
+			//		(std::to_string(myModel.light[i].color[2]))) + " " + "\n";
+
+			//std::string dir = "Direction:    " +
+			//	(std::to_string(myModel.light[i].dir) + "\n");
+
+			//std::string intencity = "Intencity:    " +
+			//	(std::to_string(myModel.light[i].intencity) + "\n");
+
+			//OutputDebugStringA((type + color + dir + intencity).c_str());
+		}
+
+		else if (std::string(myModel.light[i].type) == "Directional")
+		{
+			LightBFF aDirectionalLight;
+
+			aDirectionalLight.color[0] = myModel.light[i].color[0];
+			aDirectionalLight.color[1] = myModel.light[i].color[1];
+			aDirectionalLight.color[2] = myModel.light[i].color[2];
+
+			aDirectionalLight.dir = myModel.light[i].dir;
+
+			aDirectionalLight.intencity = myModel.light[i].intencity;
+
+			directionalLights.emplace_back(aDirectionalLight);
+
+			///// THIS IS FOR CONSOLE USE ONLY ///// 
+
+			/*std::string type = "Type:    " +
+				(std::string(myModel.light[i].type) + "\n");
+
+			std::string color = "Color:    " +
+				(std::to_string(myModel.light[i].color[0]) + " " +
+				(std::to_string(myModel.light[i].color[1])) + " " +
+					(std::to_string(myModel.light[i].color[2]))) + " " + "\n";
+
+			std::string dir = "Direction:    " +
+				(std::to_string(myModel.light[i].dir) + "\n");
+
+			std::string intencity = "Intencity:    " +
+				(std::to_string(myModel.light[i].intencity) + "\n");
+
+			OutputDebugStringA((type + color + dir + intencity).c_str());*/
+		}
+	}
+
 
 	pointLights.emplace_back();//______________________________________________________
 
+	
 }
 
 void Model::printBffModel(ModelBFF model)
@@ -276,6 +382,21 @@ for (int i = 0; i < model.mesh.nrOfControlPoints; i++)
 	OutputDebugStringA((vtxNr + vtxPos + uv + normal + biNormal + tangent).c_str());
 }
 OutputDebugStringA(std::to_string(model.material.Diffuse[1]).c_str());
+}
+
+LightBFF Model::getPointLight(int index)
+{
+	return this->pointLights.at(index);
+}
+
+LightBFF Model::getSpotLight(int index)
+{
+	return this->spotLights.at(index);
+}
+
+LightBFF Model::getDirectionalLight(int index)
+{
+	return this->directionalLights.at(index);
 }
 
 
