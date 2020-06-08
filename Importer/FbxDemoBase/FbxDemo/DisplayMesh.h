@@ -23,7 +23,9 @@ std::vector<std::vector<BlendShapesBFF>> GetBlendShapeDataArr2(FbxNode* pNode);
 std::vector<std::vector<BlendshapeBFF>> GetNewBlendShapeData2();
 int GetNrOfVertexInBlendShape2();
 int GetNrOfBlendShapes2();
-char* getTextureName2();
+int GetNrOfTextures2();
+char* getTextureName22(int index2);
+const char* GetTextureType2(int index2);
 
 
 #endif // #ifndef _DISPLAY_MESH_H

@@ -61,12 +61,17 @@ SceneBFF sceneData;
 MeshBFF meshData2;
 std::vector<ControlPointBFF> controlPointData2;
 MaterialBFF materialData3;
+
+std::vector<MaterialBFF> finalMaterialData;
+
 std::vector<LightBFF> lightData2;
 std::vector<CameraBFF> cameraData2;
 
 FbxAMatrix lightTransforms;
 
 char* textureTempName;
+
+const char* textureType;
 
 std::vector<std::vector<BlendShapesBFF>> blendShapeDataArr3;
 std::vector<std::vector<BlendshapeBFF>> newBlendShapeData;
@@ -256,35 +261,97 @@ int main(int argc, char** argv)
                 "Normals (" + std::to_string(newBlendShapeData[i][v].norm[0]) + ", " + std::to_string(newBlendShapeData[i][v].norm[1]) + ", " + std::to_string(newBlendShapeData[i][v].norm[2]) + ")\n\n");
         }
     }
-
+	
     // ****************** Material ****************** //
+
+
     
- //   materialData3 = GetMaterialData2();
+	for (int i = 0; i < GetNrOfTextures2(); i++)
+	{
+		finalMaterialData.emplace_back(GetMaterialData2());
 
-	//textureTempName = getTextureName2();
+		std::cout << "TextureNr: " << i << std::endl;
 
-	//for (int i = 0; i < sizeof(materialData3.texturePath); i++)
+		textureTempName = getTextureName22(i);
+		
+		std::cout << "Filepath: " << textureTempName;
+
+		textureType = GetTextureType2(i);
+
+		std::cout << "FileType: " << textureType;
+
+
+
+		for (int j = 0; j < sizeof(finalMaterialData[i].texturePath); j++)
+		{
+			finalMaterialData[i].texturePath[j] = textureTempName[j];
+		}
+
+		for (int k = 0; k < sizeof(finalMaterialData[i].textureType); k++)
+		{
+			finalMaterialData[i].textureType[k] = textureType[k];
+		}
+		
+
+
+		myStringFile5.writeToStringFile(
+			"\n------------- Material: \n\n"
+			"DiffuseR: " + std::to_string(finalMaterialData[i].Diffuse[0]) + "\n" +
+			"DiffuseG: " + std::to_string(finalMaterialData[i].Diffuse[1]) + "\n" +
+			"DiffuseB: " + std::to_string(finalMaterialData[i].Diffuse[2]) + "\n" +
+			"\n" +
+			"AmbientR: " + std::to_string(finalMaterialData[i].Ambient[0]) + "\n" +
+			"AmbientG: " + std::to_string(finalMaterialData[i].Ambient[1]) + "\n" +
+			"AmbientB: " + std::to_string(finalMaterialData[i].Ambient[2]) + "\n" +
+			"\n" +
+			"Opacity: " + std::to_string(finalMaterialData[i].Opacity) + "\n " +
+			"\n" +
+			"TexturePath: " + std::string(finalMaterialData[i].texturePath) + "\n " +
+			"TextureType: " + std::string(finalMaterialData[i].textureType));
+
+		myFile5.writeToFile((const char*)&finalMaterialData[i], sizeof(MaterialBFF)); //Add to biFile
+
+	}
+
+	/// MATERIAL DATA WORKING KINDA ///
+
+	//for (int i = 0; i < GetNrOfTextures2(); i++)
 	//{
-	//	materialData3.texturePath[i] = textureTempName[i];
-	//}
 	//
- //   myStringFile5.writeToStringFile(
- //       "\n------------- Material: \n\n"
- //       "DiffuseR: " + std::to_string(materialData3.Diffuse[0]) + "\n" +
- //       "DiffuseG: " + std::to_string(materialData3.Diffuse[1]) + "\n" +
- //       "DiffuseB: " + std::to_string(materialData3.Diffuse[2]) + "\n" +
- //       "\n" +
- //       "AmbientR: " + std::to_string(materialData3.Ambient[0]) + "\n" +
- //       "AmbientG: " + std::to_string(materialData3.Ambient[1]) + "\n" +
- //       "AmbientB: " + std::to_string(materialData3.Ambient[2]) + "\n" +
- //       "\n" +
- //       "Opacity: " + std::to_string(materialData3.Opacity) + "\n " +
-	//	"\n" +
-	//	"TexturePath: " + std::string(materialData3.texturePath) + "\n " );
 
- //   myFile5.writeToFile((const char*)&materialData3, sizeof(MaterialBFF)); //Add to biFile
-    
-    // ****************** Light ****************** //
+	//	materialData3 = GetMaterialData2();
+
+	//	textureTempName = getTextureName22();
+	//	textureType = GetTextureType2();
+
+	//	for (int i = 0; i < sizeof(materialData3.texturePath); i++)
+	//	{
+	//		materialData3.texturePath[i] = textureTempName[i];
+	//		materialData3.textureType[i] = textureType[i];
+
+	//	}
+
+
+	//	myStringFile5.writeToStringFile(
+	//		"\n------------- Material: \n\n"
+	//		"DiffuseR: " + std::to_string(materialData3.Diffuse[0]) + "\n" +
+	//		"DiffuseG: " + std::to_string(materialData3.Diffuse[1]) + "\n" +
+	//		"DiffuseB: " + std::to_string(materialData3.Diffuse[2]) + "\n" +
+	//		"\n" +
+	//		"AmbientR: " + std::to_string(materialData3.Ambient[0]) + "\n" +
+	//		"AmbientG: " + std::to_string(materialData3.Ambient[1]) + "\n" +
+	//		"AmbientB: " + std::to_string(materialData3.Ambient[2]) + "\n" +
+	//		"\n" +
+	//		"Opacity: " + std::to_string(materialData3.Opacity) + "\n " +
+	//		"\n" +
+	//		"TexturePath: " + std::string(materialData3.texturePath) + "\n " +
+	//		"TextureType: " + std::string(materialData3.textureType));
+
+	//	myFile5.writeToFile((const char*)&materialData3, sizeof(MaterialBFF)); //Add to biFile
+
+	//}
+
+    //  ****************** Light ****************** //
     
     
 

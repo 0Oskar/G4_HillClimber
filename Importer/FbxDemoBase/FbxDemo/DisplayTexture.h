@@ -21,7 +21,19 @@ void DisplayTextureInfo(FbxTexture* pTexture, int pBlendMode);
 //void setTextureName(char* theTexture);
 //static char* aTextureName;
 //char* getTextureName();
+//std::string GetTexturePath();
+
 std::string GetTexturePath();
+
+int getNrOfTextures();
+
+char* GetTexturePath2(char arrayOfPaths[]);
+char* getTexturePathArr(int index);
+
+const char* GetTextureType();
+
+const char* GetTextureTypeArr(int index);
+
 
 #endif // #ifndef _DISPLAY_TEXTURE_H
 

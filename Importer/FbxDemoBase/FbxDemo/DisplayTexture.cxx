@@ -15,6 +15,13 @@
 #include "DisplayTexture.h"
 std::string textureName;
 char* eyMan;
+const char* textureTypeChar;
+const char* textureTypeCharArr[50];
+
+int nrOfTextures;
+bool doOnce = false;
+
+char* texturePaths[50];
 
 void DisplayTextureInfo(FbxTexture* pTexture, int pBlendMode)
 {
@@ -23,11 +30,22 @@ void DisplayTextureInfo(FbxTexture* pTexture, int pBlendMode)
 
     DisplayString("            Name: \"", (char *) pTexture->GetName(), "\"");
     
+	nrOfTextures++;
+
+	if (doOnce == false)
+	{
+		nrOfTextures = 0;
+		doOnce = true;
+	}
+
 	if (lFileTexture)
 	{
         
 		DisplayString("            Type: File Texture");
         eyMan = (char*)lFileTexture->GetFileName();
+
+		texturePaths[nrOfTextures] = (char*)lFileTexture->GetFileName();
+
 		DisplayString("            File Name: \"", (char*)lFileTexture->GetFileName(), "\"");
         textureName = std::string(eyMan);
 		//setTextureName((char*)lFileTexture->GetFileName());		
@@ -85,6 +103,13 @@ void DisplayTextureInfo(FbxTexture* pTexture, int pBlendMode)
         "Spherical Reflexion Map", "Sphere Reflexion Map", "Bump Normal Map" };
 
     DisplayString("            Texture Use: ", pTextureUses[pTexture->GetTextureUse()]);
+
+	//textureTypeChar = pTextureUses[pTexture->GetTextureUse()];
+
+	textureTypeCharArr[nrOfTextures] = pTextureUses[pTexture->GetTextureUse()];
+
+	
+
     DisplayString("");                
 
 }
@@ -93,6 +118,33 @@ std::string GetTexturePath()
 {
     return textureName;
 }
+
+int getNrOfTextures()
+{
+	return nrOfTextures;
+}
+
+char* GetTexturePath2(char arrayOfPaths[])
+{
+	return arrayOfPaths;
+}
+
+char* getTexturePathArr(int index)
+{
+	return texturePaths[index];
+}
+
+const char* GetTextureType()
+{
+	return textureTypeChar;
+}
+
+const char* GetTextureTypeArr(int index)
+{
+	return textureTypeCharArr[index];
+}
+
+
 
 //void setTextureName(char* theTexture)
 //{

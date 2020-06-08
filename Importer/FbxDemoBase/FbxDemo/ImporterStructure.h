@@ -70,6 +70,7 @@ struct MaterialBFF
 	float Ambient[3];
 	float Opacity;
 	char texturePath[128];
+	char textureType[128];
 };
 
 struct LightBFF

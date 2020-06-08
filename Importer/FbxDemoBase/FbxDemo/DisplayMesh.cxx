@@ -44,6 +44,8 @@ FileWrite myStringFile("../stringFile.bff");
 int vertexCount;
 std::vector<ControlPointBFF> controlPointData;
 
+
+
 MeshBFF meshData;
 int currentVertex = 0;
 
@@ -214,6 +216,22 @@ int GetNrOfBlendShapes2()
 	return GetNrOfBlendShapes();
 }
 
+int GetNrOfTextures2()
+{
+	return getNrOfTextures();
+}
+
+char* getTextureName22(int index2)
+{
+	return GetTexturePath2(getTexturePathArr(index2));
+}
+
+const char* GetTextureType2(int index2)
+{
+	return GetTextureTypeArr(index2);
+
+}
+
 
 
 
@@ -261,7 +279,7 @@ void DisplayControlsPoints(FbxMesh* pMesh)
 	int nrOfControlPoints = pMesh->GetControlPointsCount();
 	int nrOfUVs = pMesh->GetElementUVCount();
 	int nrOfNormals = pMesh->GetElementNormalCount();
-	int nrOfInfluences = ((FbxSkin*)pMesh->GetDeformer(0, FbxDeformer::eSkin))->GetClusterCount();
+	//int nrOfInfluences = ((FbxSkin*)pMesh->GetDeformer(0, FbxDeformer::eSkin))->GetClusterCount();
 	
 	FbxCluster* cluster;
 	meshData.nrOfControlPoints = nrOfControlPoints;
