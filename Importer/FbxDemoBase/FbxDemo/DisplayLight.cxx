@@ -22,7 +22,21 @@ void DisplayDefaultAnimationValues(FbxLight* pLight);
 void DisplayLight(FbxNode* pNode)
 {
     nrOfLigths++;
-    
+
+	FbxAMatrix transformMatrix;
+
+	if (pNode->GetNodeAttribute())
+	{
+		const FbxVector4 lightTranslation = pNode->LclTranslation.Get();
+		const FbxVector4 lightRotation = pNode->LclRotation.Get();
+		const FbxVector4 lightScaling = pNode->LclScaling.Get();
+
+		transformMatrix.SetT(lightTranslation);
+		transformMatrix.SetR(lightRotation);
+		transformMatrix.SetS(lightScaling);
+	}
+
+	
 
     FbxLight* lLight = (FbxLight*) pNode->GetNodeAttribute();
 

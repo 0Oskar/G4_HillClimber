@@ -254,15 +254,15 @@ int main(int argc, char** argv)
     }
 
     // ****************** Material ****************** //
-    /*
+    
     materialData3 = GetMaterialData2();
 
-	//textureTempName = getTextureName2();
+	textureTempName = getTextureName2();
 
-	//for (int i = 0; i < sizeof(materialData3.texturePath); i++)
-	//{
-	//	materialData3.texturePath[i] = textureTempName[i];
-	//}
+	for (int i = 0; i < sizeof(materialData3.texturePath); i++)
+	{
+		materialData3.texturePath[i] = textureTempName[i];
+	}
 	
     myStringFile5.writeToStringFile(
         "\n------------- Material: \n\n"
@@ -279,7 +279,7 @@ int main(int argc, char** argv)
 		"TexturePath: " + std::string(materialData3.texturePath) + "\n " );
 
     myFile5.writeToFile((const char*)&materialData3, sizeof(MaterialBFF)); //Add to biFile
-    */
+    
     // ****************** Light ****************** //
     /*
     lightData2 = GetLightData();
