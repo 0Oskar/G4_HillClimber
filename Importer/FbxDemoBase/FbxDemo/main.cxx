@@ -64,6 +64,8 @@ MaterialBFF materialData3;
 std::vector<LightBFF> lightData2;
 std::vector<CameraBFF> cameraData2;
 
+FbxAMatrix lightTransforms;
+
 char* textureTempName;
 
 std::vector<std::vector<BlendShapesBFF>> blendShapeDataArr3;
@@ -75,6 +77,7 @@ std::vector<VertexAnimBFF> keyFrameData2;
 
 int main(int argc, char** argv)
 {
+	
     //myFile.writeToFile("test line from main");
 
     BiReader myFile("../biFile.bff");
@@ -104,7 +107,7 @@ int main(int argc, char** argv)
         //lFilePath = "../TriAnim.fbx";
 
 
-        lFilePath = "../Plane1__Blend2__Joint3.fbx";
+        lFilePath = "../lightAndShit.fbx";
 
 		lResult = LoadScene(lSdkManager, lScene, lFilePath.Buffer());
 	}
@@ -187,6 +190,7 @@ int main(int argc, char** argv)
         boneData2[i].bindRot[2] = bindRots2[i + 1][2];
     }
 
+	lightData2 = GetLightData();
     // ****************** Scene ****************** //
     myStringFile5.writeToStringFile("############ Scene ############\n");
     myStringFile5.writeToStringFile(
@@ -255,53 +259,85 @@ int main(int argc, char** argv)
 
     // ****************** Material ****************** //
     
-    materialData3 = GetMaterialData2();
+ //   materialData3 = GetMaterialData2();
 
-	textureTempName = getTextureName2();
+	//textureTempName = getTextureName2();
 
-	for (int i = 0; i < sizeof(materialData3.texturePath); i++)
-	{
-		materialData3.texturePath[i] = textureTempName[i];
-	}
-	
-    myStringFile5.writeToStringFile(
-        "\n------------- Material: \n\n"
-        "DiffuseR: " + std::to_string(materialData3.Diffuse[0]) + "\n" +
-        "DiffuseG: " + std::to_string(materialData3.Diffuse[1]) + "\n" +
-        "DiffuseB: " + std::to_string(materialData3.Diffuse[2]) + "\n" +
-        "\n" +
-        "AmbientR: " + std::to_string(materialData3.Ambient[0]) + "\n" +
-        "AmbientG: " + std::to_string(materialData3.Ambient[1]) + "\n" +
-        "AmbientB: " + std::to_string(materialData3.Ambient[2]) + "\n" +
-        "\n" +
-        "Opacity: " + std::to_string(materialData3.Opacity) + "\n " +
-		"\n" +
-		"TexturePath: " + std::string(materialData3.texturePath) + "\n " );
+	//for (int i = 0; i < sizeof(materialData3.texturePath); i++)
+	//{
+	//	materialData3.texturePath[i] = textureTempName[i];
+	//}
+	//
+ //   myStringFile5.writeToStringFile(
+ //       "\n------------- Material: \n\n"
+ //       "DiffuseR: " + std::to_string(materialData3.Diffuse[0]) + "\n" +
+ //       "DiffuseG: " + std::to_string(materialData3.Diffuse[1]) + "\n" +
+ //       "DiffuseB: " + std::to_string(materialData3.Diffuse[2]) + "\n" +
+ //       "\n" +
+ //       "AmbientR: " + std::to_string(materialData3.Ambient[0]) + "\n" +
+ //       "AmbientG: " + std::to_string(materialData3.Ambient[1]) + "\n" +
+ //       "AmbientB: " + std::to_string(materialData3.Ambient[2]) + "\n" +
+ //       "\n" +
+ //       "Opacity: " + std::to_string(materialData3.Opacity) + "\n " +
+	//	"\n" +
+	//	"TexturePath: " + std::string(materialData3.texturePath) + "\n " );
 
-    myFile5.writeToFile((const char*)&materialData3, sizeof(MaterialBFF)); //Add to biFile
+ //   myFile5.writeToFile((const char*)&materialData3, sizeof(MaterialBFF)); //Add to biFile
     
     // ****************** Light ****************** //
-    /*
-    lightData2 = GetLightData();
+    
+    
 
     for (int i = 0; i < getNrOfLights(); i++)
     {
         myStringFile5.writeToStringFile("\n\n\n------------- Light\n\n");
 
-        myStringFile5.writeToStringFile(
-            "Type: " + (std::string)lightData2[i].type + "\n" +
-            "\n" +
-            "ColorR: " + std::to_string(lightData2[i].color[0]) + "\n" +
-            "ColorG: " + std::to_string(lightData2[i].color[1]) + "\n" +
-            "ColorB: " + std::to_string(lightData2[i].color[2]) + "\n" +
-            "\n" +
-            "Dir: " + std::to_string(lightData2[i].dir) + "\n" +
-            "\n" +
-            "Intencity: " + std::to_string(lightData2[i].intencity) + "\n\n");
+		//Which light transform matrix to use.
+
+		lightTransforms = getLightTransformMatrix(i);
+
+		FbxVector4 lightTranslation2 = lightTransforms.GetT();
+		FbxVector4 lightRotation = lightTransforms.GetR();
+		FbxVector4 lightScaling = lightTransforms.GetS();
+
+		
+		lightData2[i].translation[0] = lightTranslation2[0];
+		lightData2[i].translation[1] = lightTranslation2[1];
+		lightData2[i].translation[2] = lightTranslation2[2];
+
+		lightData2[i].rotation[0] = lightRotation[0];
+		lightData2[i].rotation[1] = lightRotation[1];
+		lightData2[i].rotation[2] = lightRotation[2];
+
+		lightData2[i].scale[0] = lightScaling[0];
+		lightData2[i].scale[1] = lightScaling[1];
+		lightData2[i].scale[2] = lightScaling[2];
+
+		myStringFile5.writeToStringFile(
+			"Type: " + (std::string)lightData2[i].type + "\n" +
+			"\n" +
+			"ColorR: " + std::to_string(lightData2[i].color[0]) + "\n" +
+			"ColorG: " + std::to_string(lightData2[i].color[1]) + "\n" +
+			"ColorB: " + std::to_string(lightData2[i].color[2]) + "\n" +
+			"\n" +
+			"Dir: " + std::to_string(lightData2[i].dir) + "\n" +
+			"\n" +
+			"Intencity: " + std::to_string(lightData2[i].intencity) + "\n" +
+			"Translation: " + std::to_string(lightData2[i].translation[0]) + ", " +
+			std::to_string(lightData2[i].translation[1]) + ", " +
+			std::to_string(lightData2[i].translation[2]) + "\n" +
+			"Rotation: " + std::to_string(lightData2[i].rotation[0]) + ", " +
+			std::to_string(lightData2[i].rotation[1]) + ", " +
+			std::to_string(lightData2[i].rotation[2]) + "\n" +
+			"Scale: " + std::to_string(lightData2[i].scale[0]) + ", " +
+			std::to_string(lightData2[i].scale[1]) + ", " +
+			std::to_string(lightData2[i].scale[2]));
+
+
 
         myFile5.writeToFile((const char*)&lightData2[i], sizeof(LightBFF)); //Add to biFile
     }
-    */
+    
     // ****************** Camera ****************** //
     /*
     cameraData2 = GetCameraData();

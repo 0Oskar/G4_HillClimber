@@ -1,122 +1,61 @@
 ############ Scene ############
-NrOfLights: 0
+NrOfLights: 1
 NrOfCameras: 0
 NrOfVertexAnimFrames: 0
-NrOfBlendShapes: 2
+NrOfBlendShapes: 0
 
 
 ############ Mesh ############
-Mesh Name: PlaneMesh
-NrOfControlPoints: 4
-NrOfJoints: 3
+Mesh Name: 
+NrOfControlPoints: 0
+NrOfJoints: 0
 
 
 ############ Control Points ############
 
------- Index 0)
-Position (-0.500000, 0.000000, 0.500000)
-UV (0.000000, 0.000000)
-
-Normal (0.000000, 1.000000, 0.000000)
-biNormal (0.000000, 0.000000, -1.000000)
-Tangent (1.000000, -0.000000, 0.000000)
-
-Influenced by joint:1 (0.000000%)
-Influenced by joint:1 (0.000000%)
-Influenced by joint:3 (0.000000%)
-Influenced by joint:0 (0.000000%)
 
 
+------------- Light
 
------- Index 1)
-Position (0.500000, 0.000000, 0.500000)
-UV (1.000000, 0.000000)
+Type: Directional
 
-Normal (0.000000, 1.000000, 0.000000)
-biNormal (0.000000, 0.000000, -1.000000)
-Tangent (1.000000, 0.000000, 0.000000)
+ColorR: 1.000000
+ColorG: 1.000000
+ColorB: 1.000000
 
-Influenced by joint:1 (0.000000%)
-Influenced by joint:1 (0.000000%)
-Influenced by joint:3 (0.000000%)
-Influenced by joint:0 (0.000000%)
+Dir: 45.000000
+
+Intencity: 100.000000
+Translation: 0.000000, 0.000000, -3.748017
+Rotation: 0.000000, 0.000000, 0.000000
+Scale: 0.000000, 0.000000, 0.000000############ Scene ############
+NrOfLights: 1
+NrOfCameras: 0
+NrOfVertexAnimFrames: 0
+NrOfBlendShapes: 0
 
 
+############ Mesh ############
+Mesh Name: 
+NrOfControlPoints: 0
+NrOfJoints: 0
 
------- Index 2)
-Position (-0.500000, 0.000000, -0.500000)
-UV (0.000000, 1.000000)
 
-Normal (0.000000, 1.000000, 0.000000)
-biNormal (0.000000, 0.000000, -1.000000)
-Tangent (1.000000, 0.000000, 0.000000)
-
-Influenced by joint:1 (0.000000%)
-Influenced by joint:1 (0.000000%)
-Influenced by joint:3 (0.000000%)
-Influenced by joint:0 (0.000000%)
+############ Control Points ############
 
 
 
------- Index 3)
-Position (0.500000, 0.000000, -0.500000)
-UV (1.000000, 1.000000)
+------------- Light
 
-Normal (0.000000, 1.000000, 0.000000)
-biNormal (0.000000, 0.000000, -1.000000)
-Tangent (1.000000, 0.000000, 0.000000)
+Type: Directional
 
-Influenced by joint:1 (0.000000%)
-Influenced by joint:1 (0.000000%)
-Influenced by joint:3 (0.000000%)
-Influenced by joint:0 (0.000000%)
+ColorR: 1.000000
+ColorG: 1.000000
+ColorB: 1.000000
 
+Dir: 45.000000
 
-
-
-
-############ BlendShape ############
-
------- Index 0)
-Position (-0.500000, 0.000000, 1.500000)
-Normals (0.000000, 1.000000, 0.000000)
-
-
------- Index 1)
-Position (0.500000, 0.000000, 1.500000)
-Normals (0.000000, 1.000000, 0.000000)
-
-
------- Index 2)
-Position (-0.500000, 0.000000, -1.500000)
-Normals (0.000000, 1.000000, 0.000000)
-
-
------- Index 3)
-Position (0.500000, 0.000000, -1.500000)
-Normals (0.000000, 1.000000, 0.000000)
-
-
-
-
-############ BlendShape ############
-
------- Index 0)
-Position (-1.000000, 0.000000, 0.500000)
-Normals (0.000000, 1.000000, 0.000000)
-
-
------- Index 1)
-Position (1.000000, 0.000000, 0.500000)
-Normals (0.000000, 1.000000, 0.000000)
-
-
------- Index 2)
-Position (-1.000000, 0.000000, -0.500000)
-Normals (0.000000, 1.000000, 0.000000)
-
-
------- Index 3)
-Position (1.000000, 0.000000, -0.500000)
-Normals (0.000000, 1.000000, 0.000000)
-
+Intencity: 100.000000
+Translation: 0.000000, 0.000000, -3.748017
+Rotation: 0.000000, 25.353979, -37.689655
+Scale: 1.424001, 1.424001, 1.424001

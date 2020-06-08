@@ -78,6 +78,9 @@ struct LightBFF
 	float color[3];
 	float dir;
 	float intencity;
+	float translation[4];
+	float rotation[4];
+	float scale[4];
 };
 
 struct CameraBFF

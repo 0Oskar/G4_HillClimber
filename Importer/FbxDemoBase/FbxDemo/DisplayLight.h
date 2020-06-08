@@ -15,11 +15,10 @@
 #include "DisplayCommon.h"
 
 void DisplayLight(FbxNode* pNode);
-FbxAMatrix transformMatrix;
 
 int getNrOfLights();
 std::vector<LightBFF> GetLightData();
-FbxAMatrix getTransformMatrix();
+FbxAMatrix getLightTransformMatrix(int index);
 
 #endif // #ifndef _DISPLAY_LIGHT_H
 
