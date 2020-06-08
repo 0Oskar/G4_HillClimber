@@ -21,7 +21,7 @@ std::vector<JointBFF> jointData;
 
 bool sortbysec(const std::pair<int, float>& a, const std::pair<int, float>& b)
 {
-    return (a.second > b.second);
+    return (a.second < b.second);
 }
 
 void DisplayLink(FbxGeometry* pGeometry)
@@ -121,9 +121,13 @@ void DisplayLink(FbxGeometry* pGeometry)
     int nrOfControlPoints = pGeometry->GetControlPointsCount();
     int nrOfJoints = ((FbxSkin*)pGeometry->GetDeformer(0, FbxDeformer::eSkin))->GetClusterCount();
     int nrOfInfluencedControlPoints = 0;
+    std::vector<std::vector<int>> contolIndexList;
+    std::vector<std::vector<float>> weightList;
 
     std::vector<std::vector<std::pair<int, float>>> test;
 
+    contolIndexList.resize(nrOfControlPoints);
+    weightList.resize(nrOfControlPoints);
     test.resize(nrOfControlPoints);
 
     for (int j = 0; j < nrOfJoints; j++)
@@ -135,20 +139,28 @@ void DisplayLink(FbxGeometry* pGeometry)
         {
             int* indices = lCluster->GetControlPointIndices();
             double* lWeights = lCluster->GetControlPointWeights();
+
+            contolIndexList[indices[i]].push_back(j);
+            weightList[indices[i]].push_back((float)lWeights[i]);
             
             test[indices[i]].push_back(std::make_pair(j, (float)lWeights[i]));
         }
     }
+    
+    //ToDo: sortera wegiht listan så att störst hamnar först.
+    //      Gör samma sortering för index listan.
+    //      Ta bort alla som är mindre än den fjärede stösta talet weighten
+    //      Om det finns färre än fyra weights som påverkar en control point fixa det mannen
 
-    //if less then 4 influences
-
-    //Sort
     for (int c = 0; c < nrOfControlPoints; c++)
     {
+        for (int i = 0; i < contolIndexList[c].size(); i++)
+        {
+
+        }
         std::sort(test[c].begin(), test[c].end(), sortbysec);
     }
 
-    for (int c = 0; c < nrOfControlPoints; c++)
     int hej = 1;
 }
 
