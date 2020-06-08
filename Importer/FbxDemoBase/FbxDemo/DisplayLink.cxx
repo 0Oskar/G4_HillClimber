@@ -18,6 +18,7 @@
 #endif
 
 std::vector<JointBFF> jointData;
+std::vector<ControlPointBFF> controlPointDataTemp;
 
 bool sortbysec(const std::pair<int, float>& a, const std::pair<int, float>& b)
 {
@@ -37,14 +38,14 @@ void DisplayLink(FbxGeometry* pGeometry)
     FbxCluster* lCluster;
 
     lSkinCount=pGeometry->GetDeformerCount(FbxDeformer::eSkin);
-
+    int nrOfJoints = 0;
 
 
     //lLinkCount = pGeometry->GetLinkCount();
     for(i=0; i!=lSkinCount; ++i)
     {
         lClusterCount = ((FbxSkin *) pGeometry->GetDeformer(i, FbxDeformer::eSkin))->GetClusterCount();
-        jointData.resize(lClusterCount);
+        nrOfJoints = lClusterCount;
         for (j = 0; j != lClusterCount; ++j)
         {
             DisplayInt("    Cluster ", i);
@@ -119,12 +120,12 @@ void DisplayLink(FbxGeometry* pGeometry)
 
     //EGET:
     int nrOfControlPoints = pGeometry->GetControlPointsCount();
-    int nrOfJoints = ((FbxSkin*)pGeometry->GetDeformer(0, FbxDeformer::eSkin))->GetClusterCount();
+    //int nrOfJoints = ((FbxSkin*)pGeometry->GetDeformer(0, FbxDeformer::eSkin))->GetClusterCount();
     int nrOfInfluencedControlPoints = 0;
 
-    std::vector<std::vector<std::pair<int, float>>> test;
+    std::vector<std::vector<std::pair<int, float>>> arr;
 
-    test.resize(nrOfControlPoints);
+    arr.resize(nrOfControlPoints);
 
     for (int j = 0; j < nrOfJoints; j++)
     {
@@ -136,38 +137,70 @@ void DisplayLink(FbxGeometry* pGeometry)
             int* indices = lCluster->GetControlPointIndices();
             double* lWeights = lCluster->GetControlPointWeights();
             
-            test[indices[i]].push_back(std::make_pair(j, (float)lWeights[i]));
+            arr[indices[i]].push_back(std::make_pair(j, (float)lWeights[i]));
         }
     }
 
-    //if less then 4 influences
 
     //Sort
     for (int c = 0; c < nrOfControlPoints; c++)
     {
-        std::sort(test[c].begin(), test[c].end(), sortbysec);
+        std::sort(arr[c].begin(), arr[c].end(), sortbysec);
     }
 
-    for (int c = 0; c < nrOfControlPoints; c++)
-    int hej = 1;
-}
 
-std::vector<JointBFF> GetJointData(int nrOfJoints)
-{
-    return jointData;
-}
-/*
-for (alla controlPoints) c
-{
-    for (alla joints) j
+    //if less then 4 influences
+    for (int c = 0; c < nrOfControlPoints; c++)
     {
-        for (alla controlpoint som är influerade) k
+        //int testing = arr[c].size();
+        if (arr[c].size() > 4)
         {
-            if (lIndices[k] == c)
+            int nrOfExtras = arr[c].size() - 4;
+            float extraWeight = 0;
+            //Om fler
+            for (int e = 0; e < nrOfExtras; e++)
             {
-                Detta betyder att control point c blir influerad av denna jointen
+                extraWeight += arr[c][4 + e].second;
+            }
+            extraWeight = extraWeight / 4;
+            arr[c][0].second += extraWeight;
+            arr[c][1].second += extraWeight;
+            arr[c][2].second += extraWeight;
+            arr[c][3].second += extraWeight;
+        }
+
+        if (arr[c].size() < 4)
+        {
+            int nrOfMissing = 4 - arr[c].size();
+      
+            //Om färre
+            for (int e = 0; e < nrOfMissing; e++)
+            {
+                arr[c].push_back(std::make_pair(-1, 0));
             }
         }
+
     }
+
+    //Tilldela till structen
+    controlPointDataTemp.resize(nrOfControlPoints);
+    for (int c = 0; c < nrOfControlPoints; c++)
+    {
+        controlPointDataTemp[c].influencedByJoints[0] = arr[c][0].first;
+        controlPointDataTemp[c].influencedByJoints[1] = arr[c][1].first;
+        controlPointDataTemp[c].influencedByJoints[2] = arr[c][2].first;
+        controlPointDataTemp[c].influencedByJoints[3] = arr[c][3].first;
+
+        controlPointDataTemp[c].boneWeight[0] = arr[c][0].second;
+        controlPointDataTemp[c].boneWeight[1] = arr[c][1].second;
+        controlPointDataTemp[c].boneWeight[2] = arr[c][2].second;
+        controlPointDataTemp[c].boneWeight[3] = arr[c][3].second;
+    }
+    int num = 0;
 }
-*/
+
+std::vector<ControlPointBFF> GetControlPointJointData()
+{
+    return controlPointDataTemp;
+}
+

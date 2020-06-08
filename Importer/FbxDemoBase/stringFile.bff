@@ -8,7 +8,7 @@ NrOfBlendShapes: 2
 ############ Mesh ############
 Mesh Name: PlaneMesh
 NrOfControlPoints: 4
-NrOfJoints: 3
+NrOfJoints: 5
 
 
 ############ Control Points ############
@@ -21,6 +21,12 @@ Normal (0.000000, 1.000000, 0.000000)
 biNormal (0.000000, 0.000000, -1.000000)
 Tangent (1.000000, -0.000000, 0.000000)
 
+Influenced by joint:2 (0.988363%)
+Influenced by joint:1 (0.011637%)
+Influenced by joint:-1 (0.000000%)
+Influenced by joint:-1 (0.000000%)
+
+
 
 ------ Index 1)
 Position (0.500000, 0.000000, 0.500000)
@@ -29,6 +35,12 @@ UV (1.000000, 0.000000)
 Normal (0.000000, 1.000000, 0.000000)
 biNormal (0.000000, 0.000000, -1.000000)
 Tangent (1.000000, 0.000000, 0.000000)
+
+Influenced by joint:0 (0.354937%)
+Influenced by joint:1 (0.245826%)
+Influenced by joint:3 (0.208442%)
+Influenced by joint:2 (0.190795%)
+
 
 
 ------ Index 2)
@@ -39,6 +51,12 @@ Normal (0.000000, 1.000000, 0.000000)
 biNormal (0.000000, 0.000000, -1.000000)
 Tangent (1.000000, 0.000000, 0.000000)
 
+Influenced by joint:1 (0.990273%)
+Influenced by joint:0 (0.009726%)
+Influenced by joint:-1 (0.000000%)
+Influenced by joint:-1 (0.000000%)
+
+
 
 ------ Index 3)
 Position (0.500000, 0.000000, -0.500000)
@@ -47,6 +65,12 @@ UV (1.000000, 1.000000)
 Normal (0.000000, 1.000000, 0.000000)
 biNormal (0.000000, 0.000000, -1.000000)
 Tangent (1.000000, 0.000000, 0.000000)
+
+Influenced by joint:0 (1.000000%)
+Influenced by joint:-1 (0.000000%)
+Influenced by joint:-1 (0.000000%)
+Influenced by joint:-1 (0.000000%)
+
 
 
 
@@ -98,45 +122,3 @@ Normals (0.000000, 1.000000, 0.000000)
 
 
 ############ Joints ############
-
------- Index 0)
-Joint Index: 0
-Matrix:
-Pos: (0.000000, 0.000000, 0.000000)
-Rot: (0.000000, 0.000000, 0.000000)
-Scale: (0.000000, 0.000000, 0.000000)
-
-Influences controlpoint: 0 (0.000000%)
-Influences controlpoint: 0 (0.000000%)
-Influences controlpoint: 0 (0.000000%)
-Influences controlpoint: 0 (0.000000%)
-
-
-
------- Index 1)
-Joint Index: 0
-Matrix:
-Pos: (0.000000, 0.000000, 0.000000)
-Rot: (0.000000, 0.000000, 0.000000)
-Scale: (0.000000, 0.000000, 0.000000)
-
-Influences controlpoint: 0 (0.000000%)
-Influences controlpoint: 0 (0.000000%)
-Influences controlpoint: 0 (0.000000%)
-Influences controlpoint: 0 (0.000000%)
-
-
-
------- Index 2)
-Joint Index: 0
-Matrix:
-Pos: (0.000000, 0.000000, 0.000000)
-Rot: (0.000000, 0.000000, 0.000000)
-Scale: (0.000000, 0.000000, 0.000000)
-
-Influences controlpoint: 0 (0.000000%)
-Influences controlpoint: 0 (0.000000%)
-Influences controlpoint: 0 (0.000000%)
-Influences controlpoint: 0 (0.000000%)
-
-

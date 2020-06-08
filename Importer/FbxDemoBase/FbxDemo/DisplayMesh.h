@@ -25,6 +25,7 @@ int GetNrOfVertexInBlendShape2();
 int GetNrOfBlendShapes2();
 char* getTextureName2();
 std::vector<JointBFF> GetJointData2(int nrOfJoints);
+std::vector<ControlPointBFF> GetControlPointJointData2();
 
 
 #endif // #ifndef _DISPLAY_MESH_H

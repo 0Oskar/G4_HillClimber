@@ -13,7 +13,6 @@ struct MeshBFF
 	char name[64];
 	unsigned int nrOfControlPoints;
 	unsigned int nrJoints;
-	
 };
 
 struct ControlPointBFF

@@ -188,6 +188,7 @@ int main(int argc, char** argv)
         boneData2[i].bindRot[2] = bindRots2[i + 1][2];
     }
 
+
     // ****************** Scene ****************** //
     myStringFile5.writeToStringFile("############ Scene ############\n");
     myStringFile5.writeToStringFile(
@@ -218,6 +219,21 @@ int main(int argc, char** argv)
 
     // ****************** Control Point ****************** //
     controlPointData2 = GetControlPointData();
+    std::vector<ControlPointBFF> tempControlJointData;
+    tempControlJointData = GetControlPointJointData2();
+    for (int c = 0; c < meshData2.nrOfControlPoints; c++)
+    {
+        controlPointData2[c].influencedByJoints[0] = tempControlJointData[c].influencedByJoints[0];
+        controlPointData2[c].influencedByJoints[1] = tempControlJointData[c].influencedByJoints[1];
+        controlPointData2[c].influencedByJoints[2] = tempControlJointData[c].influencedByJoints[2];
+        controlPointData2[c].influencedByJoints[3] = tempControlJointData[c].influencedByJoints[3];
+
+        controlPointData2[c].boneWeight[0] = tempControlJointData[c].boneWeight[0];
+        controlPointData2[c].boneWeight[1] = tempControlJointData[c].boneWeight[1];
+        controlPointData2[c].boneWeight[2] = tempControlJointData[c].boneWeight[2];
+        controlPointData2[c].boneWeight[3] = tempControlJointData[c].boneWeight[3];
+    }
+    
     myStringFile5.writeToStringFile("\n############ Control Points ############\n");
     for (int i = 0; i < meshData2.nrOfControlPoints; i++)
     {
@@ -230,11 +246,11 @@ int main(int argc, char** argv)
             "biNormal (" + std::to_string(controlPointData2[i].biNorm[0]) + ", " + std::to_string(controlPointData2[i].biNorm[1]) + ", " + std::to_string(controlPointData2[i].biNorm[2]) + ")\n" +
             "Tangent (" + std::to_string(controlPointData2[i].tan[0]) + ", " + std::to_string(controlPointData2[i].tan[1]) + ", " + std::to_string(controlPointData2[i].tan[2]) + ")\n" +
             "\n"
-            //"Influenced by joint:" + std::to_string(controlPointData2[i].boneID[0]) + " (" + std::to_string(controlPointData2[i].boneWeight[0]) + "%)\n" +
-            //"Influenced by joint:" + std::to_string(controlPointData2[i].boneID[1]) + " (" + std::to_string(controlPointData2[i].boneWeight[1]) + "%)\n" +
-            //"Influenced by joint:" + std::to_string(controlPointData2[i].boneID[2]) + " (" + std::to_string(controlPointData2[i].boneWeight[2]) + "%)\n" +
-            //"Influenced by joint:" + std::to_string(controlPointData2[i].boneID[3]) + " (" + std::to_string(controlPointData2[i].boneWeight[3]) + "%)\n" +
-            //"\n\n"
+            "Influenced by joint:" + std::to_string(controlPointData2[i].influencedByJoints[0]) + " (" + std::to_string(controlPointData2[i].boneWeight[0]) + "%)\n" +
+            "Influenced by joint:" + std::to_string(controlPointData2[i].influencedByJoints[1]) + " (" + std::to_string(controlPointData2[i].boneWeight[1]) + "%)\n" +
+            "Influenced by joint:" + std::to_string(controlPointData2[i].influencedByJoints[2]) + " (" + std::to_string(controlPointData2[i].boneWeight[2]) + "%)\n" +
+            "Influenced by joint:" + std::to_string(controlPointData2[i].influencedByJoints[3]) + " (" + std::to_string(controlPointData2[i].boneWeight[3]) + "%)\n" +
+            "\n\n"
         );
         myFile5.writeToFile((const char*)&controlPointData2[i], sizeof(ControlPointBFF)); //Add to biFile
 
@@ -255,25 +271,25 @@ int main(int argc, char** argv)
     }
 
     // ****************** Joints ****************** //
-    jointData3 = GetJointData2(getNrOfJoints());
+    //jointData3 = GetJointData2(getNrOfJoints());
     myStringFile5.writeToStringFile("\n############ Joints ############\n");
-    for (int j = 0; j < getNrOfJoints(); j++)
-    {
-        myStringFile5.writeToStringFile(
-            "\n------ Index " + std::to_string(j) + ")\n" +
-            "Joint Index: " + std::to_string(jointData3[j].jointIndex) + "\n" +
-            "Matrix:\n" +
-            "Pos: (" + std::to_string(jointData3[j].matrix[0]) + ", " + std::to_string(jointData3[j].matrix[1]) + ", " + std::to_string(jointData3[j].matrix[2]) + ")\n" +
-            "Rot: (" + std::to_string(jointData3[j].matrix[4]) + ", " + std::to_string(jointData3[j].matrix[5]) + ", " + std::to_string(jointData3[j].matrix[6]) + ")\n" +
-            "Scale: (" + std::to_string(jointData3[j].matrix[7]) + ", " + std::to_string(jointData3[j].matrix[8]) + ", " + std::to_string(jointData3[j].matrix[9]) + ")\n" +
-            //"\n" +
-            //"Influences controlpoint: " + std::to_string(jointData3[j].influencedControlPoints[0]) + " (" + std::to_string(jointData3[j].boneWeight[0]) + "%)\n" +
-            //"Influences controlpoint: " + std::to_string(jointData3[j].influencedControlPoints[1]) + " (" + std::to_string(jointData3[j].boneWeight[1]) + "%)\n" +
-            //"Influences controlpoint: " + std::to_string(jointData3[j].influencedControlPoints[2]) + " (" + std::to_string(jointData3[j].boneWeight[2]) + "%)\n" +
-            //"Influences controlpoint: " + std::to_string(jointData3[j].influencedControlPoints[3]) + " (" + std::to_string(jointData3[j].boneWeight[3]) + "%)\n" +
-            "\n\n"
-        );
-    }
+    //for (int j = 0; j < getNrOfJoints(); j++)
+    //{
+    //    myStringFile5.writeToStringFile(
+    //        "\n------ Index " + std::to_string(j) + ")\n" +
+    //        "Joint Index: " + std::to_string(jointData3[j].jointIndex) + "\n" +
+    //        "Matrix:\n" +
+    //        "Pos: (" + std::to_string(jointData3[j].matrix[0]) + ", " + std::to_string(jointData3[j].matrix[1]) + ", " + std::to_string(jointData3[j].matrix[2]) + ")\n" +
+    //        "Rot: (" + std::to_string(jointData3[j].matrix[4]) + ", " + std::to_string(jointData3[j].matrix[5]) + ", " + std::to_string(jointData3[j].matrix[6]) + ")\n" +
+    //        "Scale: (" + std::to_string(jointData3[j].matrix[7]) + ", " + std::to_string(jointData3[j].matrix[8]) + ", " + std::to_string(jointData3[j].matrix[9]) + ")\n" +
+    //        //"\n" +
+    //        //"Influences controlpoint: " + std::to_string(jointData3[j].influencedControlPoints[0]) + " (" + std::to_string(jointData3[j].boneWeight[0]) + "%)\n" +
+    //        //"Influences controlpoint: " + std::to_string(jointData3[j].influencedControlPoints[1]) + " (" + std::to_string(jointData3[j].boneWeight[1]) + "%)\n" +
+    //        //"Influences controlpoint: " + std::to_string(jointData3[j].influencedControlPoints[2]) + " (" + std::to_string(jointData3[j].boneWeight[2]) + "%)\n" +
+    //        //"Influences controlpoint: " + std::to_string(jointData3[j].influencedControlPoints[3]) + " (" + std::to_string(jointData3[j].boneWeight[3]) + "%)\n" +
+    //        "\n\n"
+    //    );
+    //}
 
 
 

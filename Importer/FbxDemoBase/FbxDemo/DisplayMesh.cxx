@@ -214,10 +214,15 @@ int GetNrOfBlendShapes2()
 	return GetNrOfBlendShapes();
 }
 
-std::vector<JointBFF> GetJointData2(int nrOfJoints)
+std::vector<ControlPointBFF> GetControlPointJointData2()
 {
-	return GetJointData(nrOfJoints);
+	return GetControlPointJointData();
 }
+
+//std::vector<JointBFF> GetJointData2(int nrOfJoints)
+//{
+//	return GetJointData(nrOfJoints);
+//}
 
 
 
@@ -266,12 +271,12 @@ void DisplayControlsPoints(FbxMesh* pMesh)
 	int nrOfControlPoints = pMesh->GetControlPointsCount();
 	int nrOfUVs = pMesh->GetElementUVCount();
 	int nrOfNormals = pMesh->GetElementNormalCount();
-	int nrOfInfluences = ((FbxSkin*)pMesh->GetDeformer(0, FbxDeformer::eSkin))->GetClusterCount();
+	//int nrOfInfluences = ((FbxSkin*)pMesh->GetDeformer(0, FbxDeformer::eSkin))->GetClusterCount();
 	
 	FbxCluster* cluster;
 	meshData.nrOfControlPoints = nrOfControlPoints;
 	controlPointData.resize(nrOfControlPoints);
-
+	
 	for (int c = 0; c < nrOfControlPoints; c++)
 	{
 		//Add positions
@@ -313,10 +318,8 @@ void DisplayControlsPoints(FbxMesh* pMesh)
 			controlPointData[c].biNorm[1] = biNormalArray[1];
 			controlPointData[c].biNorm[2] = biNormalArray[2];
 		}
+
 	}
-
-
-
 
 	DisplayString("");
 }
