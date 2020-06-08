@@ -104,8 +104,6 @@ void DisplayTextureInfo(FbxTexture* pTexture, int pBlendMode)
 
     DisplayString("            Texture Use: ", pTextureUses[pTexture->GetTextureUse()]);
 
-	//textureTypeChar = pTextureUses[pTexture->GetTextureUse()];
-
 	textureTypeCharArr[nrOfTextures] = pTextureUses[pTexture->GetTextureUse()];
 
 	
