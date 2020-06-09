@@ -29,10 +29,27 @@ struct ControlPointBFF
 	float boneWeight[4];
 };
 
+struct keyFrameBFF
+{
+	int timestamp;
+	float pose[9];
+};
+
 struct JointBFF
 {
 	int jointIndex;
-	float matrix[16]; //4x4 matrix
+	int parentIndex;
+	float bindPoseMatrix[16]; //4x4 matrix
+
+	int nrOfKeyFrames;
+	
+	std::vector<keyFrameBFF> animationFrames;
+	/*
+	scaleX		???			???			???
+	???			ScaleY		???			???
+	???			???			ScaleZ		???
+	posX		PosY		PosZ		1
+	*/
 };
 
 struct BlendshapeBFF

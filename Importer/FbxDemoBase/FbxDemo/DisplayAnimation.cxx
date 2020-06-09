@@ -21,8 +21,11 @@
 FileWrite myFile4("../biFile.bff");
 FileWrite myStringFile4("../stringFile.bff");
 std::vector<VertexAnimBFF> keyFrameData;
+std::vector<keyFrameBFF> newKeyFrameData;
+std::vector<JointBFF> jointKeyFrameData;
 int currentFrame = -1;
 int someVar = -1;
+int allJoints = 0;
 
 void DisplayAnimation(FbxAnimStack* pAnimStack, FbxNode* pNode, bool isSwitcher = false);
 void DisplayAnimation(FbxAnimLayer* pAnimLayer, FbxNode* pNode, bool isSwitcher = false);
@@ -35,8 +38,11 @@ void DisplayListCurveKeys(FbxAnimCurve* pCurve, FbxProperty* pProperty);
 void DisplayAnimation(FbxScene* pScene)
 {
     int i;
+    int g = pScene->GetSrcObjectCount<FbxAnimStack>();
+    int c = 0;
     for (i = 0; i < pScene->GetSrcObjectCount<FbxAnimStack>(); i++)
     {
+        
         FbxAnimStack* lAnimStack = pScene->GetSrcObject<FbxAnimStack>(i);
 
         FbxString lOutputString = "Animation Stack Name: ";
@@ -46,14 +52,19 @@ void DisplayAnimation(FbxScene* pScene)
 
         DisplayAnimation(lAnimStack, pScene->GetRootNode()); ////--------------------------------------------------------------------
 
-        //myStringFile4.writeToStringFile(
-        //"Hej\n");
+        
     }
+    jointKeyFrameData.resize(allJoints);
 }
 
 std::vector<VertexAnimBFF> getKeyFrameData()
 {
     return keyFrameData;
+}
+
+std::vector<JointBFF> GetJointKeyFrameData()
+{
+    return jointKeyFrameData;
 }
 
 int getNrOfkeyframes()
@@ -92,7 +103,7 @@ void DisplayAnimation(FbxAnimStack* pAnimStack, FbxNode* pNode, bool isSwitcher)
 	}
 	lOutputString += "\n\n";
     FBXSDK_printf(lOutputString);
-
+    
     for (l = 0; l < nbAnimLayers; l++) 
     {
         FbxAnimLayer* lAnimLayer = pAnimStack->GetMember<FbxAnimLayer>(l); ////--------------------------------------------------------------------
@@ -106,7 +117,7 @@ void DisplayAnimation(FbxAnimStack* pAnimStack, FbxNode* pNode, bool isSwitcher)
         //myStringFile4.writeToStringFile(
         //"Hej\n");
     }
-
+    
 	for (l = 0; l < nbAudioLayers; l++)
 	{
 		FbxAudioLayer* lAudioLayer = pAnimStack->GetMember<FbxAudioLayer>(l);
@@ -121,6 +132,9 @@ void DisplayAnimation(FbxAnimStack* pAnimStack, FbxNode* pNode, bool isSwitcher)
         //myStringFile4.writeToStringFile(
         //"Hej\n");
 	}
+    allJoints -= 2;
+    int stop = 0;
+    
 }
 
 void DisplayAnimation(FbxAudioLayer* pAudioLayer, bool )
@@ -158,24 +172,33 @@ void DisplayAnimation(FbxAnimLayer* pAnimLayer, FbxNode* pNode, bool isSwitcher)
     FbxString lOutputString;
 
     lOutputString = "     Node Name: ";
+    allJoints++;
     lOutputString += pNode->GetName();
     lOutputString += "\n\n";
     FBXSDK_printf(lOutputString);
 
     DisplayChannels(pNode, pAnimLayer, DisplayCurveKeys, DisplayListCurveKeys, isSwitcher);
+    int b = 0;
     FBXSDK_printf ("\n");
 
     for(lModelCount = 0; lModelCount < pNode->GetChildCount(); lModelCount++)
     {
         DisplayAnimation(pAnimLayer, pNode->GetChild(lModelCount), isSwitcher);
     }
+    
 }
 
 
 void DisplayChannels(FbxNode* pNode, FbxAnimLayer* pAnimLayer, void (*DisplayCurve) (FbxAnimCurve* pCurve), void (*DisplayListCurve) (FbxAnimCurve* pCurve, FbxProperty* pProperty), bool isSwitcher)
 {
     FbxAnimCurve* lAnimCurve = NULL;
+    //int lKeyCount = pCurve->KeyGetCount();
 
+    //if (allJoints >= 3)
+    //{
+    //    jointKeyFrameData.resize(allJoints - 2);
+    //    jointKeyFrameData[allJoints - 3].nrOfKeyFrames = 9;
+    //}
     // Display general curves.
     if (!isSwitcher)
     {
@@ -184,6 +207,7 @@ void DisplayChannels(FbxNode* pNode, FbxAnimLayer* pAnimLayer, void (*DisplayCur
         {
             FBXSDK_printf("        TX\n");
             DisplayCurve(lAnimCurve);
+            
             //keyFrameData[currentFrame].pos[0] = DisplayCurve(lAnimCurve);
         }
         lAnimCurve = pNode->LclTranslation.GetCurve(pAnimLayer, FBXSDK_CURVENODE_COMPONENT_Y);
@@ -491,7 +515,7 @@ void DisplayChannels(FbxNode* pNode, FbxAnimLayer* pAnimLayer, void (*DisplayCur
 
         lProperty = pNode->GetNextProperty(lProperty);
     } // while
-
+    
 }
 
 
@@ -537,6 +561,7 @@ static int TangentVelocityFlagToIndex(int flags)
     return 0;
 }
 
+int n = 0;
 void DisplayCurveKeys(FbxAnimCurve* pCurve)
 {
     static const char* interpolation[] = { "?", "constant", "linear", "cubic"};
@@ -551,9 +576,33 @@ void DisplayCurveKeys(FbxAnimCurve* pCurve)
     int     lCount;
 
 
+    float keyValue;
     int lKeyCount = pCurve->KeyGetCount();
     keyFrameData.resize(lKeyCount);
+    newKeyFrameData.resize(lKeyCount);
     someVar++;
+
+    if (allJoints >= 3)
+    {
+        if (n == 9)
+            n = 0;
+        jointKeyFrameData.resize(allJoints - 2);
+        jointKeyFrameData[allJoints - 3].nrOfKeyFrames = lKeyCount;
+        jointKeyFrameData[allJoints - 3].animationFrames.resize(lKeyCount);
+
+        for (int i = 0; i < lKeyCount; i++)
+        {
+            jointKeyFrameData[allJoints - 3].animationFrames[i].timestamp = i;
+
+            keyValue = static_cast<float>(pCurve->KeyGetValue(i)); 
+
+            jointKeyFrameData[allJoints - 3].animationFrames[i].pose[n] = keyValue;
+
+        }
+        n++;
+    }
+    
+    
 
     for(lCount = 0; lCount < lKeyCount; lCount++)
     {
@@ -571,9 +620,13 @@ void DisplayCurveKeys(FbxAnimCurve* pCurve)
         }
         keyFrameData[currentFrame].time = std::atoi(temp.c_str());
 
+        //jointKeyFrameData[0].animationFrames[someVar].timestamp = currentFrame;
+
         lOutputString += ".... Key Value: ";
         lOutputString += lKeyValue;
-        
+
+
+
         if (someVar == 0)
             keyFrameData[currentFrame].pos[0] = lKeyValue;
         if (someVar == 1)

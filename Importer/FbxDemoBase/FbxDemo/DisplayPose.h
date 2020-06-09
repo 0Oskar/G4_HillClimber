@@ -15,6 +15,7 @@
 #include "DisplayCommon.h"
 
 void DisplayPose(FbxScene* pScene);
+std::vector<JointBFF> GetJointData();
 
 #endif // #ifndef _DISPLAY_POSE_H
 

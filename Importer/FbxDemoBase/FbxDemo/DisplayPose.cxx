@@ -10,6 +10,7 @@
 ****************************************************************************************/
 
 #include "DisplayPose.h"
+std::vector<JointBFF> jointData;
 
 void DisplayPose(FbxScene* pScene)
 {
@@ -17,11 +18,13 @@ void DisplayPose(FbxScene* pScene)
     FbxString  lName;
 
     lPoseCount = pScene->GetPoseCount();
-
+    int nrOf = 0;
+    int nrOf2 = 0;
     for (i = 0; i < lPoseCount; i++)
     {
         FbxPose* lPose = pScene->GetPose(i);
-
+        jointData.resize(lPose->GetCount() - 1);
+        
         lName = lPose->GetName();
         DisplayString("Pose Name: ", lName.Buffer());
 
@@ -45,21 +48,42 @@ void DisplayPose(FbxScene* pScene)
             DisplayString("    Matrix value: ","");
 
             FbxString lMatrixValue;
-
+            nrOf2 = 0;
             for (k=0; k<4; k++)
             {
+                
                 FbxMatrix  lMatrix = lPose->GetMatrix(j);
                 FbxVector4 lRow = lMatrix.GetRow(k);
-                char        lRowValue[1024];
+                if (j >= 1)
+                {
+                    jointData[j - 1].jointIndex = j - 1;
 
+                    nrOf = 0;
+                    jointData[j - 1].bindPoseMatrix[nrOf2] = lMatrix.GetRow(k)[nrOf];
+                    nrOf++;
+                    nrOf2++;
+                    jointData[j - 1].bindPoseMatrix[nrOf2] = lMatrix.GetRow(k)[nrOf];
+                    nrOf++;
+                    nrOf2++;
+                    jointData[j - 1].bindPoseMatrix[nrOf2] = lMatrix.GetRow(k)[nrOf];
+                    nrOf++;
+                    nrOf2++;
+                    jointData[j - 1].bindPoseMatrix[nrOf2] = lMatrix.GetRow(k)[nrOf];
+                    nrOf++;
+                    nrOf2++;
+                }
+
+                char        lRowValue[1024];
+                
                 FBXSDK_sprintf(lRowValue, 1024, "%9.4f %9.4f %9.4f %9.4f\n", lRow[0], lRow[1], lRow[2], lRow[3]);
                 lMatrixValue += FbxString("        ") + FbxString(lRowValue);
-            }
 
+            }
+            
             DisplayString("", lMatrixValue.Buffer());
         }
     }
-
+    
     lPoseCount = pScene->GetCharacterPoseCount();
 
     for (i = 0; i < lPoseCount; i++)
@@ -96,6 +120,12 @@ void DisplayPose(FbxScene* pScene)
             lNodeId = FbxCharacter::ENodeId(int(lNodeId) + 1);
         }
     }
+    int stop = 0;
+}
+
+std::vector<JointBFF> GetJointData()
+{
+    return jointData;
 }
 
 

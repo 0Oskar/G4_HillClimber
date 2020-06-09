@@ -17,7 +17,7 @@
 #pragma GCC diagnostic ignored "-Wformat-security"
 #endif
 
-std::vector<JointBFF> jointData;
+//std::vector<JointBFF> jointData;
 std::vector<ControlPointBFF> controlPointDataTemp;
 
 bool sortbysec(const std::pair<int, float>& a, const std::pair<int, float>& b)

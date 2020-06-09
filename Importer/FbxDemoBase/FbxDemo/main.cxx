@@ -56,21 +56,22 @@ static bool gVerbose = true;
 FileWrite myFile5("../biFile.bff");
 FileWrite myStringFile5("../stringFile.bff");
 
-std::string texturePath;
+std::string texturePath; //!
 SceneBFF sceneData;
 MeshBFF meshData2;
 std::vector<ControlPointBFF> controlPointData2;
-MaterialBFF materialData3;
-std::vector<LightBFF> lightData2;
-std::vector<CameraBFF> cameraData2;
-std::vector<JointBFF> jointData3;
+MaterialBFF materialData3; //!
+std::vector<LightBFF> lightData2; //!
+std::vector<CameraBFF> cameraData2; //!
+std::vector<JointBFF> jointData2;
+std::vector<keyFrameBFF> keyFrameData2;
 
 char* textureTempName;
 
-std::vector<std::vector<BlendShapesBFF>> blendShapeDataArr3;
+std::vector<std::vector<BlendShapesBFF>> blendShapeDataArr3; //!
 std::vector<std::vector<BlendshapeBFF>> newBlendShapeData;
-std::vector<BonesBFF> boneData2;
-std::vector<VertexAnimBFF> keyFrameData2;
+std::vector<BonesBFF> boneData2; //!
+std::vector<VertexAnimBFF> keyFrameData3; //!
 
 //Make a file
 
@@ -105,7 +106,7 @@ int main(int argc, char** argv)
         //lFilePath = "../TriAnim.fbx";
 
 
-        lFilePath = "../Plane1__Blend2__Joint5.fbx";
+        lFilePath = "../Plane1__Blend2__Joint5__Anim20.fbx";
 
 		lResult = LoadScene(lSdkManager, lScene, lFilePath.Buffer());
 	}
@@ -271,29 +272,53 @@ int main(int argc, char** argv)
     }
 
     // ****************** Joints ****************** //
-    //jointData3 = GetJointData2(getNrOfJoints());
+    jointData2 = GetJointData();
+    std::vector<JointBFF> tempJointKeyFrameData;
+    tempJointKeyFrameData = GetJointKeyFrameData();
+    for (int j = 0; j < getNrOfJoints(); j++)
+    {
+        jointData2[j].nrOfKeyFrames = tempJointKeyFrameData[j].nrOfKeyFrames;
+        jointData2[j].animationFrames.resize(jointData2[j].nrOfKeyFrames);
+
+        for (int k = 0; k < jointData2[j].nrOfKeyFrames; k++)
+        {
+            jointData2[j].animationFrames[k].timestamp = tempJointKeyFrameData[j].animationFrames[k].timestamp;
+
+            for (int v = 0; v < 9; v++)
+            {
+                jointData2[j].animationFrames[k].pose[v] = tempJointKeyFrameData[j].animationFrames[k].pose[v];
+            }
+        }
+    }
+
     myStringFile5.writeToStringFile("\n############ Joints ############\n");
-    //for (int j = 0; j < getNrOfJoints(); j++)
-    //{
-    //    myStringFile5.writeToStringFile(
-    //        "\n------ Index " + std::to_string(j) + ")\n" +
-    //        "Joint Index: " + std::to_string(jointData3[j].jointIndex) + "\n" +
-    //        "Matrix:\n" +
-    //        "Pos: (" + std::to_string(jointData3[j].matrix[0]) + ", " + std::to_string(jointData3[j].matrix[1]) + ", " + std::to_string(jointData3[j].matrix[2]) + ")\n" +
-    //        "Rot: (" + std::to_string(jointData3[j].matrix[4]) + ", " + std::to_string(jointData3[j].matrix[5]) + ", " + std::to_string(jointData3[j].matrix[6]) + ")\n" +
-    //        "Scale: (" + std::to_string(jointData3[j].matrix[7]) + ", " + std::to_string(jointData3[j].matrix[8]) + ", " + std::to_string(jointData3[j].matrix[9]) + ")\n" +
-    //        //"\n" +
-    //        //"Influences controlpoint: " + std::to_string(jointData3[j].influencedControlPoints[0]) + " (" + std::to_string(jointData3[j].boneWeight[0]) + "%)\n" +
-    //        //"Influences controlpoint: " + std::to_string(jointData3[j].influencedControlPoints[1]) + " (" + std::to_string(jointData3[j].boneWeight[1]) + "%)\n" +
-    //        //"Influences controlpoint: " + std::to_string(jointData3[j].influencedControlPoints[2]) + " (" + std::to_string(jointData3[j].boneWeight[2]) + "%)\n" +
-    //        //"Influences controlpoint: " + std::to_string(jointData3[j].influencedControlPoints[3]) + " (" + std::to_string(jointData3[j].boneWeight[3]) + "%)\n" +
-    //        "\n\n"
-    //    );
-    //}
+    for (int j = 0; j < getNrOfJoints(); j++)
+    {
+        myStringFile5.writeToStringFile(
+            "\n------ Index " + std::to_string(j) + ")\n" +
+            "Joint Index: " + std::to_string(jointData2[j].jointIndex) + "\n" +
+            "Bindpose matrix:\n" +
+            "(" + std::to_string(jointData2[j].bindPoseMatrix[0]) + ", " + std::to_string(jointData2[j].bindPoseMatrix[1]) + ", " + std::to_string(jointData2[j].bindPoseMatrix[2]) + ", " + std::to_string(jointData2[j].bindPoseMatrix[3]) + ")\n" +
+            "(" + std::to_string(jointData2[j].bindPoseMatrix[4]) + ", " + std::to_string(jointData2[j].bindPoseMatrix[5]) + ", " + std::to_string(jointData2[j].bindPoseMatrix[6]) + ", " + std::to_string(jointData2[j].bindPoseMatrix[7]) + ")\n" +
+            "(" + std::to_string(jointData2[j].bindPoseMatrix[8]) + ", " + std::to_string(jointData2[j].bindPoseMatrix[9]) + ", " + std::to_string(jointData2[j].bindPoseMatrix[10]) + ", " + std::to_string(jointData2[j].bindPoseMatrix[11]) + ")\n" +
+            "(" + std::to_string(jointData2[j].bindPoseMatrix[12]) + ", " + std::to_string(jointData2[j].bindPoseMatrix[13]) + ", " + std::to_string(jointData2[j].bindPoseMatrix[14]) + ", " + std::to_string(jointData2[j].bindPoseMatrix[15]) + ")\n" +
+            "\n"
+            "Keyframes: "+ std::to_string(jointData2[j].nrOfKeyFrames) + "\n"
+        );
+        for (int k = 0; k < jointData2[j].nrOfKeyFrames; k++)
+        {
+            myStringFile5.writeToStringFile(
+                "Time: " + std::to_string(jointData2[j].animationFrames[k].timestamp) + "\n" +
+                "(" + std::to_string(jointData2[j].animationFrames[k].pose[0]) + ", " + std::to_string(jointData2[j].animationFrames[k].pose[1]) + ", " + std::to_string(jointData2[j].animationFrames[k].pose[2]) + ")\n" +
+                "(" + std::to_string(jointData2[j].animationFrames[k].pose[3]) + ", " + std::to_string(jointData2[j].animationFrames[k].pose[4]) + ", " + std::to_string(jointData2[j].animationFrames[k].pose[5]) + ")\n" +
+                "(" + std::to_string(jointData2[j].animationFrames[k].pose[6]) + ", " + std::to_string(jointData2[j].animationFrames[k].pose[7]) + ", " + std::to_string(jointData2[j].animationFrames[k].pose[8]) + ")\n\n"
+            );
+        }
+    }
 
-
-
-
+    // ****************** Keyframe ****************** //
+    //getKeyFrameData();
+    //myStringFile5.writeToStringFile("\n############ Keyframe ############\n");
 
 
 
