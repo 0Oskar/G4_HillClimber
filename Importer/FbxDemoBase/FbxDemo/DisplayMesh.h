@@ -24,9 +24,12 @@ std::vector<std::vector<BlendshapeBFF>> GetNewBlendShapeData2();
 int GetNrOfVertexInBlendShape2();
 int GetNrOfBlendShapes2();
 int GetNrOfTextures2();
-char* getTextureName22(int index2);
-const char* GetTextureType2(int index2);
+int getMaterialIndex2(int index);
 
+char* getTextureName22(int index2);
+//const char* GetTextureType2(int index2);
+
+std::string GetTextureType2(int index2);
 
 #endif // #ifndef _DISPLAY_MESH_H
 

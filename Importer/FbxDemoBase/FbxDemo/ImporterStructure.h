@@ -66,11 +66,12 @@ struct BlendshapeBFF
 
 struct MaterialBFF
 {
+	static const int PATH_SIZE = 128;
 	float Diffuse[3];
 	float Ambient[3];
 	float Opacity;
-	char texturePath[128];
-	char textureType[128];
+	char texturePath[PATH_SIZE];
+	char textureType[PATH_SIZE];
 };
 
 struct LightBFF

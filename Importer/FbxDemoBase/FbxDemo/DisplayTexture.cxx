@@ -16,9 +16,12 @@
 std::string textureName;
 char* eyMan;
 const char* textureTypeChar;
-const char* textureTypeCharArr[50];
+std::string textureTypeCharArr[50];
 
 int nrOfTextures;
+int nrOfTypes = 0;
+int whatMaterialIndex[50];
+
 bool doOnce = false;
 
 char* texturePaths[50];
@@ -40,7 +43,6 @@ void DisplayTextureInfo(FbxTexture* pTexture, int pBlendMode)
 
 	if (lFileTexture)
 	{
-        
 		DisplayString("            Type: File Texture");
         eyMan = (char*)lFileTexture->GetFileName();
 
@@ -104,8 +106,8 @@ void DisplayTextureInfo(FbxTexture* pTexture, int pBlendMode)
 
     DisplayString("            Texture Use: ", pTextureUses[pTexture->GetTextureUse()]);
 
-	textureTypeCharArr[nrOfTextures] = pTextureUses[pTexture->GetTextureUse()];
-
+	//textureTypeCharArr[nrOfTextures] = pTextureUses[pTexture->GetTextureUse()];
+	//textureTypeCharArr[nrOfTextures] = pTextureUses[pTexture->GetTextureUse()];
 	
 
     DisplayString("");                
@@ -137,10 +139,22 @@ const char* GetTextureType()
 	return textureTypeChar;
 }
 
-const char* GetTextureTypeArr(int index)
+//const char* GetTextureTypeArr(int index)
+//{
+//	return textureTypeCharArr[index];
+//}
+
+
+std::string GetTextureTypeArr(int index)
 {
 	return textureTypeCharArr[index];
 }
+
+int getMaterialIndex(int index)
+{
+	return whatMaterialIndex[index];
+}
+
 
 
 
@@ -186,6 +200,7 @@ void FindAndDisplayTextureInfoByProperty(FbxProperty pProperty, bool& pDisplayHe
                         FbxLayeredTexture::EBlendMode lBlendMode;
                         lLayeredTexture->GetTextureBlendMode(k, lBlendMode);
                         DisplayString("    Textures for ", pProperty.GetName());
+						
                         DisplayInt("        Texture ", k);  
                         DisplayTextureInfo(lTexture, (int) lBlendMode);   
                     }
@@ -205,6 +220,14 @@ void FindAndDisplayTextureInfoByProperty(FbxProperty pProperty, bool& pDisplayHe
                     }             
 
                     DisplayString("    Textures for ", pProperty.GetName());
+
+					std::string aType = (const char*)pProperty.GetName();
+					
+					whatMaterialIndex[nrOfTypes] = pMaterialIndex;
+					textureTypeCharArr[nrOfTypes] = aType;
+					nrOfTypes++;
+
+
                     DisplayInt("        Texture ", j);  
                     DisplayTextureInfo(lTexture, -1);
                 }

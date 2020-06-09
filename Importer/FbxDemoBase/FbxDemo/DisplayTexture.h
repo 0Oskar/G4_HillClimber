@@ -32,7 +32,10 @@ char* getTexturePathArr(int index);
 
 const char* GetTextureType();
 
-const char* GetTextureTypeArr(int index);
+//const char* GetTextureTypeArr(int index);
+
+std::string GetTextureTypeArr(int index);
+int getMaterialIndex(int index);
 
 
 #endif // #ifndef _DISPLAY_TEXTURE_H

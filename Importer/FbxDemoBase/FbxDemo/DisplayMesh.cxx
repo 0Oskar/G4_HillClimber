@@ -221,18 +221,26 @@ int GetNrOfTextures2()
 	return getNrOfTextures();
 }
 
+int getMaterialIndex2(int index)
+{
+	return getMaterialIndex(index);
+}
+
 char* getTextureName22(int index2)
 {
 	return GetTexturePath2(getTexturePathArr(index2));
 }
 
-const char* GetTextureType2(int index2)
+//const char* GetTextureType2(int index2)
+//{
+//	return GetTextureTypeArr(index2);
+//
+//}
+
+std::string GetTextureType2(int index2)
 {
 	return GetTextureTypeArr(index2);
-
 }
-
-
 
 
 

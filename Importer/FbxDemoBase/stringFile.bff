@@ -87,6 +87,7 @@ Tangent (1.000000, 0.000000, 0.000000)
 
 ------------- Material: 
 
+Texture belongs to Material : 0
 DiffuseR: 1.000000
 DiffuseG: 1.000000
 DiffuseB: 1.000000
@@ -98,9 +99,10 @@ AmbientB: 0.000000
 Opacity: 0.000000
  
 TexturePath: E:\Litet Spelprojekt\G4_HillClimber\Importer\FbxDemoBase\lightAndShit.fbm/Shreklogo.png
- TextureType: Standard
+ TextureType: DiffuseColor
 ------------- Material: 
 
+Texture belongs to Material : 0
 DiffuseR: 1.000000
 DiffuseG: 1.000000
 DiffuseB: 1.000000
@@ -111,96 +113,11 @@ AmbientB: 0.000000
 
 Opacity: 0.000000
  
-TexturePath: E:\Litet Spelprojekt\G4_HillClimber\Importer\FbxDemoBase\lightAndShit.fbm/crystal.png
- TextureType: Standard############ Scene ############
-NrOfLights: 0
-NrOfCameras: 0
-NrOfVertexAnimFrames: 0
-NrOfBlendShapes: 0
-
-
-############ Mesh ############
-Mesh Name: pCube1
-NrOfControlPoints: 8
-NrOfJoints: 0
-
-
-############ Control Points ############
-
------- Index 0)
-Position (-0.500000, -0.500000, 0.500000)
-UV (0.484823, 0.392332)
-
-Normal (0.000000, 0.000000, 1.000000)
-biNormal (0.000000, 1.000000, -0.000000)
-Tangent (1.000000, -0.000000, -0.000000)
-
-
------- Index 1)
-Position (0.500000, -0.500000, 0.500000)
-UV (0.549778, 0.392332)
-
-Normal (0.000000, 0.000000, 1.000000)
-biNormal (0.000000, 1.000000, -0.000000)
-Tangent (1.000000, -0.000000, 0.000000)
-
-
------- Index 2)
-Position (-0.500000, 0.500000, 0.500000)
-UV (0.484823, 0.457288)
-
-Normal (0.000000, 0.000000, 1.000000)
-biNormal (0.000000, 1.000000, -0.000000)
-Tangent (1.000000, -0.000000, 0.000000)
-
-
------- Index 3)
-Position (0.500000, 0.500000, 0.500000)
-UV (0.549778, 0.457288)
-
-Normal (0.000000, 0.000000, 1.000000)
-biNormal (0.000000, 1.000000, -0.000000)
-Tangent (1.000000, -0.000000, 0.000000)
-
-
------- Index 4)
-Position (-0.500000, 0.500000, -0.500000)
-UV (0.484823, 0.522243)
-
-Normal (0.000000, 1.000000, 0.000000)
-biNormal (0.000000, 0.000000, -1.000000)
-Tangent (1.000000, -0.000000, 0.000000)
-
-
------- Index 5)
-Position (0.500000, 0.500000, -0.500000)
-UV (0.549778, 0.522243)
-
-Normal (0.000000, 1.000000, 0.000000)
-biNormal (0.000000, 0.000000, -1.000000)
-Tangent (1.000000, 0.000000, 0.000000)
-
-
------- Index 6)
-Position (-0.500000, -0.500000, -0.500000)
-UV (0.484823, 0.587199)
-
-Normal (0.000000, 1.000000, 0.000000)
-biNormal (0.000000, 0.000000, -1.000000)
-Tangent (1.000000, 0.000000, 0.000000)
-
-
------- Index 7)
-Position (0.500000, -0.500000, -0.500000)
-UV (0.549778, 0.587199)
-
-Normal (0.000000, 1.000000, 0.000000)
-biNormal (0.000000, 0.000000, -1.000000)
-Tangent (1.000000, 0.000000, 0.000000)
-
-
+TexturePath: E:\Litet Spelprojekt\G4_HillClimber\Importer\FbxDemoBase\lightAndShit.fbm/1/normal_mapping_normal_map.png
+ TextureType: Bump
 ------------- Material: 
 
+Texture belongs to Material : 0
 DiffuseR: 1.000000
 DiffuseG: 1.000000
 DiffuseB: 1.000000
@@ -212,9 +129,10 @@ AmbientB: 0.000000
 Opacity: 0.000000
  
 TexturePath: E:\Litet Spelprojekt\G4_HillClimber\Importer\FbxDemoBase\lightAndShit.fbm/Shreklogo.png
- TextureType: Standard
+ TextureType: TransparentColor
 ------------- Material: 
 
+Texture belongs to Material : 1
 DiffuseR: 1.000000
 DiffuseG: 1.000000
 DiffuseB: 1.000000
@@ -225,434 +143,20 @@ AmbientB: 0.000000
 
 Opacity: 0.000000
  
-TexturePath: E:\Litet Spelprojekt\G4_HillClimber\Importer\FbxDemoBase\lightAndShit.fbm/crystal.png
- TextureType: Standard############ Scene ############
-NrOfLights: 0
-NrOfCameras: 0
-NrOfVertexAnimFrames: 0
-NrOfBlendShapes: 0
-
-
-############ Mesh ############
-Mesh Name: pCube1
-NrOfControlPoints: 8
-NrOfJoints: 0
-
-
-############ Control Points ############
-
------- Index 0)
-Position (-0.500000, -0.500000, 0.500000)
-UV (0.484823, 0.392332)
-
-Normal (0.000000, 0.000000, 1.000000)
-biNormal (0.000000, 1.000000, -0.000000)
-Tangent (1.000000, -0.000000, -0.000000)
-
-
------- Index 1)
-Position (0.500000, -0.500000, 0.500000)
-UV (0.549778, 0.392332)
-
-Normal (0.000000, 0.000000, 1.000000)
-biNormal (0.000000, 1.000000, -0.000000)
-Tangent (1.000000, -0.000000, 0.000000)
-
-
------- Index 2)
-Position (-0.500000, 0.500000, 0.500000)
-UV (0.484823, 0.457288)
-
-Normal (0.000000, 0.000000, 1.000000)
-biNormal (0.000000, 1.000000, -0.000000)
-Tangent (1.000000, -0.000000, 0.000000)
-
-
------- Index 3)
-Position (0.500000, 0.500000, 0.500000)
-UV (0.549778, 0.457288)
-
-Normal (0.000000, 0.000000, 1.000000)
-biNormal (0.000000, 1.000000, -0.000000)
-Tangent (1.000000, -0.000000, 0.000000)
-
-
------- Index 4)
-Position (-0.500000, 0.500000, -0.500000)
-UV (0.484823, 0.522243)
-
-Normal (0.000000, 1.000000, 0.000000)
-biNormal (0.000000, 0.000000, -1.000000)
-Tangent (1.000000, -0.000000, 0.000000)
-
-
------- Index 5)
-Position (0.500000, 0.500000, -0.500000)
-UV (0.549778, 0.522243)
-
-Normal (0.000000, 1.000000, 0.000000)
-biNormal (0.000000, 0.000000, -1.000000)
-Tangent (1.000000, 0.000000, 0.000000)
-
-
------- Index 6)
-Position (-0.500000, -0.500000, -0.500000)
-UV (0.484823, 0.587199)
-
-Normal (0.000000, 1.000000, 0.000000)
-biNormal (0.000000, 0.000000, -1.000000)
-Tangent (1.000000, 0.000000, 0.000000)
-
-
------- Index 7)
-Position (0.500000, -0.500000, -0.500000)
-UV (0.549778, 0.587199)
-
-Normal (0.000000, 1.000000, 0.000000)
-biNormal (0.000000, 0.000000, -1.000000)
-Tangent (1.000000, 0.000000, 0.000000)
-
-############ Scene ############
-NrOfLights: 0
-NrOfCameras: 0
-NrOfVertexAnimFrames: 0
-NrOfBlendShapes: 0
-
-
-############ Mesh ############
-Mesh Name: pCube1
-NrOfControlPoints: 8
-NrOfJoints: 0
-
-
-############ Control Points ############
-
------- Index 0)
-Position (-0.500000, -0.500000, 0.500000)
-UV (0.484823, 0.392332)
-
-Normal (0.000000, 0.000000, 1.000000)
-biNormal (0.000000, 1.000000, -0.000000)
-Tangent (1.000000, -0.000000, -0.000000)
-
-
------- Index 1)
-Position (0.500000, -0.500000, 0.500000)
-UV (0.549778, 0.392332)
-
-Normal (0.000000, 0.000000, 1.000000)
-biNormal (0.000000, 1.000000, -0.000000)
-Tangent (1.000000, -0.000000, 0.000000)
-
-
------- Index 2)
-Position (-0.500000, 0.500000, 0.500000)
-UV (0.484823, 0.457288)
-
-Normal (0.000000, 0.000000, 1.000000)
-biNormal (0.000000, 1.000000, -0.000000)
-Tangent (1.000000, -0.000000, 0.000000)
-
-
------- Index 3)
-Position (0.500000, 0.500000, 0.500000)
-UV (0.549778, 0.457288)
-
-Normal (0.000000, 0.000000, 1.000000)
-biNormal (0.000000, 1.000000, -0.000000)
-Tangent (1.000000, -0.000000, 0.000000)
-
-
------- Index 4)
-Position (-0.500000, 0.500000, -0.500000)
-UV (0.484823, 0.522243)
-
-Normal (0.000000, 1.000000, 0.000000)
-biNormal (0.000000, 0.000000, -1.000000)
-Tangent (1.000000, -0.000000, 0.000000)
-
-
------- Index 5)
-Position (0.500000, 0.500000, -0.500000)
-UV (0.549778, 0.522243)
-
-Normal (0.000000, 1.000000, 0.000000)
-biNormal (0.000000, 0.000000, -1.000000)
-Tangent (1.000000, 0.000000, 0.000000)
-
-
------- Index 6)
-Position (-0.500000, -0.500000, -0.500000)
-UV (0.484823, 0.587199)
-
-Normal (0.000000, 1.000000, 0.000000)
-biNormal (0.000000, 0.000000, -1.000000)
-Tangent (1.000000, 0.000000, 0.000000)
-
-
------- Index 7)
-Position (0.500000, -0.500000, -0.500000)
-UV (0.549778, 0.587199)
-
-Normal (0.000000, 1.000000, 0.000000)
-biNormal (0.000000, 0.000000, -1.000000)
-Tangent (1.000000, 0.000000, 0.000000)
-
-############ Scene ############
-NrOfLights: 0
-NrOfCameras: 0
-NrOfVertexAnimFrames: 0
-NrOfBlendShapes: 0
-
-
-############ Mesh ############
-Mesh Name: pCube1
-NrOfControlPoints: 8
-NrOfJoints: 0
-
-
-############ Control Points ############
-
------- Index 0)
-Position (-0.500000, -0.500000, 0.500000)
-UV (0.484823, 0.392332)
-
-Normal (0.000000, 0.000000, 1.000000)
-biNormal (0.000000, 1.000000, -0.000000)
-Tangent (1.000000, -0.000000, -0.000000)
-
-
------- Index 1)
-Position (0.500000, -0.500000, 0.500000)
-UV (0.549778, 0.392332)
-
-Normal (0.000000, 0.000000, 1.000000)
-biNormal (0.000000, 1.000000, -0.000000)
-Tangent (1.000000, -0.000000, 0.000000)
-
-
------- Index 2)
-Position (-0.500000, 0.500000, 0.500000)
-UV (0.484823, 0.457288)
-
-Normal (0.000000, 0.000000, 1.000000)
-biNormal (0.000000, 1.000000, -0.000000)
-Tangent (1.000000, -0.000000, 0.000000)
-
-
------- Index 3)
-Position (0.500000, 0.500000, 0.500000)
-UV (0.549778, 0.457288)
-
-Normal (0.000000, 0.000000, 1.000000)
-biNormal (0.000000, 1.000000, -0.000000)
-Tangent (1.000000, -0.000000, 0.000000)
-
-
------- Index 4)
-Position (-0.500000, 0.500000, -0.500000)
-UV (0.484823, 0.522243)
-
-Normal (0.000000, 1.000000, 0.000000)
-biNormal (0.000000, 0.000000, -1.000000)
-Tangent (1.000000, -0.000000, 0.000000)
-
-
------- Index 5)
-Position (0.500000, 0.500000, -0.500000)
-UV (0.549778, 0.522243)
-
-Normal (0.000000, 1.000000, 0.000000)
-biNormal (0.000000, 0.000000, -1.000000)
-Tangent (1.000000, 0.000000, 0.000000)
-
-
------- Index 6)
-Position (-0.500000, -0.500000, -0.500000)
-UV (0.484823, 0.587199)
-
-Normal (0.000000, 1.000000, 0.000000)
-biNormal (0.000000, 0.000000, -1.000000)
-Tangent (1.000000, 0.000000, 0.000000)
-
-
------- Index 7)
-Position (0.500000, -0.500000, -0.500000)
-UV (0.549778, 0.587199)
-
-Normal (0.000000, 1.000000, 0.000000)
-biNormal (0.000000, 0.000000, -1.000000)
-Tangent (1.000000, 0.000000, 0.000000)
-
-############ Scene ############
-NrOfLights: 0
-NrOfCameras: 0
-NrOfVertexAnimFrames: 0
-NrOfBlendShapes: 0
-
-
-############ Mesh ############
-Mesh Name: pCube1
-NrOfControlPoints: 8
-NrOfJoints: 0
-
-
-############ Control Points ############
-
------- Index 0)
-Position (-0.500000, -0.500000, 0.500000)
-UV (0.484823, 0.392332)
-
-Normal (0.000000, 0.000000, 1.000000)
-biNormal (0.000000, 1.000000, -0.000000)
-Tangent (1.000000, -0.000000, -0.000000)
-
-
------- Index 1)
-Position (0.500000, -0.500000, 0.500000)
-UV (0.549778, 0.392332)
-
-Normal (0.000000, 0.000000, 1.000000)
-biNormal (0.000000, 1.000000, -0.000000)
-Tangent (1.000000, -0.000000, 0.000000)
-
-
------- Index 2)
-Position (-0.500000, 0.500000, 0.500000)
-UV (0.484823, 0.457288)
-
-Normal (0.000000, 0.000000, 1.000000)
-biNormal (0.000000, 1.000000, -0.000000)
-Tangent (1.000000, -0.000000, 0.000000)
-
-
------- Index 3)
-Position (0.500000, 0.500000, 0.500000)
-UV (0.549778, 0.457288)
-
-Normal (0.000000, 0.000000, 1.000000)
-biNormal (0.000000, 1.000000, -0.000000)
-Tangent (1.000000, -0.000000, 0.000000)
-
-
------- Index 4)
-Position (-0.500000, 0.500000, -0.500000)
-UV (0.484823, 0.522243)
-
-Normal (0.000000, 1.000000, 0.000000)
-biNormal (0.000000, 0.000000, -1.000000)
-Tangent (1.000000, -0.000000, 0.000000)
-
-
------- Index 5)
-Position (0.500000, 0.500000, -0.500000)
-UV (0.549778, 0.522243)
-
-Normal (0.000000, 1.000000, 0.000000)
-biNormal (0.000000, 0.000000, -1.000000)
-Tangent (1.000000, 0.000000, 0.000000)
-
-
------- Index 6)
-Position (-0.500000, -0.500000, -0.500000)
-UV (0.484823, 0.587199)
-
-Normal (0.000000, 1.000000, 0.000000)
-biNormal (0.000000, 0.000000, -1.000000)
-Tangent (1.000000, 0.000000, 0.000000)
-
-
------- Index 7)
-Position (0.500000, -0.500000, -0.500000)
-UV (0.549778, 0.587199)
-
-Normal (0.000000, 1.000000, 0.000000)
-biNormal (0.000000, 0.000000, -1.000000)
-Tangent (1.000000, 0.000000, 0.000000)
-
-############ Scene ############
-NrOfLights: 0
-NrOfCameras: 0
-NrOfVertexAnimFrames: 0
-NrOfBlendShapes: 0
-
-
-############ Mesh ############
-Mesh Name: pCube1
-NrOfControlPoints: 8
-NrOfJoints: 0
-
-
-############ Control Points ############
-
------- Index 0)
-Position (-0.500000, -0.500000, 0.500000)
-UV (0.484823, 0.392332)
-
-Normal (0.000000, 0.000000, 1.000000)
-biNormal (0.000000, 1.000000, -0.000000)
-Tangent (1.000000, -0.000000, -0.000000)
-
-
------- Index 1)
-Position (0.500000, -0.500000, 0.500000)
-UV (0.549778, 0.392332)
-
-Normal (0.000000, 0.000000, 1.000000)
-biNormal (0.000000, 1.000000, -0.000000)
-Tangent (1.000000, -0.000000, 0.000000)
-
-
------- Index 2)
-Position (-0.500000, 0.500000, 0.500000)
-UV (0.484823, 0.457288)
-
-Normal (0.000000, 0.000000, 1.000000)
-biNormal (0.000000, 1.000000, -0.000000)
-Tangent (1.000000, -0.000000, 0.000000)
-
-
------- Index 3)
-Position (0.500000, 0.500000, 0.500000)
-UV (0.549778, 0.457288)
-
-Normal (0.000000, 0.000000, 1.000000)
-biNormal (0.000000, 1.000000, -0.000000)
-Tangent (1.000000, -0.000000, 0.000000)
-
-
------- Index 4)
-Position (-0.500000, 0.500000, -0.500000)
-UV (0.484823, 0.522243)
-
-Normal (0.000000, 1.000000, 0.000000)
-biNormal (0.000000, 0.000000, -1.000000)
-Tangent (1.000000, -0.000000, 0.000000)
-
-
------- Index 5)
-Position (0.500000, 0.500000, -0.500000)
-UV (0.549778, 0.522243)
-
-Normal (0.000000, 1.000000, 0.000000)
-biNormal (0.000000, 0.000000, -1.000000)
-Tangent (1.000000, 0.000000, 0.000000)
-
-
------- Index 6)
-Position (-0.500000, -0.500000, -0.500000)
-UV (0.484823, 0.587199)
-
-Normal (0.000000, 1.000000, 0.000000)
-biNormal (0.000000, 0.000000, -1.000000)
-Tangent (1.000000, 0.000000, 0.000000)
-
-
------- Index 7)
-Position (0.500000, -0.500000, -0.500000)
-UV (0.549778, 0.587199)
-
-Normal (0.000000, 1.000000, 0.000000)
-biNormal (0.000000, 0.000000, -1.000000)
-Tangent (1.000000, 0.000000, 0.000000)
-
+TexturePath: E:\Litet Spelprojekt\G4_HillClimber\Importer\FbxDemoBase\lightAndShit.fbm/1/Shreklogo.png
+ TextureType: DiffuseColor
+------------- Material: 
+
+Texture belongs to Material : 1
+DiffuseR: 1.000000
+DiffuseG: 1.000000
+DiffuseB: 1.000000
+
+AmbientR: 0.000000
+AmbientG: 0.000000
+AmbientB: 0.000000
+
+Opacity: 0.000000
+ 
+TexturePath: E:\Litet Spelprojekt\G4_HillClimber\Importer\FbxDemoBase\lightAndShit.fbm/normal_mapping_normal_map.png
+ TextureType: NormalMap
