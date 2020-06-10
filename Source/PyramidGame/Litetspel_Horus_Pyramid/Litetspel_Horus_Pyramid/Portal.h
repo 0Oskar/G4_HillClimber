@@ -16,10 +16,11 @@ public:
 
 	Portal();
 	~Portal();
-	void initialize(int modelIndex, int wvpCBufferIndex, Model* mdl, XMVECTOR teleportLocation, Player* player, int roomID, bool oneTimeUse = true);
+	void setActiveStatus(const bool activeStatus);
+	void initialize(const int modelIndex, const int wvpCBufferIndex, Model* mdl, const XMVECTOR teleportLocation, Player* player, const int roomID, const bool oneTimeUse = true);
 	void update();
 	void resetActiveRoomVariable();
-	bool shouldChangeActiveRoom();
-	int getRoomID();
+	bool shouldChangeActiveRoom() const;
+	int getRoomID()const ;
 
 };

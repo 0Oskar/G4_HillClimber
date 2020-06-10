@@ -17,19 +17,20 @@ private:
 	IndexBuffer m_indexBuffer;
 	ImporterBFF::Manager* myManager;
 
-
-
 	bool m_drawWithIndex;
 
 public:
 	Model();
 
-	void initModel(ID3D11Device* device, ID3D11DeviceContext* dContext, MaterialData material, std::wstring texturePath = L"");
+	void initModel(ID3D11Device* device, ID3D11DeviceContext* dContext, const MaterialData material, const std::wstring texturePath = L"");
 	void draw(DirectX::XMMATRIX &mtrx);
-	void loadVertexVector(ID3D11Device* device, ID3D11DeviceContext* dContext, std::vector<Vertex> vertexVector, MaterialData material, std::wstring texturePath = L"");
-	void loadVertexFromOBJ(ID3D11Device* device, ID3D11DeviceContext* dContext, std::wstring objFilePath, MaterialData material, std::wstring texturePath = L"");
-	void initializeModelBff(ID3D11Device* device, ID3D11DeviceContext* dContext, std::string fileName, MaterialData material, std::wstring texturePath = L"");
-	void printBffModel(ModelBFF model);
+	void loadVertexVector(ID3D11Device* device, ID3D11DeviceContext* dContext, std::vector<Vertex> vertexVector, const MaterialData material, const std::wstring texturePath = L"");
+	void loadVertexFromOBJ(ID3D11Device* device, ID3D11DeviceContext* dContext, const std::wstring objFilePath, const MaterialData material, const std::wstring texturePath = L"");
+	void initializeModelBff(ID3D11Device* device, ID3D11DeviceContext* dContext, const std::string fileName, const MaterialData material, const std::wstring texturePath = L"");
+	void printBffModel(const ModelBFF model) const;
+	void printLight(const ModelBFF model) const;
+	void printCamera(const ModelBFF model) const;
+
 	Material m_material;
 
 	std::wstring m_originalTexture;

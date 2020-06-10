@@ -8,10 +8,31 @@ Room::Room()
 
 Room::~Room()
 {
+	this->m_player = nullptr;
+	this->m_dContext = nullptr;
+	this->m_device = nullptr;
+	this->m_gameTimerPointer = nullptr;
+	this->m_models = nullptr;
+	
+	this->m_wvpCBuffers = nullptr;
+	int i = 0;
+	for (auto p : this->m_gameObjects)
+	{
+		i++;
+		if (p != nullptr)
+		{
+			delete p;
+		}
+	}
+	this->m_gameObjects.clear();
 
+	for (int i = 0; i < this->m_rooms.size(); i++) //Not created here. Will release in gamestate
+	{
+		this->m_rooms.at(i) = nullptr;
+	}
 }
 
-void Room::initialize(ID3D11Device* device, ID3D11DeviceContext* dContext, std::vector<Model>* models, std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* cBuffer, Player* player, XMVECTOR position, std::shared_ptr<DirectX::AudioEngine> audioEngine, Timer* gameTimer)
+void Room::initialize(ID3D11Device* device, ID3D11DeviceContext* dContext, std::vector<Model>* models, std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* cBuffer, Player* player, XMVECTOR position, std::shared_ptr<DirectX::AudioEngine> audioEngine, Timer* gameTimer, GameOptions option)
 {
 	this->m_device = device;
 	this->m_dContext = dContext;
@@ -21,6 +42,9 @@ void Room::initialize(ID3D11Device* device, ID3D11DeviceContext* dContext, std::
 	this->m_models = models;
 	this->audioEngine = audioEngine;
 	this->m_gameTimerPointer = gameTimer;
+
+	this->resourceHandler = &ResourceHandler::get();
+	this->option = option;
 }
 void Room::initParent()
 {
@@ -33,6 +57,13 @@ void Room::initParent()
 	this->m_worldPosition = DirectX::XMVectorZero();
 	this->m_dirLight.lightColor = { .8f, .8f, .8f, 1.f };
 	this->m_dirLight.lightDirection = {-0.8f, 1.0f, -0.7f, 0.0f };
+	this->m_fogData.cameraPos = XMFLOAT3(0, 0, 0);
+	this->m_fogData.fogEnd = 0;
+	this->m_fogData.fogStart = 0;
+	this->m_fogData.fogColor = { 0.5f, 0.5f, 0.5f };
+	this->m_lightData.lightColor = DirectX::XMFLOAT3(1.f, 1.0f, 1.0f);
+	this->m_lightData.strength = 0.5f;
+	this->m_lightData.nrOfPointLights = 0;
 }
 void Room::update(float dt, Camera* camera, Room* &activeRoom, bool &activeRoomChanged)
 {
@@ -60,7 +91,7 @@ void Room::update(float dt, Camera* camera, Room* &activeRoom, bool &activeRoomC
 		DirectX::XMMATRIX viewPMtrx = camera->getViewMatrix() * camera->getProjectionMatrix();
 		wvpData.wvp = this->m_gameObjects[i]->getWorldMatrix() * viewPMtrx;
 		wvpData.worldMatrix = this->m_gameObjects[i]->getWorldMatrix();
-			
+
 		this->m_wvpCBuffers->at(this->m_gameObjects.at(i)->getWvpCBufferIndex()).upd(&wvpData);
 	}
 }
@@ -86,7 +117,8 @@ void Room::addGameObjectToRoom(bool dynamic, bool colide, float weight, int mdlI
 
 	if (colide)
 	{
-		this->m_player->addAABB(gObject->getAABBPtr());
+		if(this->m_player != nullptr)
+			this->m_player->addAABB(gObject->getAABBPtr());
 	}
 	if (boundingBoxSize.x == 0 && boundingBoxSize.y == 0 && boundingBoxSize.z == 0)
 	{
@@ -105,7 +137,8 @@ void Room::addPlatformToRoom(int mdlIndex, Model* mdl, DirectX::XMVECTOR positio
 	XMVECTOR pos = m_worldPosition + position;
 	this->m_gameObjects.back()->setBoundingBox(platformBoundingBox);
 	this->m_gameObjects.back()->setPosition(pos);
-	this->m_player->addAABB(this->m_gameObjects.back()->getAABBPtr());
+	if(m_player != nullptr)
+		this->m_player->addAABB(this->m_gameObjects.back()->getAABBPtr());
 }
 
 void Room::addPortalToRoom(XMVECTOR teleportLocation, int mdlIndx, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR scale3D, DirectX::XMFLOAT3 boundingBoxSize, int room, bool oneTimeUse)
@@ -117,7 +150,7 @@ void Room::addPortalToRoom(XMVECTOR teleportLocation, int mdlIndx, Model* mdl, D
 	XMVECTOR pos = m_worldPosition + teleportLocation;
 	this->m_gameObjects.emplace_back(new Portal());
 	if(room != -1)
-		dynamic_cast<Portal*>(this->m_gameObjects.back())->initialize(mdlIndx, (int)m_wvpCBuffers->size() - 1, mdl, this->m_rooms[room]->getEntrancePosition(), this->m_player, room, oneTimeUse);
+		dynamic_cast<Portal*>(this->m_gameObjects.back())->initialize(mdlIndx, (int)m_wvpCBuffers->size() - 1, mdl, this->m_rooms[room]->getEntrancePosition() + XMVectorSet(0.f, this->m_player->getAABB().Extents.y + 0.1f, 0, 0), this->m_player, room, oneTimeUse);
 	else
 		dynamic_cast<Portal*>(this->m_gameObjects.back())->initialize(mdlIndx, (int)m_wvpCBuffers->size() - 1, mdl, pos, this->m_player, room, oneTimeUse);
 
@@ -165,12 +198,10 @@ std::vector<BoundingOrientedBox>* Room::getOrientedBoundingBoxPtr()
 	return &this->m_orientedBoundingBoxes;
 }
 
-
 std::vector<BoundingBox>* Room::getTriggerBoxes()
 {
 	return &this->m_triggerBoundingBoxes;
 }
-
 
 void Room::addBoundingBox(XMVECTOR position, XMFLOAT3 extends)
 {
@@ -190,6 +221,11 @@ void Room::addOrientedBoundingBox(XMVECTOR position, XMFLOAT3 extends, XMVECTOR 
 
 }
 
+void Room::addOrientedBoundingBox(BoundingOrientedBox OBB)
+{
+	this->m_orientedBoundingBoxes.emplace_back(OBB);
+}
+
 void Room::addTriggerBB(XMVECTOR position, XMFLOAT3 extends)
 {
 	XMFLOAT3 roomPos;
@@ -197,8 +233,9 @@ void Room::addTriggerBB(XMVECTOR position, XMFLOAT3 extends)
 	this->m_triggerBoundingBoxes.emplace_back(roomPos, extends);
 }
 
-DirectX::XMVECTOR Room::getEntrancePosition()
+DirectX::XMVECTOR Room::getEntrancePosition() const
 {
+	if (m_player == nullptr) return XMVectorZero();
 	return (this->m_worldPosition + this->m_entrencePosition + XMVectorSet(0.f, m_player->getAABB().Extents.y + 0.1f, 0, 0));
 }
 
@@ -210,13 +247,87 @@ void Room::addRooms(std::vector<Room*>* rooms)
 	}
 }
 
-DirectX::XMVECTOR Room::getRelativePosition(DirectX::XMVECTOR pos)
+void Room::updatePlayerBB()
+{
+	if (m_player == nullptr) return;
+	for (size_t i = 0; i < this->m_gameObjects.size(); i++)
+	{
+		if(this->m_gameObjects.at(i)->collidable())
+			this->m_player->addAABB(this->m_gameObjects.at(i)->getAABBPtr());
+	}
+	this->m_player->addAABBFromVector(&m_boundingBoxes);
+	this->m_player->addOrientedBBFromVector(&m_orientedBoundingBoxes);
+}
+
+int Room::createLight(XMFLOAT3 position, float range, XMFLOAT4 ambientColor, XMFLOAT4 diffuseColor, XMFLOAT3 atteniation)
+{
+	if(m_lightData.nrOfPointLights <= 5)
+	{
+		XMFLOAT3 wPos;
+		XMStoreFloat3(&wPos, this->m_worldPosition + XMLoadFloat3(&position));
+		PointLight pLight;
+		pLight.plPosition = wPos;
+		pLight.plRange = range;
+		pLight.plAmbient = ambientColor;
+		pLight.plDiffuse = diffuseColor;
+		pLight.att = atteniation;
+
+		this->m_lightData.pointLights[this->m_lightData.nrOfPointLights++] = pLight;
+	}	
+	else
+	{
+		assert(false && "Error, adding more lights to room than allowed.");
+	}
+	return this->m_lightData.nrOfPointLights - 1;
+}
+
+int Room::createLight(PointLight pLight)
+{
+	XMFLOAT3 wPos;
+	XMStoreFloat3(&wPos, this->m_worldPosition + XMLoadFloat3(&pLight.plPosition));
+	pLight.plPosition = wPos;
+	if (m_lightData.nrOfPointLights <= 5)
+	{
+		this->m_lightData.pointLights[this->m_lightData.nrOfPointLights++] = pLight;
+	}
+	else
+	{
+		assert(false && "Error, adding more lights to room than allowed.");
+	}
+	return this->m_lightData.nrOfPointLights - 1;
+}
+
+void Room::changeLight(int index, XMFLOAT3 position, float range, XMFLOAT4 ambientColor, XMFLOAT4 diffuseColor, XMFLOAT3 atteniation)
+{
+	this->m_lightData.pointLights[index].plPosition = position;
+	this->m_lightData.pointLights[index].plRange = range;
+	this->m_lightData.pointLights[index].plAmbient = ambientColor;
+	this->m_lightData.pointLights[index].plDiffuse = ambientColor;
+	this->m_lightData.pointLights[index].att = atteniation;
+}
+
+PointLight* Room::getLight(int index)
+{
+	return &m_lightData.pointLights[index];
+}
+
+DirectX::XMVECTOR Room::getRelativePosition(DirectX::XMVECTOR pos) const
 {
 	XMVECTOR temp = this->m_worldPosition + pos;
 	return temp;
 }
 
-PS_DIR_BUFFER Room::getDirectionalLight()
+PS_DIR_BUFFER Room::getDirectionalLight() const
 {
 	return this->m_dirLight;
+}
+
+PS_FOG_BUFFER Room::getFogData() const
+{
+	return this->m_fogData;
+}
+
+PS_LIGHT_BUFFER Room::getLightData() const
+{
+	return this->m_lightData;
 }

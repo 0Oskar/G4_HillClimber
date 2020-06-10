@@ -7,16 +7,45 @@
 
 void EdvinsRoom::createBoundingBoxes()
 {
-	this->addBoundingBox({ 0, 6, 0, 1 }, DirectX::XMFLOAT3(1, 12, 20)); //Back Wall
-	this->addBoundingBox({ -69, 6, 0, 1 }, DirectX::XMFLOAT3(1, 12, 6)); //Portal Wall
+	this->addBoundingBox({ -35, -1, 0, 1 }, DirectX::XMFLOAT3(35, 1, 30)); //Floor
 
-	this->addOrientedBoundingBox({ -64, 6, -13, 1 }, XMFLOAT3(8, 12, 1), { 0, pMath::convertDegreesToRadians(60), 0, 1 }); //Portal right wall
-	this->addOrientedBoundingBox({ -35, 6, -25, 1 }, XMFLOAT3(25, 12, 1), { 0, pMath::convertDegreesToRadians(11), 0, 1 }); //Right wall
-	this->addOrientedBoundingBox({ -5, 6, -25, 1 }, XMFLOAT3(7, 12, 1), { 0, pMath::convertDegreesToRadians(-42), 0, 1 }); //Right corner
+	this->addBoundingBox({ 0, 6, 0, 1 }, DirectX::XMFLOAT3(1, 12, 19)); //Back Wall
+	this->addBoundingBox({ -69, 6, 0, 1 }, DirectX::XMFLOAT3(1, 12, 5)); //Portal Wall
 
-	this->addOrientedBoundingBox({ -64, 6, 13, 1 }, XMFLOAT3(8, 12, 1), { 0, pMath::convertDegreesToRadians(-60), 0, 1 }); //Portal left wall
-	this->addOrientedBoundingBox({ -35, 6, 25, 1 }, XMFLOAT3(25, 12, 1), { 0, pMath::convertDegreesToRadians(-11), 0, 1 }); //Left wall
-	this->addOrientedBoundingBox({ -5, 6, 25, 1 }, XMFLOAT3(7, 12, 1), { 0, pMath::convertDegreesToRadians(42), 0, 1 }); //Left corner
+	// (Left)
+	this->addBoundingBox({ -66, 6, 6, 1 }, DirectX::XMFLOAT3(2, 12, 1));
+	this->addBoundingBox({ -67, 6, 9, 1 }, DirectX::XMFLOAT3(1, 12, 2));
+	this->addBoundingBox({ -65, 6, 12, 1 }, DirectX::XMFLOAT3(1, 12, 1));
+	this->addBoundingBox({ -63, 6, 14, 1 }, DirectX::XMFLOAT3(1, 12, 1));
+	this->addBoundingBox({ -61, 6, 16, 1 }, DirectX::XMFLOAT3(1, 12, 1));
+	this->addBoundingBox({ -59, 6, 19, 1 }, DirectX::XMFLOAT3(1, 12, 2));
+	this->addBoundingBox({ -56, 6, 22, 1 }, DirectX::XMFLOAT3(3, 12, 1));
+	this->addBoundingBox({ -46, 6, 24, 1 }, DirectX::XMFLOAT3(7, 12, 1));
+	this->addBoundingBox({ -35, 6, 26, 1 }, DirectX::XMFLOAT3(4, 12, 1));
+	this->addBoundingBox({ -26, 6, 28, 1 }, DirectX::XMFLOAT3(5, 12, 1));
+	this->addBoundingBox({ -18, 6, 30, 1 }, DirectX::XMFLOAT3(3, 12, 1));
+	this->addBoundingBox({ -12, 6, 28, 1 }, DirectX::XMFLOAT3(3, 12, 1));
+	this->addBoundingBox({ -7, 6, 26, 1 }, DirectX::XMFLOAT3(2, 12, 1));
+	this->addBoundingBox({ -4, 6, 24, 1 }, DirectX::XMFLOAT3(1, 12, 1));
+	this->addBoundingBox({ -2, 6, 21, 1 }, DirectX::XMFLOAT3(1, 12, 2));
+
+	// (Right)
+	this->addBoundingBox({ -66, 6, -6, 1 }, DirectX::XMFLOAT3(2, 12, 1));
+	this->addBoundingBox({ -67, 6, -9, 1 }, DirectX::XMFLOAT3(1, 12, 2));
+	this->addBoundingBox({ -65, 6, -12, 1 }, DirectX::XMFLOAT3(1, 12, 1));
+	this->addBoundingBox({ -63, 6, -14, 1 }, DirectX::XMFLOAT3(1, 12, 1));
+	this->addBoundingBox({ -61, 6, -16, 1 }, DirectX::XMFLOAT3(1, 12, 1));
+	this->addBoundingBox({ -59, 6, -19, 1 }, DirectX::XMFLOAT3(1, 12, 2));
+	this->addBoundingBox({ -56, 6, -22, 1 }, DirectX::XMFLOAT3(3, 12, 1));
+	this->addBoundingBox({ -46, 6, -24, 1 }, DirectX::XMFLOAT3(7, 12, 1));
+	this->addBoundingBox({ -35, 6, -26, 1 }, DirectX::XMFLOAT3(4, 12, 1));
+	this->addBoundingBox({ -26, 6, -28, 1 }, DirectX::XMFLOAT3(5, 12, 1));
+	this->addBoundingBox({ -18, 6, -30, 1 }, DirectX::XMFLOAT3(3, 12, 1));
+	this->addBoundingBox({ -12, 6, -28, 1 }, DirectX::XMFLOAT3(3, 12, 1));
+	this->addBoundingBox({ -7, 6, -26, 1 }, DirectX::XMFLOAT3(2, 12, 1));
+	this->addBoundingBox({ -4, 6, -24, 1 }, DirectX::XMFLOAT3(1, 12, 1));
+	this->addBoundingBox({ -2, 6, -21, 1 }, DirectX::XMFLOAT3(1, 12, 2));
+
 
 	this->addBoundingBox({ -45, 0, 0, 1 }, DirectX::XMFLOAT3(1.5, 2, 1.5)); //Pedistal
 }
@@ -27,14 +56,13 @@ void EdvinsRoom::createSceneObjects()
 	DirectX::XMVECTOR pos = DirectX::XMVectorSet(0.f, -10.f, 0.f, 1.f);
 	DirectX::XMVECTOR rot = DirectX::XMVectorSet(0.f, 0.f, 0.f, 1.f);
 
-
 	// PuzzleRoom 
 	pos = DirectX::XMVectorSet(0, 3, 0, 1); //world pos
 	this->addGameObjectToRoom(true, false, 1, 8, &m_models->at(8), pos, scale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
 	
 	// Pedistal
 	scale = DirectX::XMVectorSet(2, 2, 2, 1);
-	pos = DirectX::XMVectorSet(-45, -1.3, 0, 1); //world pos
+	pos = DirectX::XMVectorSet(-45.f, -1.3f, 0.f, 1.f); //world pos
 	this->addGameObjectToRoom(true, false, 1, 17, &m_models->at(17), pos, scale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
 
 	// Cover
@@ -123,20 +151,23 @@ void EdvinsRoom::createSceneObjects()
 
 void EdvinsRoom::onWin()
 {
-	OutputDebugStringA("\nYou won!\n");
 	this->guessPos = 6;
 	//Activate portal
+	StatusTextHandler::get().sendText("You guessed the correct order!\n           Portal activated", 5);
 	this->roomPortal->setPosition(XMVectorSet(-270, 0, 200, 1));
 
+	//Activate Portal Lights
+	this->getLight(1)->plRange = 50;
+	this->getLight(2)->plRange = 50;
+	
 	//Activate particalas
 
 }
 
 void EdvinsRoom::onFail()
 {
-	OutputDebugStringA("\nYou lost!\n");
 	//Reset Pos
-	this->m_player->getMoveCompPtr()->position = { -260, 0, 199, 1 };
+	this->m_player->respawn();
 
 	//Reset lever
 	this->canPullLever = true;
@@ -147,11 +178,14 @@ void EdvinsRoom::onFail()
 	this->buttonsPosY = -6;
 	for (int i = 0; i < 5; i++)
 	{
-		buttons[i]->getMoveCompPtr()->position = buttons[i]->getMoveCompPtr()->position + DirectX::XMVectorSet(0, -9.15, 0, 10);
+		buttons[i]->getMoveCompPtr()->position = buttons[i]->getMoveCompPtr()->position + DirectX::XMVectorSet(0.f, -9.15f, 0.f, 10.f);
 		//Reset player guess array
 		this->guessOrder[i] = -1;
 	}
+
 	//Add Time
+	StatusTextHandler::get().sendText("You guessed the wrong order!\n         5 sec added to timer", 5);
+	this->m_gameTimerPointer->addTime(5);
 }
 
 bool EdvinsRoom::CorrectOrder(int arr1[], int arr2[])
@@ -173,7 +207,38 @@ bool EdvinsRoom::CorrectOrder(int arr1[], int arr2[])
 EdvinsRoom::EdvinsRoom()
 {
 	Room::initParent();
-	this->m_entrencePosition = { -60, 100, -1, 1 };
+	this->m_entrencePosition = { -60, -3, -1, 1 };
+
+	
+	//Green light from portal
+	PointLight light;
+	light.plPosition = { -268.5, 4, 200 };
+	light.plDiffuse = { 0, 1, 0, 1 };
+	light.plAmbient = { 0.0, 0.0, 0.0, 1 };
+	light.plRange = 50;
+	light.att = { 1, 0, 0.05 };
+
+	int lightID = this->createLight(light); //0
+
+	// Right:
+	PointLight rightLight;
+	rightLight.plPosition = { -264, 4, 204 };
+	rightLight.plDiffuse = { 1, 0, 0, 1 };
+	rightLight.plAmbient = { 0.0, 0.0, 0.0, 1 };
+	rightLight.plRange = 5;
+	rightLight.att = { 1, 0, 0.3 };
+
+	lightID = this->createLight(rightLight); //1
+
+	//Left:
+	PointLight leftLight;
+	leftLight.plPosition = { -264, 4, 196 };
+	leftLight.plDiffuse = { 1, 0, 0, 1 };
+	leftLight.plAmbient = { 0.0, 0.0, 0.0, 1 };
+	leftLight.plRange = 5;
+	leftLight.att = { 1, 0, 0.2 };
+
+	lightID = this->createLight(leftLight); //2
 }
 
 EdvinsRoom::~EdvinsRoom()
@@ -183,216 +248,220 @@ EdvinsRoom::~EdvinsRoom()
 
 void EdvinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activeRoomChanged)
 {
-	Room::update(dt, camera, activeRoom, activeRoomChanged);
-
-	// -------- Lever Stuff -------- //
-
-	this->lever->collidesWithPlayer();
-	if (this->lever->getCanUseLever() == true) //Is inside lever BB
+	if (!this->m_player->getIsSpawning())
 	{
-		if (this->m_player->getinUse() == true && this->tempLever == false && this->canPullLever == true) //And press E on the BB
+		Room::update(dt, camera, activeRoom, activeRoomChanged);
+
+		// -------- Lever Stuff -------- //
+
+		this->lever->collidesWithPlayer();
+		if (this->lever->getCanUseLever() == true && this->canPullLever == true) //Is inside lever BB
 		{
-			for (int i = 0; i < 5; i++)
+			StatusTextHandler::get().sendText("Press E to interact", 0.01);
+			if (this->m_player->getinUse() == true && this->tempLever == false) //And press E on the BB
 			{
-				//Reset player guess array
-				this->guessOrder[i] = -1;
+				for (int i = 0; i < 5; i++)
+				{
+					//Reset player guess array
+					this->guessOrder[i] = -1;
 
-				//GenerateArr
-				int number = rand() % 5;
-				this->hyroglajfArr[i] = number;
+					//GenerateArr
+					int number = rand() % 5;
+					this->hyroglajfArr[i] = number;
 
-				//Set texture
-				std::wstring path = L"Textures/Hyroglajf_" + std::to_wstring(number) + L".png";
-				this->bricks[i]->setTexturePath(path);
+					//Set texture
+					std::wstring path = L"Textures/Hyroglajf_" + std::to_wstring(number) + L".png";
+					this->bricks[i]->setTexturePath(path);
 
-			}
+				}
 
-			this->guessPos = 0;
-			this->tempLever = true;
-			this->canMoveCover = true;
-			this->timer.restart();
-			this->leverTimer.restart();
-			this->canPullLever = false;
-			this->moveLever = true;
-		}
-	}
-
-	if (this->leverTimer.timeElapsed() < 1)
-	{
-		if (this->moveLever == true)
-		{
-			this->leverHandle->getMoveCompPtr()->rotation += DirectX::XMVectorSet(0, 0, pMath::convertDegreesToRadians(90) * dt, 10);
-		}
-	}
-
-	if (this->leverTimer.timeElapsed() >= 1 && this->canMoveCover == true)
-	{
-		this->moveCoverUp = true; //Call moveCover
-		this->canMoveCover = false;
-		this->moveLever = false;
-	}
-	
-	// -------- Cover Stuff -------- //
-
-	if (this->moveCoverUp == true) //Move cover up
-	{
-		if (XMVectorGetX(this->coverPos) >= -11) //Move X
-		{
-			this->cover->getMoveCompPtr()->position = this->cover->getMoveCompPtr()->position + DirectX::XMVectorSet(-5 * dt, 0, 0, 10);
-			this->cover->getMoveCompPtr()->position = this->cover->getMoveCompPtr()->position + DirectX::XMVectorSet(0, 8 * dt, 0, 10);
-			this->coverPos += XMVectorSetX(this->coverPos, -5 * dt);
-		}
-
-		else
-		{
-			this->coverTimer.restart();
-			this->moveCoverDown = true;
-			this->moveCoverUp = false;
-		}
-	}
-
-	if (this->coverTimer.timeElapsed() >= 5 && this->moveCoverDown == true) //Move cover down
-	{
-		if (XMVectorGetX(this->coverPos) <= -7) //Move X
-		{
-			this->cover->getMoveCompPtr()->position = this->cover->getMoveCompPtr()->position + DirectX::XMVectorSet(5 * dt, 0, 0, 10);
-			this->cover->getMoveCompPtr()->position = this->cover->getMoveCompPtr()->position + DirectX::XMVectorSet(0, -8 * dt, 0, 10);
-			this->coverPos += XMVectorSetX(this->coverPos, 5 * dt);
-		}
-		else
-		{
-			this->moveButtons = true;
-			this->moveCoverDown = false;
-		}
-	}
-
-	// -------- Button Stuff -------- //
-
-	if (this->moveButtons == true)
-	{
-		for (int i = 0; i < 5; i++) //Move all buttons
-		{
-			if (this->buttonsPosY <= 40) //Move while below 5 units in Y (45 = nrOfButtons * desiredMoveYAmount = 5 * 9)
-			{
-				buttons[i]->getMoveCompPtr()->position = buttons[i]->getMoveCompPtr()->position + DirectX::XMVectorSet(0, 30 * dt, 0, 10); //Move one frame
-				this->buttonsPosY += 30 * dt;
-			}
-
-			else //Stop moving
-			{
-				this->moveButtons = false;
-			}
-
-		}
-	}
-
-	if (timer.timeElapsed() >= 1)
-	{
-		this->tempLever = false;
-		this->spinButtonIndex = -1;
-	}
-
-	if (guessPos <= 4)
-	{
-		this->buttons[0]->collidesWithPlayer();			//Press button 0 ----------------------------------
-		if (this->buttons[0]->getCanUseLever() == true)
-		{
-			if (this->m_player->getinUse() == true && this->tempLever == false)
-			{
-				this->guessOrder[guessPos] = 0;
-				this->guessPos++;
+				this->guessPos = 0;
 				this->tempLever = true;
-				timer.restart();
-				this->spinButtonIndex = 0;
+				this->canMoveCover = true;
+				this->timer.restart();
+				this->leverTimer.restart();
+				this->canPullLever = false;
+				this->moveLever = true;
 			}
 		}
 
-		this->buttons[1]->collidesWithPlayer();			//Press button 1 ----------------------------------
-		if (this->buttons[1]->getCanUseLever() == true)
+		if (this->leverTimer.timeElapsed() < 1)
 		{
-			if (this->m_player->getinUse() == true && this->tempLever == false)
+			if (this->moveLever == true)
 			{
-				this->guessOrder[guessPos] = 1;
-				this->guessPos++;
-				this->tempLever = true;
-				timer.restart();
-				this->spinButtonIndex = 1;
+				this->leverHandle->getMoveCompPtr()->rotation += DirectX::XMVectorSet(0, 0, pMath::convertDegreesToRadians(90) * dt, 10);
 			}
 		}
 
-		this->buttons[2]->collidesWithPlayer();			//Press button 2 ----------------------------------
-		if (this->buttons[2]->getCanUseLever() == true && this->tempLever == false)
+		if (this->leverTimer.timeElapsed() >= 1 && this->canMoveCover == true)
 		{
-			if (this->m_player->getinUse() == true)
+			this->moveCoverUp = true; //Call moveCover
+			this->canMoveCover = false;
+			this->moveLever = false;
+		}
+
+		// -------- Cover Stuff -------- //
+
+		if (this->moveCoverUp == true) //Move cover up
+		{
+			if (XMVectorGetX(this->coverPos) >= -11) //Move X
 			{
-				this->guessOrder[guessPos] = 2;
-				this->guessPos++;
-				this->tempLever = true;
-				timer.restart();
-				this->spinButtonIndex = 2;
+				this->cover->getMoveCompPtr()->position = this->cover->getMoveCompPtr()->position + DirectX::XMVectorSet(-5 * dt, 0, 0, 10);
+				this->cover->getMoveCompPtr()->position = this->cover->getMoveCompPtr()->position + DirectX::XMVectorSet(0, 8 * dt, 0, 10);
+				this->coverPos += XMVectorSetX(this->coverPos, -5 * dt);
 			}
-		}
 
-		this->buttons[3]->collidesWithPlayer();			//Press button 3 ----------------------------------
-		if (this->buttons[3]->getCanUseLever() == true)
-		{
-			if (this->m_player->getinUse() == true && this->tempLever == false)
+			else
 			{
-				this->guessOrder[guessPos] = 3;
-				this->guessPos++;
-				this->tempLever = true;
-				timer.restart();
-				this->spinButtonIndex = 3;
+				this->coverTimer.restart();
+				this->moveCoverDown = true;
+				this->moveCoverUp = false;
 			}
 		}
 
-		this->buttons[4]->collidesWithPlayer();			//Press button 4 ----------------------------------
-		if (this->buttons[4]->getCanUseLever() == true)
+		if (this->coverTimer.timeElapsed() >= 5 && this->moveCoverDown == true) //Move cover down
 		{
-			if (this->m_player->getinUse() == true && this->tempLever == false)
+			if (XMVectorGetX(this->coverPos) <= -7) //Move X
 			{
-				this->guessOrder[guessPos] = 4;
-				this->guessPos++;
-				this->tempLever = true;
-				timer.restart();
-				this->spinButtonIndex = 4;
+				this->cover->getMoveCompPtr()->position = this->cover->getMoveCompPtr()->position + DirectX::XMVectorSet(5 * dt, 0, 0, 10);
+				this->cover->getMoveCompPtr()->position = this->cover->getMoveCompPtr()->position + DirectX::XMVectorSet(0, -8 * dt, 0, 10);
+				this->coverPos += XMVectorSetX(this->coverPos, 5 * dt);
+			}
+			else
+			{
+				this->moveButtons = true;
+				this->moveCoverDown = false;
 			}
 		}
-	}
 
-	if (this->spinButtonIndex != -1)
-	{
-		this->buttons[this->spinButtonIndex]->getMoveCompPtr()->rotation += DirectX::XMVectorSet(0, pMath::convertDegreesToRadians(180) * dt, 0, 10);
-	}
-	
-	// -------- Finish Stuff -------- //
+		// -------- Button Stuff -------- //
 
-	if (this->guessPos == 5)
-	{
-		if (CorrectOrder(guessOrder, hyroglajfArr))
+		if (this->moveButtons == true)
 		{
-			onWin();
+			for (int i = 0; i < 5; i++) //Move all buttons
+			{
+				if (this->buttonsPosY <= 40) //Move while below 5 units in Y (45 = nrOfButtons * desiredMoveYAmount = 5 * 9)
+				{
+					buttons[i]->getMoveCompPtr()->position = buttons[i]->getMoveCompPtr()->position + DirectX::XMVectorSet(0, 30 * dt, 0, 10); //Move one frame
+					this->buttonsPosY += 30 * dt;
+				}
+
+				else //Stop moving
+				{
+					this->moveButtons = false;
+				}
+
+			}
 		}
-		else
+
+		if (timer.timeElapsed() >= 1)
 		{
-			onFail();
+			this->tempLever = false;
+			this->spinButtonIndex = -1;
+		}
+
+		if (guessPos <= 4)
+		{
+			this->buttons[0]->collidesWithPlayer();			//Press button 0 ----------------------------------
+			if (this->buttons[0]->getCanUseLever() == true)
+			{
+				if (this->m_player->getinUse() == true && this->tempLever == false)
+				{
+					this->guessOrder[guessPos] = 0;
+					this->guessPos++;
+					this->tempLever = true;
+					timer.restart();
+					this->spinButtonIndex = 0;
+				}
+			}
+
+			this->buttons[1]->collidesWithPlayer();			//Press button 1 ----------------------------------
+			if (this->buttons[1]->getCanUseLever() == true)
+			{
+				if (this->m_player->getinUse() == true && this->tempLever == false)
+				{
+					this->guessOrder[guessPos] = 1;
+					this->guessPos++;
+					this->tempLever = true;
+					timer.restart();
+					this->spinButtonIndex = 1;
+				}
+			}
+
+			this->buttons[2]->collidesWithPlayer();			//Press button 2 ----------------------------------
+			if (this->buttons[2]->getCanUseLever() == true && this->tempLever == false)
+			{
+				if (this->m_player->getinUse() == true)
+				{
+					this->guessOrder[guessPos] = 2;
+					this->guessPos++;
+					this->tempLever = true;
+					timer.restart();
+					this->spinButtonIndex = 2;
+				}
+			}
+
+			this->buttons[3]->collidesWithPlayer();			//Press button 3 ----------------------------------
+			if (this->buttons[3]->getCanUseLever() == true)
+			{
+				if (this->m_player->getinUse() == true && this->tempLever == false)
+				{
+					this->guessOrder[guessPos] = 3;
+					this->guessPos++;
+					this->tempLever = true;
+					timer.restart();
+					this->spinButtonIndex = 3;
+				}
+			}
+
+			this->buttons[4]->collidesWithPlayer();			//Press button 4 ----------------------------------
+			if (this->buttons[4]->getCanUseLever() == true)
+			{
+				if (this->m_player->getinUse() == true && this->tempLever == false)
+				{
+					this->guessOrder[guessPos] = 4;
+					this->guessPos++;
+					this->tempLever = true;
+					timer.restart();
+					this->spinButtonIndex = 4;
+				}
+			}
+		}
+
+		if (this->spinButtonIndex != -1)
+		{
+			this->buttons[this->spinButtonIndex]->getMoveCompPtr()->rotation += DirectX::XMVectorSet(0, pMath::convertDegreesToRadians(180) * dt, 0, 10);
+		}
+
+		// -------- Finish Stuff -------- //
+
+		if (this->guessPos == 5)
+		{
+			if (CorrectOrder(guessOrder, hyroglajfArr))
+			{
+				onWin();
+			}
+			else
+			{
+				onFail();
+			}
 		}
 	}
 }
 
 void EdvinsRoom::onEntrance()
 {
-	
+	Room::onEntrance();
+	this->m_player->setSpawnPosition(this->getEntrancePosition());
 }
 
 void EdvinsRoom::init()
 {
 	this->createSceneObjects();
 	this->createBoundingBoxes();
-	this->m_player->addAABBFromVector(&m_boundingBoxes);
 	this->lever->setPlayerBoundingBox(this->m_player->getAABBPtr());
 	
-	srand(time(0));
+	srand((unsigned int)time(0));
 	this->guessPos = 0;
 	for (int i = 0; i < 5; i++)
 	{

@@ -16,6 +16,11 @@ Portal::~Portal()
 
 }
 
+void Portal::setActiveStatus(bool activeStatus)
+{
+	this->m_active = activeStatus;
+}
+
 void Portal::initialize(int modelIndex, int wvpCBufferIndex, Model* mdl, XMVECTOR teleportLocation,Player * player, int roomID, bool oneTimeUse)
 {
 
@@ -53,7 +58,7 @@ void Portal::resetActiveRoomVariable()
 	this->m_changeActiveRoom = false;
 }
 
-bool Portal::shouldChangeActiveRoom()
+bool Portal::shouldChangeActiveRoom() const
 {
 	if (this->m_roomID != -1)
 		return this->m_changeActiveRoom;
@@ -61,7 +66,7 @@ bool Portal::shouldChangeActiveRoom()
 		return false;
 }
 
-int Portal::getRoomID()
+int Portal::getRoomID() const
 {
 	return m_roomID;
 }

@@ -2,6 +2,7 @@
 #include "GameState.h"
 
 using namespace DirectX;
+void submitHighScore(std::string fileToWriteTo, std::pair<std::string, int>* scoreToWrite, int nrOfScore);
 
 GameState::GameState() 
 {
@@ -9,10 +10,41 @@ GameState::GameState()
 	this->m_dContext = nullptr;
 	this->m_chainGObjects = new std::vector<GameObject*>();
 	this->m_activeRoom = nullptr;
-	this->m_activeRoomChanged = false;
+	this->m_majorChange = false;
+	this->m_gameTime = Timer(true);
+	this->m_crossHairSRV = nullptr;
+	this->m_crosshairPosition = DirectX::XMFLOAT2();
+	this->m_map = nullptr;
+	this->m_mapPosition = DirectX::XMFLOAT2();
+	this->m_mapPlayer = nullptr;
+	this->m_mapPlayerPosition = DirectX::XMFLOAT2();
+	this->m_resourceHandler = &ResourceHandler::get();
+	this->m_timerString = "";
+	this->m_gameOver = false;
 }
 
-GameState::~GameState() {}
+GameState::~GameState() 
+{
+	for (int i = 0; i < nrOfGameObjects; i++)
+	{
+		if (m_gameObjects.at(i) != nullptr)
+		{
+			delete m_gameObjects.at(i);
+			this->m_gameObjects.at(i) = nullptr;
+		}
+	}
+
+	for (int i = 0; i < m_rooms.size(); i++)
+	{
+		if (m_rooms.at(i) != nullptr)
+		{
+			delete m_rooms.at(i);
+			this->m_rooms.at(i) = nullptr;
+		}
+	}
+	this->m_rooms.clear();
+	this->m_gameObjects.clear();
+}
 
 DirectX::XMMATRIX* GameState::getViewMatrix() const
 {
@@ -26,7 +58,7 @@ DirectX::XMMATRIX* GameState::getProjectionMatrix() const
 
 std::vector<Model>* GameState::getModelsPtr()
 {
-	return &this->m_models;
+	return this->m_modelsPtr;
 }
 
 std::vector<GameObject*>* GameState::getGameObjectsPtr()
@@ -42,7 +74,7 @@ std::vector<GameObject*>* GameState::getActiveRoomGameObjectsPtr()
 		return nullptr;
 }
 
-std::vector<BoundingBox>* GameState::getActiveRoomBoundingBoxsPtr()
+std::vector<BoundingBox>* GameState::getActiveRoomBoundingBoxesPtr()
 {
 	if (this->m_activeRoom != nullptr)
 		return this->m_activeRoom->getBoundingBoxPtr();
@@ -50,7 +82,7 @@ std::vector<BoundingBox>* GameState::getActiveRoomBoundingBoxsPtr()
 		return nullptr;
 }
 
-std::vector<BoundingOrientedBox>* GameState::getActiveRoomOrientedBoundingBoxPtr()
+std::vector<BoundingOrientedBox>* GameState::getActiveRoomOrientedBoundingBoxesPtr()
 {
 	if (this->m_activeRoom != nullptr)
 		return this->m_activeRoom->getOrientedBoundingBoxPtr();
@@ -71,6 +103,11 @@ std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* GameState::getWvpCBuffersPtr()
 	return &this->m_wvpCBuffers;
 }
 
+constantBufferData* GameState::getConstantBufferData()
+{
+	return &this->m_constantbufferData;
+}	
+
 PS_DIR_BUFFER GameState::getActiveRoomDirectionalLight()
 {
 	if (this->m_activeRoom != nullptr)
@@ -79,6 +116,24 @@ PS_DIR_BUFFER GameState::getActiveRoomDirectionalLight()
 	}
 	else
 		return PS_DIR_BUFFER();
+}
+
+PS_FOG_BUFFER GameState::getActiveRoomFogData()
+{
+	if (this->m_activeRoom != nullptr)
+	{
+		return this->m_activeRoom->getFogData();
+	}
+	else
+		return PS_FOG_BUFFER();
+}
+
+PS_LIGHT_BUFFER GameState::getActiveRoomLightData()
+{
+	if (this->m_activeRoom != nullptr)
+		return this->m_activeRoom->getLightData();
+	else
+		return PS_LIGHT_BUFFER();
 }
 
 void GameState::addGameObjectToWorld(bool dynamic, bool colide, float weight, int mdlIndx, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR scale3D, DirectX::XMFLOAT3 boundingBoxSize = DirectX::XMFLOAT3(0, 0, 0), DirectX::XMFLOAT3 acceleration = DirectX::XMFLOAT3(1, 1, 1), DirectX::XMFLOAT3 deceleration = DirectX::XMFLOAT3(1, 1, 1))
@@ -164,6 +219,11 @@ void GameState::looseALife(bool looseLife)
 	}
 }
 
+std::wstring GameState::getRoomUITexturePath()
+{
+	return dynamic_cast<FindGemsRoom*>(this->m_rooms.at(1))->getRoomUITexturePath();
+}
+/*
 void GameState::loadModels()
 {
 	// Material
@@ -177,7 +237,8 @@ void GameState::loadModels()
 	//1 - Pyramid
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(0.9f, 0.7f, 0.3f, 1.0f);
-	this->m_models[1].loadVertexFromOBJ(m_device, m_dContext, L"Models/FinalPyramid.obj", mat, L"Textures/pyramidTexture.png");
+
+	this->m_models[1].initializeModelBff(m_device, m_dContext, "BasePyramidNew.bff", mat, L"Textures/pyramidTexture.png");
 
 	//2- HookHead model
 	this->m_models.emplace_back();
@@ -277,7 +338,7 @@ void GameState::loadModels()
 	//21. PuzzleRoom(Tristan)
 	this->m_models.emplace_back(); //add empty model
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); //reset material
-	this->m_models[21].initializeModelBff(m_device, m_dContext, "TristansNewPuzzleRoom.bff", mat, L"Textures/ColorTexture.png"); //load model
+	this->m_models[21].initializeModelBff(m_device, m_dContext, "TristansPuzzleRoom.bff", mat, L"Textures/ColorTexture.png"); //load model
 
 	//22. Pyramid Portal
 	this->m_models.emplace_back(); //add empty model
@@ -304,34 +365,105 @@ void GameState::loadModels()
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
 	this->m_models[26].loadVertexFromOBJ(m_device, m_dContext, L"Models/expandingBridge.obj", mat, L"Textures/ColorTexture.png");
 
-	//27. Bells
+	//LastNumber. Room (Viktor)
+	int nrOfCurrentLModels = 26;
+
+	this->m_models.emplace_back(); 
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); 
+	this->m_models[++nrOfCurrentLModels].initializeModelBff(m_device, m_dContext, "vRoom_New.bff", mat, L"Textures/ColorTexture.png"); 
+
+	this->m_models.emplace_back(); 
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); 
+	this->m_models[++nrOfCurrentLModels].initializeModelBff(m_device, m_dContext, "vGate_New.bff", mat, L"Textures/ColorTexture.png");  
+
+	this->m_models.emplace_back(); 
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); 
+	this->m_models[++nrOfCurrentLModels].initializeModelBff(m_device, m_dContext, "vLever_New.bff", mat, L"Textures/ColorTexture.png"); 
+
+	this->m_models.emplace_back(); 
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); 
+	this->m_models[++nrOfCurrentLModels].initializeModelBff(m_device, m_dContext, "vGem1_New.bff", mat, L"Textures/ColorTexture.png");
+
+	this->m_models.emplace_back(); 
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); 
+	this->m_models[++nrOfCurrentLModels].initializeModelBff(m_device, m_dContext, "vGem2_New.bff", mat, L"Textures/ColorTexture.png"); 
+
+	this->m_models.emplace_back(); 
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); 
+	this->m_models[++nrOfCurrentLModels].initializeModelBff(m_device, m_dContext, "vGem3_New.bff", mat, L"Textures/ColorTexture.png"); 
+
+	this->m_models.emplace_back(); 
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); 
+	this->m_models[++nrOfCurrentLModels].initializeModelBff(m_device, m_dContext, "vGem4_New.bff", mat, L"Textures/ColorTexture.png"); 
+
+	this->m_models.emplace_back(); 
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f); 
+	this->m_models[++nrOfCurrentLModels].initializeModelBff(m_device, m_dContext, "vGem5_New.bff", mat, L"Textures/ColorTexture.png");
+
+	this->m_models.emplace_back();
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
+	this->m_models[++nrOfCurrentLModels].initializeModelBff(m_device, m_dContext, "vPedistal_New.bff", mat, L"Textures/ColorTexture.png");
+
+	this->m_models.emplace_back();
+    //START
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
+	this->m_models[35].loadVertexFromOBJ(m_device, m_dContext, L"Models/PalmTree.obj", mat, L"Textures/ColorTexture.png");
+
+
+	//32. Hook Highlight Gem
+	this->m_models.emplace_back(); //add empty model
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f); //reset material
+	this->m_models[32].initializeModelBff(m_device, m_dContext, "Gauntlet_GreenGem.bff", mat, L"Textures/ColorTexture.png"); //load model
+  
+	//33. Diamond
+	this->m_models.emplace_back(); //add empty model
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f); //reset material
+	this->m_models[33].initializeModelBff(m_device, m_dContext, "Diamond.bff", mat, L"Textures/ColorTexture.png"); //load model
+
+	//33. Bell
+
+	//35. Clouds
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
-	this->m_models[27].initializeModelBff(m_device, m_dContext, "Bells.bff", mat, L"Textures/ColorTexture.png"); //load model
-}
+	this->m_models[36].loadVertexFromOBJ(m_device, m_dContext, L"Models/Clouds.obj", mat, L"Textures/ColorTexture.png");
 
+	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
+	this->m_models[++nrOfCurrentLModels].initializeModelBff(m_device, m_dContext, "vRamp_New.bff", mat, L"Textures/ColorTexture.png");
+	//END
+}
+*/
 
 void GameState::roomChangeInit()
 {
 	platformBB.clear();
-	//Gedddwt active room platforms to send to hookHand.
+	this->m_gameObjects.resize(this->nrOfGameObjects);
+	this->m_player.clearAABB();
+	//Get active room platforms to send to hookHand.
 	for (size_t i = 0; this->m_activeRoom && i < this->m_activeRoom->getGameObjectsPtr()->size(); i++)
 	{
-		
 		Platform* castToPlatform = dynamic_cast<Platform*>(this->m_activeRoom->getGameObjectsPtr()->at(i));
 		if (castToPlatform != nullptr)
 		{
 			platformBB.emplace_back(castToPlatform->getAABBPtr());
 		}
+
 	}
 	PyramidRoom* pyramidRoomPtr = dynamic_cast<PyramidRoom*>(this->m_rooms[0]);
 	for (size_t i = 0; pyramidRoomPtr && i < pyramidRoomPtr->getBBForHook().size(); i++)
 	{
 		this->platformBB.emplace_back(pyramidRoomPtr->getBBForHook().at(i));
 	}
-
 	this->m_player.updateHookHandBB(platformBB);
+	this->m_activeRoom->updatePlayerBB();
+	this->m_constantbufferData.dirBuffer = m_activeRoom->getDirectionalLight();
+	this->m_constantbufferData.fogBuffer = m_activeRoom->getFogData();
+	this->m_constantbufferData.lightBuffer = m_activeRoom->getLightData();
 
+	for (size_t i = 0; i < this->m_activeRoom->getGameObjectsPtr()->size(); i++)
+	{
+		this->m_gameObjects.emplace_back(this->m_activeRoom->getGameObjectsPtr()->at(i));
+	}
+	Transition::get().fadeOut();
 }
 
 Timer* GameState::getGameTimerPtr()
@@ -339,25 +471,93 @@ Timer* GameState::getGameTimerPtr()
 	return &this->m_gameTime;
 }
 
+void GameState::afterChange()
+{
+	this->roomChangeInit();
+}
+
+void GameState::drawUI(DirectX::SpriteBatch* spriteBatchPtr, DirectX::SpriteFont* spriteFontPtr)
+{
+	spriteBatchPtr->Draw(this->m_crossHairSRV, this->m_crosshairPosition);
+	if (m_activeRoom == m_rooms[0])
+	{
+		spriteBatchPtr->Draw(this->m_map, this->m_mapPosition);
+		spriteBatchPtr->Draw(this->m_mapPlayer, this->m_mapPlayerPosition);
+	}
+	spriteFontPtr->DrawString(spriteBatchPtr, this->m_timerString.c_str(), DirectX::XMFLOAT2(10.f, 10.f), this->m_gameTime.isActive() ? DirectX::Colors::White : DirectX::Colors::Green, 0.f, DirectX::XMFLOAT2(0.f, 0.f));
+	spriteFontPtr->DrawString(spriteBatchPtr, std::to_string(this->m_gameTime.timeElapsed()).c_str(), DirectX::XMFLOAT2(70.f, 10.f), DirectX::Colors::Green, 0.f, DirectX::XMFLOAT2(0.f, 0.f));
+
+	this->m_activeRoom->drawUI(spriteBatchPtr, spriteFontPtr);
+}
+
+void GameState::onPop()
+{
+	iGameState::onPop();
+}
+
 void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext, GameOptions options, std::shared_ptr<DirectX::AudioEngine> audioEngine)
 {
 	GameObject* hook = nullptr;
 	GameObject* hookHand = nullptr;
+	GameObject* hookGem = nullptr;
+	GameObject* hookHandLeftWing = nullptr;
+	GameObject* hookHandRightWing = nullptr;
+	this->m_gameOptions = options;
+
+
 	this->m_device = device;
 	this->m_dContext = dContext;
-	this->loadModels(); //Loads all models
+	//this->loadModels(); //Loads all models
 
+	//-UI START -
+
+	// Timer
+	this->m_timerString = "Time: ";
+
+	// Crosshair
+	this->m_crossHairSRV = this->m_resourceHandler->getTexture(L"Textures/crosshair.png");
+	ID3D11Resource* crosshairTexture = 0;
+	this->m_crossHairSRV->GetResource(&crosshairTexture);
+	ID3D11Texture2D* crosshairTexture2D = 0;
+	crosshairTexture->QueryInterface<ID3D11Texture2D>(&crosshairTexture2D);
+	D3D11_TEXTURE2D_DESC desc;
+	crosshairTexture2D->GetDesc(&desc);
+	int crosshairX = (this->m_gameOptions.width / 2) - (desc.Width / 2);
+	int crosshairY = (this->m_gameOptions.height / 2) - (desc.Height / 2);
+	this->m_crosshairPosition = DirectX::XMFLOAT2((float)crosshairX, (float)crosshairY);
+	
+	// Map
+	this->m_map = this->m_resourceHandler->getTexture(L"Textures/map.png");
+	ID3D11Resource* mapTexture = 0;
+	this->m_map->GetResource(&mapTexture);
+	ID3D11Texture2D* mapTexture2D = 0;
+	mapTexture->QueryInterface<ID3D11Texture2D>(&mapTexture2D);
+	mapTexture2D->GetDesc(&desc);
+	int mapPositionX = this->m_gameOptions.width - 170;
+	int mapPositionY = 50;
+	this->m_mapPosition = DirectX::XMFLOAT2((float)mapPositionX, (float)mapPositionY);
+
+	// MapPlayer
+	this->m_mapPlayer = this->m_resourceHandler->getTexture(L"Textures/mapPlayerPos.png");
+	ID3D11Resource* mapPlayerTexture = 0;
+	this->m_mapPlayer->GetResource(&mapPlayerTexture);
+	ID3D11Texture2D* mapPlayerTexture2D = 0;
+	mapPlayerTexture->QueryInterface<ID3D11Texture2D>(&mapPlayerTexture2D);
+	mapTexture2D->GetDesc(&desc);
+	int mapPlayerPositionX = this->m_gameOptions.width - 73;
+	int mapPlayerPositionY = 108;
+	this->m_mapPlayerPosition = DirectX::XMFLOAT2((float)mapPlayerPositionX, (float)mapPlayerPositionY);
+
+	//-UI END-
 	DirectX::XMVECTOR NormalScale = DirectX::XMVectorSet(1, 1, 1, 1);
 	DirectX::XMVECTOR vec = DirectX::XMVectorSet(0.f, -10.f, 0.f, 1.f);
 	DirectX::XMVECTOR rotation = DirectX::XMVectorSet(0.f, 0.f, 0.f, 1.f);
 	
 	//Pyramid OBB
 	DirectX::XMFLOAT3 center(0.f, 62.f, 80.f);
-	DirectX::XMFLOAT3 extents(200.f, 250.f, 1.f);
-	float rotationX = XMConvertToRadians(45.f);
+	DirectX::XMFLOAT3 extents(700.f, 800.f, 1.f);
+	float rotationX = XMConvertToRadians(46.f);
 	LPCWSTR test = std::to_wstring(rotationX).c_str();
-	OutputDebugStringW(test);
-	OutputDebugStringW(L"\n");
 	DirectX::XMVECTOR quaternion = DirectX::XMQuaternionRotationRollPitchYaw(rotationX, 0.f, 0.f);
 	DirectX::XMFLOAT4 orientation;
 	DirectX::XMStoreFloat4(&orientation, quaternion);
@@ -370,27 +570,37 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_player.addPyramidOBB(&this->m_pyramidOBB);
 
 
-	// HookHead 
+	// Hook Head 
 	vec = DirectX::XMVectorSet(10.f, 1.f, -20.f, 1.f);
-	this->addGameObjectToWorld(true, false, 1, 2, &m_models[2], vec, NormalScale, DirectX::XMFLOAT3(.5f, .5f, .5f), DirectX::XMFLOAT3(10, 10, 10), DirectX::XMFLOAT3(10, 10, 10));
+	this->addGameObjectToWorld(true, false, 1, 2, &m_modelsPtr->at(2), vec, XMVectorSet(.5f, .5f, .5f, 1.f), DirectX::XMFLOAT3(.5f, .5f, .5f), DirectX::XMFLOAT3(10, 10, 10), DirectX::XMFLOAT3(10, 10, 10));
 	hook = this->m_gameObjects.back();
   
-	//HookHand
+	// Hook Hand
 	vec = DirectX::XMVectorSet(10.f, 1.f, -20.f, 1.f);
-	this->addGameObjectToWorld(true, false, 1, 4, &m_models[4], vec, DirectX::XMVectorSet(.7f, .7f, .7f, 1.f), DirectX::XMFLOAT3(0, 0, 0), DirectX::XMFLOAT3(10, 10, 10), DirectX::XMFLOAT3(10, 10, 10));
+	this->addGameObjectToWorld(true, false, 1, 4, &m_modelsPtr->at(4), vec, XMVectorSet(.5f, .5f, .5f, 1.f), DirectX::XMFLOAT3(0, 0, 0), DirectX::XMFLOAT3(10, 10, 10), DirectX::XMFLOAT3(10, 10, 10));
 	hookHand = this->m_gameObjects.back();
 
-	//Chain link
-    DirectX::XMFLOAT3 vecF3 = hook->getMoveCompPtr()->getPositionF3();
-	vec = DirectX::XMVectorSet(vecF3.x, vecF3.y, vecF3.z - 5.f, 1.f);
-	this->addGameObjectToWorld(true, false, 1, 5, &m_models[5], vec, NormalScale, XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
-	this->m_chainGObjects->push_back(this->m_gameObjects.back());
+	// Hook Gem
+	vec = DirectX::XMVectorSet(10.f, 1.f, -20.f, 1.f);
+	this->addGameObjectToWorld(true, false, 1, 32, &m_modelsPtr->at(32), vec, XMVectorSet(.5f, .5f, .5f, 1.f), DirectX::XMFLOAT3(0, 0, 0), DirectX::XMFLOAT3(10, 10, 10), DirectX::XMFLOAT3(10, 10, 10));
+	hookGem = this->m_gameObjects.back();
 
-	//Chain link stuff
+	// Hook Left Wing
+	vec = DirectX::XMVectorSet(9.f, 1.f, -20.f, 1.f);
+	this->addGameObjectToWorld(true, false, 1, 30, &m_modelsPtr->at(30), vec, XMVectorSet(.5f, .5f, .5f, 1.f), DirectX::XMFLOAT3(0, 0, 0), DirectX::XMFLOAT3(10, 10, 10), DirectX::XMFLOAT3(10, 10, 10));
+	hookHandLeftWing = this->m_gameObjects.back();
+
+	// Hook Right Wing
+	vec = DirectX::XMVectorSet(11.f, 1.f, -20.f, 1.f);
+	this->addGameObjectToWorld(true, false, 1, 31, &m_modelsPtr->at(31), vec, XMVectorSet(.5f, .5f, .5f, 1.f), DirectX::XMFLOAT3(0, 0, 0), DirectX::XMFLOAT3(10, 10, 10), DirectX::XMFLOAT3(10, 10, 10));
+	hookHandRightWing = this->m_gameObjects.back();
+
+	// Hook Chain link
+    DirectX::XMFLOAT3 vecF3 = hook->getMoveCompPtr()->getPositionF3();
 	for (size_t i = 0; i < NR_OF_CHAIN_LINKS; i++)
 	{
 		vec = DirectX::XMVectorSet(vecF3.x, vecF3.y, vecF3.z - 5.f -((float)i * 0.6f), 1.f);
-	  this->addGameObjectToWorld(true, false, 1, 5, &m_models[5], vec, NormalScale, XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
+		this->addGameObjectToWorld(true, false, 1, 5, &m_modelsPtr->at(5), vec, XMVectorSet(.9f, .9f, .9f, 1.f), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
 		this->m_chainGObjects->push_back(this->m_gameObjects.back());
 	}
 
@@ -405,47 +615,45 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	}
 
 	// Player
-	this->m_player.initialize(-1, -1, 60.f, DirectX::XMFLOAT3(20.f, 20.f, 20.f), DirectX::XMFLOAT3(.01f, .01f, .01f), hook, hookHand, this->m_chainGObjects, audioEngine, platformBB);
-    this->m_player.setSpawnPosition(DirectX::XMVectorSet(0.f, 10.f, -1.f, 1.f));
-	this->m_player.respawn();
-	
-	//Room creation
-	//Pyramid Room - [0]
-	this->m_rooms.emplace_back(new PyramidRoom());
-	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, 0, 1), audioEngine, &this->m_gameTime);
-	dynamic_cast<PyramidRoom*>(this->m_rooms.back())->init(&m_pyramidOBB);
-	m_activeRoom = m_rooms.back();
+	this->m_player.initialize(-1, -1, 60.f, DirectX::XMFLOAT3(20.f, 20.f, 20.f), DirectX::XMFLOAT3(.01f, .01f, .01f), hook, hookHand, hookGem, hookHandLeftWing, hookHandRightWing, this->m_chainGObjects, audioEngine, platformBB);
+	this->m_player.setPosition(XMVectorSet(0.f, 8.f, 0.f, 0.f));
 
-	//Template Room [1] //Up for grabs
-	this->m_rooms.emplace_back(new TemplateRoom());
-	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, 0, 1), audioEngine, &this->m_gameTime);
-	dynamic_cast<TemplateRoom*>(this->m_rooms.back())->init();
+	// Room creation
+	// Pyramid Room - [0]
+	this->m_rooms.emplace_back(new PyramidRoom());
+	this->m_rooms.back()->initialize(m_device, m_dContext, m_modelsPtr, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, 0, 1), audioEngine, &this->m_gameTime, options);
+	dynamic_cast<PyramidRoom*>(this->m_rooms.back())->init(&m_pyramidOBB);
+	this->m_activeRoom = m_rooms.back();
+	
+
+	// Viktor Room [1]
+	this->m_rooms.emplace_back(new FindGemsRoom());
+	this->m_rooms.back()->initialize(m_device, m_dContext, m_modelsPtr, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, -300, 1), audioEngine, &this->m_gameTime, options);
+	dynamic_cast<FindGemsRoom*>(this->m_rooms.back())->init();
 
 	//Kevin Room [2]
 	this->m_rooms.emplace_back(new KevinsRoom());
-	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(100, 2, 100, 1), audioEngine, &this->m_gameTime);
-
+	this->m_rooms.back()->initialize(m_device, m_dContext, m_modelsPtr, &this->m_wvpCBuffers, &m_player, XMVectorSet(100, 2, 100, 1), audioEngine, &this->m_gameTime, options);
 	dynamic_cast<KevinsRoom*>(this->m_rooms.back())->init();
-	//m_activeRoom = m_rooms.back();
-
+	
 	//Edvin Room [3]
 	this->m_rooms.emplace_back(new EdvinsRoom());
-	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(-200, 0, 200, 1), audioEngine, &this->m_gameTime);
+	this->m_rooms.back()->initialize(m_device, m_dContext, m_modelsPtr, &this->m_wvpCBuffers, &m_player, XMVectorSet(-200, 0, 200, 1), audioEngine, &this->m_gameTime, options);
 	dynamic_cast<EdvinsRoom*>(this->m_rooms.back())->init();
 
 	// Tristan Room [4]
 	this->m_rooms.emplace_back(new TristansRoom());
-	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, -200, 1), audioEngine, &this->m_gameTime);
+	this->m_rooms.back()->initialize(m_device, m_dContext, m_modelsPtr, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, -200, 1), audioEngine, &this->m_gameTime, options);
 	dynamic_cast<TristansRoom*>(this->m_rooms.back())->init();
 
-	//Otaget rum [4] -
-	/*this->m_rooms.emplace_back(new NamnRoom());
-	this->m_rooms.back()->initialize(m_device, m_dContext, &this->m_models, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, -100, 1), audioEngine, &this->m_gameTime);
-	dynamic_cast<NamnRoom*>(this->m_rooms.back())->init();*/
+	// final Room [5]
+	this->m_rooms.emplace_back(new finalRoom());
+	this->m_rooms.back()->initialize(m_device, m_dContext, m_modelsPtr, &this->m_wvpCBuffers, &m_player, XMVectorSet(0, 0, -200, 1), audioEngine, &this->m_gameTime, options);
+	dynamic_cast<finalRoom*>(this->m_rooms.back())->init();
 
-	this->m_player.getphysicsCompPtr()->setVelocity({ 0, 0, 0 });
-	this->m_player.setPosition(this->m_activeRoom->getEntrancePosition());
-	this->m_player.getphysicsCompPtr()->setVelocity({ 0, 0, 0 });
+	this->m_player.setSpawnPosition(m_activeRoom->getEntrancePosition());
+
+	this->m_player.setPosition(m_activeRoom->getEntrancePosition());
 
 	//Get active room platforms to send to hookHand.
 	for (size_t i = 0; this->m_activeRoom && i < this->m_activeRoom->getGameObjectsPtr()->size(); i++)
@@ -492,28 +700,21 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 		this->m_rooms.at(i)->portals();
 	}
 
-	this->addPortalToWorld({ 0, 0, 0, 0 }, 10, &m_models[10], { -40, 4, -5, 1 }, { 1, 1, 1, 1 }, { 2, 2, 1 }, 0); //Pyramid "Room"
-	this->addPortalToWorld({ 0, 0, 0, 0 }, 10, &m_models[10], { -30, 4, -5, 1 }, { 1, 1, 1, 1 }, { 2, 2, 1 }, 1); //Up for grabs - currently template room
-	this->addPortalToWorld({ 0, 0, 0, 0 }, 10, &m_models[10], { -20, 4, -5, 1 }, { 1, 1, 1, 1 }, { 2, 2, 1 }, 2); // Kevins room
-	this->addPortalToWorld({ 0, 0, 0, 0 }, 10, & m_models[10], { -10, 4, -5, 1 }, { 1, 1, 1, 1 }, { 2, 2, 1 }, 3); //Edvins room
-	this->addPortalToWorld({ 0, 0, 0, 0 }, 10, &m_models[10], { 30, 4, -5, 1 }, { 1, 1, 1, 1 }, { 2, 2, 1 }, 4); //Tristans Room
+	this->m_activeRoom->updatePlayerBB();
 
 	this->m_gameTime.start();
+	this->nrOfGameObjects = (int)this->m_gameObjects.size();
+	this->roomChangeInit();
 }
 
-void GameState::update(Keyboard* keyboard, MouseEvent mouseEvent, Mouse* mousePtr, float dt)
+void GameState::update(float dt)
 {
-	while (!mousePtr->empty())
-	{
-		MouseEvent mEvent = mousePtr->readEvent();
-		if (mEvent.getEvent() == Event::MouseRAW_MOVE)
-		{
-			this->m_camera.update(mEvent, dt);
-		}
-	}
-
+	this->m_constantbufferData.dirBuffer = m_activeRoom->getDirectionalLight();
+	this->m_constantbufferData.fogBuffer = m_activeRoom->getFogData();
+	this->m_constantbufferData.lightBuffer = m_activeRoom->getLightData();
+	
 	// Player
-	this->m_player.update(keyboard, mousePtr, dt);
+	this->m_player.update(dt);
 
 	// Game Objects from gameState
 	for (size_t i = 0; i < this->m_gameObjects.size(); i++)
@@ -528,7 +729,7 @@ void GameState::update(Keyboard* keyboard, MouseEvent mouseEvent, Mouse* mousePt
 			{
 				m_activeRoom = m_rooms.at(portalPtr->getRoomID());
 				portalPtr->resetActiveRoomVariable();
-				this->m_activeRoomChanged = true;
+				this->m_majorChange = true;
 				this->m_activeRoom->onEntrance();
 			}
 		}
@@ -550,6 +751,193 @@ void GameState::update(Keyboard* keyboard, MouseEvent mouseEvent, Mouse* mousePt
 	}
 
 	if(m_activeRoom != nullptr)
-		this->m_activeRoom->update(dt, &m_camera, this->m_activeRoom, m_activeRoomChanged);
+		this->m_activeRoom->update(dt, &m_camera, this->m_activeRoom, m_majorChange);
 
+
+	DirectX::XMFLOAT3 playerPos;
+	XMStoreFloat3(&playerPos, this->m_player.getPosition());
+	this->playerHeight = 4;
+	this->pyramidHeight = 585 - playerHeight;
+	this->playerPosY = (playerPos.y - playerHeight) / pyramidHeight;		//0 - 1
+	
+	if (playerPosY >= 1)
+		playerPosY = 1;
+	if (playerPosY <= 0)
+		playerPosY = 0;
+
+	this->markerTop = 108;
+	this->markerBottom = 601;
+	this->difference = markerBottom - markerTop;		//493
+	this->m_mapPlayerPosition.y = markerBottom - (playerPosY * difference);
+
+}
+
+states GameState::handleInput(Keyboard* keyboard, Mouse* mousePtr, float dt)
+{
+	states changeStateTo = states::NONE;
+	while (!keyboard->empty())
+	{
+		KeyboardEvent keyboardEvent = keyboard->readKey();
+		if (keyboardEvent.getEvent() == Event::Pressed)
+		{
+			if (keyboardEvent.getKey() == (char)27)
+				changeStateTo = states::POP;
+
+		}
+	}
+
+	if (!this->m_player.getIsSpawning())
+	{
+		// Camera
+		while (!mousePtr->empty())
+		{
+			MouseEvent mEvent = mousePtr->readEvent();
+			if (mEvent.getEvent() == Event::MouseRAW_MOVE)
+				this->m_camera.update(mEvent, dt);
+			else if (mEvent.getEvent() == Event::MouseLPressed)
+			{
+				this->m_player.shoot();
+			}
+			else if (mEvent.getEvent() == Event::MouseRPressed)
+			{
+				this->m_player.retract();
+			}
+		}
+
+		// Controls
+		if (keyboard->isKeyPressed('W'))
+			this->m_player.movePlayer(Direction::FORWARD, dt);
+
+		if (keyboard->isKeyPressed('S'))
+			this->m_player.movePlayer(Direction::BACKWARD, dt);
+
+		if (keyboard->isKeyPressed('A'))
+			this->m_player.movePlayer(Direction::LEFT, dt);
+
+		if (keyboard->isKeyPressed('D'))
+			this->m_player.movePlayer(Direction::RIGHT, dt);
+
+		if (keyboard->isKeyPressed(' ')) // Space
+		{
+			if (this->m_player.getQAMode())
+				this->m_player.movePlayer(Direction::UP, dt);
+			else
+				this->m_player.jump(dt);
+		}
+
+		if (keyboard->isKeyPressed((unsigned char)16)) // Shift
+			this->m_player.flyDown(dt);
+
+		if (keyboard->isKeyPressed('E'))
+		{
+			this->m_player.setUse(true);
+		}
+		else
+		{
+			this->m_player.setUse(false);
+		}
+
+		// QA Toggle
+		if (keyboard->isKeyPressed('P'))
+		{
+			this->m_player.setQAMode(false);
+			StatusTextHandler::get().sendText("QA Mode OFF!", 0.5);
+		}
+		if (keyboard->isKeyPressed('O'))
+		{
+			this->m_player.setQAMode(true);
+			StatusTextHandler::get().sendText("QA Mode ON!", 0.5);
+		}
+
+		// For Debugging purposes
+		if (keyboard->isKeyPressed('R'))
+		{
+			this->m_player.getMoveCompPtr()->position = DirectX::XMVectorSet(-25.f, 6.f, -70.f, 1.f);
+			this->m_player.resetVelocity(); // Reset Velocity
+		}
+	}
+
+	if (this->m_activeRoom == this->m_rooms[5]) //In final room
+	{
+		finalRoom* fRoom = dynamic_cast<finalRoom*>(this->m_activeRoom);
+		if (fRoom != nullptr && fRoom->wonGame)
+		{
+			if (!m_gameOver)
+			{
+				this->highScoreCheck();
+				changeStateTo = states::WON;
+				m_gameOver = true;
+			}
+			else
+			{
+				changeStateTo = states::POP;
+			}
+		}
+	}
+	return changeStateTo;
+}
+
+void GameState::highScoreCheck()
+{
+	fstream fileStream;
+	fileStream.open(m_fileToRead);
+	int currentTimeElapsed = (int)this->m_gameTime.timeElapsed();
+	int time;
+	std::string name;
+	std::pair<std::string, int> score[10];
+	int nrOf = 0;
+	bool change = false;
+	if (fileStream.is_open())
+	{
+		while (!fileStream.eof() && nrOf < 10)
+		{
+			fileStream >> name;
+			fileStream >> time;
+			if ((time > currentTimeElapsed) && (!change))
+			{
+				score[nrOf].first = this->m_gameOptions.name;
+				score[nrOf++].second = currentTimeElapsed;
+				change = true;
+			}
+			
+			if (nrOf < 10 && name != "")
+			{
+				score[nrOf].first = name;
+				score[nrOf++].second = time;
+			}
+			
+		}
+		fileStream.close();
+
+		if (change)
+		{
+			submitHighScore(this->m_fileToRead, score, nrOf);
+		}
+	}
+}
+
+void submitHighScore(std::string fileToWriteTo, std::pair<std::string, int>* scoreToWrite, int nrOfScore)
+{
+	std::ofstream outputStream;
+	outputStream.open(fileToWriteTo); //File to write
+	if (outputStream.is_open())
+	{
+		for (int i = 0; i < nrOfScore; i++) //Print out all the node names
+		{
+			outputStream << scoreToWrite[i].first << " ";
+			outputStream << std::to_string(scoreToWrite[i].second);
+			if (i + 1 < nrOfScore)
+			{
+				outputStream << "\n";
+			}
+		}
+	}
+}
+
+XMFLOAT3 GameState::getCameraPos() const
+{
+	XMFLOAT3 temp;
+	XMStoreFloat3(&temp, m_player.getPosition());
+
+	return temp;
 }

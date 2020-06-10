@@ -39,6 +39,7 @@ public:
 	bool visible() const;
 	bool collidable() const;
 	bool getDrawBB() const;
+	XMVECTOR getRotation() const;
 	DirectX::XMVECTOR getPosition() const;
 	DirectX::XMMATRIX getWorldMatrix() const;
 

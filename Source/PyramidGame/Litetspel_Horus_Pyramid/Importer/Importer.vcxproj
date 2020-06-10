@@ -147,6 +147,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Litetspel_Horus_Pyramid\Animation.h" />
+    <ClInclude Include="..\Litetspel_Horus_Pyramid\Keyframe.h" />
+    <ClInclude Include="..\Litetspel_Horus_Pyramid\theAnimator.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="ImporterBFF.h" />
     <ClInclude Include="Model.h" />

@@ -18,6 +18,7 @@ int nrOfLigths = 0;
 std::vector<LightBFF> lightDataArr;
 
 void DisplayDefaultAnimationValues(FbxLight* pLight);
+//Gammal kod
 
 void DisplayLight(FbxNode* pNode)
 {
@@ -98,5 +99,4 @@ void DisplayDefaultAnimationValues(FbxLight* pLight)
     lightData.dir = pLight->OuterAngle.Get();
     DisplayDouble("        Default Fog: ", pLight->Fog.Get());
 }
-
 

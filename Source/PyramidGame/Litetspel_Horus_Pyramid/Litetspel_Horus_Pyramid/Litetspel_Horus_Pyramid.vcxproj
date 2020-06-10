@@ -154,11 +154,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
+    <ClCompile Include="Bell.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Chain.cpp" />
     <ClCompile Include="CheckpointHandler.cpp" />
+    <ClCompile Include="circleAroundObject.cpp" />
     <ClCompile Include="DebugDraw.cpp" />
     <ClCompile Include="EdvinsRoom.cpp" />
+    <ClCompile Include="finalRoom.cpp" />
+    <ClCompile Include="FindGemsRoom.cpp" />
     <ClCompile Include="followingEnemy.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameState.cpp" />
@@ -171,6 +175,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Input_Mouse.cpp" />
+    <ClCompile Include="MenuState.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -188,11 +193,13 @@
     <ClCompile Include="pugixml.cpp" />
     <ClCompile Include="PyramidRoom.cpp" />
     <ClCompile Include="Room.cpp" />
+    <ClCompile Include="ShadowMapInstance.cpp" />
     <ClCompile Include="TemplateRoom.cpp" />
     <ClCompile Include="Shaders.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="TristansRoom.cpp" />
     <ClCompile Include="ViewLayer.cpp" />
+    <ClCompile Include="WinState.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -202,6 +209,18 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
     </FxCompile>
+    <FxCompile Include="Shader Files\TransitionPS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Shader Files\TransitionVS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+    </FxCompile>
     <FxCompile Include="Shader Files\VertexShader.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
@@ -210,16 +229,21 @@
   <ItemGroup>
     <ClInclude Include="Application.h" />
     <ClInclude Include="AudioComponent.h" />
+    <ClInclude Include="Bell.h" />
     <ClInclude Include="BoundingPrim.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Chain.h" />
     <ClInclude Include="CheckpointHandler.h" />
+    <ClInclude Include="circleAroundObject.h" />
     <ClInclude Include="ConstantBuffer.h" />
     <ClInclude Include="DebugDraw.h" />
+    <ClInclude Include="finalRoom.h" />
+    <ClInclude Include="FindGemsRoom.h" />
     <ClInclude Include="followingEnemy.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameState.h" />
     <ClInclude Include="EdvinsRoom.h" />
+    <ClInclude Include="iGameState.h" />
     <ClInclude Include="HookHand.h" />
     <ClInclude Include="IndexBuffer.h" />
     <ClInclude Include="Input.h" />
@@ -228,6 +252,7 @@
     <ClInclude Include="KevinsRoom.h" />
     <ClInclude Include="Lever.h" />
     <ClInclude Include="Material.h" />
+    <ClInclude Include="MenuState.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="MovementComponent.h" />
     <ClInclude Include="pch.h" />
@@ -240,12 +265,15 @@
     <ClInclude Include="ResourceHandler.h" />
     <ClInclude Include="Room.h" />
     <ClInclude Include="Shaders.h" />
+    <ClInclude Include="ShadowMapInstance.h" />
     <ClInclude Include="StatusTextHandler.h" />
     <ClInclude Include="TemplateRoom.h" />
     <ClInclude Include="Timer.h" />
+    <ClInclude Include="Transition.h" />
     <ClInclude Include="TristansRoom.h" />
     <ClInclude Include="VertexBuffer.h" />
     <ClInclude Include="ViewLayer.h" />
+    <ClInclude Include="WinState.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Importer\Importer.vcxproj">

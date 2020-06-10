@@ -34,6 +34,6 @@ public:
 	void initialize(float mouseSense, float fovAngle, float aspectRatio, float nearZ, float farZ);
 
 	// Update
+	void updateView();
 	void update(MouseEvent mouseEvent, float dt);
-
 };

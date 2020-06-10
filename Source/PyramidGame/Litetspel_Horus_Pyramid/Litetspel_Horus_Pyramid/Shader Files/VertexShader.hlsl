@@ -11,6 +11,7 @@ struct VS_OUT
     float4 pos : SV_POSITION;
     float3 normal : NORMAL;
     float2 outTextureCord : TEXCOORD;
+    float3 posWorld : Position;
 };
 
 cbuffer constantBuffer : register(b0)
@@ -23,8 +24,10 @@ VS_OUT main(VS_IN input)
 {
     VS_OUT output;
     output.pos = mul(wvp, float4(input.pos, 1.f));
+    output.posWorld = mul(wMatrix, float4(input.pos, 1.f)).xyz; //World pos
     output.normal = normalize(mul(wMatrix, float4(input.normal, 0.f))).xyz;
     output.outTextureCord = input.inTextureCord;
 
+    
 	return output;
 }

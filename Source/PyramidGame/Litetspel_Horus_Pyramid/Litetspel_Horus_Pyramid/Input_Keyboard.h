@@ -14,6 +14,7 @@ public:
 	bool isPressed() const;
 	bool isReleased() const;
 	bool isValid() const;
+	Event getEvent() const;
 	unsigned char getKey() const;
 };
 
@@ -26,9 +27,9 @@ private:
 public:
 	Keyboard();
 
-	void onKeyPressed(unsigned char key);
-	void onRelease(unsigned char key);
-	bool isKeyPressed(unsigned char key);
-	bool empty();
+	void onKeyPressed(const unsigned char key);
+	void onRelease(const unsigned char key);
+	bool isKeyPressed(const unsigned char key) const;
+	bool empty() const;
 	KeyboardEvent readKey();
 };

@@ -2,8 +2,9 @@
 
 
 <GameOptions>
-  <Width>1200</Width>
-  <Height>800</Height>
+  <Width>1920</Width>
+  <Height>1000</Height>
   <FOV>75</FOV>
   <mouseSensitivity>0.02</mouseSensitivity>
+  <name>Player1</name>
 </GameOptions>

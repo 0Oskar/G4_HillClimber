@@ -6,10 +6,19 @@ Lever::Lever()
 {
 	m_theTexture = L" ";
 	m_sound = L" ";
-	activated = false;
+	activated = true;
 	canUseLever = false;
 	//defaultLever L"Models/Lever.obj";
 	m_audioComponent = new AudioComponent();
+}
+
+Lever::~Lever()
+{
+	if (m_audioComponent != nullptr)
+	{
+		delete m_audioComponent;
+		m_audioComponent = nullptr;
+	}
 }
 
 void Lever::init(bool colidable, int modelIndex, int wvpCBufferIndex, Model* mdl)
@@ -22,7 +31,7 @@ void Lever::onPlayerColide()
 	canUseLever = true;
 }
 
-void Lever::activateLever()
+void Lever::toggleActivateLever()
 {
 	if (this->activated == false)
 	{
@@ -43,6 +52,10 @@ bool Lever::getLeverValue()
 
 bool Lever::getCanUseLever()
 {
+	if (this->activated == false)
+	{
+		return false;
+	}
 	return this->canUseLever;
 }
 

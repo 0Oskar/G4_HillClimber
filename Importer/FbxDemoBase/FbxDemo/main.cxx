@@ -102,11 +102,8 @@ int main(int argc, char** argv)
 	if( lFilePath.IsEmpty() )
 	{
 
-
-        //lFilePath = "../TriAnim.fbx";
-
-
         lFilePath = "../Plane1__Blend2__Joint5__Anim20.fbx";
+        //lFilePath = "../vRoom_New2.fbx";
 
 		lResult = LoadScene(lSdkManager, lScene, lFilePath.Buffer());
 	}

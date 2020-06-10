@@ -7,35 +7,54 @@
 #include "ViewLayer.h"
 #include "Lever.h"
 #include "Portal.h"
-#include"TemplateRoom.h"
-#include"PyramidRoom.h"
-#include"KevinsRoom.h"
-#include"EdvinsRoom.h"
+#include "TemplateRoom.h"
+#include "finalRoom.h"
+#include "PyramidRoom.h"
+#include "KevinsRoom.h"
+#include "EdvinsRoom.h"
 #include "TristansRoom.h"
+#include "FindGemsRoom.h"
+#include "iGameState.h"
+
 
 using namespace std;
 
-class GameState
+class GameState : public iGameState
 {
 private:
+	//Edvin stuff for map
+	float playerHeight;
+	float pyramidHeight;
+	float playerPosY;
+	float markerTop;
+	float markerBottom;
+	float difference;
+	float markerPosY;
+
 	Player m_player;
-	Camera m_camera;
 	Timer m_gameTime;
 	DirectX::BoundingOrientedBox m_pyramidOBB;
-	
-	ID3D11Device* m_device;
-	ID3D11DeviceContext* m_dContext;
 	Room* m_activeRoom;
+	int nrOfGameObjects;
   
-	std::vector<Model> m_models;
-	std::vector<GameObject*> m_gameObjects;
-	std::vector<ConstBuffer<VS_CONSTANT_BUFFER>> m_wvpCBuffers;
 	std::vector<Room*> m_rooms;
 
 	std::vector<DirectX::BoundingBox*> platformBB;
 	std::vector<GameObject*>* m_chainGObjects;
+	bool m_gameOver;
 	
-	void loadModels();
+
+	//UI Stuff
+	ID3D11ShaderResourceView* m_crossHairSRV;
+	DirectX::XMFLOAT2 m_crosshairPosition;
+
+	ID3D11ShaderResourceView* m_map;
+	DirectX::XMFLOAT2 m_mapPosition;
+
+	ID3D11ShaderResourceView* m_mapPlayer;
+	DirectX::XMFLOAT2 m_mapPlayerPosition;
+
+	std::string m_timerString;
 public:
 	GameState();
 	~GameState();
@@ -46,22 +65,33 @@ public:
 	std::vector<Model>* getModelsPtr();
 	std::vector<GameObject*>* getGameObjectsPtr();
 	std::vector<GameObject*>* getActiveRoomGameObjectsPtr();
-	std::vector<BoundingBox>* getActiveRoomBoundingBoxsPtr();
-	std::vector<BoundingOrientedBox>* getActiveRoomOrientedBoundingBoxPtr();
+	std::vector<BoundingBox>* getActiveRoomBoundingBoxesPtr();
+	std::vector<BoundingOrientedBox>* getActiveRoomOrientedBoundingBoxesPtr();
 	std::vector<BoundingBox>* getActiveRoomTriggerBox();
 	std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* getWvpCBuffersPtr();
+	constantBufferData* getConstantBufferData();
 	PS_DIR_BUFFER getActiveRoomDirectionalLight();
-	void addGameObjectToWorld(bool dynamic, bool colide, float weight, int mdlIndx, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR scale3D, DirectX::XMFLOAT3 boundingBoxSize, DirectX::XMFLOAT3 acceleration, DirectX::XMFLOAT3 deceleration);
-	void addPlatformToWorld(int mdlIndex, DirectX::BoundingOrientedBox* pyramid, Model* mdl, DirectX::XMVECTOR position, DirectX::XMFLOAT3 platformBoundingBox);
-	void addLeverToWorld(int mdlIndex, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation, DirectX::XMFLOAT3 leverBB);
-	void addPortalToWorld(XMVECTOR teleportLocation, int mdlIndx, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR scale3D, DirectX::XMFLOAT3 boundingBoxSize, int room);
-	void looseALife(bool looseLife);
-	// Initialization
-	void initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext, GameOptions options, std::shared_ptr<DirectX::AudioEngine> audioEngine);
-	// Update
-	void update(Keyboard* keyboard, MouseEvent mouseEvent, Mouse* mousePointer, float dt);
+	PS_FOG_BUFFER getActiveRoomFogData();
+	PS_LIGHT_BUFFER getActiveRoomLightData();
+	void addGameObjectToWorld(const bool dynamic, const bool colide, const float weight, const int mdlIndx, Model* mdl, const DirectX::XMVECTOR position, const DirectX::XMVECTOR scale3D, const DirectX::XMFLOAT3 boundingBoxSize, const DirectX::XMFLOAT3 acceleration, const DirectX::XMFLOAT3 deceleration);
+	void addPlatformToWorld(const int mdlIndex, DirectX::BoundingOrientedBox* pyramid, Model* mdl, const DirectX::XMVECTOR position, const DirectX::XMFLOAT3 platformBoundingBox);
+	void addLeverToWorld(const int mdlIndex, Model* mdl, const DirectX::XMVECTOR position, const DirectX::XMVECTOR rotation, const DirectX::XMFLOAT3 leverBB);
+	void addPortalToWorld(const XMVECTOR teleportLocation, const int mdlIndx, Model* mdl, const DirectX::XMVECTOR position, const DirectX::XMVECTOR scale3D, const DirectX::XMFLOAT3 boundingBoxSize, const int room);
+	void looseALife(const bool looseLife);
+	std::wstring getRoomUITexturePath();
 
-	bool m_activeRoomChanged;
+	// Initialization
+	void initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext, const GameOptions options, std::shared_ptr<DirectX::AudioEngine> audioEngine);
+	// Update
+	void update(const float dt);
+	states handleInput(Keyboard* keyboard, Mouse* mouePointer, const float dt);
+	void highScoreCheck();
+	//void updateCustomViewLayerVariables(ViewLayer* viewLayer);
+	XMFLOAT3 getCameraPos() const;
+
 	void roomChangeInit();
 	Timer* getGameTimerPtr();
+	void afterChange();
+	void drawUI(DirectX::SpriteBatch* spriteBatchPtr, DirectX::SpriteFont* spriteFontPtr);
+	void onPop();
 };
