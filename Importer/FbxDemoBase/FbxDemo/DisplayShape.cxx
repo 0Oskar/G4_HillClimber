@@ -13,7 +13,6 @@
 
 #include "DisplayCommon.h"
 #include "DisplayShape.h"
-std::vector<std::vector<BlendShapesBFF>> blendShapeDataArr;
 std::vector<std::vector<BlendshapeBFF>> newBlendShapeArr;
 int currentShape = 0;
 int nrOfShapes = 0;
@@ -29,7 +28,6 @@ void DisplayShape(FbxGeometry* pGeometry)
 
     lBlendShapeCount = pGeometry->GetDeformerCount(FbxDeformer::eBlendShape);
 	nrOfShapes = lBlendShapeCount;
-	blendShapeDataArr.resize(lBlendShapeCount);
 	newBlendShapeArr.resize(nrOfShapes);
 
     for (int lBlendShapeIndex = 0; lBlendShapeIndex < lBlendShapeCount; ++lBlendShapeIndex)
@@ -56,7 +54,6 @@ void DisplayShape(FbxGeometry* pGeometry)
 				FbxLayerElementArrayTemplate<FbxVector4>* lNormals = NULL;    
 				bool lStatus = lShape->GetNormals(&lNormals); 
 
-				blendShapeDataArr[currentShape].resize(lShape->GetControlPointsCount());
 				newBlendShapeArr[currentShape].resize(lShape->GetControlPointsCount());
 				nrOfVertexInShape = lShape->GetControlPointsCount();
 
@@ -66,20 +63,12 @@ void DisplayShape(FbxGeometry* pGeometry)
 					Display3DVector("            Coordinates: ", lControlPoints[j]);
 					//pMesh->GetPolygonVertex(i, j);
 
-					blendShapeDataArr[currentShape][j].pos[0] = lControlPoints[j][0];
-					blendShapeDataArr[currentShape][j].pos[1] = lControlPoints[j][1];
-					blendShapeDataArr[currentShape][j].pos[2] = lControlPoints[j][2];
-
 					newBlendShapeArr[currentShape][j].pos[0] = lControlPoints[j][0];
 					newBlendShapeArr[currentShape][j].pos[1] = lControlPoints[j][1];
 					newBlendShapeArr[currentShape][j].pos[2] = lControlPoints[j][2];
 					if (lStatus && lNormals && lNormals->GetCount() == lControlPointsCount)
 					{
 						Display3DVector("            Normal Vector: ", lNormals->GetAt(j));
-
-						blendShapeDataArr[currentShape][j].norm[0] = lNormals->GetAt(j)[0];
-						blendShapeDataArr[currentShape][j].norm[1] = lNormals->GetAt(j)[1];
-						blendShapeDataArr[currentShape][j].norm[2] = lNormals->GetAt(j)[2];
 
 						newBlendShapeArr[currentShape][j].norm[0] = lNormals->GetAt(j)[0];
 						newBlendShapeArr[currentShape][j].norm[1] = lNormals->GetAt(j)[1];
@@ -92,12 +81,6 @@ void DisplayShape(FbxGeometry* pGeometry)
 		}
 		currentShape++;
     }
-}
-
-
-std::vector<std::vector<BlendShapesBFF>> GetBlendShapeDataArr()
-{
-	return blendShapeDataArr;
 }
 
 std::vector<std::vector<BlendshapeBFF>> GetNewBlendShapeData()

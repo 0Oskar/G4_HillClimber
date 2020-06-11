@@ -57,7 +57,9 @@ static bool gVerbose = true;
 FileWrite myFile5("../biFile.bff");
 FileWrite myStringFile5("../stringFile.bff");
 
+// Outpus ---------------
 SceneBFF sceneData;
+
 MeshBFF meshData2;
 
 std::vector<MaterialBFF> finalMaterialData;
@@ -69,18 +71,18 @@ std::string texturePath;
 
 std::vector<ControlPointBFF> controlPointData2;
 
-std::vector<LightBFF> lightData2; //!
 FbxAMatrix lightTransforms;
 
-std::vector<CameraBFF> cameraData2; //!
-std::vector<JointBFF> jointData2;
-std::vector<keyFrameBFF> keyFrameData2;
+std::vector<LightBFF> lightData2;
 
+std::vector<CameraBFF> cameraData2;
 
-std::vector<std::vector<BlendShapesBFF>> blendShapeDataArr3; //!
 std::vector<std::vector<BlendshapeBFF>> newBlendShapeData;
-std::vector<BonesBFF> boneData2; //!
-std::vector<VertexAnimBFF> keyFrameData3; //!
+
+std::vector<keyFrameBFF> keyFrameData2;
+std::vector<JointBFF> jointData2;
+
+
 
 //Make a file
 
@@ -115,7 +117,7 @@ int main(int argc, char** argv)
         //lFilePath = "../TriAnim.fbx";
 
 
-        lFilePath = "../Plane1__Blend2__Joint5__Anim20__Texture2__Material2__Light3.fbx";
+        lFilePath = "../Plane1__Blend2__Joint5__Anim20__Texture2__Material2__Light3__Camera2.fbx";
 
 		lResult = LoadScene(lSdkManager, lScene, lFilePath.Buffer());
 	}
@@ -172,12 +174,12 @@ int main(int argc, char** argv)
 
     // Destroy all objects created by the FBX SDK.
     DestroySdkObjects(lSdkManager, lResult);
+    sceneData.nrOfTextures = GetNrOfTextures2();
     sceneData.nrOfLights = getNrOfLights();
     sceneData.nrOfCameras = getNrOfCameras();
     sceneData.nrOfVertexAnimFrames = getNrOfkeyframes();
     sceneData.nrOfBlendShapes = GetNrOfBlendShapes2();
-
-    boneData2.resize(getNrOfJoints());
+    /*
     std::vector<std::string> names2;
     names2 = GetJointName();
 
@@ -186,27 +188,29 @@ int main(int argc, char** argv)
     {
         strcpy_s(temp, _countof(temp), names2[i].c_str());
         for (int j = 0; j < sizeof(temp); j++)
-            boneData2[i].name[j] = temp[j];
+            //boneData2[i].name[j] = temp[j];
     }
 
     std::vector<FbxVector4> bindRots2;
     bindRots2 = GetBindRots();
     for (int i = 0; i < getNrOfJoints(); i++)
     {
-        boneData2[i].bindRot[0] = bindRots2[i + 1][0];
-        boneData2[i].bindRot[1] = bindRots2[i + 1][1];
-        boneData2[i].bindRot[2] = bindRots2[i + 1][2];
+        //boneData2[i].bindRot[0] = bindRots2[i + 1][0];
+        //boneData2[i].bindRot[1] = bindRots2[i + 1][1];
+        //boneData2[i].bindRot[2] = bindRots2[i + 1][2];
     }
-
+    */
 
     // ****************** Scene ****************** //
     myStringFile5.writeToStringFile("############ Scene ############\n");
     myStringFile5.writeToStringFile(
+        "NrOfTextures: " + std::to_string(sceneData.nrOfTextures) +
+        "\n" +
         "NrOfLights: " + std::to_string(sceneData.nrOfLights) +
         "\n" +
         "NrOfCameras: " + std::to_string(sceneData.nrOfCameras) +
         "\n" +
-        "NrOfVertexAnimFrames: " + std::to_string(sceneData.nrOfVertexAnimFrames) +
+        "NrOfFrames: " + std::to_string(sceneData.nrOfVertexAnimFrames) +
         "\n" +
         "NrOfBlendShapes: " + std::to_string(sceneData.nrOfBlendShapes) +
         "\n\n"
@@ -246,6 +250,8 @@ int main(int argc, char** argv)
             "Opacity: " + std::to_string(finalMaterialData[m].Opacity) + "\n " +
             "\n\n"
         );
+
+        myFile5.writeToFile((const char*)&finalMaterialData[m], sizeof(MaterialBFF)); //Add to biFile
     }
 
     // ****************** Texture ****************** //
@@ -283,6 +289,8 @@ int main(int argc, char** argv)
             "TexturePath: " + (std::string)finalTextureData[t].texturePath + "\n" +
             "\n\n"
         );
+
+        myFile5.writeToFile((const char*)&finalTextureData[t], sizeof(TextureBFF)); //Add to biFile
     }
 
     // ****************** Control Point ****************** //
@@ -320,67 +328,8 @@ int main(int argc, char** argv)
             "Influenced by joint:" + std::to_string(controlPointData2[i].influencedByJoints[3]) + " (" + std::to_string(controlPointData2[i].boneWeight[3]) + "%)\n" +
             "\n\n"
         );
+
         myFile5.writeToFile((const char*)&controlPointData2[i], sizeof(ControlPointBFF)); //Add to biFile
-
-    }
-
-    // ****************** Blendshape ****************** //
-    newBlendShapeData = GetNewBlendShapeData2();
-    for (int i = 0; i < GetNrOfBlendShapes2(); i++)
-    {
-        myStringFile5.writeToStringFile("\n\n\n############ BlendShape ############\n");
-        for (int v = 0; v < GetNrOfVertexInBlendShape2(); v++)
-        {
-            myStringFile5.writeToStringFile(
-                "\n------ Index " + std::to_string(v) + ")\n" +
-                "Position (" + std::to_string(newBlendShapeData[i][v].pos[0]) + ", " + std::to_string(newBlendShapeData[i][v].pos[1]) + ", " + std::to_string(newBlendShapeData[i][v].pos[2]) + ")\n" +
-                "Normals (" + std::to_string(newBlendShapeData[i][v].norm[0]) + ", " + std::to_string(newBlendShapeData[i][v].norm[1]) + ", " + std::to_string(newBlendShapeData[i][v].norm[2]) + ")\n\n");
-        }
-    }
-
-    // ****************** Joints ****************** //
-    jointData2 = GetJointData();
-    std::vector<JointBFF> tempJointKeyFrameData;
-    tempJointKeyFrameData = GetJointKeyFrameData();
-    for (int j = 0; j < getNrOfJoints(); j++)
-    {
-        jointData2[j].nrOfKeyFrames = tempJointKeyFrameData[j].nrOfKeyFrames;
-        jointData2[j].animationFrames.resize(jointData2[j].nrOfKeyFrames);
-
-        for (int k = 0; k < jointData2[j].nrOfKeyFrames; k++)
-        {
-            jointData2[j].animationFrames[k].timestamp = tempJointKeyFrameData[j].animationFrames[k].timestamp;
-
-            for (int v = 0; v < 9; v++)
-            {
-                jointData2[j].animationFrames[k].pose[v] = tempJointKeyFrameData[j].animationFrames[k].pose[v];
-            }
-        }
-    }
-
-    myStringFile5.writeToStringFile("\n############ Joints ############\n");
-    for (int j = 0; j < getNrOfJoints(); j++)
-    {
-        myStringFile5.writeToStringFile(
-            "\n------ Index " + std::to_string(j) + ")\n" +
-            "Joint Index: " + std::to_string(jointData2[j].jointIndex) + "\n" +
-            "Bindpose matrix:\n" +
-            "(" + std::to_string(jointData2[j].bindPoseMatrix[0]) + ", " + std::to_string(jointData2[j].bindPoseMatrix[1]) + ", " + std::to_string(jointData2[j].bindPoseMatrix[2]) + ", " + std::to_string(jointData2[j].bindPoseMatrix[3]) + ")\n" +
-            "(" + std::to_string(jointData2[j].bindPoseMatrix[4]) + ", " + std::to_string(jointData2[j].bindPoseMatrix[5]) + ", " + std::to_string(jointData2[j].bindPoseMatrix[6]) + ", " + std::to_string(jointData2[j].bindPoseMatrix[7]) + ")\n" +
-            "(" + std::to_string(jointData2[j].bindPoseMatrix[8]) + ", " + std::to_string(jointData2[j].bindPoseMatrix[9]) + ", " + std::to_string(jointData2[j].bindPoseMatrix[10]) + ", " + std::to_string(jointData2[j].bindPoseMatrix[11]) + ")\n" +
-            "(" + std::to_string(jointData2[j].bindPoseMatrix[12]) + ", " + std::to_string(jointData2[j].bindPoseMatrix[13]) + ", " + std::to_string(jointData2[j].bindPoseMatrix[14]) + ", " + std::to_string(jointData2[j].bindPoseMatrix[15]) + ")\n" +
-            "\n"
-            "Keyframes: "+ std::to_string(jointData2[j].nrOfKeyFrames) + "\n"
-        );
-        for (int k = 0; k < jointData2[j].nrOfKeyFrames; k++)
-        {
-            myStringFile5.writeToStringFile(
-                "Time: " + std::to_string(jointData2[j].animationFrames[k].timestamp) + "\n" +
-                "(" + std::to_string(jointData2[j].animationFrames[k].pose[0]) + ", " + std::to_string(jointData2[j].animationFrames[k].pose[1]) + ", " + std::to_string(jointData2[j].animationFrames[k].pose[2]) + ")\n" +
-                "(" + std::to_string(jointData2[j].animationFrames[k].pose[3]) + ", " + std::to_string(jointData2[j].animationFrames[k].pose[4]) + ", " + std::to_string(jointData2[j].animationFrames[k].pose[5]) + ")\n" +
-                "(" + std::to_string(jointData2[j].animationFrames[k].pose[6]) + ", " + std::to_string(jointData2[j].animationFrames[k].pose[7]) + ", " + std::to_string(jointData2[j].animationFrames[k].pose[8]) + ")\n\n"
-            );
-        }
     }
 
     // ****************** Light ****************** //
@@ -430,151 +379,94 @@ int main(int argc, char** argv)
         myFile5.writeToFile((const char*)&lightData2[i], sizeof(LightBFF)); //Add to biFile
     }
 
-    /*
-    lightData2 = GetLightData();
-
-    for (int i = 0; i < getNrOfLights(); i++)
-    {
-        myStringFile5.writeToStringFile("\n\n\n------------- Light\n\n");
-
-        myStringFile5.writeToStringFile(
-            "Type: " + (std::string)lightData2[i].type + "\n" +
-            "\n" +
-            "ColorR: " + std::to_string(lightData2[i].color[0]) + "\n" +
-            "ColorG: " + std::to_string(lightData2[i].color[1]) + "\n" +
-            "ColorB: " + std::to_string(lightData2[i].color[2]) + "\n" +
-            "\n" +
-            "Dir: " + std::to_string(lightData2[i].dir) + "\n" +
-            "\n" +
-            "Intencity: " + std::to_string(lightData2[i].intencity) + "\n\n");
-
-        myFile5.writeToFile((const char*)&lightData2[i], sizeof(LightBFF)); //Add to biFile
-    }
-    */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     // ****************** Camera ****************** //
-    /*
     cameraData2 = GetCameraData();
     
+    myStringFile5.writeToStringFile("\n############ Camera ############\n");
     for (int i = 0; i < getNrOfCameras(); i++)
     {
-        myStringFile5.writeToStringFile("\n\n\n------------- Camera:\n\n");
-
         myStringFile5.writeToStringFile(
-            "PosX: " + std::to_string(cameraData2[i].pos[0]) + "\n" +
-            "PosY: " + std::to_string(cameraData2[i].pos[1]) + "\n" +
-            "PosZ: " + std::to_string(cameraData2[i].pos[2]) + "\n" +
+            "\n------ Index " + std::to_string(i) + ")\n" +
+            "Position (" + std::to_string(cameraData2[i].pos[0]) + ", " + std::to_string(cameraData2[i].pos[1]) + ", "  + std::to_string(cameraData2[i].pos[2]) + ")\n" +
             "\n" +
-            "UpVecX: " + std::to_string(cameraData2[i].upVec[0]) + "\n" +
-            "UpVecY: " + std::to_string(cameraData2[i].upVec[1]) + "\n" +
-            "UpVecZ: " + std::to_string(cameraData2[i].upVec[2]) + "\n" +
+            "UpVector (" + std::to_string(cameraData2[i].upVec[0]) + ", " + std::to_string(cameraData2[i].upVec[1]) + ", " + std::to_string(cameraData2[i].upVec[2]) + ")\n" +
             "\n" +
-            "ForwardVecX: " + std::to_string(cameraData2[i].forwardVec[0]) + "\n" +
-            "ForwardVecY: " + std::to_string(cameraData2[i].forwardVec[1]) + "\n" +
-            "ForwardVecZ: " + std::to_string(cameraData2[i].forwardVec[2]) + "\n" +
+            "ForwardVector (" + std::to_string(cameraData2[i].forwardVec[0]) + ", " + std::to_string(cameraData2[i].forwardVec[1]) + ", " + std::to_string(cameraData2[i].forwardVec[2]) + ")\n" +
             "\n" +
             "NearPlane: " + std::to_string(cameraData2[i].nearPlane) + "\n" +
             "\n" +
             "FarPlane: " + std::to_string(cameraData2[i].farPlane) + "\n" +
             "\n" +
-            "FOV: " + std::to_string(cameraData2[i].FOV) + " (degrees)" + "\n" + "\n" + "\n");
-        myFile5.writeToFile((const char*)&cameraData2, sizeof(CameraBFF)); //Add to biFile
+            "FOV: " + std::to_string(cameraData2[i].FOV) + " (degrees)" + "\n" + 
+            "\n" + "\n"
+        );
 
+        myFile5.writeToFile((const char*)&cameraData2, sizeof(CameraBFF)); //Add to biFile
     }
-    */
-    // ****************** Shapes ****************** //
-    /*
+    
+    // ****************** Blendshape ****************** //
+    newBlendShapeData = GetNewBlendShapeData2();
     for (int i = 0; i < GetNrOfBlendShapes2(); i++)
     {
-        myStringFile5.writeToStringFile("\n\n\n------------- BlendShape:\n\n");
+        myStringFile5.writeToStringFile("\n\n\n############ BlendShape ############\n");
         for (int v = 0; v < GetNrOfVertexInBlendShape2(); v++)
         {
             myStringFile5.writeToStringFile(
-            "\n------ Index " + std::to_string(v) + ")\n\n" +
-            "PosX: " + std::to_string(blendShapeDataArr3[i][v].pos[0]) +
-            "\n" +
-            "PosY: " + std::to_string(blendShapeDataArr3[i][v].pos[1]) +
-            "\n" +
-            "PosZ: " + std::to_string(blendShapeDataArr3[i][v].pos[2]) +
-            "\n" +
-            "NormX: " + std::to_string(blendShapeDataArr3[i][v].norm[0]) +
-            "\n" +
-            "NormY: " + std::to_string(blendShapeDataArr3[i][v].norm[1]) +
-            "\n" +
-            "NormZ: " + std::to_string(blendShapeDataArr3[i][v].norm[2]) +
-            "\n\n");
+                "\n------ Index " + std::to_string(v) + ")\n" +
+                "Position (" + std::to_string(newBlendShapeData[i][v].pos[0]) + ", " + std::to_string(newBlendShapeData[i][v].pos[1]) + ", " + std::to_string(newBlendShapeData[i][v].pos[2]) + ")\n" +
+                "Normals (" + std::to_string(newBlendShapeData[i][v].norm[0]) + ", " + std::to_string(newBlendShapeData[i][v].norm[1]) + ", " + std::to_string(newBlendShapeData[i][v].norm[2]) + ")\n" +
+                "\n\n"
+            );
+
+            myFile5.writeToFile((const char*)&newBlendShapeData[i][v], sizeof(BlendshapeBFF)); //Add to biFile
         }
     }
-    */
-    // ****************** Bones ****************** //    
-    /*
-    for (int i = 0; i < getNrOfJoints(); i++)
-    {
-        myStringFile5.writeToStringFile("\n\n\n------------- Bone:\n\n");
 
+    // ****************** Joints ****************** //
+    jointData2 = GetJointData();
+    std::vector<JointBFF> tempJointKeyFrameData;
+    tempJointKeyFrameData = GetJointKeyFrameData();
+    for (int j = 0; j < getNrOfJoints(); j++)
+    {
+        jointData2[j].nrOfKeyFrames = tempJointKeyFrameData[j].nrOfKeyFrames;
+        jointData2[j].animationFrames.resize(jointData2[j].nrOfKeyFrames);
+
+        for (int k = 0; k < jointData2[j].nrOfKeyFrames; k++)
+        {
+            jointData2[j].animationFrames[k].timestamp = tempJointKeyFrameData[j].animationFrames[k].timestamp;
+
+            for (int v = 0; v < 9; v++)
+            {
+                jointData2[j].animationFrames[k].pose[v] = tempJointKeyFrameData[j].animationFrames[k].pose[v];
+            }
+        }
+    }
+
+    myStringFile5.writeToStringFile("\n############ Joints ############\n");
+    for (int j = 0; j < getNrOfJoints(); j++)
+    {
         myStringFile5.writeToStringFile(
-            "Bone Name: " + (std::string)boneData2[i].name + 
+            "\n------ Index " + std::to_string(j) + ")\n" +
+            "Joint Index: " + std::to_string(jointData2[j].jointIndex) + "\n" +
+            "Bindpose matrix:\n" +
+            "(" + std::to_string(jointData2[j].bindPoseMatrix[0]) + ", " + std::to_string(jointData2[j].bindPoseMatrix[1]) + ", " + std::to_string(jointData2[j].bindPoseMatrix[2]) + ", " + std::to_string(jointData2[j].bindPoseMatrix[3]) + ")\n" +
+            "(" + std::to_string(jointData2[j].bindPoseMatrix[4]) + ", " + std::to_string(jointData2[j].bindPoseMatrix[5]) + ", " + std::to_string(jointData2[j].bindPoseMatrix[6]) + ", " + std::to_string(jointData2[j].bindPoseMatrix[7]) + ")\n" +
+            "(" + std::to_string(jointData2[j].bindPoseMatrix[8]) + ", " + std::to_string(jointData2[j].bindPoseMatrix[9]) + ", " + std::to_string(jointData2[j].bindPoseMatrix[10]) + ", " + std::to_string(jointData2[j].bindPoseMatrix[11]) + ")\n" +
+            "(" + std::to_string(jointData2[j].bindPoseMatrix[12]) + ", " + std::to_string(jointData2[j].bindPoseMatrix[13]) + ", " + std::to_string(jointData2[j].bindPoseMatrix[14]) + ", " + std::to_string(jointData2[j].bindPoseMatrix[15]) + ")\n" +
             "\n"
-            "BindRotX: " + std::to_string(boneData2[i].bindRot[0]) +
-            "\n" +
-            "BindRotY: " + std::to_string(boneData2[i].bindRot[1]) +
-            "\n" +
-            "BindRotZ: " + std::to_string(boneData2[i].bindRot[2]) +
-            "\n\n");
-        //myFile5.writeToFile((const char*)&cameraData2, sizeof(CameraBFF)); //Add to biFile
+            "Keyframes: " + std::to_string(jointData2[j].nrOfKeyFrames) + "\n"
+        );
 
+        for (int k = 0; k < jointData2[j].nrOfKeyFrames; k++)
+        {
+            myStringFile5.writeToStringFile(
+                "Time: " + std::to_string(jointData2[j].animationFrames[k].timestamp) + "\n" +
+                "(" + std::to_string(jointData2[j].animationFrames[k].pose[0]) + ", " + std::to_string(jointData2[j].animationFrames[k].pose[1]) + ", " + std::to_string(jointData2[j].animationFrames[k].pose[2]) + ")\n" +
+                "(" + std::to_string(jointData2[j].animationFrames[k].pose[3]) + ", " + std::to_string(jointData2[j].animationFrames[k].pose[4]) + ", " + std::to_string(jointData2[j].animationFrames[k].pose[5]) + ")\n" +
+                "(" + std::to_string(jointData2[j].animationFrames[k].pose[6]) + ", " + std::to_string(jointData2[j].animationFrames[k].pose[7]) + ", " + std::to_string(jointData2[j].animationFrames[k].pose[8]) + ")\n\n"
+            );
+        }
     }
-    */
-    // ****************** Vertex Animation ****************** //
-    /*
-    keyFrameData2 = getKeyFrameData();
-
-    for (int i = 0; i < getNrOfkeyframes(); i++)
-    {
-        myStringFile5.writeToStringFile("\n\n\n-------------  Vertex Animation:\n\n");
-
-        myStringFile5.writeToStringFile(
-            "Frame: " + std::to_string(keyFrameData2[i].time) +
-            "\n" +
-            "PosX: " + std::to_string(keyFrameData2[i].pos[0]) +
-            "\n" +
-            "PosY: " + std::to_string(keyFrameData2[i].pos[1]) +
-            "\n" +
-            "PosZ: " + std::to_string(keyFrameData2[i].pos[2]) +
-            "\n" +
-            "RotX: " + std::to_string(keyFrameData2[i].rot[0]) +
-            "\n" +
-            "RotY: " + std::to_string(keyFrameData2[i].rot[1]) +
-            "\n" +
-            "RotZ: " + std::to_string(keyFrameData2[i].rot[2]) +
-            "\n" +
-            "ScaleX: " + std::to_string(keyFrameData2[i].scale[0]) +
-            "\n" +
-            "ScaleY: " + std::to_string(keyFrameData2[i].scale[1]) +
-            "\n" +
-            "ScaleZ: " + std::to_string(keyFrameData2[i].scale[2]) +
-            "\n\n");
-
-        myFile5.writeToFile((const char*)&keyFrameData2, sizeof(VertexAnimBFF)); // Add to biFile
-    }
-    */
-
-
     return 0;
 }
 
@@ -620,7 +512,7 @@ void DisplayContent(FbxNode* pNode)
 
         case FbxNodeAttribute::eMesh:      
             DisplayMesh(pNode);
-            blendShapeDataArr3 = GetBlendShapeDataArr2(pNode);
+            //blendShapeDataArr3 = GetBlendShapeDataArr2(pNode);
             break;
 
         case FbxNodeAttribute::eNurbs:      

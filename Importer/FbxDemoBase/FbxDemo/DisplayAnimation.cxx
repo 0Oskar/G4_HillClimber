@@ -20,12 +20,12 @@
 
 FileWrite myFile4("../biFile.bff");
 FileWrite myStringFile4("../stringFile.bff");
-std::vector<VertexAnimBFF> keyFrameData;
 std::vector<keyFrameBFF> newKeyFrameData;
 std::vector<JointBFF> jointKeyFrameData;
 int currentFrame = -1;
 int someVar = -1;
 int allJoints = 0;
+int nrOfKeyFrames;
 
 void DisplayAnimation(FbxAnimStack* pAnimStack, FbxNode* pNode, bool isSwitcher = false);
 void DisplayAnimation(FbxAnimLayer* pAnimLayer, FbxNode* pNode, bool isSwitcher = false);
@@ -57,11 +57,6 @@ void DisplayAnimation(FbxScene* pScene)
     jointKeyFrameData.resize(allJoints);
 }
 
-std::vector<VertexAnimBFF> getKeyFrameData()
-{
-    return keyFrameData;
-}
-
 std::vector<JointBFF> GetJointKeyFrameData()
 {
     return jointKeyFrameData;
@@ -69,7 +64,7 @@ std::vector<JointBFF> GetJointKeyFrameData()
 
 int getNrOfkeyframes()
 {
-    return keyFrameData.size();
+    return nrOfKeyFrames;
 }
 
 void DisplayAnimation(FbxAnimStack* pAnimStack, FbxNode* pNode, bool isSwitcher)
@@ -578,7 +573,7 @@ void DisplayCurveKeys(FbxAnimCurve* pCurve)
 
     float keyValue;
     int lKeyCount = pCurve->KeyGetCount();
-    keyFrameData.resize(lKeyCount);
+    nrOfKeyFrames = lKeyCount;
     newKeyFrameData.resize(lKeyCount);
     someVar++;
 
@@ -618,7 +613,6 @@ void DisplayCurveKeys(FbxAnimCurve* pCurve)
         {
             temp.pop_back(); // ta bort den sissta *
         }
-        keyFrameData[currentFrame].time = std::atoi(temp.c_str());
 
         //jointKeyFrameData[0].animationFrames[someVar].timestamp = currentFrame;
 
@@ -627,24 +621,7 @@ void DisplayCurveKeys(FbxAnimCurve* pCurve)
 
 
 
-        if (someVar == 0)
-            keyFrameData[currentFrame].pos[0] = lKeyValue;
-        if (someVar == 1)
-            keyFrameData[currentFrame].pos[1] = lKeyValue;
-        if (someVar == 2)
-            keyFrameData[currentFrame].pos[2] = lKeyValue;
-        if (someVar == 3)
-            keyFrameData[currentFrame].rot[0] = lKeyValue;
-        if (someVar == 4)
-            keyFrameData[currentFrame].rot[1] = lKeyValue;
-        if (someVar == 5)
-            keyFrameData[currentFrame].rot[2] = lKeyValue;
-        if (someVar == 6)
-            keyFrameData[currentFrame].scale[0] = lKeyValue;
-        if (someVar == 7)
-            keyFrameData[currentFrame].scale[1] = lKeyValue;
-        if (someVar == 8)
-            keyFrameData[currentFrame].scale[2] = lKeyValue;
+
 
         lOutputString += " [ ";
         lOutputString += interpolation[ InterpolationFlagToIndex(pCurve->KeyGetInterpolation(lCount)) ];

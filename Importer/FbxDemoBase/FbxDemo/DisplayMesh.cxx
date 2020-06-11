@@ -50,7 +50,6 @@ int currentVertex = 0;
 std::vector<MaterialBFF> materialData;
 
 //FbxMesh* MeshRef;
-std::vector<std::vector<BlendShapesBFF>> blendShapeDataArr2;
 int nrOfShapes2;
 int nrOfVertexInShape2;
 
@@ -134,7 +133,7 @@ int GetMaterialIndex2(int index)
 {
 	return  GetMaterialIndex(index);
 }
-
+/*
 std::vector<std::vector<BlendShapesBFF>> GetBlendShapeDataArr2(FbxNode* pNode)
 {
 	blendShapeDataArr2 = GetBlendShapeDataArr();
@@ -202,7 +201,7 @@ std::vector<std::vector<BlendShapesBFF>> GetBlendShapeDataArr2(FbxNode* pNode)
 	return blendShapeDataArr2;
 	//return GetBlendShapeDataArr();
 }
-
+*/
 std::vector<std::vector<BlendshapeBFF>> GetNewBlendShapeData2()
 {
 	return GetNewBlendShapeData();
