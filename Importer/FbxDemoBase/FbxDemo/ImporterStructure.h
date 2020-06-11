@@ -1,7 +1,9 @@
 #pragma once
+#include <vector>
 
 struct SceneBFF
 {
+	unsigned int nrOfTextures;
 	unsigned int nrOfLights;
 	unsigned int nrOfCameras;
 	unsigned int nrOfVertexAnimFrames;

@@ -7,8 +7,9 @@ class ModelBFF
 	public:
 		SceneBFF scene;
 		MeshBFF mesh;
-		VertexBFF* vertexArr;
+		ControlPointBFF* controllPointsArr;
 		MaterialBFF material;
+		TextureBFF texture;
 		LightBFF light;
 		CameraBFF camera;
 		VertexAnimBFF vertexAnim;
