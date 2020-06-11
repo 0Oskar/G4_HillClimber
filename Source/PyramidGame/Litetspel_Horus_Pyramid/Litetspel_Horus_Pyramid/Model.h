@@ -17,7 +17,9 @@ private:
 	IndexBuffer m_indexBuffer;
 	ImporterBFF::Manager* myManager;
 
-
+	std::vector<LightBFF> pointLights;
+	std::vector<LightBFF> spotLights;
+	std::vector<LightBFF> directionalLights;
 
 	bool m_drawWithIndex;
 
@@ -30,6 +32,13 @@ public:
 	void loadVertexFromOBJ(ID3D11Device* device, ID3D11DeviceContext* dContext, std::wstring objFilePath, MaterialData material, std::wstring texturePath = L"");
 	void initializeModelBff(ID3D11Device* device, ID3D11DeviceContext* dContext, std::string fileName, MaterialData material, std::wstring texturePath = L"");
 	void printBffModel(ModelBFF model);
+	void printLight(const ModelBFF model) const;
+	void printCamera(const ModelBFF model) const;
+
+	LightBFF getPointLight(int index);
+	LightBFF getSpotLight(int index);
+	LightBFF getDirectionalLight(int index);
+
 	Material m_material;
 
 	std::wstring m_originalTexture;

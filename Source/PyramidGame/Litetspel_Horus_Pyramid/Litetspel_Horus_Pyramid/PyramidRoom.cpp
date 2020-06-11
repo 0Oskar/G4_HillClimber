@@ -168,6 +168,18 @@ void PyramidRoom::createSceneObjects()
 	this->m_checkpointHandler.addCheckpointGameObject((int)this->m_gameObjects.size() - 1, this->m_gameObjects.back()->getPosition());
 	platformBB.emplace_back(this->m_gameObjects.back()->getAABBPtr());
 
+
+	///           -----    BFF TEST HERE    -----  
+
+	vec = DirectX::XMVectorSet(0.f, 5.f, -30.f, 1.f);
+	this->addGameObjectToRoom(false, true, 0, 28, &m_models->at(28), vec, { 1.f, 1.f, 1.f });
+
+
+
+
+
+
+
 	//Initialize audio component for platforms and add theire boundingboxes to playerBoundingBoxes
 	for (size_t i = 0; i < this->m_gameObjects.size(); i++)
 	{

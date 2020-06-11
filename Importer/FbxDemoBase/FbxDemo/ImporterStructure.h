@@ -74,7 +74,7 @@ struct BlendshapeBFF
 	float norm[3];
 };
 
-struct keyFrameBFF
+struct KeyFrameBFF
 {
 	int timestamp;
 	float pose[9];
@@ -88,7 +88,7 @@ struct JointBFF
 
 	int nrOfKeyFrames;
 	
-	std::vector<keyFrameBFF> animationFrames;
+	std::vector<KeyFrameBFF> animationFrames;
 };
 
 

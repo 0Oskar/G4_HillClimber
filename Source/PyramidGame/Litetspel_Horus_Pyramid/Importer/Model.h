@@ -7,11 +7,13 @@ class ModelBFF
 	public:
 		SceneBFF scene;
 		MeshBFF mesh;
-		ControlPointBFF* controllPointsArr;
+		std::vector<ControlPointBFF> controllPointsArr;
 		MaterialBFF material;
 		TextureBFF texture;
-		LightBFF light;
-		CameraBFF camera;
-		VertexAnimBFF vertexAnim;
-		BlendShapesBFF blendShapes;
+		std::vector<LightBFF> light;
+		std::vector<CameraBFF> camera;
+		BlendshapeBFF blendShapes;
+		KeyFrameBFF keyframes;
+		JointBFF joints;
+
 };
