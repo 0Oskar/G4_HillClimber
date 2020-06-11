@@ -57,7 +57,9 @@ static bool gVerbose = true;
 FileWrite myFile5("../biFile.bff");
 FileWrite myStringFile5("../stringFile.bff");
 
+// Outpus ---------------
 SceneBFF sceneData;
+
 MeshBFF meshData2;
 
 std::vector<MaterialBFF> finalMaterialData;
@@ -69,18 +71,18 @@ std::string texturePath;
 
 std::vector<ControlPointBFF> controlPointData2;
 
-std::vector<LightBFF> lightData2; //!
 FbxAMatrix lightTransforms;
 
-std::vector<CameraBFF> cameraData2; //!
-std::vector<JointBFF> jointData2;
-std::vector<keyFrameBFF> keyFrameData2;
+std::vector<LightBFF> lightData2;
 
+std::vector<CameraBFF> cameraData2;
 
-std::vector<std::vector<BlendShapesBFF>> blendShapeDataArr3; //!
 std::vector<std::vector<BlendshapeBFF>> newBlendShapeData;
-std::vector<BonesBFF> boneData2; //!
-std::vector<VertexAnimBFF> keyFrameData3; //!
+
+std::vector<keyFrameBFF> keyFrameData2;
+std::vector<JointBFF> jointData2;
+
+
 
 //Make a file
 
@@ -172,12 +174,12 @@ int main(int argc, char** argv)
 
     // Destroy all objects created by the FBX SDK.
     DestroySdkObjects(lSdkManager, lResult);
+    sceneData.nrOfTextures = GetNrOfTextures2();
     sceneData.nrOfLights = getNrOfLights();
     sceneData.nrOfCameras = getNrOfCameras();
     sceneData.nrOfVertexAnimFrames = getNrOfkeyframes();
     sceneData.nrOfBlendShapes = GetNrOfBlendShapes2();
-
-    boneData2.resize(getNrOfJoints());
+    /*
     std::vector<std::string> names2;
     names2 = GetJointName();
 
@@ -186,22 +188,24 @@ int main(int argc, char** argv)
     {
         strcpy_s(temp, _countof(temp), names2[i].c_str());
         for (int j = 0; j < sizeof(temp); j++)
-            boneData2[i].name[j] = temp[j];
+            //boneData2[i].name[j] = temp[j];
     }
 
     std::vector<FbxVector4> bindRots2;
     bindRots2 = GetBindRots();
     for (int i = 0; i < getNrOfJoints(); i++)
     {
-        boneData2[i].bindRot[0] = bindRots2[i + 1][0];
-        boneData2[i].bindRot[1] = bindRots2[i + 1][1];
-        boneData2[i].bindRot[2] = bindRots2[i + 1][2];
+        //boneData2[i].bindRot[0] = bindRots2[i + 1][0];
+        //boneData2[i].bindRot[1] = bindRots2[i + 1][1];
+        //boneData2[i].bindRot[2] = bindRots2[i + 1][2];
     }
-
+    */
 
     // ****************** Scene ****************** //
     myStringFile5.writeToStringFile("############ Scene ############\n");
     myStringFile5.writeToStringFile(
+        "NrOfTextures: " + std::to_string(sceneData.nrOfTextures) +
+        "\n" +
         "NrOfLights: " + std::to_string(sceneData.nrOfLights) +
         "\n" +
         "NrOfCameras: " + std::to_string(sceneData.nrOfCameras) +
@@ -328,24 +332,6 @@ int main(int argc, char** argv)
         myFile5.writeToFile((const char*)&controlPointData2[i], sizeof(ControlPointBFF)); //Add to biFile
     }
 
-    // ****************** Blendshape ****************** //
-    newBlendShapeData = GetNewBlendShapeData2();
-    for (int i = 0; i < GetNrOfBlendShapes2(); i++)
-    {
-        myStringFile5.writeToStringFile("\n\n\n############ BlendShape ############\n");
-        for (int v = 0; v < GetNrOfVertexInBlendShape2(); v++)
-        {
-            myStringFile5.writeToStringFile(
-                "\n------ Index " + std::to_string(v) + ")\n" +
-                "Position (" + std::to_string(newBlendShapeData[i][v].pos[0]) + ", " + std::to_string(newBlendShapeData[i][v].pos[1]) + ", " + std::to_string(newBlendShapeData[i][v].pos[2]) + ")\n" +
-                "Normals (" + std::to_string(newBlendShapeData[i][v].norm[0]) + ", " + std::to_string(newBlendShapeData[i][v].norm[1]) + ", " + std::to_string(newBlendShapeData[i][v].norm[2]) + ")\n" + 
-                "\n\n"
-            );
-
-            myFile5.writeToFile((const char*)&newBlendShapeData[i][v], sizeof(BlendshapeBFF)); //Add to biFile
-        }
-    }
-
     // ****************** Light ****************** //
     lightData2 = GetLightData();
     for (int i = 0; i < getNrOfLights(); i++)
@@ -418,6 +404,24 @@ int main(int argc, char** argv)
         myFile5.writeToFile((const char*)&cameraData2, sizeof(CameraBFF)); //Add to biFile
     }
     
+    // ****************** Blendshape ****************** //
+    newBlendShapeData = GetNewBlendShapeData2();
+    for (int i = 0; i < GetNrOfBlendShapes2(); i++)
+    {
+        myStringFile5.writeToStringFile("\n\n\n############ BlendShape ############\n");
+        for (int v = 0; v < GetNrOfVertexInBlendShape2(); v++)
+        {
+            myStringFile5.writeToStringFile(
+                "\n------ Index " + std::to_string(v) + ")\n" +
+                "Position (" + std::to_string(newBlendShapeData[i][v].pos[0]) + ", " + std::to_string(newBlendShapeData[i][v].pos[1]) + ", " + std::to_string(newBlendShapeData[i][v].pos[2]) + ")\n" +
+                "Normals (" + std::to_string(newBlendShapeData[i][v].norm[0]) + ", " + std::to_string(newBlendShapeData[i][v].norm[1]) + ", " + std::to_string(newBlendShapeData[i][v].norm[2]) + ")\n" +
+                "\n\n"
+            );
+
+            myFile5.writeToFile((const char*)&newBlendShapeData[i][v], sizeof(BlendshapeBFF)); //Add to biFile
+        }
+    }
+
     // ****************** Joints ****************** //
     jointData2 = GetJointData();
     std::vector<JointBFF> tempJointKeyFrameData;
@@ -463,86 +467,6 @@ int main(int argc, char** argv)
             );
         }
     }
-
-
-    // ****************** Shapes ****************** //
-    /*
-    for (int i = 0; i < GetNrOfBlendShapes2(); i++)
-    {
-        myStringFile5.writeToStringFile("\n\n\n------------- BlendShape:\n\n");
-        for (int v = 0; v < GetNrOfVertexInBlendShape2(); v++)
-        {
-            myStringFile5.writeToStringFile(
-            "\n------ Index " + std::to_string(v) + ")\n\n" +
-            "PosX: " + std::to_string(blendShapeDataArr3[i][v].pos[0]) +
-            "\n" +
-            "PosY: " + std::to_string(blendShapeDataArr3[i][v].pos[1]) +
-            "\n" +
-            "PosZ: " + std::to_string(blendShapeDataArr3[i][v].pos[2]) +
-            "\n" +
-            "NormX: " + std::to_string(blendShapeDataArr3[i][v].norm[0]) +
-            "\n" +
-            "NormY: " + std::to_string(blendShapeDataArr3[i][v].norm[1]) +
-            "\n" +
-            "NormZ: " + std::to_string(blendShapeDataArr3[i][v].norm[2]) +
-            "\n\n");
-        }
-    }
-    */
-    // ****************** Bones ****************** //    
-    /*
-    for (int i = 0; i < getNrOfJoints(); i++)
-    {
-        myStringFile5.writeToStringFile("\n\n\n------------- Bone:\n\n");
-
-        myStringFile5.writeToStringFile(
-            "Bone Name: " + (std::string)boneData2[i].name + 
-            "\n"
-            "BindRotX: " + std::to_string(boneData2[i].bindRot[0]) +
-            "\n" +
-            "BindRotY: " + std::to_string(boneData2[i].bindRot[1]) +
-            "\n" +
-            "BindRotZ: " + std::to_string(boneData2[i].bindRot[2]) +
-            "\n\n");
-        //myFile5.writeToFile((const char*)&cameraData2, sizeof(CameraBFF)); //Add to biFile
-
-    }
-    */
-    // ****************** Vertex Animation ****************** //
-    /*
-    keyFrameData2 = getKeyFrameData();
-
-    for (int i = 0; i < getNrOfkeyframes(); i++)
-    {
-        myStringFile5.writeToStringFile("\n\n\n-------------  Vertex Animation:\n\n");
-
-        myStringFile5.writeToStringFile(
-            "Frame: " + std::to_string(keyFrameData2[i].time) +
-            "\n" +
-            "PosX: " + std::to_string(keyFrameData2[i].pos[0]) +
-            "\n" +
-            "PosY: " + std::to_string(keyFrameData2[i].pos[1]) +
-            "\n" +
-            "PosZ: " + std::to_string(keyFrameData2[i].pos[2]) +
-            "\n" +
-            "RotX: " + std::to_string(keyFrameData2[i].rot[0]) +
-            "\n" +
-            "RotY: " + std::to_string(keyFrameData2[i].rot[1]) +
-            "\n" +
-            "RotZ: " + std::to_string(keyFrameData2[i].rot[2]) +
-            "\n" +
-            "ScaleX: " + std::to_string(keyFrameData2[i].scale[0]) +
-            "\n" +
-            "ScaleY: " + std::to_string(keyFrameData2[i].scale[1]) +
-            "\n" +
-            "ScaleZ: " + std::to_string(keyFrameData2[i].scale[2]) +
-            "\n\n");
-
-        myFile5.writeToFile((const char*)&keyFrameData2, sizeof(VertexAnimBFF)); // Add to biFile
-    }
-    */
-
-
     return 0;
 }
 
@@ -588,7 +512,7 @@ void DisplayContent(FbxNode* pNode)
 
         case FbxNodeAttribute::eMesh:      
             DisplayMesh(pNode);
-            blendShapeDataArr3 = GetBlendShapeDataArr2(pNode);
+            //blendShapeDataArr3 = GetBlendShapeDataArr2(pNode);
             break;
 
         case FbxNodeAttribute::eNurbs:      
