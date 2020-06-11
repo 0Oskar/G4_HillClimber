@@ -4,7 +4,7 @@ FileWrite::FileWrite(std::string path)
 {
 	//this->fileName = "C:/Users/vibbo/OneDrive/Skrivbord/LitetSpel-HillClimbers/G4_HillClimber/Importer/FbxDemoBase/testFile.bff";
 	this->fileName = path; 
-	this->outputFile.open(fileName.c_str(), std::ofstream::binary | std::ios_base::app);
+	this->outputFile.open(fileName.c_str(), std::ofstream::binary | std::ios_base::out);
 	//std::ios_base::app
 
 	//for (int i = 0; i < 64; i++) {

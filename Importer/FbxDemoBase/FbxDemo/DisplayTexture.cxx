@@ -14,7 +14,13 @@
 #include "DisplayCommon.h"
 #include "DisplayTexture.h"
 std::string textureName;
+std::string texturePaths[50]; // 50 = nr of possible textures on mesh
+std::string textureTypes[50];
 char* eyMan;
+int nrOfTextures = 0;
+int nrOfTypes = 0;
+int materialIndex[50];
+
 
 void DisplayTextureInfo(FbxTexture* pTexture, int pBlendMode)
 {
@@ -22,12 +28,19 @@ void DisplayTextureInfo(FbxTexture* pTexture, int pBlendMode)
 	FbxProceduralTexture *lProceduralTexture = FbxCast<FbxProceduralTexture>(pTexture);
 
     DisplayString("            Name: \"", (char *) pTexture->GetName(), "\"");
-    
+
+    nrOfTextures++;
+    int currentTexture = nrOfTextures - 1;
+
+
 	if (lFileTexture)
 	{
         
 		DisplayString("            Type: File Texture");
         eyMan = (char*)lFileTexture->GetFileName();
+
+        texturePaths[currentTexture] = (char*)lFileTexture->GetFileName();
+
 		DisplayString("            File Name: \"", (char*)lFileTexture->GetFileName(), "\"");
         textureName = std::string(eyMan);
 		//setTextureName((char*)lFileTexture->GetFileName());		
@@ -94,6 +107,36 @@ std::string GetTexturePath()
     return textureName;
 }
 
+int GetNrOfTextures()
+{
+    return nrOfTextures;
+}
+
+char* GetTexturePath2(char arrayOfTexturePaths[])
+{
+    return arrayOfTexturePaths;
+}
+
+//char* GetTexturePathArr(int index)
+//{
+//    return texturePaths[index];
+//}
+
+std::string GetTextureTypeArray(int index)
+{
+    return textureTypes[index];
+}
+
+int GetMaterialIndex(int index)
+{
+    return 0;
+}
+
+std::string GETNAME2(int index)
+{
+    return texturePaths[index];
+}
+
 //void setTextureName(char* theTexture)
 //{
 //	aTextureName = theTexture;
@@ -155,6 +198,10 @@ void FindAndDisplayTextureInfoByProperty(FbxProperty pProperty, bool& pDisplayHe
                     }             
 
                     DisplayString("    Textures for ", pProperty.GetName());
+                    std::string aType = (const char*)pProperty.GetName();
+                    textureTypes[nrOfTypes] = aType;
+                    materialIndex[nrOfTypes] = pMaterialIndex;
+                    nrOfTypes++;
                     DisplayInt("        Texture ", j);  
                     DisplayTextureInfo(lTexture, -1);
                 }
@@ -167,6 +214,7 @@ void FindAndDisplayTextureInfoByProperty(FbxProperty pProperty, bool& pDisplayHe
 
 void DisplayTexture(FbxGeometry* pGeometry)
 {
+    
     int lMaterialIndex;
     FbxProperty lProperty;
     if(pGeometry->GetNode()==NULL)

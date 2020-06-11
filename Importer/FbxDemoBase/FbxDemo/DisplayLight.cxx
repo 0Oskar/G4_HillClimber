@@ -16,13 +16,31 @@ FileWrite myStringFile3("../stringFile.bff");
 LightBFF lightData;
 int nrOfLigths = 0;
 std::vector<LightBFF> lightDataArr;
+std::vector<FbxAMatrix> transformMatrices;
+
+FbxAMatrix transform;
+
+FbxDouble4 lightT;
+FbxDouble4 lightR;
+FbxDouble4 lightS;
 
 void DisplayDefaultAnimationValues(FbxLight* pLight);
 
 void DisplayLight(FbxNode* pNode)
 {
     nrOfLigths++;
-    
+    if (pNode->GetNodeAttribute())
+    {
+        lightT = pNode->LclTranslation.Get();
+        lightR = pNode->LclRotation.Get();
+        lightS = pNode->LclScaling.Get();
+
+        transform.SetT(FbxVector4(lightT));
+        transform.SetR(FbxVector4(lightR));
+        transform.SetS(FbxVector4(lightS));
+
+        transformMatrices.emplace_back(transform);
+    }
 
     FbxLight* lLight = (FbxLight*) pNode->GetNodeAttribute();
 
@@ -77,6 +95,11 @@ int getNrOfLights()
 std::vector<LightBFF> GetLightData()
 {
     return lightDataArr;
+}
+
+FbxAMatrix getLightTransformMatrix(int index)
+{
+	return transformMatrices.at(index);
 }
 
 

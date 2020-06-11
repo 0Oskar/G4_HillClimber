@@ -36,6 +36,7 @@
 #include "DisplayPivotsAndLimits.h"
 #include "DisplayUserProperties.h"
 #include "DisplayGenericInfo.h"
+#include <Windows.h>
 
 //#include "FileWrite.h"
 #include "BiReader.h"
@@ -56,17 +57,25 @@ static bool gVerbose = true;
 FileWrite myFile5("../biFile.bff");
 FileWrite myStringFile5("../stringFile.bff");
 
-std::string texturePath; //!
 SceneBFF sceneData;
 MeshBFF meshData2;
+
+std::vector<MaterialBFF> finalMaterialData;
+
+std::vector<TextureBFF> finalTextureData;
+std::string textureTempName;
+std::string textureType;
+std::string texturePath;
+
 std::vector<ControlPointBFF> controlPointData2;
-MaterialBFF materialData3; //!
+
 std::vector<LightBFF> lightData2; //!
+FbxAMatrix lightTransforms;
+
 std::vector<CameraBFF> cameraData2; //!
 std::vector<JointBFF> jointData2;
 std::vector<keyFrameBFF> keyFrameData2;
 
-char* textureTempName;
 
 std::vector<std::vector<BlendShapesBFF>> blendShapeDataArr3; //!
 std::vector<std::vector<BlendshapeBFF>> newBlendShapeData;
@@ -106,7 +115,7 @@ int main(int argc, char** argv)
         //lFilePath = "../TriAnim.fbx";
 
 
-        lFilePath = "../Plane1__Blend2__Joint5__Anim20.fbx";
+        lFilePath = "../Plane1__Blend2__Joint5__Anim20__Texture2__Material2__Light3.fbx";
 
 		lResult = LoadScene(lSdkManager, lScene, lFilePath.Buffer());
 	}
@@ -206,17 +215,75 @@ int main(int argc, char** argv)
 
     // ****************** Mesh ****************** //
     meshData2 = GetMeshData();
+    meshData2.nrOfMaterials = GetNrOfMaterials2();
     meshData2.nrJoints = getNrOfJoints();
     myStringFile5.writeToStringFile("\n############ Mesh ############\n");
     myStringFile5.writeToStringFile(
-        "Mesh Name: " + (std::string)meshData2.name +
-        "\n" +
-        "NrOfControlPoints: " + std::to_string(meshData2.nrOfControlPoints) +
-        "\n" +
+        "Mesh Name: " + (std::string)meshData2.name + "\n" +
+        "NrOfControlPoints: " + std::to_string(meshData2.nrOfControlPoints) + "\n" +
+        "NrOfMaterials: " + std::to_string(meshData2.nrOfMaterials) + "\n" +
         "NrOfJoints: " + std::to_string(meshData2.nrJoints) +
         "\n\n"
     );
     myFile5.writeToFile((const char*)&meshData2, sizeof(MeshBFF)); //Add to biFile
+
+    // ****************** Material ****************** //
+    finalMaterialData = GetMaterialData2();
+
+    myStringFile5.writeToStringFile("\n############ Materials ############\n");
+    for (int m = 0; m < GetNrOfMaterials2(); m++)
+    {
+        myStringFile5.writeToStringFile(
+            "\n------ Index " + std::to_string(m) + ")\n" +
+            "DiffuseR: " + std::to_string(finalMaterialData[m].Diffuse[0]) + "\n" +
+            "DiffuseG: " + std::to_string(finalMaterialData[m].Diffuse[1]) + "\n" +
+            "DiffuseB: " + std::to_string(finalMaterialData[m].Diffuse[2]) + "\n" +
+            "\n" +
+            "AmbientR: " + std::to_string(finalMaterialData[m].Ambient[0]) + "\n" +
+            "AmbientG: " + std::to_string(finalMaterialData[m].Ambient[1]) + "\n" +
+            "AmbientB: " + std::to_string(finalMaterialData[m].Ambient[2]) + "\n" +
+            "\n" +
+            "Opacity: " + std::to_string(finalMaterialData[m].Opacity) + "\n " +
+            "\n\n"
+        );
+    }
+
+    // ****************** Texture ****************** //
+    finalTextureData.resize(GetNrOfTextures2());
+    for (int t = 0; t < GetNrOfTextures2(); t++)
+    {
+        //--- copy file  ---
+        std::string fullPath = GETNAME(t);
+        int index = fullPath.find_last_of("/");
+
+        //std::string start = fullPath.substr(0, index);
+        std::string end = fullPath.substr(index, fullPath.size() - 1);
+        int stop = 0;
+        std::string destination = ".." + end;
+        CopyFile(GETNAME(t).c_str(), destination.c_str(), FALSE);
+        
+
+        //--- Assign values ---
+        //texturePath = GETNAME(t);
+        textureType = GetTextureType2(t);
+
+        strcpy_s(finalTextureData[t].texturePath, TextureBFF::PATH_SIZE, destination.c_str());
+        strcpy_s(finalTextureData[t].textureType, TextureBFF::PATH_SIZE, textureType.c_str());
+
+        finalTextureData[t].parentMaterialIndex = GetMaterialIndex2(t);
+    }
+
+    myStringFile5.writeToStringFile("\n############ Textures ############\n");
+    for (int t = 0; t < GetNrOfTextures2(); t++)
+    {
+        myStringFile5.writeToStringFile(
+            "\n------ Index " + std::to_string(t) + ")\n" +
+            "Texture belongs to Material : " + std::to_string(finalTextureData[t].parentMaterialIndex) + "\n" +
+            "TextureType: " + (std::string)finalTextureData[t].textureType + "\n" +
+            "TexturePath: " + (std::string)finalTextureData[t].texturePath + "\n" +
+            "\n\n"
+        );
+    }
 
     // ****************** Control Point ****************** //
     controlPointData2 = GetControlPointData();
@@ -316,44 +383,53 @@ int main(int argc, char** argv)
         }
     }
 
-    // ****************** Keyframe ****************** //
-    //getKeyFrameData();
-    //myStringFile5.writeToStringFile("\n############ Keyframe ############\n");
-
-
-
-
-
-
-
-    // ****************** Material ****************** //
-    /*
-    materialData3 = GetMaterialData2();
-
-	//textureTempName = getTextureName2();
-
-	//for (int i = 0; i < sizeof(materialData3.texturePath); i++)
-	//{
-	//	materialData3.texturePath[i] = textureTempName[i];
-	//}
-	
-    myStringFile5.writeToStringFile(
-        "\n------------- Material: \n\n"
-        "DiffuseR: " + std::to_string(materialData3.Diffuse[0]) + "\n" +
-        "DiffuseG: " + std::to_string(materialData3.Diffuse[1]) + "\n" +
-        "DiffuseB: " + std::to_string(materialData3.Diffuse[2]) + "\n" +
-        "\n" +
-        "AmbientR: " + std::to_string(materialData3.Ambient[0]) + "\n" +
-        "AmbientG: " + std::to_string(materialData3.Ambient[1]) + "\n" +
-        "AmbientB: " + std::to_string(materialData3.Ambient[2]) + "\n" +
-        "\n" +
-        "Opacity: " + std::to_string(materialData3.Opacity) + "\n " +
-		"\n" +
-		"TexturePath: " + std::string(materialData3.texturePath) + "\n " );
-
-    myFile5.writeToFile((const char*)&materialData3, sizeof(MaterialBFF)); //Add to biFile
-    */
     // ****************** Light ****************** //
+    lightData2 = GetLightData();
+    for (int i = 0; i < getNrOfLights(); i++)
+    {
+        lightTransforms = getLightTransformMatrix(i);
+
+        FbxVector4 lightTranslation2 = lightTransforms.GetT();
+        FbxVector4 lightRotation = lightTransforms.GetR();
+        FbxVector4 lightScaling = lightTransforms.GetS();
+
+
+        lightData2[i].translation[0] = lightTranslation2[0];
+        lightData2[i].translation[1] = lightTranslation2[1];
+        lightData2[i].translation[2] = lightTranslation2[2];
+
+        lightData2[i].rotation[0] = lightRotation[0];
+        lightData2[i].rotation[1] = lightRotation[1];
+        lightData2[i].rotation[2] = lightRotation[2];
+
+        lightData2[i].scale[0] = lightScaling[0];
+        lightData2[i].scale[1] = lightScaling[1];
+        lightData2[i].scale[2] = lightScaling[2];
+    }
+
+    myStringFile5.writeToStringFile("\n############ Lights ############\n");
+    for (int i = 0; i < getNrOfLights(); i++)
+    {
+        myStringFile5.writeToStringFile(
+            "\n------ Index " + std::to_string(i) + ")\n" +
+            "Type: " + (std::string)lightData2[i].type + "\n" +
+            "\n" +
+            "ColorR: " + std::to_string(lightData2[i].color[0]) + "\n" +
+            "ColorG: " + std::to_string(lightData2[i].color[1]) + "\n" +
+            "ColorB: " + std::to_string(lightData2[i].color[2]) + "\n" +
+            "\n" +
+            "Dir: " + std::to_string(lightData2[i].dir) + "\n" +
+            "Intencity: " + std::to_string(lightData2[i].intencity) + "\n" +
+            "\n" +
+            "Translation: " + std::to_string(lightData2[i].translation[0]) + ", " + std::to_string(lightData2[i].translation[1]) + ", " + std::to_string(lightData2[i].translation[2]) + "\n" +
+            "Rotation: " + std::to_string(lightData2[i].rotation[0]) + ", " + std::to_string(lightData2[i].rotation[1]) + ", " + std::to_string(lightData2[i].rotation[2]) + "\n" +
+            "Scale: " + std::to_string(lightData2[i].scale[0]) + ", " + std::to_string(lightData2[i].scale[1]) + ", " + std::to_string(lightData2[i].scale[2]) + "\n" + 
+            "\n\n"
+        );
+
+        myFile5.writeToFile((const char*)&lightData2[i], sizeof(LightBFF)); //Add to biFile
+    }
+
     /*
     lightData2 = GetLightData();
 
@@ -375,6 +451,22 @@ int main(int argc, char** argv)
         myFile5.writeToFile((const char*)&lightData2[i], sizeof(LightBFF)); //Add to biFile
     }
     */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     // ****************** Camera ****************** //
     /*
     cameraData2 = GetCameraData();
@@ -481,6 +573,7 @@ int main(int argc, char** argv)
         myFile5.writeToFile((const char*)&keyFrameData2, sizeof(VertexAnimBFF)); // Add to biFile
     }
     */
+
 
     return 0;
 }

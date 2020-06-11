@@ -47,7 +47,7 @@ std::vector<ControlPointBFF> controlPointData;
 MeshBFF meshData;
 int currentVertex = 0;
 
-MaterialBFF materialData;
+std::vector<MaterialBFF> materialData;
 
 //FbxMesh* MeshRef;
 std::vector<std::vector<BlendShapesBFF>> blendShapeDataArr2;
@@ -79,35 +79,9 @@ void DisplayMesh(FbxNode* pNode)
 
 	DisplayMaterialMapping(lMesh);
 	DisplayMaterial(lMesh);
-	materialData = getMaterialInfo();
+	materialData = GetMaterialData();
 
 	DisplayTexture(lMesh);
-
-	std::string fullPath = GetTexturePath();
-	if (fullPath != "")
-	{
-		int index1 = fullPath.find_last_of("\\");
-		int index2 = fullPath.find_last_of("/");
-
-		std::string start = fullPath.substr(0, index1);
-		std::string end = fullPath.substr(index2, fullPath.size() - 1);
-
-		std::string destination = start + end;
-		CopyFile(GetTexturePath().c_str(), destination.c_str(), FALSE);
-
-		char temp2[128];
-		strcpy_s(temp2, _countof(temp2), destination.c_str()); 
-		for (int i = 0; i < sizeof(temp2); i++)
-			materialData.texturePath[i] = temp2[i];
-	}
-	else
-	{
-		std::string noTextureString = "No texture found!";
-		char temp2[128];
-		strcpy_s(temp2, _countof(temp2), noTextureString.c_str());
-		for (int i = 0; i < sizeof(temp2); i++)
-			materialData.texturePath[i] = temp2[i];
-	}
 
 	DisplayMaterialConnections(lMesh);
 	DisplayLink(lMesh);
@@ -126,9 +100,39 @@ std::vector<ControlPointBFF> GetControlPointData()
 	return controlPointData;
 }
 
-MaterialBFF GetMaterialData2()
+int GetNrOfMaterials2()
+{
+	return GetNrOfMaterials();
+}
+
+std::vector<MaterialBFF> GetMaterialData2()
 {
 	return materialData;
+}
+
+int GetNrOfTextures2()
+{
+	return GetNrOfTextures();
+}
+
+//char* GetTextureName(int index)
+//{
+//	return GetTexturePath2(GetTexturePathArr(index));
+//}
+
+std::string GETNAME(int index)
+{
+	return GETNAME2(index);
+}
+
+std::string GetTextureType2(int index)
+{
+	return GetTextureTypeArray(index);
+}
+
+int GetMaterialIndex2(int index)
+{
+	return  GetMaterialIndex(index);
 }
 
 std::vector<std::vector<BlendShapesBFF>> GetBlendShapeDataArr2(FbxNode* pNode)

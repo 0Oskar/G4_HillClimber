@@ -15,7 +15,9 @@
 #include "DisplayCommon.h"
 
 void DisplayMaterial(FbxGeometry* pGeometry);
-MaterialBFF getMaterialInfo();
+std::vector<MaterialBFF> GetMaterialData();
+int GetNrOfMaterials();
+
 
 #endif // #ifndef _DISPLAY_MATERIAL_H
 

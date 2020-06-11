@@ -1,5 +1,5 @@
 ############ Scene ############
-NrOfLights: 0
+NrOfLights: 3
 NrOfCameras: 0
 NrOfVertexAnimFrames: 21
 NrOfBlendShapes: 2
@@ -8,7 +8,52 @@ NrOfBlendShapes: 2
 ############ Mesh ############
 Mesh Name: PlaneMesh
 NrOfControlPoints: 4
+NrOfMaterials: 2
 NrOfJoints: 5
+
+
+############ Materials ############
+
+------ Index 0)
+DiffuseR: 1.000000
+DiffuseG: 1.000000
+DiffuseB: 1.000000
+
+AmbientR: 0.000000
+AmbientG: 0.000000
+AmbientB: 0.000000
+
+Opacity: 0.000000
+ 
+
+
+------ Index 1)
+DiffuseR: 0.000000
+DiffuseG: 1.000000
+DiffuseB: 0.149800
+
+AmbientR: 0.000000
+AmbientG: 0.000000
+AmbientB: 0.000000
+
+Opacity: 0.000000
+ 
+
+
+############ Textures ############
+
+------ Index 0)
+Texture belongs to Material : 0
+TextureType: DiffuseColor
+TexturePath: ../Bild2.PNG
+
+
+
+------ Index 1)
+Texture belongs to Material : 0
+TextureType: Bump
+TexturePath: ../bild7.PNG
+
 
 
 ############ Control Points ############
@@ -17,14 +62,14 @@ NrOfJoints: 5
 Position (-0.500000, 0.000000, 0.500000)
 UV (0.000000, 0.000000)
 
-Normal (-0.000000, 1.000000, 0.000000)
+Normal (-0.000001, 1.000000, -0.000000)
 biNormal (0.000000, 0.000000, -1.000000)
 Tangent (1.000000, -0.000000, 0.000000)
 
-Influenced by joint:0 (0.992817%)
-Influenced by joint:3 (0.002465%)
-Influenced by joint:4 (0.002465%)
-Influenced by joint:2 (0.001476%)
+Influenced by joint:0 (0.993589%)
+Influenced by joint:3 (0.002467%)
+Influenced by joint:4 (0.002467%)
+Influenced by joint:2 (0.001477%)
 
 
 
@@ -32,11 +77,11 @@ Influenced by joint:2 (0.001476%)
 Position (0.500000, 0.000000, 0.500000)
 UV (1.000000, 0.000000)
 
-Normal (-0.000000, 1.000000, 0.000000)
+Normal (-0.000001, 1.000000, -0.000000)
 biNormal (0.000000, 0.000000, -1.000000)
 Tangent (1.000000, 0.000000, 0.000000)
 
-Influenced by joint:0 (0.999895%)
+Influenced by joint:0 (1.000000%)
 Influenced by joint:-1 (0.000000%)
 Influenced by joint:-1 (0.000000%)
 Influenced by joint:-1 (0.000000%)
@@ -47,14 +92,14 @@ Influenced by joint:-1 (0.000000%)
 Position (-0.500000, 0.000000, -0.500000)
 UV (0.000000, 1.000000)
 
-Normal (-0.000000, 1.000000, 0.000000)
+Normal (-0.000001, 1.000000, -0.000000)
 biNormal (0.000000, 0.000000, -1.000000)
 Tangent (1.000000, 0.000000, 0.000000)
 
-Influenced by joint:0 (0.995187%)
-Influenced by joint:3 (0.001604%)
-Influenced by joint:4 (0.001604%)
-Influenced by joint:2 (0.001041%)
+Influenced by joint:0 (0.995748%)
+Influenced by joint:3 (0.001605%)
+Influenced by joint:4 (0.001605%)
+Influenced by joint:2 (0.001042%)
 
 
 
@@ -62,11 +107,11 @@ Influenced by joint:2 (0.001041%)
 Position (0.500000, 0.000000, -0.500000)
 UV (1.000000, 1.000000)
 
-Normal (-0.000000, 1.000000, 0.000000)
+Normal (-0.000001, 1.000000, -0.000000)
 biNormal (0.000000, 0.000000, -1.000000)
 Tangent (1.000000, 0.000000, 0.000000)
 
-Influenced by joint:0 (0.999940%)
+Influenced by joint:0 (1.000000%)
 Influenced by joint:-1 (0.000000%)
 Influenced by joint:-1 (0.000000%)
 Influenced by joint:-1 (0.000000%)
@@ -589,7 +634,7 @@ Bindpose matrix:
 (0.059391, -0.163176, -0.984808, 0.000000)
 (-0.336824, 0.925417, -0.173648, 0.000000)
 (0.939693, 0.342020, 0.000000, 0.000000)
-(2.988518, 3.131679, 12.772117, 1.000000)
+(2.988518, 3.131679, 12.772116, 1.000000)
 
 Keyframes: 21
 Time: 0
@@ -696,4 +741,54 @@ Time: 20
 (0.000000, 1.000000, 1.000000)
 (1.000000, 0.000000, 0.000000)
 (-0.000000, 0.000000, -0.000000)
+
+
+############ Lights ############
+
+------ Index 0)
+Type: Point
+
+ColorR: 1.000000
+ColorG: 1.000000
+ColorB: 1.000000
+
+Dir: 45.000000
+Intencity: 100.000000
+
+Translation: 1.000000, 1.000000, 1.000000
+Rotation: 5.000000, 1.000000, 9.000000
+Scale: 10.000000, 3.000000, 8.000000
+
+
+
+------ Index 1)
+Type: Directional
+
+ColorR: 1.000000
+ColorG: 1.000000
+ColorB: 1.000000
+
+Dir: 45.000000
+Intencity: 100.000000
+
+Translation: 2.000000, 2.000000, 2.000000
+Rotation: 0.000000, 0.000000, 0.000000
+Scale: 1.000000, 1.000000, 1.000000
+
+
+
+------ Index 2)
+Type: Spot
+
+ColorR: 1.000000
+ColorG: 1.000000
+ColorB: 1.000000
+
+Dir: 40.000000
+Intencity: 100.000000
+
+Translation: 3.000000, 3.000000, 3.000000
+Rotation: 0.000000, 0.000000, 0.000000
+Scale: 1.000000, 1.000000, 1.000000
+
 

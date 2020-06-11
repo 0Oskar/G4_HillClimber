@@ -18,6 +18,7 @@ void DisplayLight(FbxNode* pNode);
 
 int getNrOfLights();
 std::vector<LightBFF> GetLightData();
+FbxAMatrix getLightTransformMatrix(int index);
 
 #endif // #ifndef _DISPLAY_LIGHT_H
 

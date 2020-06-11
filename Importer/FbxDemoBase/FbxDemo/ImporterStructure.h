@@ -12,6 +12,7 @@ struct MeshBFF
 {
 	char name[64];
 	unsigned int nrOfControlPoints;
+	unsigned int nrOfMaterials;
 	unsigned int nrJoints;
 };
 
@@ -58,34 +59,19 @@ struct BlendshapeBFF
 	float norm[3];
 };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 struct MaterialBFF
 {
 	float Diffuse[3];
 	float Ambient[3];
 	float Opacity;
-	char texturePath[128];
+};
+
+struct TextureBFF
+{
+	int parentMaterialIndex;
+	static const int PATH_SIZE = 128;
+	char texturePath[PATH_SIZE];
+	char textureType[PATH_SIZE];
 };
 
 struct LightBFF
@@ -94,7 +80,18 @@ struct LightBFF
 	float color[3];
 	float dir;
 	float intencity;
+	float translation[4];
+	float rotation[4];
+	float scale[4];
 };
+
+
+
+
+
+
+
+
 
 struct CameraBFF
 {

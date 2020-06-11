@@ -17,7 +17,15 @@
 void DisplayMesh(FbxNode* pNode);
 MeshBFF GetMeshData();
 std::vector<ControlPointBFF> GetControlPointData();
-MaterialBFF GetMaterialData2();
+int GetNrOfMaterials2();
+std::vector<MaterialBFF> GetMaterialData2();
+int GetNrOfTextures2();
+//char* GetTextureName(int index);
+std::string GETNAME(int index);
+
+
+std::string GetTextureType2(int index);
+int GetMaterialIndex2(int index);
 
 std::vector<std::vector<BlendShapesBFF>> GetBlendShapeDataArr2(FbxNode* pNode);
 std::vector<std::vector<BlendshapeBFF>> GetNewBlendShapeData2();
