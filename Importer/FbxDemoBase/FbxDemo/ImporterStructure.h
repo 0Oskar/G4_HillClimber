@@ -85,14 +85,6 @@ struct LightBFF
 	float scale[4];
 };
 
-
-
-
-
-
-
-
-
 struct CameraBFF
 {
 	float pos[3];
@@ -102,6 +94,12 @@ struct CameraBFF
 	float farPlane;
 	float FOV;
 };
+
+
+
+
+
+
 
 // Tristans
 struct VertexAnimBFF
