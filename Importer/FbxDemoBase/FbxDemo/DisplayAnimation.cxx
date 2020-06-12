@@ -20,7 +20,7 @@
 
 FileWrite myFile4("../biFile.bff");
 FileWrite myStringFile4("../stringFile.bff");
-std::vector<keyFrameBFF> newKeyFrameData;
+std::vector<KeyFrameBFF> newKeyFrameData;
 std::vector<JointBFF> jointKeyFrameData;
 int currentFrame = -1;
 int someVar = -1;

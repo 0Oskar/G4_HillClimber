@@ -8,12 +8,13 @@ class ModelBFF
 		SceneBFF scene;
 		MeshBFF mesh;
 		std::vector<ControlPointBFF> controllPointsArr;
-		MaterialBFF material;
-		TextureBFF texture;
+		std::vector<IndexListBFF> indexList;
+		std::vector<MaterialBFF> material;
+		std::vector<TextureBFF> texture;
 		std::vector<LightBFF> light;
 		std::vector<CameraBFF> camera;
-		BlendshapeBFF blendShapes;
-		KeyFrameBFF keyframes;
-		JointBFF joints;
+		std::vector<BlendshapeBFF> blendShapes;
+		std::vector<KeyFrameBFF> keyframes;
+		std::vector<JointBFF> joints;
 
 };

@@ -238,7 +238,7 @@ void DisplayMaterial(FbxGeometry* pGeometry)
                 lKFbxDouble1 =((FbxSurfacePhong *) lMaterial)->ReflectionFactor;
                 DisplayDouble("            Reflectivity: ", lKFbxDouble1.Get());
             }
-            else if(lMaterial->GetClassId().Is(FbxSurfaceLambert::ClassId) )
+            else if(lMaterial->GetClassId().Is(FbxSurfaceLambert::ClassId))
             {
                 // We found a Lambert material. Display its properties.
                 // Display the Ambient Color

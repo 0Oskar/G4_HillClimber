@@ -13,6 +13,7 @@ struct SceneBFF
 struct MeshBFF
 {
 	char name[64];
+	unsigned int nrOfVertex;
 	unsigned int nrOfControlPoints;
 	unsigned int nrOfMaterials;
 	unsigned int nrJoints;
@@ -23,6 +24,7 @@ struct MaterialBFF
 	float Diffuse[3];
 	float Ambient[3];
 	float Opacity;
+
 };
 
 struct TextureBFF
@@ -42,9 +44,15 @@ struct ControlPointBFF
 	float biNorm[3];
 	float tan[3];
 
-	//int controlPointIndex;
+	unsigned int controlPointIndex;
+
 	int influencedByJoints[4];
 	float boneWeight[4];
+};
+
+struct IndexListBFF
+{
+	unsigned int index;
 };
 
 struct LightBFF

@@ -163,7 +163,7 @@ void PyramidRoom::createSceneObjects()
 	this->m_checkpointHandler.addCheckpointGameObject((int)this->m_gameObjects.size() - 1, this->m_gameObjects.back()->getPosition());
 	platformBB.emplace_back(this->m_gameObjects.back()->getAABBPtr());
 
-	vec = DirectX::XMVectorSet(10.f, 85.f, 98.f, 1.f);
+	vec = DirectX::XMVectorSet(0, 10, 0, 1);
 	this->addGameObjectToRoom(false, true, 0, 19, &m_models->at(19), vec, { 0.7f, 0.7f, 0.7f }, DirectX::XMFLOAT3(7.f, 1.f, 5.f));
 	this->m_checkpointHandler.addCheckpointGameObject((int)this->m_gameObjects.size() - 1, this->m_gameObjects.back()->getPosition());
 	platformBB.emplace_back(this->m_gameObjects.back()->getAABBPtr());
@@ -171,7 +171,7 @@ void PyramidRoom::createSceneObjects()
 
 	///           -----    BFF TEST HERE    -----  
 
-	vec = DirectX::XMVectorSet(0.f, 5.f, -30.f, 1.f);
+	vec = DirectX::XMVectorSet(0, 9, 10, 1);
 	this->addGameObjectToRoom(false, true, 0, 28, &m_models->at(28), vec, { 1.f, 1.f, 1.f });
 
 

@@ -217,6 +217,7 @@ void Model::initializeModelBff(ID3D11Device* device, ID3D11DeviceContext* dConte
 
 	ModelBFF myModel = myManager->LoadModel(fileName.c_str());
 	m_vertices.resize(myModel.mesh.nrOfControlPoints);
+
 	for (int i = 0; i < myModel.mesh.nrOfControlPoints; i++)
 	{
 		m_vertices[i].position = XMFLOAT3(myModel.controllPointsArr[i].pos);
@@ -226,6 +227,16 @@ void Model::initializeModelBff(ID3D11Device* device, ID3D11DeviceContext* dConte
 
 	HRESULT hr = this->m_vertexBuffer.initialize(this->m_devicePtr, m_vertices.data(), (int)m_vertices.size());
 	assert(SUCCEEDED(hr) && "Error, vertex buffer could not be created!");
+
+	m_drawWithIndex = true;
+	m_indices.resize(myModel.mesh.nrOfVertex);
+	for (int i = 0; i < myModel.mesh.nrOfVertex; i++)
+	{
+		m_indices[i] = myModel.indexList[i].index;
+	}
+
+	hr = this->m_indexBuffer.init(this->m_devicePtr, m_indices.data(), (int)m_indices.size());
+	assert(SUCCEEDED(hr) && "Error, index buffer could not be created!");
 
 	if (texturePath != L"")
 	{

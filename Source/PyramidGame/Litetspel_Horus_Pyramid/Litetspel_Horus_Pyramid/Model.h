@@ -14,6 +14,7 @@ private:
 	ID3D11DeviceContext* m_deviceContextPtr;
 	VertexBuffer<Vertex> m_vertexBuffer;
 	std::vector<Vertex> m_vertices;
+	std::vector<DWORD> m_indices;
 	IndexBuffer m_indexBuffer;
 	ImporterBFF::Manager* myManager;
 

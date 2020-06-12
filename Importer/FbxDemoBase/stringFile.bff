@@ -8,6 +8,7 @@ NrOfBlendShapes: 2
 
 ############ Mesh ############
 Mesh Name: PlaneMesh
+NrOfVertex: 6
 NrOfControlPoints: 4
 NrOfMaterials: 2
 NrOfJoints: 5
@@ -67,6 +68,8 @@ Normal (-0.000000, 1.000000, -0.000000)
 biNormal (0.000000, 0.000000, -1.000000)
 Tangent (1.000000, -0.000000, 0.000000)
 
+ControlPointIndex: 0
+
 Influenced by joint:0 (0.993589%)
 Influenced by joint:3 (0.002467%)
 Influenced by joint:4 (0.002467%)
@@ -81,6 +84,8 @@ UV (1.000000, 0.000000)
 Normal (-0.000000, 1.000000, -0.000000)
 biNormal (0.000000, 0.000000, -1.000000)
 Tangent (1.000000, 0.000000, 0.000000)
+
+ControlPointIndex: 1
 
 Influenced by joint:0 (1.000000%)
 Influenced by joint:-1 (0.000000%)
@@ -97,6 +102,8 @@ Normal (-0.000000, 1.000000, -0.000000)
 biNormal (0.000000, 0.000000, -1.000000)
 Tangent (1.000000, 0.000000, 0.000000)
 
+ControlPointIndex: 2
+
 Influenced by joint:0 (0.995748%)
 Influenced by joint:3 (0.001605%)
 Influenced by joint:4 (0.001605%)
@@ -112,10 +119,24 @@ Normal (-0.000000, 1.000000, -0.000000)
 biNormal (0.000000, 0.000000, -1.000000)
 Tangent (1.000000, 0.000000, 0.000000)
 
+ControlPointIndex: 3
+
 Influenced by joint:0 (1.000000%)
 Influenced by joint:-1 (0.000000%)
 Influenced by joint:-1 (0.000000%)
 Influenced by joint:-1 (0.000000%)
+
+
+
+############ Index List ############
+
+Index: 0
+Index: 1
+Index: 2
+
+Index: 2
+Index: 1
+Index: 3
 
 
 
@@ -261,6 +282,7 @@ Normals (0.000000, 1.000000, 0.000000)
 
 ------ Index 0)
 Joint Index: 0
+Parent Index: 0
 Bindpose matrix:
 (-0.296955, 0.815879, 4.924028, 0.000000)
 (-2.020948, 5.552502, -1.041892, 0.000000)
@@ -376,6 +398,7 @@ Time: 20
 
 ------ Index 1)
 Joint Index: 1
+Parent Index: 0
 Bindpose matrix:
 (0.939692, 0.342020, 0.000000, 0.000000)
 (-0.336824, 0.925416, -0.173648, 0.000000)
@@ -491,6 +514,7 @@ Time: 20
 
 ------ Index 2)
 Joint Index: 2
+Parent Index: 0
 Bindpose matrix:
 (0.059391, -0.163176, -0.984808, 0.000000)
 (-0.336824, 0.925416, -0.173648, 0.000000)
@@ -606,6 +630,7 @@ Time: 20
 
 ------ Index 3)
 Joint Index: 3
+Parent Index: 0
 Bindpose matrix:
 (-0.813926, -0.378886, -0.440419, 0.000000)
 (-0.336824, 0.925416, -0.173648, 0.000000)
@@ -721,6 +746,7 @@ Time: 20
 
 ------ Index 4)
 Joint Index: 4
+Parent Index: 0
 Bindpose matrix:
 (0.059391, -0.163176, -0.984808, 0.000000)
 (-0.336824, 0.925416, -0.173648, 0.000000)

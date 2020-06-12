@@ -43,6 +43,7 @@ FileWrite myFile("../biFile.bff");
 FileWrite myStringFile("../stringFile.bff");
 int vertexCount;
 std::vector<ControlPointBFF> controlPointData;
+std::vector<IndexListBFF> indexList;
 
 MeshBFF meshData;
 int currentVertex = 0;
@@ -97,6 +98,11 @@ MeshBFF GetMeshData()
 std::vector<ControlPointBFF> GetControlPointData()
 {
 	return controlPointData;
+}
+
+std::vector<IndexListBFF> GetIndexList()
+{
+	return indexList;
 }
 
 int GetNrOfMaterials2()
@@ -222,6 +228,28 @@ std::vector<ControlPointBFF> GetControlPointJointData2()
 	return GetControlPointJointData();
 }
 
+void newFunc(FbxMesh* pMesh)
+{
+	std::vector<int> tempList;
+	int nrOfFaces = pMesh->GetPolygonCount();
+	for (int i = 0; i < nrOfFaces; i++)
+	{
+		int nrOfVertexInFace = pMesh->GetPolygonSize(i);
+		for (int j = 0; j < nrOfVertexInFace; j++)
+		{
+			tempList.push_back(pMesh->GetPolygonVertex(i, j));
+		}
+	}
+
+	indexList.resize(tempList.size());
+	for (int i = 0; i < tempList.size(); i++)
+	{
+		indexList[i].index = tempList[i];
+	}
+
+	int stop = 0;
+}
+
 //std::vector<JointBFF> GetJointData2(int nrOfJoints)
 //{
 //	return GetJointData(nrOfJoints);
@@ -331,6 +359,7 @@ void DisplayControlsPoints(FbxMesh* pMesh)
 
 void DisplayPolygons(FbxMesh* pMesh)
 {
+	newFunc(pMesh);
 	int i, j, lPolygonCount = pMesh->GetPolygonCount();
 	FbxVector4* lControlPoints = pMesh->GetControlPoints();
 	char header[100];
