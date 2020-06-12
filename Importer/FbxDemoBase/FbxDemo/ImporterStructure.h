@@ -89,5 +89,3 @@ struct JointBFF
 	
 	std::vector<keyFrameBFF> animationFrames;
 };
-
-
