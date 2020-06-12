@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 
 struct SceneBFF
 {
@@ -73,7 +74,7 @@ struct BlendshapeBFF
 	float norm[3];
 };
 
-struct keyFrameBFF
+struct KeyFrameBFF
 {
 	int timestamp;
 	float pose[9];
@@ -86,6 +87,6 @@ struct JointBFF
 	float bindPoseMatrix[16]; //4x4 matrix
 
 	int nrOfKeyFrames;
-	
 	std::vector<keyFrameBFF> animationFrames;
 };
+

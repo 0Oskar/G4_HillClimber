@@ -79,7 +79,7 @@ std::vector<CameraBFF> cameraData2;
 
 std::vector<std::vector<BlendshapeBFF>> newBlendShapeData;
 
-std::vector<keyFrameBFF> keyFrameData2;
+std::vector<KeyFrameBFF> keyFrameData2;
 std::vector<JointBFF> jointData2;
 
 
