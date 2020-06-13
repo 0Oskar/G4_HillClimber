@@ -447,10 +447,13 @@ int main(int argc, char** argv)
 
     // ****************** Joints ****************** //
     jointData2 = GetJointData();
-    std::vector<JointBFF> tempJointKeyFrameData;
-    tempJointKeyFrameData = GetJointKeyFrameData();
+    std::vector<JointBFF> tempJointKeyFrameData = GetJointKeyFrameData();
+    
+    std::vector<int> tempParentData = GetJointParent();
+    
     for (int j = 0; j < getNrOfJoints(); j++)
     {
+        jointData2[j].parentIndex = tempParentData[j];
         jointData2[j].nrOfKeyFrames = tempJointKeyFrameData[j].nrOfKeyFrames;
         jointData2[j].animationFrames.resize(jointData2[j].nrOfKeyFrames);
 
@@ -478,7 +481,7 @@ int main(int argc, char** argv)
             "(" + std::to_string(jointData2[j].bindPoseMatrix[8]) + ", " + std::to_string(jointData2[j].bindPoseMatrix[9]) + ", " + std::to_string(jointData2[j].bindPoseMatrix[10]) + ", " + std::to_string(jointData2[j].bindPoseMatrix[11]) + ")\n" +
             "(" + std::to_string(jointData2[j].bindPoseMatrix[12]) + ", " + std::to_string(jointData2[j].bindPoseMatrix[13]) + ", " + std::to_string(jointData2[j].bindPoseMatrix[14]) + ", " + std::to_string(jointData2[j].bindPoseMatrix[15]) + ")\n" +
             "\n"
-            "Keyframes: " + std::to_string(jointData2[j].nrOfKeyFrames) + "\n"
+            "Keyframes: " + std::to_string(jointData2[j].nrOfKeyFrames) + "\n\n"
         );
 
         myFile5.writeToFile((const char*)&jointData2[j].jointIndex, sizeof(int)); //Add to biFile

@@ -17,6 +17,7 @@
 void DisplaySkeleton(FbxNode* pNode);
 int getNrOfJoints();
 std::vector<std::string> GetJointName();
+std::vector<int> GetJointParent();
 
 #endif // #ifndef _DISPLAY_SKELETON_H
 

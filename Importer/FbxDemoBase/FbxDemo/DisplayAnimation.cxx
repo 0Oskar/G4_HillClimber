@@ -25,6 +25,8 @@ std::vector<JointBFF> jointKeyFrameData;
 int currentFrame = -1;
 int someVar = -1;
 int allJoints = 0;
+int otherNodes = 0;
+bool countOtherNodes = true;
 int nrOfKeyFrames;
 
 void DisplayAnimation(FbxAnimStack* pAnimStack, FbxNode* pNode, bool isSwitcher = false);
@@ -168,6 +170,8 @@ void DisplayAnimation(FbxAnimLayer* pAnimLayer, FbxNode* pNode, bool isSwitcher)
 
     lOutputString = "     Node Name: ";
     allJoints++;
+    if (countOtherNodes == true)
+        otherNodes++;
     lOutputString += pNode->GetName();
     lOutputString += "\n\n";
     FBXSDK_printf(lOutputString);
@@ -189,11 +193,6 @@ void DisplayChannels(FbxNode* pNode, FbxAnimLayer* pAnimLayer, void (*DisplayCur
     FbxAnimCurve* lAnimCurve = NULL;
     //int lKeyCount = pCurve->KeyGetCount();
 
-    //if (allJoints >= 3)
-    //{
-    //    jointKeyFrameData.resize(allJoints - 2);
-    //    jointKeyFrameData[allJoints - 3].nrOfKeyFrames = 9;
-    //}
     // Display general curves.
     if (!isSwitcher)
     {
@@ -575,17 +574,18 @@ void DisplayCurveKeys(FbxAnimCurve* pCurve)
     int lKeyCount = pCurve->KeyGetCount();
     nrOfKeyFrames = lKeyCount;
     newKeyFrameData.resize(lKeyCount);
+    countOtherNodes = false;
     someVar++;
 
     if (allJoints >= 3)
     {
+        jointKeyFrameData.resize(allJoints - 2);
+        jointKeyFrameData[allJoints - 3].nrOfKeyFrames = nrOfKeyFrames;
+        jointKeyFrameData[allJoints - 3].animationFrames.resize(nrOfKeyFrames);
+
         if (n == 9)
             n = 0;
-        jointKeyFrameData.resize(allJoints - 2);
-        jointKeyFrameData[allJoints - 3].nrOfKeyFrames = lKeyCount;
-        jointKeyFrameData[allJoints - 3].animationFrames.resize(lKeyCount);
-
-        for (int i = 0; i < lKeyCount; i++)
+        for (int i = 0; i < nrOfKeyFrames; i++)
         {
             jointKeyFrameData[allJoints - 3].animationFrames[i].timestamp = i;
 

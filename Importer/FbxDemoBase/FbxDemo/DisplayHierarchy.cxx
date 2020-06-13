@@ -10,6 +10,8 @@
 ****************************************************************************************/
 
 #include <fbxsdk.h>
+#include <vector>
+#include <string>
 
 #if defined (FBXSDK_ENV_MAC)
 // disable the “format not a string literal and no format arguments” warning since
@@ -26,6 +28,7 @@ void DisplayHierarchy(FbxScene* pScene)
 {
     int i;
     FbxNode* lRootNode = pScene->GetRootNode();
+    
     nrOfJoints2 = lRootNode->GetChildCount();
 
     for( i = 0; i < lRootNode->GetChildCount(); i++)

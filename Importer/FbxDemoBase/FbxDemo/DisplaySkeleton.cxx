@@ -15,6 +15,8 @@
 #include "DisplaySkeleton.h"
 int nrOfJoints = 0;
 std::vector<std::string> names;
+std::vector<FbxNode*> listOfJoints;
+std::vector<std::string> parents;
 
 void DisplaySkeleton(FbxNode* pNode)
 { 
@@ -23,7 +25,10 @@ void DisplaySkeleton(FbxNode* pNode)
     
     DisplayString("Skeleton Name: ", (char *) pNode->GetName());
     DisplayMetaDataConnections(lSkeleton);
+
     names.push_back(pNode->GetName());
+    listOfJoints.push_back(pNode);
+    parents.push_back(pNode->GetParent()->GetName());
 
     const char* lSkeletonTypes[] = { "Root", "Limb", "Limb Node", "Effector" };
 
@@ -53,4 +58,32 @@ int getNrOfJoints()
 std::vector<std::string> GetJointName()
 {
     return names;
+}
+
+std::vector<int> GetJointParent()
+{
+    std::vector<int> list;
+    bool foundAParent = false;
+
+    list.resize(nrOfJoints);
+    for (int j = 0; j < nrOfJoints; j++)
+    {
+        foundAParent = false;
+        for (int j2 = 0; j2 < nrOfJoints; j2++)
+        {
+            if (parents[j] == names[j2])
+            {
+                list[j] = j2;
+                foundAParent = true;
+            }
+            if (j2 == nrOfJoints && foundAParent == false)
+            {
+                list[j] = -1;
+            }
+        }
+    }
+    list[0] = -1;
+
+    int stop = 0;
+    return list;
 }

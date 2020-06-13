@@ -23,6 +23,7 @@ void DisplayPose(FbxScene* pScene)
     for (i = 0; i < lPoseCount; i++)
     {
         FbxPose* lPose = pScene->GetPose(i);
+        //lPose->GetParentLibrary();
         jointData.resize(lPose->GetCount() - 1);
         
         lName = lPose->GetName();
