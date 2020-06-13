@@ -246,12 +246,42 @@ int main(int argc, char** argv)
             "DiffuseR: " + std::to_string(finalMaterialData[m].Diffuse[0]) + "\n" +
             "DiffuseG: " + std::to_string(finalMaterialData[m].Diffuse[1]) + "\n" +
             "DiffuseB: " + std::to_string(finalMaterialData[m].Diffuse[2]) + "\n" +
+            "Difuse Factor: " + std::to_string(finalMaterialData[m].DiffuseFactor) + "\n" +
             "\n" +
+
             "AmbientR: " + std::to_string(finalMaterialData[m].Ambient[0]) + "\n" +
             "AmbientG: " + std::to_string(finalMaterialData[m].Ambient[1]) + "\n" +
             "AmbientB: " + std::to_string(finalMaterialData[m].Ambient[2]) + "\n" +
+            "Ambient Factor: " + std::to_string(finalMaterialData[m].AmbientFactor) + "\n" +
             "\n" +
-            "Opacity: " + std::to_string(finalMaterialData[m].Opacity) + "\n " +
+
+            "TransparencyR: " + std::to_string(finalMaterialData[m].TransparencyColor[0]) + "\n" +
+            "TransparencyG: " + std::to_string(finalMaterialData[m].TransparencyColor[1]) + "\n" +
+            "TransparencyB: " + std::to_string(finalMaterialData[m].TransparencyColor[2]) + "\n" +
+            "Transparency Factor: " + std::to_string(finalMaterialData[m].Transparency) + "\n " +
+            "\n" +
+
+            "Normal Map X: " + std::to_string(finalMaterialData[m].NormalMap[0]) + "\n" +
+            "Normal Map Y: " + std::to_string(finalMaterialData[m].NormalMap[1]) + "\n" +
+            "Normal Map Z: " + std::to_string(finalMaterialData[m].NormalMap[2]) + "\n" +
+            "\n" +
+            
+            "Bump: " + std::to_string(finalMaterialData[m].Bump) + "\n" +
+            "Bump Factor: " + std::to_string(finalMaterialData[m].BumpFactor) + "\n" +
+            "\n" +
+
+            "DisplacementR: " + std::to_string(finalMaterialData[m].DisplacementColor[0]) + "\n" +
+            "DisplacementG: " + std::to_string(finalMaterialData[m].DisplacementColor[1]) + "\n" +
+            "DisplacementB: " + std::to_string(finalMaterialData[m].DisplacementColor[2]) + "\n" +
+            "Displacement Factor: " + std::to_string(finalMaterialData[m].DisplacementFactor) + "\n " +
+            "\n" +
+
+            "Vector DisplacementR: " + std::to_string(finalMaterialData[m].VectorDisplacementColor[0]) + "\n" +
+            "Vector DisplacementG: " + std::to_string(finalMaterialData[m].VectorDisplacementColor[1]) + "\n" +
+            "Vector DisplacementB: " + std::to_string(finalMaterialData[m].VectorDisplacementColor[2]) + "\n" +
+            "Vector Displacement Factor: " + std::to_string(finalMaterialData[m].VectorDisplacementFactor) + "\n " +
+            "\n" +
+
             "\n\n"
         );
 

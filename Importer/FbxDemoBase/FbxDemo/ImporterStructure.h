@@ -22,9 +22,28 @@ struct MeshBFF
 struct MaterialBFF
 {
 	float Diffuse[3];
-	float Ambient[3];
-	float Opacity;
+	float DiffuseFactor;
 
+	float Ambient[3];
+	float AmbientFactor;
+
+	float TransparencyColor[3];
+	float Transparency;
+
+	float Emissive[3];
+	float EmissiveFactor;
+
+	float NormalMap[3];
+
+	float Bump;
+	float BumpFactor;
+
+
+	float DisplacementColor[3];
+	float DisplacementFactor;
+
+	float VectorDisplacementColor[3];
+	float VectorDisplacementFactor;
 };
 
 struct TextureBFF
