@@ -65,7 +65,6 @@ namespace ImporterBFF
 		{
 			ControlPointBFF ctrl;
 
-
 			MeshFile.read((char*)&ctrl, sizeof(ControlPointBFF));
 			model.controllPointsArr.push_back(ctrl);
 			//Flip
@@ -73,9 +72,6 @@ namespace ImporterBFF
 			model.controllPointsArr.back().norm[2] *= -1;
 			model.controllPointsArr.back().uv[1] *= -1;
 		}
-
-
-
 
 
 
@@ -107,16 +103,18 @@ namespace ImporterBFF
 			model.blendShapes.push_back(blend);
 		}
 
-		KeyFrameBFF dump;
-		MeshFile.read((char*)&dump, sizeof(KeyFrameBFF));
+		//KeyFrameBFF dump;
+		//MeshFile.read((char*)&dump, sizeof(KeyFrameBFF));
+
+		// MeshFile.read((char*)&model.scene, sizeof(SceneBFF));
 
 		for (int j = 0; j < model.mesh.nrJoints; j++)
 		{
 			JointBFF jnt;
-			MeshFile.read((char*)&jnt.jointIndex, sizeof(int));
-			MeshFile.read((char*)&jnt.parentIndex, sizeof(int));
+			MeshFile.read((char*)&jnt.jointIndex, sizeof(char));
+			MeshFile.read((char*)&jnt.parentIndex, sizeof(char));
 			MeshFile.read((char*)&jnt.bindPoseMatrix, sizeof(float[16]));
-			MeshFile.read((char*)&jnt.nrOfKeyFrames, sizeof(int));
+			MeshFile.read((char*)&jnt.nrOfKeyFrames, sizeof(char));
 			
 			for (int k = 0; k < jnt.nrOfKeyFrames; k++)
 			{

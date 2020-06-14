@@ -22,6 +22,7 @@ FileWrite myFile4("../biFile.bff");
 FileWrite myStringFile4("../stringFile.bff");
 std::vector<KeyFrameBFF> newKeyFrameData;
 std::vector<JointBFF> jointKeyFrameData;
+std::vector<std::vector<KeyFrameBFF>> keyFrameData2D;
 int currentFrame = -1;
 int someVar = -1;
 int allJoints = 0;
@@ -62,6 +63,11 @@ void DisplayAnimation(FbxScene* pScene)
 std::vector<JointBFF> GetJointKeyFrameData()
 {
     return jointKeyFrameData;
+}
+
+std::vector<std::vector<KeyFrameBFF>> GetKeyFrameData()
+{
+    return std::vector<std::vector<KeyFrameBFF>>();
 }
 
 int getNrOfkeyframes()
@@ -577,7 +583,9 @@ void DisplayCurveKeys(FbxAnimCurve* pCurve)
     countOtherNodes = false;
     someVar++;
 
-    if (allJoints >= 3)
+
+    // Uses old system "KeyFrameBFF" struct in "JoinBFF" struct \/
+    if (allJoints >= 3)  // Rework
     {
         jointKeyFrameData.resize(allJoints - 2);
         jointKeyFrameData[allJoints - 3].nrOfKeyFrames = nrOfKeyFrames;

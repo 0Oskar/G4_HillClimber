@@ -114,6 +114,6 @@ struct JointBFF
 	float bindPoseMatrix[16]; //4x4 matrix
 
 	int nrOfKeyFrames;
-	std::vector<KeyFrameBFF> animationFrames;
+	//std::vector<KeyFrameBFF> animationFrames;
 };
 

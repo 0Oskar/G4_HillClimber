@@ -18,6 +18,7 @@ void DisplayAnimation(FbxScene* pScene);
 void DisplayDefaultAnimation(FbxNode* pNode);
 
 std::vector<JointBFF> GetJointKeyFrameData();
+std::vector<std::vector<KeyFrameBFF>> GetKeyFrameData();
 
 int getNrOfkeyframes();
 
