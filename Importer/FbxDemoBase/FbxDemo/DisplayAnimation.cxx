@@ -25,9 +25,14 @@ std::vector<JointBFF> jointKeyFrameData;
 std::vector<std::vector<KeyFrameBFF>> keyFrameData2D;
 int currentFrame = -1;
 int someVar = -1;
+
+int nodesbefore = 0;
+int allNodes = 0;
+bool countNodesBefore = true;
+
+///
 int allJoints = 0;
 int otherNodes = 0;
-bool countOtherNodes = true;
 int nrOfKeyFrames;
 
 void DisplayAnimation(FbxAnimStack* pAnimStack, FbxNode* pNode, bool isSwitcher = false);
@@ -67,7 +72,7 @@ std::vector<JointBFF> GetJointKeyFrameData()
 
 std::vector<std::vector<KeyFrameBFF>> GetKeyFrameData()
 {
-    return std::vector<std::vector<KeyFrameBFF>>();
+    return keyFrameData2D;
 }
 
 int getNrOfkeyframes()
@@ -175,8 +180,8 @@ void DisplayAnimation(FbxAnimLayer* pAnimLayer, FbxNode* pNode, bool isSwitcher)
     FbxString lOutputString;
 
     lOutputString = "     Node Name: ";
-    allJoints++;
-    if (countOtherNodes == true)
+    allNodes++;
+    if (countNodesBefore == true)
         otherNodes++;
     lOutputString += pNode->GetName();
     lOutputString += "\n\n";
@@ -580,11 +585,12 @@ void DisplayCurveKeys(FbxAnimCurve* pCurve)
     int lKeyCount = pCurve->KeyGetCount();
     nrOfKeyFrames = lKeyCount;
     newKeyFrameData.resize(lKeyCount);
-    countOtherNodes = false;
+    countNodesBefore = false;
     someVar++;
 
 
     // Uses old system "KeyFrameBFF" struct in "JoinBFF" struct \/
+    /*
     if (allJoints >= 3)  // Rework
     {
         jointKeyFrameData.resize(allJoints - 2);
@@ -604,7 +610,32 @@ void DisplayCurveKeys(FbxAnimCurve* pCurve)
         }
         n++;
     }
+    */
     
+   
+   
+    if (allNodes >= 3)  // Reworked?
+    {
+        jointKeyFrameData.resize(allNodes - otherNodes);
+        keyFrameData2D.resize(allNodes - otherNodes); // fixed?
+        keyFrameData2D.at(allNodes - otherNodes).resize(nrOfKeyFrames); // memory shit
+           
+
+        jointKeyFrameData[allNodes - otherNodes+1].nrOfKeyFrames = nrOfKeyFrames;
+
+        if (n == 9)
+            n = 0;
+        for (int i = 0; i < nrOfKeyFrames; i++)
+        {
+            keyFrameData2D[allNodes - otherNodes+1].at(i).timestamp = i;
+
+            keyValue = static_cast<float>(pCurve->KeyGetValue(i));
+
+            keyFrameData2D[allNodes - otherNodes+1].at(i).pose[n] = keyValue;
+
+        }
+        n++;
+    }
     
 
     for(lCount = 0; lCount < lKeyCount; lCount++)
@@ -623,6 +654,7 @@ void DisplayCurveKeys(FbxAnimCurve* pCurve)
         }
 
         //jointKeyFrameData[0].animationFrames[someVar].timestamp = currentFrame;
+        keyFrameData2D[0].at(someVar).timestamp = currentFrame;
 
         lOutputString += ".... Key Value: ";
         lOutputString += lKeyValue;

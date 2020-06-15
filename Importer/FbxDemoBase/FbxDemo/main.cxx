@@ -478,7 +478,7 @@ int main(int argc, char** argv)
     // ****************** Joints ****************** //
     jointData2 = GetJointData();
     std::vector<JointBFF> tempJointKeyFrameData = GetJointKeyFrameData();
-    std::vector<std::vector<KeyFrameBFF>> tempKeyFrameData;
+    std::vector<std::vector<KeyFrameBFF>> tempKeyFrameData = GetKeyFrameData();
         //= GetKeyFrameData(); /// <----- FIX
     
     std::vector<int> tempParentData = GetJointParent();
@@ -503,11 +503,11 @@ int main(int argc, char** argv)
         */
         for (int k = 0; k < jointData2[j].nrOfKeyFrames; k++) // Rework into new standalone 2D "KeyFrameBFF"
         {
-            keyFrameData2[j].at[k].timestamp = tempJointKeyFrameData[j].animationFrames[k].timestamp;
+            keyFrameData2[j].at(k).timestamp = tempKeyFrameData[j].at(k).timestamp;
 
             for (int v = 0; v < 9; v++)
             {
-                keyFrameData2[j].at[k].pose[v] = tempJointKeyFrameData[j].animationFrames[k].pose[v];
+                keyFrameData2[j].at(k).pose[v] = tempKeyFrameData[j].at(k).pose[v];
             }
         }
 
@@ -535,6 +535,7 @@ int main(int argc, char** argv)
         //myFile5.writeToFile((const char*)&jointData2[j].parentIndex, sizeof(const char)); //Add to biFile
         //myFile5.writeToFile((const char*)&jointData2[j].bindPoseMatrix, sizeof(float[16])); //Add to biFile
         //myFile5.writeToFile((const char*)&jointData2[j].nrOfKeyFrames, sizeof(const char)); //Add to biFile
+
         /* 
         for (int k = 0; k < jointData2[j].nrOfKeyFrames; k++)
         {
@@ -551,14 +552,15 @@ int main(int argc, char** argv)
         for (int k = 0; k < jointData2[j].nrOfKeyFrames; k++)
         {
             myStringFile5.writeToStringFile(
-                "Time: " + std::to_string(keyFrameData2[j].animationFrames[k].timestamp) + "\n" +
-                "(" + std::to_string(keyFrameData2[j].animationFrames[k].pose[0]) + ", " + std::to_string(keyFrameData2[j].animationFrames[k].pose[1]) + ", " + std::to_string(keyFrameData2[j].animationFrames[k].pose[2]) + ")\n" +
-                "(" + std::to_string(keyFrameData2[j].animationFrames[k].pose[3]) + ", " + std::to_string(keyFrameData2[j].animationFrames[k].pose[4]) + ", " + std::to_string(keyFrameData2[j].animationFrames[k].pose[5]) + ")\n" +
-                "(" + std::to_string(keyFrameData2[j].animationFrames[k].pose[6]) + ", " + std::to_string(keyFrameData2[j].animationFrames[k].pose[7]) + ", " + std::to_string(keyFrameData2[j].animationFrames[k].pose[8]) + ")\n\n"
+                "Time: " + std::to_string(keyFrameData2[j].at(k).timestamp) + "\n" +
+                "(" + std::to_string(keyFrameData2[j].at(k).pose[0]) + ", " + std::to_string(keyFrameData2[j].at(k).pose[1]) + ", " + std::to_string(keyFrameData2[j].at(k).pose[2]) + ")\n" +
+                "(" + std::to_string(keyFrameData2[j].at(k).pose[3]) + ", " + std::to_string(keyFrameData2[j].at(k).pose[4]) + ", " + std::to_string(keyFrameData2[j].at(k).pose[5]) + ")\n" +
+                "(" + std::to_string(keyFrameData2[j].at(k).pose[6]) + ", " + std::to_string(keyFrameData2[j].at(k).pose[7]) + ", " + std::to_string(keyFrameData2[j].at(k).pose[8]) + ")\n\n"
             );
 
-            myFile5.writeToFile((const char*)&keyFrameData2[j].animationFrames[k], sizeof(KeyFrameBFF)); //Add to biFile
-        }
+            myFile5.writeToFile((const char*)&keyFrameData2[j].at(k), sizeof(KeyFrameBFF)); //Add to biFile
+        }        
+        
 
     }
     return 0;
