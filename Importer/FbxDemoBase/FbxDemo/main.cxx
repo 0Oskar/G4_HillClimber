@@ -237,6 +237,27 @@ int main(int argc, char** argv)
 
     // ****************** Material ****************** //
     finalMaterialData = GetMaterialData2();
+    std::vector<int> arr;
+    arr = GetMaterialIndex2();
+    int nrOfConnectedTextures;
+
+    for (int m = 0; m < GetNrOfMaterials2(); m++)
+    {
+        nrOfConnectedTextures = 0;
+        for (int t = 0; t < GetNrOfTextures2(); t++)
+        {
+            if (arr[t] == m)
+            {
+                nrOfConnectedTextures++;
+                finalMaterialData[m].connectedToTextureIndex.push_back(t);
+            }
+            else
+            {
+
+            }
+        }
+        finalMaterialData[m].nrOfTexturesConnected = nrOfConnectedTextures;
+    }
 
     myStringFile5.writeToStringFile("\n############ Materials ############\n");
     for (int m = 0; m < GetNrOfMaterials2(); m++)
@@ -263,11 +284,55 @@ int main(int argc, char** argv)
             "Vector DisplacementR (" + std::to_string(finalMaterialData[m].VectorDisplacementColor[0]) + ", " + std::to_string(finalMaterialData[m].VectorDisplacementColor[1]) + ", " + std::to_string(finalMaterialData[m].VectorDisplacementColor[2]) + ")\n" +
             "Vector Displacement Factor: " + std::to_string(finalMaterialData[m].VectorDisplacementFactor) + "\n " +
             "\n" +
-            "Connected to textureIndex: "
-            "\n\n"
+            "NrOfConnectedTextures: " + std::to_string(finalMaterialData[m].nrOfTexturesConnected) + "\n"
+            //"Connected to textureIndex: "
+            //"\n\n"
         );
+        myFile5.writeToFile((const char*)&finalMaterialData[m].Diffuse[0], sizeof(float));
+        myFile5.writeToFile((const char*)&finalMaterialData[m].Diffuse[1], sizeof(float));
+        myFile5.writeToFile((const char*)&finalMaterialData[m].Diffuse[2], sizeof(float));
+        myFile5.writeToFile((const char*)&finalMaterialData[m].DiffuseFactor, sizeof(float));
 
-        myFile5.writeToFile((const char*)&finalMaterialData[m], sizeof(MaterialBFF)); //Add to biFile
+        myFile5.writeToFile((const char*)&finalMaterialData[m].Ambient[0], sizeof(float));
+        myFile5.writeToFile((const char*)&finalMaterialData[m].Ambient[1], sizeof(float));
+        myFile5.writeToFile((const char*)&finalMaterialData[m].Ambient[2], sizeof(float));
+        myFile5.writeToFile((const char*)&finalMaterialData[m].AmbientFactor, sizeof(float));
+
+        myFile5.writeToFile((const char*)&finalMaterialData[m].TransparencyColor[0], sizeof(float));
+        myFile5.writeToFile((const char*)&finalMaterialData[m].TransparencyColor[1], sizeof(float));
+        myFile5.writeToFile((const char*)&finalMaterialData[m].TransparencyColor[2], sizeof(float));
+        myFile5.writeToFile((const char*)&finalMaterialData[m].Transparency, sizeof(float));
+
+        myFile5.writeToFile((const char*)&finalMaterialData[m].Emissive[0], sizeof(float));
+        myFile5.writeToFile((const char*)&finalMaterialData[m].Emissive[1], sizeof(float));
+        myFile5.writeToFile((const char*)&finalMaterialData[m].Emissive[2], sizeof(float));
+        myFile5.writeToFile((const char*)&finalMaterialData[m].EmissiveFactor, sizeof(float));
+
+        myFile5.writeToFile((const char*)&finalMaterialData[m].NormalMap[0], sizeof(float));
+        myFile5.writeToFile((const char*)&finalMaterialData[m].NormalMap[1], sizeof(float));
+        myFile5.writeToFile((const char*)&finalMaterialData[m].NormalMap[2], sizeof(float));
+
+        myFile5.writeToFile((const char*)&finalMaterialData[m].Bump, sizeof(float));
+        myFile5.writeToFile((const char*)&finalMaterialData[m].BumpFactor, sizeof(float));
+
+        myFile5.writeToFile((const char*)&finalMaterialData[m].DisplacementColor[0], sizeof(float));
+        myFile5.writeToFile((const char*)&finalMaterialData[m].DisplacementColor[1], sizeof(float));
+        myFile5.writeToFile((const char*)&finalMaterialData[m].DisplacementColor[2], sizeof(float));
+        myFile5.writeToFile((const char*)&finalMaterialData[m].DisplacementFactor, sizeof(float));
+
+        myFile5.writeToFile((const char*)&finalMaterialData[m].VectorDisplacementColor[0], sizeof(float));
+        myFile5.writeToFile((const char*)&finalMaterialData[m].VectorDisplacementColor[1], sizeof(float));
+        myFile5.writeToFile((const char*)&finalMaterialData[m].VectorDisplacementColor[2], sizeof(float));
+        myFile5.writeToFile((const char*)&finalMaterialData[m].VectorDisplacementFactor, sizeof(float));
+
+        myFile5.writeToFile((const char*)&finalMaterialData[m].nrOfTexturesConnected, sizeof(int));
+        for (int c = 0; c < finalMaterialData[m].nrOfTexturesConnected; c++)
+        {
+            myStringFile5.writeToStringFile(
+                "Connected to textureIndex: " + std::to_string(finalMaterialData[m].connectedToTextureIndex[c]) + "\n"
+            );
+            myFile5.writeToFile((const char*)&finalMaterialData[m].connectedToTextureIndex[c], sizeof(int));
+        }
     }
 
     // ****************** Texture ****************** //
@@ -291,16 +356,15 @@ int main(int argc, char** argv)
 
         strcpy_s(finalTextureData[t].texturePath, TextureBFF::PATH_SIZE, destination.c_str());
         strcpy_s(finalTextureData[t].textureType, TextureBFF::PATH_SIZE, textureType.c_str());
-
-        finalTextureData[t].parentMaterialIndex = GetMaterialIndex2(t);
     }
 
     myStringFile5.writeToStringFile("\n############ Textures ############\n");
     for (int t = 0; t < GetNrOfTextures2(); t++)
     {
+        finalTextureData[t].textureIndex = t;
         myStringFile5.writeToStringFile(
             "\n------ Index " + std::to_string(t) + ")\n" +
-            "Texture belongs to Material : " + std::to_string(finalTextureData[t].parentMaterialIndex) + "\n" +
+            "Texture index : " + std::to_string(finalTextureData[t].textureIndex) + "\n" +
             "TextureType: " + (std::string)finalTextureData[t].textureType + "\n" +
             "TexturePath: " + (std::string)finalTextureData[t].texturePath + "\n" +
             "\n\n"

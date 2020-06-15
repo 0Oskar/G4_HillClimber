@@ -47,7 +47,51 @@ namespace ImporterBFF
 		for (int m = 0; m < model.mesh.nrOfMaterials; m++)
 		{
 			MaterialBFF mat;
-			MeshFile.read((char*)&mat, sizeof(MaterialBFF));
+			//MeshFile.read((char*)&mat, sizeof(MaterialBFF));
+			MeshFile.read((char*)&mat.Diffuse[0], sizeof(float));
+			MeshFile.read((char*)&mat.Diffuse[1], sizeof(float));
+			MeshFile.read((char*)&mat.Diffuse[2], sizeof(float));
+			MeshFile.read((char*)&mat.DiffuseFactor, sizeof(float));
+
+			MeshFile.read((char*)&mat.Ambient[0], sizeof(float));
+			MeshFile.read((char*)&mat.Ambient[1], sizeof(float));
+			MeshFile.read((char*)&mat.Ambient[2], sizeof(float));
+			MeshFile.read((char*)&mat.AmbientFactor, sizeof(float));
+
+			MeshFile.read((char*)&mat.TransparencyColor[0], sizeof(float));
+			MeshFile.read((char*)&mat.TransparencyColor[1], sizeof(float));
+			MeshFile.read((char*)&mat.TransparencyColor[2], sizeof(float));
+			MeshFile.read((char*)&mat.Transparency, sizeof(float));
+
+			MeshFile.read((char*)&mat.Emissive[0], sizeof(float));
+			MeshFile.read((char*)&mat.Emissive[1], sizeof(float));
+			MeshFile.read((char*)&mat.Emissive[2], sizeof(float));
+			MeshFile.read((char*)&mat.EmissiveFactor, sizeof(float));
+
+			MeshFile.read((char*)&mat.NormalMap[0], sizeof(float));
+			MeshFile.read((char*)&mat.NormalMap[1], sizeof(float));
+			MeshFile.read((char*)&mat.NormalMap[2], sizeof(float));
+
+			MeshFile.read((char*)&mat.Bump, sizeof(float));
+			MeshFile.read((char*)&mat.BumpFactor, sizeof(float));
+
+			MeshFile.read((char*)&mat.DisplacementColor[0], sizeof(float));
+			MeshFile.read((char*)&mat.DisplacementColor[1], sizeof(float));
+			MeshFile.read((char*)&mat.DisplacementColor[2], sizeof(float));
+			MeshFile.read((char*)&mat.DisplacementFactor, sizeof(float));
+
+			MeshFile.read((char*)&mat.VectorDisplacementColor[0], sizeof(float));
+			MeshFile.read((char*)&mat.VectorDisplacementColor[1], sizeof(float));
+			MeshFile.read((char*)&mat.VectorDisplacementColor[2], sizeof(float));
+			MeshFile.read((char*)&mat.VectorDisplacementFactor, sizeof(float));
+
+			MeshFile.read((char*)&mat.nrOfTexturesConnected, sizeof(int));
+			mat.connectedToTextureIndex.resize(mat.nrOfTexturesConnected);
+			for (int c = 0; c < mat.nrOfTexturesConnected; c++)
+			{
+				MeshFile.read((char*)&mat.connectedToTextureIndex[c], sizeof(int));
+			}
+
 			model.material.push_back(mat);
 		}
 		

@@ -26,7 +26,7 @@ int GetNrOfTextures();
 char* GetTexturePath2(char arrayOfTexturePaths[]);
 char* GetTexturePathArr(int index);
 std::string GetTextureTypeArray(int index);
-int GetMaterialIndex(int index);
+std::vector<int> GetMaterialIndex();
 std::string GETNAME2(int index);
 
 #endif // #ifndef _DISPLAY_TEXTURE_H

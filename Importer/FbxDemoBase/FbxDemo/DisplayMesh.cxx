@@ -135,10 +135,12 @@ std::string GetTextureType2(int index)
 	return GetTextureTypeArray(index);
 }
 
-int GetMaterialIndex2(int index)
+std::vector<int> GetMaterialIndex2()
 {
-	return  GetMaterialIndex(index);
+	return GetMaterialIndex();
 }
+
+
 /*
 std::vector<std::vector<BlendShapesBFF>> GetBlendShapeDataArr2(FbxNode* pNode)
 {

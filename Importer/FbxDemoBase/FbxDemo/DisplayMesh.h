@@ -26,7 +26,7 @@ std::string GETNAME(int index);
 
 
 std::string GetTextureType2(int index);
-int GetMaterialIndex2(int index);
+std::vector<int> GetMaterialIndex2();
 
 std::vector<std::vector<BlendshapeBFF>> GetNewBlendShapeData2();
 int GetNrOfVertexInBlendShape2();

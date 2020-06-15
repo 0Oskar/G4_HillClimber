@@ -20,6 +20,7 @@ char* eyMan;
 int nrOfTextures = 0;
 int nrOfTypes = 0;
 int materialIndex[50];
+std::vector<int> connectedMats;
 
 
 void DisplayTextureInfo(FbxTexture* pTexture, int pBlendMode)
@@ -127,10 +128,12 @@ std::string GetTextureTypeArray(int index)
     return textureTypes[index];
 }
 
-int GetMaterialIndex(int index)
+std::vector<int> GetMaterialIndex()
 {
-    return 0;
+    return connectedMats;
 }
+
+
 
 std::string GETNAME2(int index)
 {
@@ -194,9 +197,11 @@ void FindAndDisplayTextureInfoByProperty(FbxProperty pProperty, bool& pDisplayHe
                     //display connected Material header only at the first time
                     if(pDisplayHeader){                    
                         DisplayInt("    Textures connected to Material ", pMaterialIndex);
+                        
                         pDisplayHeader = false;
                     }             
 
+                    connectedMats.push_back(pMaterialIndex);
                     DisplayString("    Textures for ", pProperty.GetName());
                     std::string aType = (const char*)pProperty.GetName();
                     textureTypes[nrOfTypes] = aType;

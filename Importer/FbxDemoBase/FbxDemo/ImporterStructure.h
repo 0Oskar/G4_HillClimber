@@ -44,11 +44,14 @@ struct MaterialBFF
 
 	float VectorDisplacementColor[3];
 	float VectorDisplacementFactor;
+
+	int nrOfTexturesConnected;
+	std::vector<int> connectedToTextureIndex;
 };
 
 struct TextureBFF
 {
-	int parentMaterialIndex;
+	int textureIndex;
 	static const int PATH_SIZE = 128;
 	char texturePath[PATH_SIZE];
 	char textureType[PATH_SIZE];
