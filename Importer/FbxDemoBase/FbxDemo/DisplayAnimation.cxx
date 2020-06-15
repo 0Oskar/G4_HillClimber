@@ -24,9 +24,12 @@ std::vector<KeyFrameBFF> newKeyFrameData;
 std::vector<JointBFF> jointKeyFrameData;
 int currentFrame = -1;
 int someVar = -1;
-int allJoints = 0;
-int otherNodes = 0;
+
+int nodesBefore = 0;
+int allNodes = 0;
+int nodesAfter = 0;
 bool countOtherNodes = true;
+
 int nrOfKeyFrames;
 
 void DisplayAnimation(FbxAnimStack* pAnimStack, FbxNode* pNode, bool isSwitcher = false);
@@ -56,7 +59,7 @@ void DisplayAnimation(FbxScene* pScene)
 
         
     }
-    jointKeyFrameData.resize(allJoints);
+    //jointKeyFrameData.resize(allNodes);
 }
 
 std::vector<JointBFF> GetJointKeyFrameData()
@@ -129,7 +132,7 @@ void DisplayAnimation(FbxAnimStack* pAnimStack, FbxNode* pNode, bool isSwitcher)
         //myStringFile4.writeToStringFile(
         //"Hej\n");
 	}
-    allJoints -= 2;
+    allNodes -= 2;
     int stop = 0;
     
 }
@@ -169,9 +172,9 @@ void DisplayAnimation(FbxAnimLayer* pAnimLayer, FbxNode* pNode, bool isSwitcher)
     FbxString lOutputString;
 
     lOutputString = "     Node Name: ";
-    allJoints++;
+    allNodes++;
     if (countOtherNodes == true)
-        otherNodes++;
+        nodesBefore++;
     lOutputString += pNode->GetName();
     lOutputString += "\n\n";
     FBXSDK_printf(lOutputString);
@@ -556,6 +559,12 @@ static int TangentVelocityFlagToIndex(int flags)
 }
 
 int n = 0;
+int latestTrack = 0;
+int currentJoint = 0;
+//int latestValue = 3; // 2 - 1 ---- -1 = someVar default value
+bool doOnce = true;
+bool stop = false;
+
 void DisplayCurveKeys(FbxAnimCurve* pCurve)
 {
     static const char* interpolation[] = { "?", "constant", "linear", "cubic"};
@@ -569,32 +578,66 @@ void DisplayCurveKeys(FbxAnimCurve* pCurve)
     FbxString lOutputString;
     int     lCount;
 
-
     float keyValue;
     int lKeyCount = pCurve->KeyGetCount();
     nrOfKeyFrames = lKeyCount;
     newKeyFrameData.resize(lKeyCount);
     countOtherNodes = false;
+
+    //int currentJoint;
+    //if (doOnce == true)
+    //{
+    //    currentJoint = 0;
+    //    doOnce = false;
+    //}
+        
     someVar++;
 
-    if (allJoints >= 3)
+    if (allNodes >= 3 /*&& allNodes <= (3 +5) && allNodes == latestValue*/)
     {
-        jointKeyFrameData.resize(allJoints - 2);
-        jointKeyFrameData[allJoints - 3].nrOfKeyFrames = nrOfKeyFrames;
-        jointKeyFrameData[allJoints - 3].animationFrames.resize(nrOfKeyFrames);
-
-        if (n == 9)
-            n = 0;
-        for (int i = 0; i < nrOfKeyFrames; i++)
+        //int stop = 0;
+        currentJoint++;
+        //latestValue++;
+        if (doOnce == true)
         {
-            jointKeyFrameData[allJoints - 3].animationFrames[i].timestamp = i;
+            latestTrack = allNodes - (nodesBefore + 1);
+            doOnce = false;
+        }
+            
+        int track = allNodes - (nodesBefore + 1);
 
-            keyValue = static_cast<float>(pCurve->KeyGetValue(i)); 
+        if (track != latestTrack)
+        {
+            stop = false;
+            n = 0;
+            latestTrack = track;
+        }
+            
 
-            jointKeyFrameData[allJoints - 3].animationFrames[i].pose[n] = keyValue;
+        jointKeyFrameData.resize(allNodes - (nodesBefore - 1));
+        jointKeyFrameData[allNodes - (nodesBefore)].nrOfKeyFrames = nrOfKeyFrames;
+        jointKeyFrameData[allNodes - (nodesBefore)].animationFrames.resize(nrOfKeyFrames);
 
+        if (stop == false)
+        {
+            for (int i = 0; i < nrOfKeyFrames; i++)
+            {
+                jointKeyFrameData[allNodes - (nodesBefore)].animationFrames[i].timestamp = i;
+
+                keyValue = static_cast<float>(pCurve->KeyGetValue(i));
+
+                jointKeyFrameData[allNodes - (nodesBefore)].animationFrames[i].pose[n] = keyValue;
+                int g = 0;
+                if (i == nrOfKeyFrames - 1 && n == 8)
+                {
+                    stop = true;
+                    latestTrack = track;
+                    n = 0;
+                }
+            }
         }
         n++;
+        
     }
     
     

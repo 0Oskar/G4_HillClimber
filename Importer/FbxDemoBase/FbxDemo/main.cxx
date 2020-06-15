@@ -118,7 +118,7 @@ int main(int argc, char** argv)
         //lFilePath = "../TriAnim.fbx";
 
 
-        lFilePath = "../Plane1__Blend2__Joint5__Anim20__Texture2__Material2__Light3__Camera2.fbx";
+        lFilePath = "../JointTest.fbx";
 
 		lResult = LoadScene(lSdkManager, lScene, lFilePath.Buffer());
 	}
@@ -446,15 +446,81 @@ int main(int argc, char** argv)
     }
 
     // ****************** Joints ****************** //
-    jointData2 = GetJointData();
+    jointData2.resize(getNrOfJoints());
+
+    std::vector<JointBFF> tempBindpose = GetJointData();
+
+    std::vector<std::string> bindNames = GetBindposeNameList();
+    std::vector<std::string> jointNames = GetJointName();
+    std::vector<bool> hasValue;
+    hasValue.resize(getNrOfJoints());
+    int num = 0;
+    for (int i = 0; i < getNrOfJoints(); i++)
+    {
+        if (jointNames[i] == bindNames[i + num])
+        {
+            hasValue[i] = true;
+        }
+        else
+        {
+            hasValue[i] = false;
+            num -= 1;
+        }
+    }
+
+    int t = 0;
+    for (int j = 0; j < getNrOfJoints(); j++)
+    {
+        if (hasValue[j] == false)
+        {
+            jointData2[j].bindPoseMatrix[0] = 1;
+            jointData2[j].bindPoseMatrix[1] = 0;
+            jointData2[j].bindPoseMatrix[2] = 0;
+            jointData2[j].bindPoseMatrix[3] = 0;
+
+            jointData2[j].bindPoseMatrix[4] = 0;
+            jointData2[j].bindPoseMatrix[5] = 1;
+            jointData2[j].bindPoseMatrix[6] = 0;
+            jointData2[j].bindPoseMatrix[7] = 0;
+
+            jointData2[j].bindPoseMatrix[8] = 0;
+            jointData2[j].bindPoseMatrix[9] = 0;
+            jointData2[j].bindPoseMatrix[10] = 1;
+            jointData2[j].bindPoseMatrix[11] = 0;
+
+            jointData2[j].bindPoseMatrix[12] = 0;
+            jointData2[j].bindPoseMatrix[13] = 0;
+            jointData2[j].bindPoseMatrix[14] = 0;
+            jointData2[j].bindPoseMatrix[15] = 1;
+
+            t -= 1;
+        }
+        else
+        {
+            for (int i = 0; i < 16; i++)
+            {
+                jointData2[j].bindPoseMatrix[i] = tempBindpose[j + t].bindPoseMatrix[i];
+            }
+            int ajhgd = 0;
+        }
+    }
+    int alsdjhl = 0;
+
+
+
+
     std::vector<JointBFF> tempJointKeyFrameData = GetJointKeyFrameData();
     
     std::vector<int> tempParentData = GetJointParent();
-    
+
+    //std::vector<int> childList = GetNrOfChildren();
+
+    int top = 0;
     for (int j = 0; j < getNrOfJoints(); j++)
     {
         jointData2[j].parentIndex = tempParentData[j];
-        jointData2[j].nrOfKeyFrames = tempJointKeyFrameData[j].nrOfKeyFrames;
+        jointData2[j].jointIndex = j;
+        //jointData2[j].nrOfKeyFrames = tempJointKeyFrameData[j].nrOfKeyFrames;
         jointData2[j].animationFrames.resize(jointData2[j].nrOfKeyFrames);
 
         for (int k = 0; k < jointData2[j].nrOfKeyFrames; k++)
@@ -467,6 +533,11 @@ int main(int argc, char** argv)
             }
         }
     }
+    //tempBindpose 6
+    //jointData2   8
+
+
+    
 
     myStringFile5.writeToStringFile("\n############ Joints ############\n");
     for (int j = 0; j < getNrOfJoints(); j++)
@@ -500,6 +571,7 @@ int main(int argc, char** argv)
             myFile5.writeToFile((const char*)&jointData2[j].animationFrames[k], sizeof(KeyFrameBFF)); //Add to biFile
         }
     }
+
     return 0;
 }
 

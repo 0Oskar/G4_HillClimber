@@ -16,6 +16,7 @@
 
 void DisplayPose(FbxScene* pScene);
 std::vector<JointBFF> GetJointData();
+std::vector<std::string> GetBindposeNameList();
 
 #endif // #ifndef _DISPLAY_POSE_H
 

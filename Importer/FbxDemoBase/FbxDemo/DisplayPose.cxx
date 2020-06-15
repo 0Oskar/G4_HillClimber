@@ -12,6 +12,12 @@
 #include "DisplayPose.h"
 std::vector<JointBFF> jointData;
 
+std::vector<std::string> bindposeNames;
+//std::string strValue0;
+//std::string strValue1;
+//std::string strValue2;
+//std::string strValue3;
+
 void DisplayPose(FbxScene* pScene)
 {
     int      i,j,k,lPoseCount;
@@ -27,6 +33,7 @@ void DisplayPose(FbxScene* pScene)
         jointData.resize(lPose->GetCount() - 1);
         
         lName = lPose->GetName();
+        
         DisplayString("Pose Name: ", lName.Buffer());
 
         DisplayBool("    Is a bind pose: ", lPose->IsBindPose());
@@ -34,11 +41,17 @@ void DisplayPose(FbxScene* pScene)
         DisplayInt("    Number of items in the pose: ", lPose->GetCount());
 
         DisplayString("","");
+        //int jhagds = lPose->GetCount();
 
         for (j=0; j<lPose->GetCount(); j++)
         {
             lName = lPose->GetNodeName(j).GetCurrentName();
             DisplayString("    Item name: ", lName.Buffer());
+
+            if (j >= 1)
+            {
+                bindposeNames.push_back(lName.Buffer());
+            }
 
             if (!lPose->IsBindPose())
             {
@@ -55,29 +68,63 @@ void DisplayPose(FbxScene* pScene)
                 
                 FbxMatrix  lMatrix = lPose->GetMatrix(j);
                 FbxVector4 lRow = lMatrix.GetRow(k);
-                if (j >= 1)
-                {
-                    jointData[j - 1].jointIndex = j - 1;
+                //if (j >= 1)
+                //{
+                //    jointData[j - 1].jointIndex = j - 1;
 
-                    nrOf = 0;
-                    jointData[j - 1].bindPoseMatrix[nrOf2] = lMatrix.GetRow(k)[nrOf];
-                    nrOf++;
-                    nrOf2++;
-                    jointData[j - 1].bindPoseMatrix[nrOf2] = lMatrix.GetRow(k)[nrOf];
-                    nrOf++;
-                    nrOf2++;
-                    jointData[j - 1].bindPoseMatrix[nrOf2] = lMatrix.GetRow(k)[nrOf];
-                    nrOf++;
-                    nrOf2++;
-                    jointData[j - 1].bindPoseMatrix[nrOf2] = lMatrix.GetRow(k)[nrOf];
-                    nrOf++;
-                    nrOf2++;
-                }
+                //    jointData[j - 1].bindPoseMatrix[nrOf2] = lRow[0];
+                //    nrOf2++;
+                //    jointData[j - 1].bindPoseMatrix[nrOf2] = lRow[1];
+                //    nrOf2++;
+                //    jointData[j - 1].bindPoseMatrix[nrOf2] = lRow[2];
+                //    nrOf2++;
+                //    jointData[j - 1].bindPoseMatrix[nrOf2] = lRow[3];
+                //    nrOf2++;
+                //}
 
                 char        lRowValue[1024];
                 
                 FBXSDK_sprintf(lRowValue, 1024, "%9.4f %9.4f %9.4f %9.4f\n", lRow[0], lRow[1], lRow[2], lRow[3]);
                 lMatrixValue += FbxString("        ") + FbxString(lRowValue);
+
+
+
+                if (j >= 1)
+                {
+                    /*
+                    1) konvertera float till string
+                    2) konvertera från string till float
+                    3) Bara gurdarna vet vraför det funkar
+                    */
+
+                    std::string HEJ = std::to_string(lRow[0]) + " " + std::to_string(lRow[1]) + " " + std::to_string(lRow[2]) + " " + std::to_string(lRow[3]);
+
+                    std::string strValue0 = std::to_string(lRow[0]);
+                    std::string strValue1 = std::to_string(lRow[1]);
+                    std::string strValue2 = std::to_string(lRow[2]);
+                    std::string strValue3 = std::to_string(lRow[3]);
+                    std::string::size_type sz;
+
+
+                    float fltValue0 = std::stof(strValue0, &sz);
+                    float fltValue1 = std::stof(strValue1, &sz);
+                    float fltValue2 = std::stof(strValue2, &sz);
+                    float fltValue3 = std::stof(strValue3, &sz);
+
+                    
+                    //    jointData[j - 1].jointIndex = j - 1;
+
+                    jointData[j - 1].bindPoseMatrix[nrOf2] = fltValue0;
+                    nrOf2++;
+                    jointData[j - 1].bindPoseMatrix[nrOf2] = fltValue1;
+                    nrOf2++;
+                    jointData[j - 1].bindPoseMatrix[nrOf2] = fltValue2;
+                    nrOf2++;
+                    jointData[j - 1].bindPoseMatrix[nrOf2] = fltValue3;
+                    nrOf2++;
+
+                    int gk = 0;
+                }
 
             }
             
@@ -127,6 +174,11 @@ void DisplayPose(FbxScene* pScene)
 std::vector<JointBFF> GetJointData()
 {
     return jointData;
+}
+
+std::vector<std::string> GetBindposeNameList()
+{
+    return bindposeNames;
 }
 
 

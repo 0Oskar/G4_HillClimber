@@ -17,6 +17,7 @@ int nrOfJoints = 0;
 std::vector<std::string> names;
 std::vector<FbxNode*> listOfJoints;
 std::vector<std::string> parents;
+std::vector<int> listOfChildren;
 
 void DisplaySkeleton(FbxNode* pNode)
 { 
@@ -29,6 +30,7 @@ void DisplaySkeleton(FbxNode* pNode)
     names.push_back(pNode->GetName());
     listOfJoints.push_back(pNode);
     parents.push_back(pNode->GetParent()->GetName());
+    listOfChildren.push_back(pNode->GetChildCount());
 
     const char* lSkeletonTypes[] = { "Root", "Limb", "Limb Node", "Effector" };
 
@@ -86,4 +88,9 @@ std::vector<int> GetJointParent()
 
     int stop = 0;
     return list;
+}
+
+std::vector<int> GetNrOfChildren()
+{
+    return listOfChildren;
 }
