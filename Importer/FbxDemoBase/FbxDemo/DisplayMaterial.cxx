@@ -249,6 +249,11 @@ void DisplayMaterial(FbxGeometry* pGeometry)
 				material[lCount].Ambient[1] = lKFbxDouble3.Get()[1];
 				material[lCount].Ambient[2] = lKFbxDouble3.Get()[2];
 
+                // Display the Ambient Factor
+                lKFbxDouble1 = ((FbxSurfaceLambert*)lMaterial)->AmbientFactor;
+                DisplayDouble("            Ambient Factor: ", 1.0 - lKFbxDouble1.Get());
+                material[lCount].AmbientFactor = 1.0 - lKFbxDouble1.Get();
+
                 // Display the Diffuse Color
                 lKFbxDouble3 =((FbxSurfaceLambert *)lMaterial)->Diffuse;
                 theColor.Set(lKFbxDouble3.Get()[0], lKFbxDouble3.Get()[1], lKFbxDouble3.Get()[2]);
@@ -257,16 +262,75 @@ void DisplayMaterial(FbxGeometry* pGeometry)
 				material[lCount].Diffuse[1] = lKFbxDouble3.Get()[1];
 				material[lCount].Diffuse[2] = lKFbxDouble3.Get()[2];
 
+                // Display the Diffuse Factor
+                lKFbxDouble1 = ((FbxSurfaceLambert*)lMaterial)->DiffuseFactor;
+                DisplayDouble("            Diffuse Factor: ", 1.0 - lKFbxDouble1.Get());
+                material[lCount].DiffuseFactor = 1.0 - lKFbxDouble1.Get();
 
                 // Display the Emissive
                 lKFbxDouble3 =((FbxSurfaceLambert *)lMaterial)->Emissive;
                 theColor.Set(lKFbxDouble3.Get()[0], lKFbxDouble3.Get()[1], lKFbxDouble3.Get()[2]);
                 DisplayColor("            Emissive: ", theColor);
+                material[lCount].Emissive[0] = lKFbxDouble3.Get()[0];
+                material[lCount].Emissive[1] = lKFbxDouble3.Get()[1];
+                material[lCount].Emissive[2] = lKFbxDouble3.Get()[2];
 
-                // Display the Opacity
+                // Display Opacity Color
+                lKFbxDouble3 = ((FbxSurfaceLambert*)lMaterial)->TransparentColor;
+                theColor.Set(lKFbxDouble3.Get()[0], lKFbxDouble3.Get()[1], lKFbxDouble3.Get()[2]);
+                DisplayColor("            Opacity Color:", theColor);
+                material[lCount].TransparencyColor[0] = lKFbxDouble3.Get()[0];
+                material[lCount].TransparencyColor[1] = lKFbxDouble3.Get()[1];
+                material[lCount].TransparencyColor[2] = lKFbxDouble3.Get()[2];
+                
+                // Display the Transparency
                 lKFbxDouble1 =((FbxSurfaceLambert *)lMaterial)->TransparencyFactor;
-                DisplayDouble("            Opacity: ", 1.0-lKFbxDouble1.Get());
-				material[lCount].Opacity = 1.0 - lKFbxDouble1.Get();
+                DisplayDouble("            Transparency: ", 1.0-lKFbxDouble1.Get());
+				material[lCount].Transparency = 1.0 - lKFbxDouble1.Get();
+
+                // Diasplay Normal Map
+                lKFbxDouble3 = ((FbxSurfaceLambert*)lMaterial)->NormalMap;
+                theColor.Set(lKFbxDouble3.Get()[0], lKFbxDouble3.Get()[1], lKFbxDouble3.Get()[2]);
+                DisplayDouble("            Normal Map: ", 1.0 - lKFbxDouble1.Get());
+                material[lCount].NormalMap[0] = lKFbxDouble3.Get()[0];
+                material[lCount].NormalMap[1] = lKFbxDouble3.Get()[1];
+                material[lCount].NormalMap[2] = lKFbxDouble3.Get()[2];
+
+                // Display the Bump
+                lKFbxDouble1 = ((FbxSurfaceLambert*)lMaterial)->Bump;
+                DisplayDouble("            Bump: ", 1.0 - lKFbxDouble1.Get());
+                material[lCount].Bump = 1.0 - lKFbxDouble1.Get();
+
+                // Display the Bump Factor
+                lKFbxDouble1 = ((FbxSurfaceLambert*)lMaterial)->BumpFactor;
+                DisplayDouble("            Bump Factor: ", 1.0 - lKFbxDouble1.Get());
+                material[lCount].BumpFactor = 1.0 - lKFbxDouble1.Get();
+
+                // Diasplay Displacement Color
+                lKFbxDouble3 = ((FbxSurfaceLambert*)lMaterial)->DisplacementColor;
+                theColor.Set(lKFbxDouble3.Get()[0], lKFbxDouble3.Get()[1], lKFbxDouble3.Get()[2]);
+                DisplayDouble("            Displacement Color: ", 1.0 - lKFbxDouble1.Get());
+                material[lCount].DisplacementColor[0] = lKFbxDouble3.Get()[0];
+                material[lCount].DisplacementColor[1] = lKFbxDouble3.Get()[1];
+                material[lCount].DisplacementColor[2] = lKFbxDouble3.Get()[2];
+
+                // Display the Displacement Factor
+                lKFbxDouble1 = ((FbxSurfaceLambert*)lMaterial)->BumpFactor;
+                DisplayDouble("            Displacement Factor: ", 1.0 - lKFbxDouble1.Get());
+                material[lCount].DisplacementFactor = 1.0 - lKFbxDouble1.Get();
+
+                // Diasplay Vector Displacement Color
+                lKFbxDouble3 = ((FbxSurfaceLambert*)lMaterial)->VectorDisplacementColor;
+                theColor.Set(lKFbxDouble3.Get()[0], lKFbxDouble3.Get()[1], lKFbxDouble3.Get()[2]);
+                DisplayDouble("            Vector Displacement Color: ", 1.0 - lKFbxDouble1.Get());
+                material[lCount].VectorDisplacementColor[0] = lKFbxDouble3.Get()[0];
+                material[lCount].VectorDisplacementColor[1] = lKFbxDouble3.Get()[1];
+                material[lCount].VectorDisplacementColor[2] = lKFbxDouble3.Get()[2];
+
+                // Display the Vector Displacement Factor
+                lKFbxDouble1 = ((FbxSurfaceLambert*)lMaterial)->VectorDisplacementFactor;
+                DisplayDouble("            Vector Displacement Factor: ", 1.0 - lKFbxDouble1.Get());
+                material[lCount].VectorDisplacementFactor = 1.0 - lKFbxDouble1.Get();
             }
             else
                 DisplayString("Unknown type of Material");
