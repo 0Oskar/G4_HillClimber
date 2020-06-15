@@ -356,6 +356,10 @@ void Model::initializeModelBff(ID3D11Device* device, ID3D11DeviceContext* dConte
 
 }
 
+//void Model::printSceneBFF(const ModelBFF model)
+//{
+//}
+
 void Model::printBffModel(ModelBFF model)
 {
 for (int i = 0; i < model.mesh.nrOfControlPoints; i++)
@@ -489,6 +493,37 @@ void Model::printCamera(const ModelBFF model) const
 		std::string FOV = "FOV:    " +
 			(std::to_string(model.camera[i].FOV) + "\n");
 		OutputDebugStringA((pos + upVec + forwardVec + nearPlane + farPlane + FOV).c_str());
+	}
+}
+
+void Model::printJoints(const ModelBFF model) const
+{
+	for (int i = 0; i < model.mesh.nrJoints; i++) 
+	{
+		std::string joint = "\n Joint: " + std::to_string(i) + "\n";
+
+		std::string jointIndex = ("JointIndex: " + (std::to_string(model.joints[i].jointIndex) + "\n"));
+
+		std::string jointParentIndex = "JointParentIndex: " + (std::to_string(model.joints[i].parentIndex) + "\n");
+
+		std::string bindPoseMatrix = "BindPoseMatrix: " +
+			(std::to_string(model.joints[i].bindPoseMatrix[0]) + " " + (std::to_string(model.joints[i].bindPoseMatrix[1]) + " " + (std::to_string(model.joints[i].bindPoseMatrix[2]) + (std::to_string(model.joints[i].bindPoseMatrix[3]) + "\n" +
+			(std::to_string(model.joints[i].bindPoseMatrix[4]) + " " + (std::to_string(model.joints[i].bindPoseMatrix[5]) + " " + (std::to_string(model.joints[i].bindPoseMatrix[6]) + (std::to_string(model.joints[i].bindPoseMatrix[7]) + "\n" +
+			(std::to_string(model.joints[i].bindPoseMatrix[8]) + " " + (std::to_string(model.joints[i].bindPoseMatrix[9]) + " " + (std::to_string(model.joints[i].bindPoseMatrix[10]) + (std::to_string(model.joints[i].bindPoseMatrix[11]) + "\n" +
+			(std::to_string(model.joints[i].bindPoseMatrix[12]) + " " + (std::to_string(model.joints[i].bindPoseMatrix[13]) + " " + (std::to_string(model.joints[i].bindPoseMatrix[14]) + (std::to_string(model.joints[i].bindPoseMatrix[15]) + "\n"))))))))))))))));
+
+		std::string nrOfKeyFrames = "NrOfKeyFrames:	" + (std::to_string(model.joints[i].nrOfKeyFrames) + "\n");
+	
+		std::string animationFrames = "AnimationFrames: ";
+		for (int j = 0; j < model.joints[i].nrOfKeyFrames; j++) 
+		{
+			animationFrames += (
+				(std::to_string(model.joints[i].animationFrames[j].timestamp)) + "\n" +
+				(std::to_string(model.joints[i].animationFrames[j].pose[0])) + " " + (std::to_string(model.joints[i].animationFrames[j].pose[1])) + " " + (std::to_string(model.joints[i].animationFrames[j].pose[2])) + " " +
+				(std::to_string(model.joints[i].animationFrames[j].pose[3])) + " " + (std::to_string(model.joints[i].animationFrames[j].pose[4])) + " " + (std::to_string(model.joints[i].animationFrames[j].pose[5])) + " " +
+				(std::to_string(model.joints[i].animationFrames[j].pose[6])) + " " + (std::to_string(model.joints[i].animationFrames[j].pose[7])) + " " + (std::to_string(model.joints[i].animationFrames[j].pose[8])) + "\n");
+		}
+		OutputDebugStringA((joint + jointIndex + jointParentIndex + bindPoseMatrix + nrOfKeyFrames + animationFrames).c_str());
 	}
 }
 

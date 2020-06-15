@@ -32,9 +32,12 @@ public:
 	void loadVertexVector(ID3D11Device* device, ID3D11DeviceContext* dContext, std::vector<Vertex> vertexVector, MaterialData material, std::wstring texturePath = L"");
 	void loadVertexFromOBJ(ID3D11Device* device, ID3D11DeviceContext* dContext, std::wstring objFilePath, MaterialData material, std::wstring texturePath = L"");
 	void initializeModelBff(ID3D11Device* device, ID3D11DeviceContext* dContext, std::string fileName, MaterialData material, std::wstring texturePath = L"");
+	
+	//void printSceneBFF(const ModelBFF model);
 	void printBffModel(ModelBFF model);
 	void printLight(const ModelBFF model) const;
 	void printCamera(const ModelBFF model) const;
+	void printJoints(const ModelBFF model) const;
 
 	LightBFF getPointLight(int index);
 	LightBFF getSpotLight(int index);
