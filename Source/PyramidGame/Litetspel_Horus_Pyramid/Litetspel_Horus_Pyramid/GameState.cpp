@@ -313,7 +313,7 @@ void GameState::loadModels()
 	///           -----    BFF TEST HERE    -----
 	this->m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
-	this->m_models[28].initializeModelBff(m_device, m_dContext, "BigTest.bff", mat, L"Textures/NewCubeTex.png");
+	this->m_models[28].initializeModelBff(m_device, m_dContext, "BigTest3.bff", mat, L"Textures/NewCubeTex.png");
 
 
 }

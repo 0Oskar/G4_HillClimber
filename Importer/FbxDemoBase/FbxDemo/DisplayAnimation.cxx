@@ -27,7 +27,6 @@ int someVar = -1;
 
 int nodesBefore = 0;
 int allNodes = 0;
-int nodesAfter = 0;
 bool countOtherNodes = true;
 
 int nrOfKeyFrames;
@@ -593,7 +592,7 @@ void DisplayCurveKeys(FbxAnimCurve* pCurve)
         
     someVar++;
 
-    if (allNodes >= 3 /*&& allNodes <= (3 +5) && allNodes == latestValue*/)
+    if (allNodes >= nodesBefore)
     {
         //int stop = 0;
         currentJoint++;
