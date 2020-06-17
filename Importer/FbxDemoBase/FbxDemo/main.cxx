@@ -118,7 +118,7 @@ int main(int argc, char** argv)
         //lFilePath = "../TriAnim.fbx";
 
 
-        lFilePath = "../JointTest.fbx";
+        lFilePath = "../finalTest.fbx";
 
 		lResult = LoadScene(lSdkManager, lScene, lFilePath.Buffer());
 	}
@@ -607,16 +607,16 @@ int main(int argc, char** argv)
             for (int k = 0; k < jointData2[j].nrOfKeyFrames; k++)
             {
                 jointData2[j].animationFrames[k].timestamp = tempJointKeyFrameData[j].animationFrames[k].timestamp;
-
-                for (int v = 0; v < 9; v++)
+                for (int v = 0; v < 3; v++)
                 {
-                    jointData2[j].animationFrames[k].pose[v] = tempJointKeyFrameData[j].animationFrames[k].pose[v];
+                    jointData2[j].animationFrames[k].pos[v] = tempJointKeyFrameData[j].animationFrames[k].pos[v];
+                    jointData2[j].animationFrames[k].rot[v] = tempJointKeyFrameData[j].animationFrames[k].rot[v];
+                    jointData2[j].animationFrames[k].scale[v] = tempJointKeyFrameData[j].animationFrames[k].scale[v];
                 }
             }
         }
     }
-    //tempBindpose 6
-    //jointData2   8
+
 
 
     
@@ -661,21 +661,21 @@ int main(int argc, char** argv)
         {
             myStringFile5.writeToStringFile(
                 "Time: " + std::to_string(jointData2[j].animationFrames[k].timestamp) + "\n" +
-                "(" + std::to_string(jointData2[j].animationFrames[k].pose[0]) + ", " + std::to_string(jointData2[j].animationFrames[k].pose[1]) + ", " + std::to_string(jointData2[j].animationFrames[k].pose[2]) + ")\n" +
-                "(" + std::to_string(jointData2[j].animationFrames[k].pose[3]) + ", " + std::to_string(jointData2[j].animationFrames[k].pose[4]) + ", " + std::to_string(jointData2[j].animationFrames[k].pose[5]) + ")\n" +
-                "(" + std::to_string(jointData2[j].animationFrames[k].pose[6]) + ", " + std::to_string(jointData2[j].animationFrames[k].pose[7]) + ", " + std::to_string(jointData2[j].animationFrames[k].pose[8]) + ")\n\n"
+                "(" + std::to_string(jointData2[j].animationFrames[k].pos[0]) + ", " + std::to_string(jointData2[j].animationFrames[k].pos[1]) + ", " + std::to_string(jointData2[j].animationFrames[k].pos[2]) + ")\n" +
+                "(" + std::to_string(jointData2[j].animationFrames[k].rot[0]) + ", " + std::to_string(jointData2[j].animationFrames[k].rot[1]) + ", " + std::to_string(jointData2[j].animationFrames[k].rot[2]) + ")\n" +
+                "(" + std::to_string(jointData2[j].animationFrames[k].scale[0]) + ", " + std::to_string(jointData2[j].animationFrames[k].scale[1]) + ", " + std::to_string(jointData2[j].animationFrames[k].scale[2]) + ")\n\n"
             );
 
             myFile5.writeToFile((const char*)&jointData2[j].animationFrames[k].timestamp, sizeof(int)); //Add to biFile
-            myFile5.writeToFile((const char*)&jointData2[j].animationFrames[k].pose[0], sizeof(float));
-            myFile5.writeToFile((const char*)&jointData2[j].animationFrames[k].pose[1], sizeof(float));
-            myFile5.writeToFile((const char*)&jointData2[j].animationFrames[k].pose[2], sizeof(float));
-            myFile5.writeToFile((const char*)&jointData2[j].animationFrames[k].pose[3], sizeof(float));
-            myFile5.writeToFile((const char*)&jointData2[j].animationFrames[k].pose[4], sizeof(float));
-            myFile5.writeToFile((const char*)&jointData2[j].animationFrames[k].pose[5], sizeof(float));
-            myFile5.writeToFile((const char*)&jointData2[j].animationFrames[k].pose[6], sizeof(float));
-            myFile5.writeToFile((const char*)&jointData2[j].animationFrames[k].pose[7], sizeof(float));
-            myFile5.writeToFile((const char*)&jointData2[j].animationFrames[k].pose[8], sizeof(float));
+            myFile5.writeToFile((const char*)&jointData2[j].animationFrames[k].pos[0], sizeof(float));
+            myFile5.writeToFile((const char*)&jointData2[j].animationFrames[k].pos[1], sizeof(float));
+            myFile5.writeToFile((const char*)&jointData2[j].animationFrames[k].pos[2], sizeof(float));
+            myFile5.writeToFile((const char*)&jointData2[j].animationFrames[k].rot[0], sizeof(float));
+            myFile5.writeToFile((const char*)&jointData2[j].animationFrames[k].rot[1], sizeof(float));
+            myFile5.writeToFile((const char*)&jointData2[j].animationFrames[k].rot[2], sizeof(float));
+            myFile5.writeToFile((const char*)&jointData2[j].animationFrames[k].scale[0], sizeof(float));
+            myFile5.writeToFile((const char*)&jointData2[j].animationFrames[k].scale[1], sizeof(float));
+            myFile5.writeToFile((const char*)&jointData2[j].animationFrames[k].scale[2], sizeof(float));
         }
     }
 

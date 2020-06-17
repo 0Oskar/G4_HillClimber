@@ -563,6 +563,7 @@ int currentJoint = 0;
 //int latestValue = 3; // 2 - 1 ---- -1 = someVar default value
 bool doOnce = true;
 bool stop = false;
+//std::vector<FbxAMatrix> pose;
 
 void DisplayCurveKeys(FbxAnimCurve* pCurve)
 {
@@ -624,9 +625,30 @@ void DisplayCurveKeys(FbxAnimCurve* pCurve)
                 jointKeyFrameData[allNodes - (nodesBefore)].animationFrames[i].timestamp = i;
 
                 keyValue = static_cast<float>(pCurve->KeyGetValue(i));
+               
+                //jointKeyFrameData[allNodes - (nodesBefore)].animationFrames[i].pose[n] = keyValue;
+                //pose[allNodes - (nodesBefore)][n] = keyValue;
+                if (n == 0)
+                    jointKeyFrameData[allNodes - (nodesBefore)].animationFrames[i].pos[0] = keyValue;
+                if (n == 1)
+                    jointKeyFrameData[allNodes - (nodesBefore)].animationFrames[i].pos[1] = keyValue;
+                if (n == 2)
+                    jointKeyFrameData[allNodes - (nodesBefore)].animationFrames[i].pos[2] = keyValue;
 
-                jointKeyFrameData[allNodes - (nodesBefore)].animationFrames[i].pose[n] = keyValue;
-                int g = 0;
+                if (n == 3)
+                    jointKeyFrameData[allNodes - (nodesBefore)].animationFrames[i].rot[0] = keyValue;
+                if (n == 4)
+                    jointKeyFrameData[allNodes - (nodesBefore)].animationFrames[i].rot[1] = keyValue;
+                if (n == 5)
+                    jointKeyFrameData[allNodes - (nodesBefore)].animationFrames[i].rot[2] = keyValue;
+
+                if (n == 6)
+                    jointKeyFrameData[allNodes - (nodesBefore)].animationFrames[i].scale[0] = keyValue;
+                if (n == 7)
+                    jointKeyFrameData[allNodes - (nodesBefore)].animationFrames[i].scale[1] = keyValue;
+                if (n == 8)
+                    jointKeyFrameData[allNodes - (nodesBefore)].animationFrames[i].scale[2] = keyValue;
+
                 if (i == nrOfKeyFrames - 1 && n == 8)
                 {
                     stop = true;
@@ -639,7 +661,7 @@ void DisplayCurveKeys(FbxAnimCurve* pCurve)
         
     }
     
-    
+    int g = 0;
 
     for(lCount = 0; lCount < lKeyCount; lCount++)
     {

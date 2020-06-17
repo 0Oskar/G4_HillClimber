@@ -16,5 +16,4 @@ class ModelBFF
 		std::vector<BlendshapeBFF> blendShapes;
 		std::vector<KeyFrameBFF> keyframes;
 		std::vector<JointBFF> joints;
-
 };

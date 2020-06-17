@@ -16,7 +16,9 @@ namespace ImporterBFF
 		static Manager& GetInstance();
 		Manager(Manager const&) = delete;
 		void operator =(Manager const&) = delete;
-
+		/*
+		The first call adds mesh to the manager, call again for a pointer to mesh. This is the only function needed.
+		*/
 		const ModelBFF& LoadModel(const char* fileName);
 
 		

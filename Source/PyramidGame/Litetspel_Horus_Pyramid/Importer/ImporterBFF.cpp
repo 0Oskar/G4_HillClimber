@@ -8,24 +8,6 @@ namespace ImporterBFF
 	{
 		ModelBFF model;
 		std::ifstream MeshFile(filePath, std::ifstream::binary);
-
-
-		//if(model.mesh.nrOfMaterials > 0)
-		//	MeshFile.read((char*)&model.material, model.mesh.nrOfMaterials * sizeof(MaterialBFF));
-		//
-		//if (model.scene.nrOfTextures > 0) 
-		//	MeshFile.read((char*)&model.texture, model.scene.nrOfTextures * sizeof(TextureBFF));
-
-
-		//model.controllPointsArr = new ControlPointBFF[model.mesh.nrOfControlPoints];
-		//model.controllPointsArr = 
-		//// Flippa X axeln och V flr uv
-		//for (size_t i = 0; i < model.mesh.nrOfControlPoints; i++)
-		//{
-		//	model.controllPointsArr[i].pos[2] *= -1;
-		//	model.controllPointsArr[i].norm[2] *= -1;
-		//	model.controllPointsArr[i].uv[1] *= -1;
-		//}
 		
 
 	/*
@@ -178,15 +160,15 @@ namespace ImporterBFF
 			for (int k = 0; k < jnt.nrOfKeyFrames; k++)
 			{
 				MeshFile.read((char*)&jnt.animationFrames[k].timestamp, sizeof(int));
-				MeshFile.read((char*)&jnt.animationFrames[k].pose[0], sizeof(float));
-				MeshFile.read((char*)&jnt.animationFrames[k].pose[1], sizeof(float));
-				MeshFile.read((char*)&jnt.animationFrames[k].pose[2], sizeof(float));
-				MeshFile.read((char*)&jnt.animationFrames[k].pose[3], sizeof(float));
-				MeshFile.read((char*)&jnt.animationFrames[k].pose[4], sizeof(float));
-				MeshFile.read((char*)&jnt.animationFrames[k].pose[5], sizeof(float));
-				MeshFile.read((char*)&jnt.animationFrames[k].pose[6], sizeof(float));
-				MeshFile.read((char*)&jnt.animationFrames[k].pose[7], sizeof(float));
-				MeshFile.read((char*)&jnt.animationFrames[k].pose[8], sizeof(float));
+				MeshFile.read((char*)&jnt.animationFrames[k].pos[0], sizeof(float));
+				MeshFile.read((char*)&jnt.animationFrames[k].pos[1], sizeof(float));
+				MeshFile.read((char*)&jnt.animationFrames[k].pos[2], sizeof(float));
+				MeshFile.read((char*)&jnt.animationFrames[k].rot[0], sizeof(float));
+				MeshFile.read((char*)&jnt.animationFrames[k].rot[1], sizeof(float));
+				MeshFile.read((char*)&jnt.animationFrames[k].rot[2], sizeof(float));
+				MeshFile.read((char*)&jnt.animationFrames[k].scale[0], sizeof(float));
+				MeshFile.read((char*)&jnt.animationFrames[k].scale[1], sizeof(float));
+				MeshFile.read((char*)&jnt.animationFrames[k].scale[2], sizeof(float));
 			}
 			model.joints.push_back(jnt);
 		}

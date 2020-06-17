@@ -70,10 +70,11 @@ void DisplayShape(FbxGeometry* pGeometry)
 					{
 						Display3DVector("            Normal Vector: ", lNormals->GetAt(j));
 
-						newBlendShapeArr[currentShape][j].norm[0] = lNormals->GetAt(j)[0];
-						newBlendShapeArr[currentShape][j].norm[1] = lNormals->GetAt(j)[1];
-						newBlendShapeArr[currentShape][j].norm[2] = lNormals->GetAt(j)[2];
+
 					}
+					newBlendShapeArr[currentShape][j].norm[0] = lNormals->GetAt(j)[0];
+					newBlendShapeArr[currentShape][j].norm[1] = lNormals->GetAt(j)[1];
+					newBlendShapeArr[currentShape][j].norm[2] = lNormals->GetAt(j)[2];
 				}
 
 				DisplayString("");

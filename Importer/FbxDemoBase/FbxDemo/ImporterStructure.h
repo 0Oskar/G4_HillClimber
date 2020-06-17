@@ -107,7 +107,9 @@ struct BlendshapeBFF
 struct KeyFrameBFF
 {
 	int timestamp;
-	float pose[9];
+	float pos[3];
+	float rot[3];
+	float scale[3];
 };
 
 struct JointBFF

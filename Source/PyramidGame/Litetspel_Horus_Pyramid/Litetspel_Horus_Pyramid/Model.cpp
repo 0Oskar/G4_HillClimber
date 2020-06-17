@@ -215,7 +215,7 @@ void Model::initializeModelBff(ID3D11Device* device, ID3D11DeviceContext* dConte
 	this->m_devicePtr = device;
 	this->m_deviceContextPtr = dContext;
 
-	ModelBFF myModel = myManager->LoadModel(fileName.c_str());
+	const ModelBFF &myModel = myManager->LoadModel(fileName.c_str());
 	m_vertices.resize(myModel.mesh.nrOfControlPoints);
 
 	for (int i = 0; i < myModel.mesh.nrOfControlPoints; i++)
