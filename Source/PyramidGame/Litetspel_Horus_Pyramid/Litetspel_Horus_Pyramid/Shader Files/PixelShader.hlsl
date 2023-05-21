@@ -1,9 +1,10 @@
 struct PS_IN
 {
-    float4 pos : SV_POSITION;
+    float4 position : SV_POSITION;
     float3 normal : NORMAL;
-    float2 inTextureCord : TEXCOORD;
-    float3 posWorld : Position;
+    float2 texcoord : TEXCOORD;
+    float3 positionW : POSITION;
+    float4 positionShadow : POSITION1;
 };
 
 struct PointLight
@@ -52,16 +53,7 @@ Texture2D objTexture : TEXTURE : register(t0);
 Texture2D shadowMap : TEXTURE : register(t1);
 
 SamplerState samplerState : SAMPLER : register(s0);
-SamplerComparisonState shadowSampler
-{
-    Filter = COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
-
-    AddressU = BORDER;
-    AddressV = BORDER;
-    AddressW = BORDER;
-    BorderColor = float4(0.f, 0.f, 0.f, 0.f);
-    ComparisonFunc = LESS_EQUAL;
-};
+SamplerComparisonState shadowSampler : SAMPLER : register(s1);
 
 float4 pointLightCalculation(float4 matAmbient, float4 matDiffuse, float4 lightAmbient, float4 lightDiffuse, float3 lightPos, float lightRange, float3 pposition, float3 pnormal, float3 attenuation)
 {
@@ -95,21 +87,52 @@ float4 pointLightCalculation(float4 matAmbient, float4 matDiffuse, float4 lightA
     return float4(0, 0, 0, 1);
 }
 
+float calculateShadowFactor(float4 shadowPosition)
+{
+    // Shadow Mapping
+    float2 shadowUV = shadowPosition.xy / shadowPosition.w * 0.5f + 0.5f;
+    shadowUV.y = 1.0f - shadowUV.y;
+
+    float shadowDepth = shadowPosition.z / shadowPosition.w;
+
+    float shadowFactor = 0;
+    //[flatten]
+    //if (shadowDepth < 0.f || shadowDepth > 1.f) // if the pixels depth is beyond the shadow map, skip shadow sampling(Pixel is lit by light)
+    //{
+    //    shadowFactor = 1.f;
+    //}
+    //else
+    {
+        const int sampleRange = 1;
+        [unroll]
+        for (int x = -sampleRange; x <= sampleRange; x++)
+        {
+            [unroll]
+            for (int y = -sampleRange; y <= sampleRange; y++)
+            {
+                shadowFactor += shadowMap.SampleCmpLevelZero(shadowSampler, shadowUV, shadowDepth, int2(x, y));
+            }
+        }
+        shadowFactor /= ((sampleRange * 2 + 1) * (sampleRange * 2 + 1));
+    }
+    return shadowFactor;
+}
+
 float4 main(PS_IN input) : SV_TARGET
 {
-    float4 pixelColorFromTexture = objTexture.Sample(samplerState, input.inTextureCord);
+    float4 pixelColorFromTexture = objTexture.Sample(samplerState, input.texcoord);
     float3 ambientclr = ambientColor * strength;
     float diffBright = saturate(dot(input.normal, dirLightDirection.xyz));
     
-    float3 lightDiffuse = ambientclr + dirLightColor.xyz * diffBright;
+    float3 lightDiffuse = ambientclr + ((dirLightColor.xyz * diffBright) * calculateShadowFactor(input.positionShadow));
     float4 fColor = float4(diffuse.xyz * pixelColorFromTexture.xyz * lightDiffuse.xyz, 1);
     
-    float3 wPosToCamera = cameraPos - input.posWorld;
+    float3 wPosToCamera = cameraPos - input.positionW;
     float distance = length(wPosToCamera);
     wPosToCamera = wPosToCamera / distance; //Normalize
     for (int i = 0; i < nrOfPointLights; i++)
     {
-        fColor = saturate(fColor + pointLightCalculation(ambient, diffuse, pointLights[i].plAmbient, pointLights[i].plDiffuse, pointLights[i].plPosition, pointLights[i].plRange, input.posWorld, input.normal, pointLights[i].att)); 
+        fColor = saturate(fColor + pointLightCalculation(ambient, diffuse, pointLights[i].plAmbient, pointLights[i].plDiffuse, pointLights[i].plPosition, pointLights[i].plRange, input.positionW, input.normal, pointLights[i].att)); 
     }
     
     //fog
@@ -119,4 +142,5 @@ float4 main(PS_IN input) : SV_TARGET
         fColor = float4(lerp(fColor.xyz, fogColor, fogLerp), 1);
     }
     return float4(fColor.xyz, 1);
+    //return float4(calculateShadowFactor(input.positionShadow), 0, 0, 1);
 }

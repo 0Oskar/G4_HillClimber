@@ -59,7 +59,7 @@ void Platform::update(float dt)
 			{
 				this->m_currentTime = time;
 				this->m_texturePath = m_textures[time].c_str();
-				m_audioComponent->emitSound(m_crackSounds[time % m_nrOfCracKSounds], this->m_movementComp->position);
+				m_audioComponent->emitSound(m_crackSounds[time % m_nrOfCracKSounds], this->m_movementComp->position, 0, false, 5.f);
 			}
 		}
 	}

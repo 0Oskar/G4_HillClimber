@@ -59,7 +59,7 @@ void MenuState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 
 	this->m_device = device;
 	this->m_dContext = dContext;
-	this->m_cameraMovementComponentPtr = new MovementComponent;
+	this->m_cameraMovementComponentPtr = new MovementComponent();
 	this->m_audioComponent = new AudioComponent();
 	this->m_gameOptions = options;
 

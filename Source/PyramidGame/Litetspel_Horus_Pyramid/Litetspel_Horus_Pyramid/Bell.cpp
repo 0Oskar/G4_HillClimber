@@ -49,9 +49,9 @@ void Bell::moveBellForward()
 	XMVECTOR movePos = XMVectorSet(0, 0, -BELL_OFFSET, 0);
 	endPos = startPos + movePos;
 	//OutputDebugString(L"MOVE FORWARD");
-	std::wstring test(std::to_wstring(XMVectorGetX(this->getPosition())) + L", " + std::to_wstring(XMVectorGetY(this->getPosition())) + L", " + std::to_wstring(XMVectorGetZ(this->getPosition())));
+	/*std::wstring test(std::to_wstring(XMVectorGetX(this->getPosition())) + L", " + std::to_wstring(XMVectorGetY(this->getPosition())) + L", " + std::to_wstring(XMVectorGetZ(this->getPosition())));
 	OutputDebugString(test.c_str());
-	OutputDebugString(L"\n");
+	OutputDebugString(L"\n");*/
 }
 
 void Bell::moveBellForward2()

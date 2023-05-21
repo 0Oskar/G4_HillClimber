@@ -17,6 +17,11 @@ struct VS_CONSTANT_BUFFER
 	DirectX::XMMATRIX wvp;
 	DirectX::XMMATRIX worldMatrix;
 };
+struct VS_DIRECTIONAL_CBUFFER
+{
+	DirectX::XMMATRIX lightViewMatrix;
+	DirectX::XMMATRIX lightProjMatrix;
+};
 
 struct PS_FOG_BUFFER
 {

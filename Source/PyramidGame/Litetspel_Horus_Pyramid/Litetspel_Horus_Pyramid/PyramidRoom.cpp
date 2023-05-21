@@ -66,7 +66,7 @@ void PyramidRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& acti
 	//strHej += "\n";
 	//OutputDebugStringA(strHej.c_str());
 
-	this->clouds->getMoveCompPtr()->rotation += DirectX::XMVectorSet(0, pMath::convertDegreesToRadians(1) * dt, 0, 10);
+	//this->clouds->getMoveCompPtr()->rotation += DirectX::XMVectorSet(0, pMath::convertDegreesToRadians(1) * dt, 0, 10);
 }
 
 void PyramidRoom::init(DirectX::BoundingOrientedBox* pyramidBB)

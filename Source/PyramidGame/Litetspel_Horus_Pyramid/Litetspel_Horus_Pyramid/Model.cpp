@@ -297,9 +297,9 @@ for (unsigned int i = 0; i < model.mesh.nrOfVertex; i++)
 
 
 
-	OutputDebugStringA((vtxNr + vtxPos + uv + normal + biNormal + tangent + pos + upVec + forwardVec + nearPlane + farPlane + FOV).c_str());
+	//OutputDebugStringA((vtxNr + vtxPos + uv + normal + biNormal + tangent + pos + upVec + forwardVec + nearPlane + farPlane + FOV).c_str());
 }
-OutputDebugStringA(std::to_string(model.material.Diffuse[1]).c_str());
+//OutputDebugStringA(std::to_string(model.material.Diffuse[1]).c_str());
 }
 
 void Model::draw(DirectX::XMMATRIX& viewProjMtx)

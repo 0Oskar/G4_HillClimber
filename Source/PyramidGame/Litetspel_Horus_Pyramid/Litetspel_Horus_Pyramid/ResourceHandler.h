@@ -20,7 +20,7 @@ private:
 		}
 		assert(SUCCEEDED(hr) && "Error, failed to load texture file!");
 
-		return  couldLoad;
+		return couldLoad;
 	}
 public:
 	static ResourceHandler& get()

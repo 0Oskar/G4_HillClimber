@@ -1,0 +1,40 @@
+struct VS_IN
+{
+    float3 position : POSITION;
+    float3 normal : NORMAL;
+    float2 texCoord : TEXCOORD;
+};
+
+struct VS_OUT
+{
+    float4 position : SV_POSITION;
+};
+
+cbuffer WVPBuffer : register(b0)
+{
+    matrix wvpMatrix;
+    matrix worldMatrix;
+};
+
+cbuffer lightSpaceMatrices : register(b1)
+{
+    matrix lightViewMatrix;
+    matrix lightProjectionMatrix;
+};
+ 
+VS_OUT main(VS_IN input)
+{
+    VS_OUT output;
+    
+    // Transform the vertex position into projected space.
+    //matrix lightWVPMatrix = worldMatrix * lightViewMatrix * lightProjectionMatrix;
+    //output.position = mul(lightWVPMatrix, float4(input.position, 1.0f));
+    //output.position = mul(wvpMatrix, float4(input.position, 1.f));
+    
+    output.position = mul(worldMatrix, float4(input.position, 1.f));
+    output.position = mul(lightViewMatrix, output.position);
+    output.position = mul(lightProjectionMatrix, output.position);
+    //output.position = mul(float4(input.position, 1.0f), worldMatrix * lightViewMatrix * lightProjectionMatrix);
+    
+    return output;
+}

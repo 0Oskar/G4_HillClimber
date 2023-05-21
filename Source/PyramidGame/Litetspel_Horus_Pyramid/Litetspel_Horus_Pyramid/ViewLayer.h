@@ -30,7 +30,9 @@ private:
 	Microsoft::WRL::ComPtr< ID3D11DepthStencilView > m_depthStencilView;
 	Microsoft::WRL::ComPtr< ID3D11Texture2D > m_depthStencilBuffer;
 	Microsoft::WRL::ComPtr< ID3D11DepthStencilState > m_depthStencilState;
-	
+
+	D3D11_VIEWPORT m_viewport;
+
 	// SamplerState
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> m_samplerState;
 
@@ -43,6 +45,9 @@ private:
 	// Texture Handler
 	ResourceHandler* resourceHandler;
 
+	// Shadow Mapping
+	ShadowMapInstance m_shadowInstance;
+	bool drawShadowmapDebug = false;
 	
 	// SpriteBatch
 	std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;

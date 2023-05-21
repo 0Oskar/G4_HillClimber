@@ -4,13 +4,10 @@
     <FxCompile Include="Shader Files\VertexShader.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="Shader Files\PixelShader.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="Shader Files\TransitionPS.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
     <FxCompile Include="Shader Files\TransitionVS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shader Files\ShadowVS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>
@@ -332,5 +329,9 @@
     <Filter Include="Source\RotationalFiles">
       <UniqueIdentifier>{823bbb62-e776-430f-b6d9-1f4bee21286c}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Shader Files\PixelShader.hlsl" />
+    <Text Include="Shader Files\TransitionPS.hlsl" />
   </ItemGroup>
 </Project>

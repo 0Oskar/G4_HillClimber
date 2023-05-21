@@ -156,7 +156,7 @@ void TristansRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& act
 				this->moveLever0 = true;
 
 
-				OutputDebugString(L"LEVER PULLED\n");
+				//OutputDebugString(L"LEVER PULLED\n");
 
 				this->bellsShallLower = true;
 			}
@@ -175,9 +175,9 @@ void TristansRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& act
 			{
 				isAnimationGoing = true;
 				randNr = (rand() % 3);
-				OutputDebugString(L" randNr choosen \n ");
-				OutputDebugStringA(std::to_string(randNr).c_str());
-				OutputDebugString(L"\n ");
+				//OutputDebugString(L" randNr choosen \n ");
+				//OutputDebugStringA(std::to_string(randNr).c_str());
+				//OutputDebugString(L"\n ");
 				if (randNr == 0)
 				{
 					Bellmove1(1);
@@ -195,21 +195,21 @@ void TristansRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& act
 			{
 				if (randNr == 0)
 				{
-					OutputDebugString(L" ranNr 01 \n ");
+					//OutputDebugString(L" ranNr 01 \n ");
 					Bellmove1(1);
-					OutputDebugString(L" ranNr 02 \n ");
+					//OutputDebugString(L" ranNr 02 \n ");
 				}
 				if (randNr == 1)
 				{
-					OutputDebugString(L" ranNr 11 \n ");
+					//OutputDebugString(L" ranNr 11 \n ");
 					Bellmove2(1);
-					OutputDebugString(L" ranNr 12 \n ");
+					//OutputDebugString(L" ranNr 12 \n ");
 				}
 				if (randNr == 2)
 				{
-					OutputDebugString(L" ranNr 21 \n ");
+					//OutputDebugString(L" ranNr 21 \n ");
 					Bellmove3(1);
-					OutputDebugString(L" ranNr 22 \n ");
+					//OutputDebugString(L" ranNr 22 \n ");
 				}
 			}
 		}
@@ -238,7 +238,7 @@ void TristansRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& act
 				this->moveLever1 = true;
 
 
-				OutputDebugString(L"LEVER PULLED\n");
+				//OutputDebugString(L"LEVER PULLED\n");
 
 				this->bellsShallRase = true;
 				if (randNr == 0)
@@ -411,15 +411,15 @@ void TristansRoom::Bellmove1(float startTime)
 	//Step1
 	if (this->moveTimer.timeElapsed() >= startTime && this->moveTimer.timeElapsed() <= startTime + 1.f)
 	{
-		OutputDebugString(L"MOVE1");
+		//OutputDebugString(L"MOVE1");
 		if (!this->bell1->GetAnimating() && !this->bell2->GetAnimating() && !this->bell3->GetAnimating())
 		{
-			OutputDebugString(L"Step 1 START!\n");
+			//OutputDebugString(L"Step 1 START!\n");
 			bell1->moveBellForward();
 			//bell2->lowerBell();
 			bell3->moveBellForward2();
-			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
-			OutputDebugString(L", Step 1 END!\n");
+			//OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			//OutputDebugString(L", Step 1 END!\n");
 			this->diamond->setPosition(DirectX::XMVectorSet(30.f, 0.f, -30.f, 1) + this->m_worldPosition);
 		}
 	}
@@ -431,8 +431,8 @@ void TristansRoom::Bellmove1(float startTime)
 			bell1->moveBellRight();
 			bell2->moveBellRight();
 			bell3->moveBellLeft2();
-			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
-			OutputDebugString(L", Step 2 \n");
+			//OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			//OutputDebugString(L", Step 2 \n");
 		}
 	}
 	//Step3
@@ -443,8 +443,8 @@ void TristansRoom::Bellmove1(float startTime)
 			//bell1->moveBellBackward2();
 			bell2->moveBellForward2();
 			bell3->moveBellBackward2();
-			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
-			OutputDebugString(L", Step 3 \n");
+			//OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			//OutputDebugString(L", Step 3 \n");
 		}
 	}
 	//Step4
@@ -455,8 +455,8 @@ void TristansRoom::Bellmove1(float startTime)
 			//bell1->moveBellBackward2();
 			bell2->moveBellLeft();
 			bell3->moveBellRight();
-			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
-			OutputDebugString(L"Step 4 \n");
+			//OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			//OutputDebugString(L"Step 4 \n");
 		}
 	}
 	//Step5
@@ -467,8 +467,8 @@ void TristansRoom::Bellmove1(float startTime)
 			bell1->moveBellLeft();
 			bell2->moveBellRight();
 			//bell3->moveBellRight();
-			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
-			OutputDebugString(L"Step 5 \n");
+			//OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			//OutputDebugString(L"Step 5 \n");
 		}
 	}
 	//Step6
@@ -479,8 +479,8 @@ void TristansRoom::Bellmove1(float startTime)
 			bell1->moveBellBackward();
 			bell2->moveBellBackward();
 			bell3->moveBellForward2();
-			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
-			OutputDebugString(L"Step 6 \n");
+			//OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			//OutputDebugString(L"Step 6 \n");
 		}
 	}
 	//Step7
@@ -491,8 +491,8 @@ void TristansRoom::Bellmove1(float startTime)
 			//bell1->moveBellBackward();
 			bell2->moveBellLeft2();
 			bell3->moveBellRight();
-			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
-			OutputDebugString(L"Step 7 \n");
+			//OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			//OutputDebugString(L"Step 7 \n");
 		}
 	}
 	//Step8
@@ -503,8 +503,8 @@ void TristansRoom::Bellmove1(float startTime)
 			bell1->moveBellForward();
 			bell2->moveBellForward();
 			bell3->moveBellBackward2();
-			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
-			OutputDebugString(L"Step 8 \n");
+			//OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			//OutputDebugString(L"Step 8 \n");
 		}
 	}
 	//Step9
@@ -515,8 +515,8 @@ void TristansRoom::Bellmove1(float startTime)
 			bell1->moveBellRight2();
 			bell2->moveBellRight();
 			bell3->moveBellLeft2();
-			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
-			OutputDebugString(L"Step 9 \n");
+			//OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			//OutputDebugString(L"Step 9 \n");
 		}
 	}
 	//Step10
@@ -527,8 +527,8 @@ void TristansRoom::Bellmove1(float startTime)
 			//bell1->moveBellRight2();
 			bell2->moveBellBackward2();
 			bell3->moveBellForward2();
-			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
-			OutputDebugString(L"Step 10 \n");
+			//OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			//OutputDebugString(L"Step 10 \n");
 		}
 	}
 	//Step11
@@ -539,8 +539,8 @@ void TristansRoom::Bellmove1(float startTime)
 			bell1->moveBellLeft();
 			bell2->moveBellLeft();
 			bell3->moveBellRight2();
-			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
-			OutputDebugString(L"Step 11 \n");
+			//OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			//OutputDebugString(L"Step 11 \n");
 		}
 	}
 	//Step12
@@ -551,8 +551,8 @@ void TristansRoom::Bellmove1(float startTime)
 			bell1->moveBellBackward();
 			//bell2->moveBellLeft();
 			bell3->moveBellBackward2();
-			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
-			OutputDebugString(L"Step 12 \n");
+			//OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			//OutputDebugString(L"Step 12 \n");
 		}
 	}
 	if (this->moveTimer.timeElapsed() >= startTime + 12.2f)
@@ -578,15 +578,15 @@ void TristansRoom::Bellmove2(float startTime)
 	//Step1
 	if (this->moveTimer.timeElapsed() >= startTime && this->moveTimer.timeElapsed() <= startTime + 1.f)
 	{
-		OutputDebugString(L"MOVE2");
+		//OutputDebugString(L"MOVE2");
 		if (!this->bell1->GetAnimating() && !this->bell2->GetAnimating() && !this->bell3->GetAnimating())
 		{
-			OutputDebugString(L"Step 1 START!\n");
+			//OutputDebugString(L"Step 1 START!\n");
 			bell1->moveBellForward();
 			bell2->moveBellForward2();
 			//bell3->moveBellForward2();
-			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
-			OutputDebugString(L", Step 1 END!\n");
+			//OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			//OutputDebugString(L", Step 1 END!\n");
 			this->diamond->setPosition(DirectX::XMVectorSet(0.f, 0.f, -30.f, 1) + this->m_worldPosition);
 		}
 	}
@@ -598,8 +598,8 @@ void TristansRoom::Bellmove2(float startTime)
 			bell1->moveBellRight();
 			//bell2->moveBellRight();
 			bell3->moveBellLeft();
-			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
-			OutputDebugString(L", Step 2 \n");
+			//OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			//OutputDebugString(L", Step 2 \n");
 		}
 	}
 	//Step3
@@ -610,8 +610,8 @@ void TristansRoom::Bellmove2(float startTime)
 			bell1->moveBellRight();
 			//bell2->moveBellForward2();
 			//bell3->moveBellBackward2();
-			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
-			OutputDebugString(L", Step 3 \n");
+			//OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			//OutputDebugString(L", Step 3 \n");
 		}
 	}
 	//Step4
@@ -622,8 +622,8 @@ void TristansRoom::Bellmove2(float startTime)
 			bell1->moveBellBackward();
 			//bell2->moveBellLeft();
 			//bell3->moveBellRight();
-			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
-			OutputDebugString(L"Step 4 \n");
+			//OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			//OutputDebugString(L"Step 4 \n");
 		}
 	}
 	//Step5
@@ -634,8 +634,8 @@ void TristansRoom::Bellmove2(float startTime)
 			//bell1->moveBellLeft();
 			//bell2->moveBellRight();
 			bell3->moveBellForward();
-			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
-			OutputDebugString(L"Step 5 \n");
+			//OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			//OutputDebugString(L"Step 5 \n");
 		}
 	}
 	//Step6
@@ -646,8 +646,8 @@ void TristansRoom::Bellmove2(float startTime)
 			bell1->moveBellLeft2();
 			bell2->moveBellRight();
 			//bell3->moveBellForward2();
-			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
-			OutputDebugString(L"Step 6 \n");
+			//OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			//OutputDebugString(L"Step 6 \n");
 		}
 	}
 	//Step7
@@ -658,8 +658,8 @@ void TristansRoom::Bellmove2(float startTime)
 			bell1->moveBellForward2();
 			bell2->moveBellBackward();
 			bell3->moveBellForward();
-			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
-			OutputDebugString(L"Step 7 \n");
+			//OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			//OutputDebugString(L"Step 7 \n");
 		}
 	}
 	//Step8
@@ -670,8 +670,8 @@ void TristansRoom::Bellmove2(float startTime)
 			bell1->moveBellBackward2();
 			bell2->moveBellLeft();
 			bell3->moveBellRight();
-			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
-			OutputDebugString(L"Step 8 \n");
+			//OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			//OutputDebugString(L"Step 8 \n");
 		}
 	}
 	//Step9
@@ -682,8 +682,8 @@ void TristansRoom::Bellmove2(float startTime)
 			bell1->moveBellRight2();
 			bell2->moveBellLeft();
 			bell3->moveBellLeft2();
-			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
-			OutputDebugString(L"Step 9 \n");
+			//OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			//OutputDebugString(L"Step 9 \n");
 		}
 	}
 	//Step10
@@ -694,8 +694,8 @@ void TristansRoom::Bellmove2(float startTime)
 			bell1->moveBellForward2();
 			bell2->moveBellBackward();
 			bell3->moveBellBackward();
-			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
-			OutputDebugString(L"Step 10 \n");
+			//OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			//OutputDebugString(L"Step 10 \n");
 		}
 	}
 	//Step11
@@ -706,8 +706,8 @@ void TristansRoom::Bellmove2(float startTime)
 			bell1->moveBellLeft2();
 			bell2->moveBellRight();
 			bell3->moveBellRight2();
-			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
-			OutputDebugString(L"Step 11 \n");
+			//OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			//OutputDebugString(L"Step 11 \n");
 		}
 	}
 	//Step12
@@ -718,8 +718,8 @@ void TristansRoom::Bellmove2(float startTime)
 			bell1->moveBellBackward2();
 			//bell2->moveBellLeft();
 			bell3->moveBellBackward();
-			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
-			OutputDebugString(L"Step 12 \n");
+			//OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			//OutputDebugString(L"Step 12 \n");
 			//this->diamond->setPosition(DirectX::XMVectorSet(0.f, 50.f, -30.f, 1.f) + this->m_worldPosition);
 		}
 	}
@@ -746,15 +746,15 @@ void TristansRoom::Bellmove3(float startTime)
 	//Step1
 	if (this->moveTimer.timeElapsed() >= startTime && this->moveTimer.timeElapsed() <= startTime + 1.f)
 	{
-		OutputDebugString(L"MOVE3");
+		//OutputDebugString(L"MOVE3");
 		if (!this->bell1->GetAnimating() && !this->bell2->GetAnimating() && !this->bell3->GetAnimating())
 		{
-			OutputDebugString(L"Step 1 START!\n");
+			//OutputDebugString(L"Step 1 START!\n");
 			bell1->moveBellForward();
 			bell2->moveBellForward2();
 			//bell3->moveBellForward2();
-			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
-			OutputDebugString(L", Step 1 END!\n");
+			//OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			//OutputDebugString(L", Step 1 END!\n");
 			this->diamond->setPosition(DirectX::XMVectorSet(-30.f, 0.f, -30.f, 1) + this->m_worldPosition);
 		}
 	}
@@ -766,8 +766,8 @@ void TristansRoom::Bellmove3(float startTime)
 			bell1->moveBellRight2();
 			bell2->moveBellLeft();
 			bell3->moveBellLeft();
-			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
-			OutputDebugString(L", Step 2 \n");
+			//OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			//OutputDebugString(L", Step 2 \n");
 		}
 	}
 	//Step3
@@ -778,8 +778,8 @@ void TristansRoom::Bellmove3(float startTime)
 			//bell1->moveBellRight();
 			bell2->moveBellBackward2();
 			bell3->moveBellForward2();
-			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
-			OutputDebugString(L", Step 3 \n");
+			//OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			//OutputDebugString(L", Step 3 \n");
 		}
 	}
 	//Step4
@@ -790,8 +790,8 @@ void TristansRoom::Bellmove3(float startTime)
 			bell1->moveBellLeft();
 			bell2->moveBellRight();
 			//bell3->moveBellRight();
-			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
-			OutputDebugString(L"Step 4 \n");
+			//OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			//OutputDebugString(L"Step 4 \n");
 		}
 	}
 	//Step5
@@ -802,8 +802,8 @@ void TristansRoom::Bellmove3(float startTime)
 			bell1->moveBellLeft();
 			//bell2->moveBellRight();
 			bell3->moveBellRight();
-			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
-			OutputDebugString(L"Step 5 \n");
+			//OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			//OutputDebugString(L"Step 5 \n");
 		}
 	}
 	//Step6
@@ -814,8 +814,8 @@ void TristansRoom::Bellmove3(float startTime)
 			bell1->moveBellBackward();
 			bell2->moveBellForward2();
 			//bell3->moveBellForward2();
-			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
-			OutputDebugString(L"Step 6 \n");
+			//OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			//OutputDebugString(L"Step 6 \n");
 		}
 	}
 	//Step7
@@ -826,8 +826,8 @@ void TristansRoom::Bellmove3(float startTime)
 			bell1->moveBellRight2();
 			bell2->moveBellLeft();
 			bell3->moveBellLeft();
-			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
-			OutputDebugString(L"Step 7 \n");
+			//OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			//OutputDebugString(L"Step 7 \n");
 		}
 	}
 	//Step8
@@ -838,8 +838,8 @@ void TristansRoom::Bellmove3(float startTime)
 			bell1->moveBellForward2();
 			bell2->moveBellBackward();
 			bell3->moveBellBackward2();
-			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
-			OutputDebugString(L"Step 8 \n");
+			//OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			//OutputDebugString(L"Step 8 \n");
 		}
 	}
 	//Step9
@@ -850,8 +850,8 @@ void TristansRoom::Bellmove3(float startTime)
 			bell1->moveBellLeft();
 			bell2->moveBellRight();
 			//bell3->moveBellLeft2();
-			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
-			OutputDebugString(L"Step 9 \n");
+			//OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			//OutputDebugString(L"Step 9 \n");
 		}
 	}
 	//Step10
@@ -862,8 +862,8 @@ void TristansRoom::Bellmove3(float startTime)
 			//bell1->moveBellForward2();
 			bell2->moveBellRight();
 			//bell3->moveBellBackward();
-			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
-			OutputDebugString(L"Step 10 \n");
+			//OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			//OutputDebugString(L"Step 10 \n");
 		}
 	}
 	//Step11
@@ -874,8 +874,8 @@ void TristansRoom::Bellmove3(float startTime)
 			bell1->moveBellLeft();
 			//bell2->moveBellRight();
 			//bell3->moveBellRight2();
-			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
-			OutputDebugString(L"Step 11 \n");
+			//OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			//OutputDebugString(L"Step 11 \n");
 		}
 	}
 	//Step12
@@ -886,8 +886,8 @@ void TristansRoom::Bellmove3(float startTime)
 			bell1->moveBellBackward2();
 			bell2->moveBellBackward();
 			//bell3->moveBellBackward();
-			OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
-			OutputDebugString(L"Step 12 \n");
+			//OutputDebugStringA(std::to_string(this->moveTimer.timeElapsed()).c_str());
+			//OutputDebugString(L"Step 12 \n");
 			//this->diamond->setPosition(DirectX::XMVectorSet(-30.f, 50.f, -30.f, 1) + this->m_worldPosition);
 		}
 	}
