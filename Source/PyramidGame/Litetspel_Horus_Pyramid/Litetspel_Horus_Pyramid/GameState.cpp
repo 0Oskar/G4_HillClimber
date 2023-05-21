@@ -34,7 +34,7 @@ GameState::~GameState()
 		}
 	}
 
-	for (int i = 0; i < m_rooms.size(); i++)
+	for (int i = 0; i < (int)m_rooms.size(); i++)
 	{
 		if (m_rooms.at(i) != nullptr)
 		{
@@ -158,7 +158,7 @@ void GameState::addGameObjectToWorld(bool dynamic, bool colide, float weight, in
 	if (colide)
 	{
 		this->m_player.addAABB(gObject->getAABBPtr());
-		
+
 
 	}
 	if (boundingBoxSize.x == 0 && boundingBoxSize.y == 0 && boundingBoxSize.z == 0)
@@ -166,6 +166,27 @@ void GameState::addGameObjectToWorld(bool dynamic, bool colide, float weight, in
 
 	}
 	else
+		gObject->setBoundingBox(boundingBoxSize);
+}
+
+// Thread safe version
+static void addGameObjectToWorldStatic(Player* player, GameObject* gObject, unsigned wvpBufferIndex, bool dynamic, bool colide, float weight, int mdlIndx, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR scale3D, DirectX::XMFLOAT3 boundingBoxSize = DirectX::XMFLOAT3(0, 0, 0), DirectX::XMFLOAT3 acceleration = DirectX::XMFLOAT3(1, 1, 1), DirectX::XMFLOAT3 deceleration = DirectX::XMFLOAT3(1, 1, 1))
+{
+	if (dynamic)
+	{
+		gObject->initializeDynamic(colide, false, mdlIndx, wvpBufferIndex, weight, acceleration, deceleration, mdl);
+	}
+	else
+	{
+		gObject->initializeStatic(colide, mdlIndx, wvpBufferIndex, mdl);
+	}
+
+	gObject->setScale(scale3D);
+	gObject->setPosition(position);
+
+	if (colide)
+		player->addAABB(gObject->getAABBPtr());
+	if (boundingBoxSize.x != 0 && boundingBoxSize.y != 0 && boundingBoxSize.z != 0)
 		gObject->setBoundingBox(boundingBoxSize);
 }
 
@@ -435,7 +456,7 @@ void GameState::loadModels()
 
 void GameState::roomChangeInit()
 {
-	platformBB.clear();
+	m_platformBB.clear();
 	this->m_gameObjects.resize(this->nrOfGameObjects);
 	this->m_player.clearAABB();
 	//Get active room platforms to send to hookHand.
@@ -444,16 +465,16 @@ void GameState::roomChangeInit()
 		Platform* castToPlatform = dynamic_cast<Platform*>(this->m_activeRoom->getGameObjectsPtr()->at(i));
 		if (castToPlatform != nullptr)
 		{
-			platformBB.emplace_back(castToPlatform->getAABBPtr());
+			m_platformBB.emplace_back(castToPlatform->getAABBPtr());
 		}
 
 	}
 	PyramidRoom* pyramidRoomPtr = dynamic_cast<PyramidRoom*>(this->m_rooms[0]);
 	for (size_t i = 0; pyramidRoomPtr && i < pyramidRoomPtr->getBBForHook().size(); i++)
 	{
-		this->platformBB.emplace_back(pyramidRoomPtr->getBBForHook().at(i));
+		this->m_platformBB.emplace_back(pyramidRoomPtr->getBBForHook().at(i));
 	}
-	this->m_player.updateHookHandBB(platformBB);
+	this->m_player.updateHookHandBB(m_platformBB);
 	this->m_activeRoom->updatePlayerBB();
 	this->m_constantbufferData.dirBuffer = m_activeRoom->getDirectionalLight();
 	this->m_constantbufferData.fogBuffer = m_activeRoom->getFogData();
@@ -497,11 +518,6 @@ void GameState::onPop()
 
 void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext, GameOptions options, std::shared_ptr<DirectX::AudioEngine> audioEngine)
 {
-	GameObject* hook = nullptr;
-	GameObject* hookHand = nullptr;
-	GameObject* hookGem = nullptr;
-	GameObject* hookHandLeftWing = nullptr;
-	GameObject* hookHandRightWing = nullptr;
 	this->m_gameOptions = options;
 
 
@@ -569,12 +585,17 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	);
 	this->m_player.addPyramidOBB(&this->m_pyramidOBB);
 
+	GameObject* hook = nullptr;
+	GameObject* hookHand = nullptr;
+	GameObject* hookGem = nullptr;
+	GameObject* hookHandLeftWing = nullptr;
+	GameObject* hookHandRightWing = nullptr;
 
 	// Hook Head 
 	vec = DirectX::XMVectorSet(10.f, 1.f, -20.f, 1.f);
 	this->addGameObjectToWorld(true, false, 1, 2, &m_modelsPtr->at(2), vec, XMVectorSet(.5f, .5f, .5f, 1.f), DirectX::XMFLOAT3(.5f, .5f, .5f), DirectX::XMFLOAT3(10, 10, 10), DirectX::XMFLOAT3(10, 10, 10));
 	hook = this->m_gameObjects.back();
-  
+
 	// Hook Hand
 	vec = DirectX::XMVectorSet(10.f, 1.f, -20.f, 1.f);
 	this->addGameObjectToWorld(true, false, 1, 4, &m_modelsPtr->at(4), vec, XMVectorSet(.5f, .5f, .5f, 1.f), DirectX::XMFLOAT3(0, 0, 0), DirectX::XMFLOAT3(10, 10, 10), DirectX::XMFLOAT3(10, 10, 10));
@@ -596,10 +617,10 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	hookHandRightWing = this->m_gameObjects.back();
 
 	// Hook Chain link
-    DirectX::XMFLOAT3 vecF3 = hook->getMoveCompPtr()->getPositionF3();
+	DirectX::XMFLOAT3 vecF3 = hook->getMoveCompPtr()->getPositionF3();
 	for (size_t i = 0; i < NR_OF_CHAIN_LINKS; i++)
 	{
-		vec = DirectX::XMVectorSet(vecF3.x, vecF3.y, vecF3.z - 5.f -((float)i * 0.6f), 1.f);
+		vec = DirectX::XMVectorSet(vecF3.x, vecF3.y, vecF3.z - 5.f - ((float)i * 0.6f), 1.f);
 		this->addGameObjectToWorld(true, false, 1, 5, &m_modelsPtr->at(5), vec, XMVectorSet(.9f, .9f, .9f, 1.f), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
 		this->m_chainGObjects->push_back(this->m_gameObjects.back());
 	}
@@ -610,14 +631,17 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 		Platform* castToPlatform = dynamic_cast<Platform*>(this->m_gameObjects.at(i));
 		if (castToPlatform != nullptr)
 		{
-			platformBB.emplace_back(castToPlatform->getAABBPtr());
+			m_platformBB.emplace_back(castToPlatform->getAABBPtr());
 		}
 	}
 
 	// Player
-	this->m_player.initialize(-1, -1, 60.f, DirectX::XMFLOAT3(20.f, 20.f, 20.f), DirectX::XMFLOAT3(.01f, .01f, .01f), hook, hookHand, hookGem, hookHandLeftWing, hookHandRightWing, this->m_chainGObjects, audioEngine, platformBB);
+	this->m_player.initialize(-1, -1, 60.f, DirectX::XMFLOAT3(20.f, 20.f, 20.f), DirectX::XMFLOAT3(.01f, .01f, .01f), hook, hookHand, hookGem, hookHandLeftWing, hookHandRightWing, this->m_chainGObjects, audioEngine, m_platformBB);
 	this->m_player.setPosition(XMVectorSet(0.f, 8.f, 0.f, 0.f));
-
+	// Player
+	/*bool playerInitDoneLoading = false;
+	playerInit(&playerInitDoneLoading, m_device, m_dContext, m_modelsPtr, &m_player, &m_pyramidOBB);*/
+	
 	// Room creation
 	// Pyramid Room - [0]
 	this->m_rooms.emplace_back(new PyramidRoom());
@@ -661,16 +685,16 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 		Platform* castToPlatform = dynamic_cast<Platform*>(this->m_activeRoom->getGameObjectsPtr()->at(i));
 		if (castToPlatform != nullptr)
 		{
-			platformBB.emplace_back(castToPlatform->getAABBPtr());
+			m_platformBB.emplace_back(castToPlatform->getAABBPtr());
 		}
 	}
 	
 	PyramidRoom* pyramidRoomPtr = dynamic_cast<PyramidRoom*>(this->m_rooms[0]);
 	for (size_t i = 0; pyramidRoomPtr && i < pyramidRoomPtr->getBBForHook().size(); i++)
 	{
-		this->platformBB.emplace_back(pyramidRoomPtr->getBBForHook().at(i));
+		this->m_platformBB.emplace_back(pyramidRoomPtr->getBBForHook().at(i));
 	}
-	this->m_player.updateHookHandBB(platformBB);
+	this->m_player.updateHookHandBB(m_platformBB);
 
 	//Initialize audio component for platforms and add theire boundingboxes to playerBoundingBoxes
 	for (size_t i = 0; i < this->m_gameObjects.size(); i++)
@@ -705,6 +729,71 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	this->m_gameTime.start();
 	this->nrOfGameObjects = (int)this->m_gameObjects.size();
 	this->roomChangeInit();
+}
+
+static void playerInit(bool* finished, ID3D11Device* device, ID3D11DeviceContext* dContext, std::vector<Model>* modelList, Player* player, BoundingOrientedBox* pyramidOBB)
+{
+	//allocator<GameObject> allocGO;
+	//allocator<ConstBuffer<VS_CONSTANT_BUFFER>> allocCB;
+	//std::vector<GameObject*> gameObjects(5, allocGO);
+	//std::vector<ConstBuffer<VS_CONSTANT_BUFFER>> matrixCBuffers(5, allocCB);
+
+	//unsigned index = 0;
+	//GameObject* hookHand			= gameObjects[index++];
+	//GameObject* hookGem				= gameObjects[index++];
+	//GameObject* hookHandLeftWing	= gameObjects[index++];
+	//GameObject* hookHandRightWing	= gameObjects[index++];
+
+	//// Hook Head
+	//GameObject* hook = gameObjects[index++];
+	//XMVECTOR vec = DirectX::XMVectorSet(10.f, 1.f, -20.f, 1.f);
+	//addGameObjectToWorldStatic(player, hook, matrixCBuffers[index], true, false, 1, 2, &modelList->at(2), vec, XMVectorSet(.5f, .5f, .5f, 1.f), DirectX::XMFLOAT3(.5f, .5f, .5f), DirectX::XMFLOAT3(10, 10, 10), DirectX::XMFLOAT3(10, 10, 10));
+	//
+	//// Hook Hand
+	//vec = DirectX::XMVectorSet(10.f, 1.f, -20.f, 1.f);
+	//this->addGameObjectToWorld(true, false, 1, 4, &modelList->at(4), vec, XMVectorSet(.5f, .5f, .5f, 1.f), DirectX::XMFLOAT3(0, 0, 0), DirectX::XMFLOAT3(10, 10, 10), DirectX::XMFLOAT3(10, 10, 10));
+	//hookHand = this->m_gameObjects.back();
+
+	//// Hook Gem
+	//vec = DirectX::XMVectorSet(10.f, 1.f, -20.f, 1.f);
+	//this->addGameObjectToWorld(true, false, 1, 32, &modelList->at(32), vec, XMVectorSet(.5f, .5f, .5f, 1.f), DirectX::XMFLOAT3(0, 0, 0), DirectX::XMFLOAT3(10, 10, 10), DirectX::XMFLOAT3(10, 10, 10));
+	//hookGem = this->m_gameObjects.back();
+
+	//// Hook Left Wing
+	//vec = DirectX::XMVectorSet(9.f, 1.f, -20.f, 1.f);
+	//this->addGameObjectToWorld(true, false, 1, 30, &modelList->at(30), vec, XMVectorSet(.5f, .5f, .5f, 1.f), DirectX::XMFLOAT3(0, 0, 0), DirectX::XMFLOAT3(10, 10, 10), DirectX::XMFLOAT3(10, 10, 10));
+	//hookHandLeftWing = this->m_gameObjects.back();
+
+	//// Hook Right Wing
+	//vec = DirectX::XMVectorSet(11.f, 1.f, -20.f, 1.f);
+	//this->addGameObjectToWorld(true, false, 1, 31, &modelList->at(31), vec, XMVectorSet(.5f, .5f, .5f, 1.f), DirectX::XMFLOAT3(0, 0, 0), DirectX::XMFLOAT3(10, 10, 10), DirectX::XMFLOAT3(10, 10, 10));
+	//hookHandRightWing = this->m_gameObjects.back();
+
+	//// Hook Chain link
+ //   DirectX::XMFLOAT3 vecF3 = hook->getMoveCompPtr()->getPositionF3();
+	//for (size_t i = 0; i < NR_OF_CHAIN_LINKS; i++)
+	//{
+	//	vec = DirectX::XMVectorSet(vecF3.x, vecF3.y, vecF3.z - 5.f -((float)i * 0.6f), 1.f);
+	//	this->addGameObjectToWorld(true, false, 1, 5, &modelList->at(5), vec, XMVectorSet(.9f, .9f, .9f, 1.f), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
+	//	this->m_chainGObjects->push_back(this->m_gameObjects.back());
+	//}
+
+	////Possible hook gameobjects
+	//for (size_t i = 0; i < this->m_gameObjects.size(); i++)
+	//{
+	//	Platform* castToPlatform = dynamic_cast<Platform*>(this->m_gameObjects.at(i));
+	//	if (castToPlatform != nullptr)
+	//	{
+	//		m_platformBB.emplace_back(castToPlatform->getAABBPtr());
+	//	}
+	//}
+
+	//// Player
+	//player->initialize(-1, -1, 60.f, DirectX::XMFLOAT3(20.f, 20.f, 20.f), DirectX::XMFLOAT3(.01f, .01f, .01f), hook, hookHand, hookGem, hookHandLeftWing, hookHandRightWing, this->m_chainGObjects, audioEngine, m_platformBB);
+	//player->setPosition(XMVectorSet(0.f, 8.f, 0.f, 0.f));
+	//player->addPyramidOBB(pyramidOBB);
+
+	//*finished = true;
 }
 
 void GameState::update(float dt)

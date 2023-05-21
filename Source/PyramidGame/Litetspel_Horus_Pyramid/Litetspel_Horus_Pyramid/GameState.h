@@ -39,7 +39,7 @@ private:
   
 	std::vector<Room*> m_rooms;
 
-	std::vector<DirectX::BoundingBox*> platformBB;
+	std::vector<DirectX::BoundingBox*> m_platformBB;
 	std::vector<GameObject*>* m_chainGObjects;
 	bool m_gameOver;
 	
@@ -82,6 +82,9 @@ public:
 
 	// Initialization
 	void initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext, const GameOptions options, std::shared_ptr<DirectX::AudioEngine> audioEngine);
+	static void playerInit(bool* finished, ID3D11Device* device, ID3D11DeviceContext* dContext, std::vector<Model>* modelList, Player* player, BoundingOrientedBox* pyramidOBB);
+	//static void playerInit();
+	
 	// Update
 	void update(const float dt);
 	states handleInput(Keyboard* keyboard, Mouse* mouePointer, const float dt);

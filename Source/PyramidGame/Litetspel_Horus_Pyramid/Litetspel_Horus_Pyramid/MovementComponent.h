@@ -37,6 +37,7 @@ public:
 		this->up = DirectX::XMVectorSet(0.f, 1.f, 0.f, 0.f);
 		this->down = DirectX::XMVectorSet(0.f, -1.f, 0.f, 0.f);
 
+		
 		this->viewMatrix = new DirectX::XMMATRIX(DirectX::XMMatrixIdentity());
 	}
 	MovementComponent(const MovementComponent& otherMoveComponent)

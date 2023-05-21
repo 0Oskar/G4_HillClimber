@@ -75,7 +75,7 @@ void Model::loadVertexVector(ID3D11Device* device, ID3D11DeviceContext* dContext
 		this->m_material.init(device, dContext, material);
 }
 
-void Model::loadVertexFromOBJ(ID3D11Device* device, ID3D11DeviceContext* dContext, std::wstring objFilePath, MaterialData material, std::wstring texturePath)
+void Model::loadVertexFromOBJ(ID3D11Device* device, ID3D11DeviceContext* dContext, std::string modelFilePath, MaterialData material, std::wstring texturePath)
 {
 	this->m_devicePtr = device;
 	this->m_deviceContextPtr = dContext;
@@ -99,7 +99,7 @@ void Model::loadVertexFromOBJ(ID3D11Device* device, ID3D11DeviceContext* dContex
 
 	// File Stream
 	std::stringstream sStream;
-	std::ifstream inFileStream(objFilePath);
+	std::ifstream inFileStream("Models/" + modelFilePath);
 	std::string line = "";
 	std::string prefix = "";
 	DirectX::XMFLOAT3 tempF3;
@@ -208,14 +208,17 @@ void Model::loadVertexFromOBJ(ID3D11Device* device, ID3D11DeviceContext* dContex
 	}
 	else
 		this->m_material.init(device, dContext, material);
+
+	std::string loadedMessage = "OBJ Model loaded: " + modelFilePath + "\n";
+	OutputDebugStringA(loadedMessage.c_str());
 }
 
-void Model::initializeModelBff(ID3D11Device* device, ID3D11DeviceContext* dContext, std::string fileName, MaterialData material, std::wstring texturePath)
+void Model::initializeModelBff(ID3D11Device* device, ID3D11DeviceContext* dContext, std::string modelFilePath, MaterialData material, std::wstring texturePath)
 {
 	this->m_devicePtr = device;
 	this->m_deviceContextPtr = dContext;
 
-	ModelBFF myModel = myManager->LoadModel(fileName.c_str());
+	ModelBFF myModel = myManager->LoadModel(modelFilePath.c_str());
 	m_vertices.resize(myModel.mesh.nrOfVertex);
 	for (unsigned int i = 0; i < myModel.mesh.nrOfVertex; i++)
 	{
@@ -235,71 +238,73 @@ void Model::initializeModelBff(ID3D11Device* device, ID3D11DeviceContext* dConte
 	else
 		this->m_material.init(device, dContext, material);
 
-	printBffModel(myModel); //For testing
+	//printBffModel(myModel); //For testing
+	std::string loadedMessage = "BFF Model loaded: " + modelFilePath + "\n";
+	OutputDebugStringA(loadedMessage.c_str());
 }
 
 void Model::printBffModel(ModelBFF model) const
 {
-for (unsigned int i = 0; i < model.mesh.nrOfVertex; i++)
-{
-	std::string vtxNr = "\nvtx:		" + std::to_string(i) + "\n";
+	for (unsigned int i = 0; i < model.mesh.nrOfVertex; i++)
+	{
+		std::string vtxNr = "\nvtx:		" + std::to_string(i) + "\n";
 
-	std::string vtxPos = "Pos:		" + 
-		(std::to_string(model.vertexArr[i].pos[0]) + " " +
-		(std::to_string(model.vertexArr[i].pos[1])) + " " +
-		(std::to_string(model.vertexArr[i].pos[2]))) + "\n";
+		std::string vtxPos = "Pos:		" + 
+			(std::to_string(model.vertexArr[i].pos[0]) + " " +
+			(std::to_string(model.vertexArr[i].pos[1])) + " " +
+			(std::to_string(model.vertexArr[i].pos[2]))) + "\n";
 
-	std::string uv = "uv:			" + 
-		(std::to_string(model.vertexArr[i].uv[0]) + " " +
-		(std::to_string(model.vertexArr[i].uv[1]))) + "\n";
+		std::string uv = "uv:			" + 
+			(std::to_string(model.vertexArr[i].uv[0]) + " " +
+			(std::to_string(model.vertexArr[i].uv[1]))) + "\n";
 
-	std::string normal = "Normal:		" + 
-		(std::to_string(model.vertexArr[i].norm[0]) + " " +
-		(std::to_string(model.vertexArr[i].norm[1])) + " " +
-		(std::to_string(model.vertexArr[i].norm[2]))) + "\n";
+		std::string normal = "Normal:		" + 
+			(std::to_string(model.vertexArr[i].norm[0]) + " " +
+			(std::to_string(model.vertexArr[i].norm[1])) + " " +
+			(std::to_string(model.vertexArr[i].norm[2]))) + "\n";
 
-	std::string biNormal = "Binormal:	" + 
-		(std::to_string(model.vertexArr[i].biNorm[0]) + " " +
-		(std::to_string(model.vertexArr[i].biNorm[1])) + " " +
-		(std::to_string(model.vertexArr[i].biNorm[2]))) + "\n";
+		std::string biNormal = "Binormal:	" + 
+			(std::to_string(model.vertexArr[i].biNorm[0]) + " " +
+			(std::to_string(model.vertexArr[i].biNorm[1])) + " " +
+			(std::to_string(model.vertexArr[i].biNorm[2]))) + "\n";
 
-	std::string tangent = "Tan:		" + 
-		(std::to_string(model.vertexArr[i].tan[0]) + " " +
-		(std::to_string(model.vertexArr[i].tan[1])) + " " +
-		(std::to_string(model.vertexArr[i].tan[2]))) + "\n";
-
-
-
-	std::string pos = "Pos:    "+
-		(std::to_string(model.camera.pos[0]) + " " +
-		(std::to_string(model.camera.pos[1])) + " " +
-		(std::to_string(model.camera.pos[2]))) + "\n";
-
-	std::string upVec = "upVec:    " +
-		(std::to_string(model.camera.upVec[0]) + " " +
-		(std::to_string(model.camera.upVec[1])) + " " +
-		(std::to_string(model.camera.upVec[2]))) + "\n";
-
-	std::string forwardVec = "forwardVec:    " +
-		(std::to_string(model.camera.forwardVec[0]) + " " +
-		(std::to_string(model.camera.forwardVec[1])) + " " +
-		(std::to_string(model.camera.forwardVec[2]))) + "\n";
-
-	std::string nearPlane = "nearPlane:    " +
-		(std::to_string(model.camera.nearPlane) + "\n"); 
-
-
-	std::string farPlane = "farPlane:    " +
-		(std::to_string(model.camera.farPlane) + "\n");
-
-	std::string FOV = "FOV:    " +
-		(std::to_string(model.camera.FOV) + "\n");
+		std::string tangent = "Tan:		" + 
+			(std::to_string(model.vertexArr[i].tan[0]) + " " +
+			(std::to_string(model.vertexArr[i].tan[1])) + " " +
+			(std::to_string(model.vertexArr[i].tan[2]))) + "\n";
 
 
 
-	//OutputDebugStringA((vtxNr + vtxPos + uv + normal + biNormal + tangent + pos + upVec + forwardVec + nearPlane + farPlane + FOV).c_str());
-}
-//OutputDebugStringA(std::to_string(model.material.Diffuse[1]).c_str());
+		std::string pos = "Pos:    "+
+			(std::to_string(model.camera.pos[0]) + " " +
+			(std::to_string(model.camera.pos[1])) + " " +
+			(std::to_string(model.camera.pos[2]))) + "\n";
+
+		std::string upVec = "upVec:    " +
+			(std::to_string(model.camera.upVec[0]) + " " +
+			(std::to_string(model.camera.upVec[1])) + " " +
+			(std::to_string(model.camera.upVec[2]))) + "\n";
+
+		std::string forwardVec = "forwardVec:    " +
+			(std::to_string(model.camera.forwardVec[0]) + " " +
+			(std::to_string(model.camera.forwardVec[1])) + " " +
+			(std::to_string(model.camera.forwardVec[2]))) + "\n";
+
+		std::string nearPlane = "nearPlane:    " +
+			(std::to_string(model.camera.nearPlane) + "\n"); 
+
+
+		std::string farPlane = "farPlane:    " +
+			(std::to_string(model.camera.farPlane) + "\n");
+
+		std::string FOV = "FOV:    " +
+			(std::to_string(model.camera.FOV) + "\n");
+
+
+
+		//OutputDebugStringA((vtxNr + vtxPos + uv + normal + biNormal + tangent + pos + upVec + forwardVec + nearPlane + farPlane + FOV).c_str());
+	}
+	//OutputDebugStringA(std::to_string(model.material.Diffuse[1]).c_str());
 }
 
 void Model::draw(DirectX::XMMATRIX& viewProjMtx)
