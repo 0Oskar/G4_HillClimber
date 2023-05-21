@@ -2,6 +2,7 @@
 #include"pch.h"
 #include"WICTextureLoader.h"
 
+static const WCHAR* TEXTURE_PATH = L"Textures/";
 
 class ResourceHandler
 {

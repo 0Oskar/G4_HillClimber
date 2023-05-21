@@ -4,16 +4,16 @@
 
 Model::Model()
 {
-	this->m_deviceContextPtr = nullptr;
-	this->m_devicePtr = nullptr;
-	this->m_drawWithIndex = false;
+	m_deviceContextPtr = nullptr;
+	m_devicePtr = nullptr;
+	m_drawWithIndex = false;
 	myManager = &ImporterBFF::Manager::GetInstance();
 }
 
 void Model::initModel(ID3D11Device* device, ID3D11DeviceContext* dContext, MaterialData material, std::wstring texturePath)
 {
-	this->m_devicePtr = device;
-	this->m_deviceContextPtr = dContext;
+	m_devicePtr = device;
+	m_deviceContextPtr = dContext;
 
 	std::vector<Vertex> vertices
 	{
@@ -38,7 +38,7 @@ void Model::initModel(ID3D11Device* device, ID3D11DeviceContext* dContext, Mater
 			1.0f, 1.0f
 		)
 	};
-	HRESULT hr = this->m_vertexBuffer.initialize(this->m_devicePtr, vertices.data(), (int)vertices.size());
+	HRESULT hr = m_vertexBuffer.initialize(m_devicePtr, vertices.data(), (int)vertices.size());
 	assert(SUCCEEDED(hr) && "Error, vertex buffer could not be created!");
 
 	DWORD indicies[] =
@@ -46,39 +46,44 @@ void Model::initModel(ID3D11Device* device, ID3D11DeviceContext* dContext, Mater
 		0, 1, 2,
 		0, 2, 3
 	};
-	this->m_drawWithIndex = true;
-	hr = this->m_indexBuffer.init(this->m_devicePtr, indicies, ARRAYSIZE(indicies));
+	m_drawWithIndex = true;
+	hr = m_indexBuffer.init(m_devicePtr, indicies, ARRAYSIZE(indicies));
 	assert(SUCCEEDED(hr) && "Error, index buffer could not be created!");
 
 	if (texturePath != L"")
-		this->m_material.init(device, dContext, material, texturePath.c_str());
+	{
+		wstring path = (TEXTURE_PATH + texturePath);
+		m_material.init(device, dContext, material, path.c_str());
+		m_originalTexture = path;
+	}
 	else
-		this->m_material.init(device, dContext, material);
+		m_material.init(device, dContext, material);
 }
 
 void Model::loadVertexVector(ID3D11Device* device, ID3D11DeviceContext* dContext, std::vector<Vertex> vertexVector, MaterialData material, std::wstring texturePath)
 {
-	this->m_devicePtr = device;
-	this->m_deviceContextPtr = dContext;
+	m_devicePtr = device;
+	m_deviceContextPtr = dContext;
 
-	HRESULT hr = this->m_vertexBuffer.initialize(this->m_devicePtr, vertexVector.data(), (int)vertexVector.size());
+	HRESULT hr = m_vertexBuffer.initialize(m_devicePtr, vertexVector.data(), (int)vertexVector.size());
 	assert(SUCCEEDED(hr) && "Error, vertex buffer could not be created!");
 
-	this->m_vertices = vertexVector;
+	m_vertices = vertexVector;
 
 	if (texturePath != L"")
 	{
-		this->m_material.init(device, dContext, material, texturePath.c_str());
-		this->m_originalTexture = texturePath;
+		wstring path = (TEXTURE_PATH + texturePath);
+		m_material.init(device, dContext, material, path.c_str());
+		m_originalTexture = path;
 	}
 	else
-		this->m_material.init(device, dContext, material);
+		m_material.init(device, dContext, material);
 }
 
 void Model::loadVertexFromOBJ(ID3D11Device* device, ID3D11DeviceContext* dContext, std::string modelFilePath, MaterialData material, std::wstring texturePath)
 {
-	this->m_devicePtr = device;
-	this->m_deviceContextPtr = dContext;
+	m_devicePtr = device;
+	m_deviceContextPtr = dContext;
 
 	// Values Contained
 	bool hasNormals = false;
@@ -98,6 +103,7 @@ void Model::loadVertexFromOBJ(ID3D11Device* device, ID3D11DeviceContext* dContex
 	std::string materialFilePath = "";
 
 	// File Stream
+	m_modelPath = modelFilePath;
 	std::stringstream sStream;
 	std::ifstream inFileStream("Models/" + modelFilePath);
 	std::string line = "";
@@ -184,30 +190,31 @@ void Model::loadVertexFromOBJ(ID3D11Device* device, ID3D11DeviceContext* dContex
 	}
 	inFileStream.close();
 
-	this->m_vertices.resize(vertexPosIndices.size(), Vertex());
+	m_vertices.resize(vertexPosIndices.size(), Vertex());
 
 	//Load in all indices
-	for (size_t i = 0; i < this->m_vertices.size(); ++i)
+	for (size_t i = 0; i < m_vertices.size(); ++i)
 	{
-		this->m_vertices[i].position = vertexPositions[vertexPosIndices[i] - 1];
-		//this->m_vertices[i].color = vertexPositions[vertexPosIndices[i] - 1];
+		m_vertices[i].position = vertexPositions[vertexPosIndices[i] - 1];
+		//m_vertices[i].color = vertexPositions[vertexPosIndices[i] - 1];
 		if (vertexTexcoords.size())
-			this->m_vertices[i].textureCoord = vertexTexcoords[vertexTexIndices[i] - 1];
+			m_vertices[i].textureCoord = vertexTexcoords[vertexTexIndices[i] - 1];
 			
 		if (vertexNormals.size())
-			this->m_vertices[i].normal = vertexNormals[vertexNormIndices[i] - 1];
+			m_vertices[i].normal = vertexNormals[vertexNormIndices[i] - 1];
 	}
 
-	HRESULT hr = this->m_vertexBuffer.initialize(this->m_devicePtr, this->m_vertices.data(), (int)this->m_vertices.size());
+	HRESULT hr = m_vertexBuffer.initialize(m_devicePtr, m_vertices.data(), (int)m_vertices.size());
 	assert(SUCCEEDED(hr) && "Error, vertex buffer could not be created!");
 
 	if (texturePath != L"")
 	{
-		this->m_material.init(device, dContext, material, texturePath.c_str());
-		this->m_originalTexture = texturePath;
+		wstring path = (TEXTURE_PATH + texturePath);
+		m_material.init(device, dContext, material, path.c_str());
+		m_originalTexture = path;
 	}
 	else
-		this->m_material.init(device, dContext, material);
+		m_material.init(device, dContext, material);
 
 	std::string loadedMessage = "OBJ Model loaded: " + modelFilePath + "\n";
 	OutputDebugStringA(loadedMessage.c_str());
@@ -215,9 +222,10 @@ void Model::loadVertexFromOBJ(ID3D11Device* device, ID3D11DeviceContext* dContex
 
 void Model::initializeModelBff(ID3D11Device* device, ID3D11DeviceContext* dContext, std::string modelFilePath, MaterialData material, std::wstring texturePath)
 {
-	this->m_devicePtr = device;
-	this->m_deviceContextPtr = dContext;
+	m_devicePtr = device;
+	m_deviceContextPtr = dContext;
 
+	m_modelPath = modelFilePath;
 	ModelBFF myModel = myManager->LoadModel(modelFilePath.c_str());
 	m_vertices.resize(myModel.mesh.nrOfVertex);
 	for (unsigned int i = 0; i < myModel.mesh.nrOfVertex; i++)
@@ -227,16 +235,17 @@ void Model::initializeModelBff(ID3D11Device* device, ID3D11DeviceContext* dConte
 		m_vertices[i].textureCoord = XMFLOAT2(myModel.vertexArr[i].uv);
 	}
 
-	HRESULT hr = this->m_vertexBuffer.initialize(this->m_devicePtr, m_vertices.data(), (int)m_vertices.size());
+	HRESULT hr = m_vertexBuffer.initialize(m_devicePtr, m_vertices.data(), (int)m_vertices.size());
 	assert(SUCCEEDED(hr) && "Error, vertex buffer could not be created!");
 
 	if (texturePath != L"")
 	{
-		this->m_material.init(device, dContext, material, texturePath.c_str());
-		this->m_originalTexture = texturePath;
+		wstring path = (TEXTURE_PATH + texturePath);
+		m_material.init(device, dContext, material, path.c_str());
+		m_originalTexture = path;
 	}
 	else
-		this->m_material.init(device, dContext, material);
+		m_material.init(device, dContext, material);
 
 	//printBffModel(myModel); //For testing
 	std::string loadedMessage = "BFF Model loaded: " + modelFilePath + "\n";
@@ -309,15 +318,15 @@ void Model::printBffModel(ModelBFF model) const
 
 void Model::draw(DirectX::XMMATRIX& viewProjMtx)
 {
-	this->m_material.upd(this->m_deviceContextPtr);
+	m_material.upd(m_deviceContextPtr);
 
 	UINT vertexOffset = 0;
-	this->m_deviceContextPtr->IASetVertexBuffers(0, 1, this->m_vertexBuffer.GetAddressOf(), this->m_vertexBuffer.getStridePointer(), &vertexOffset);
-	this->m_deviceContextPtr->IASetIndexBuffer(this->m_indexBuffer.Get(), DXGI_FORMAT::DXGI_FORMAT_R32_UINT, 0);
+	m_deviceContextPtr->IASetVertexBuffers(0, 1, m_vertexBuffer.GetAddressOf(), m_vertexBuffer.getStridePointer(), &vertexOffset);
+	m_deviceContextPtr->IASetIndexBuffer(m_indexBuffer.Get(), DXGI_FORMAT::DXGI_FORMAT_R32_UINT, 0);
 	
-	if (this->m_drawWithIndex)
-		this->m_deviceContextPtr->DrawIndexed(this->m_indexBuffer.getSize(), 0, 0);
+	if (m_drawWithIndex)
+		m_deviceContextPtr->DrawIndexed(m_indexBuffer.getSize(), 0, 0);
 	else
-		this->m_deviceContextPtr->Draw(this->m_vertexBuffer.getSize(), 0);
+		m_deviceContextPtr->Draw(m_vertexBuffer.getSize(), 0);
 
 }

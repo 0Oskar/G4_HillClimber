@@ -20,7 +20,7 @@ private:
 public:
 	WinState();
 	~WinState();
-	void initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext, const GameOptions options, std::shared_ptr<DirectX::AudioEngine> audioEngine);
+	void initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext, const GameOptions options, std::shared_ptr<DirectX::AudioEngine> audioEngine, volatile bool* doneLoadingModels);
 	void update(const float dt);
 	void afterChange();
 	states handleInput(Keyboard* keyboard, Mouse* mousePtr, const float dt);

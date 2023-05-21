@@ -23,19 +23,19 @@ class GameState : public iGameState
 {
 private:
 	//Edvin stuff for map
-	float playerHeight;
-	float pyramidHeight;
-	float playerPosY;
-	float markerTop;
-	float markerBottom;
-	float difference;
-	float markerPosY;
+	float m_playerHeight;
+	float m_pyramidHeight;
+	float m_playerPosY;
+	float m_markerTop;
+	float m_markerBottom;
+	float m_difference;
+	float m_markerPosY;
 
 	Player m_player;
 	Timer m_gameTime;
 	DirectX::BoundingOrientedBox m_pyramidOBB;
 	Room* m_activeRoom;
-	int nrOfGameObjects;
+	int m_nrOfGameObjects;
   
 	std::vector<Room*> m_rooms;
 
@@ -81,7 +81,7 @@ public:
 	std::wstring getRoomUITexturePath();
 
 	// Initialization
-	void initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext, const GameOptions options, std::shared_ptr<DirectX::AudioEngine> audioEngine);
+	void initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext, const GameOptions options, std::shared_ptr<DirectX::AudioEngine> audioEngine, volatile bool* doneLoadingModels);
 	static void playerInit(bool* finished, ID3D11Device* device, ID3D11DeviceContext* dContext, std::vector<Model>* modelList, Player* player, BoundingOrientedBox* pyramidOBB);
 	//static void playerInit();
 	

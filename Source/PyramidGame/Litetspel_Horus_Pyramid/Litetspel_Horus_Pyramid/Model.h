@@ -31,5 +31,5 @@ public:
 	Material m_material;
 
 	std::wstring m_originalTexture;
-
+	std::string m_modelPath; // Makes it easier to debug
 };

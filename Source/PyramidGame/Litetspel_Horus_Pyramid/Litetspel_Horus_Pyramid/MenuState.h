@@ -2,6 +2,8 @@
 #include"iGameState.h"
 #include"PyramidRoom.h"
 
+#define MODEL_COUNT 50
+
 class MenuState : public iGameState
 {
 private:
@@ -17,7 +19,7 @@ private:
 	const XMVECTOR m_lookAtPosConst = { 0, 200, 150 };
 
 	//Sound
-	const std::wstring menuSound = L"Sounds/MainMenu.wav";
+	const std::wstring m_menuSound = L"Sounds/MainMenu.wav";
 
 	// UI
 	ID3D11ShaderResourceView* m_titelImage;
@@ -25,13 +27,14 @@ private:
 	DirectX::XMFLOAT2 m_titelImagePosition;
 	DirectX::XMFLOAT2 m_infoImagePosition;
 
+	volatile bool* m_doneLoadingModelsPtr;
+	void loadModels();
 public:
 	MenuState();
 	~MenuState();
-	void initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext, const GameOptions options, std::shared_ptr<DirectX::AudioEngine> audioEngine);
+	void initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext, const GameOptions options, std::shared_ptr<DirectX::AudioEngine> audioEngine, volatile bool* doneLoadingModels);
 	void update(const float dt);
 	void afterChange();
-	void loadModels();
 	states handleInput(Keyboard* keyboard, Mouse* mousePtr, const float dt);
 
 	// Getters
@@ -50,4 +53,5 @@ public:
 	void onLeave();
 	void onPop();
 
+	static void loadModelsThreadSafe(volatile bool* doneLoadingModels, Model* modelListPtr, ID3D11Device* device, ID3D11DeviceContext* dContext);
 };

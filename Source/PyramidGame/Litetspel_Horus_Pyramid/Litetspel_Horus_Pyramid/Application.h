@@ -20,8 +20,10 @@ private:
 	HDEVNOTIFY m_hNewAudio;
 	bool m_resetAudio;
 	std::shared_ptr<DirectX::AudioEngine> m_audioEngine;
+
 	std::stack<iGameState*> m_gameStateStack;
 	bool m_shouldQuit;
+	volatile bool m_doneLoadingModels;
 
 	void audioUpdate();
 
@@ -44,7 +46,7 @@ public:
 	void applicationLoop();
 	void pushNewState(const states state);
 	void GameStateChecks();
-	void newAudioDevice() { this->m_resetAudio = true; OutputDebugString(L"New Audio Device!"); }
+	void newAudioDevice() { m_resetAudio = true; OutputDebugString(L"New Audio Device!"); }
 
 	Input m_input;
 	HWND m_window;

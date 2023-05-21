@@ -55,7 +55,7 @@ void WinState::setupLight()
 	this->m_constantbufferData.dirBuffer.lightDirection = { 1, 1, 1, 1 };
 }
 
-void WinState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext, GameOptions options, std::shared_ptr<DirectX::AudioEngine> audioEngine)
+void WinState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext, GameOptions options, std::shared_ptr<DirectX::AudioEngine> audioEngine, volatile bool* doneLoadingModels)
 {
 
 

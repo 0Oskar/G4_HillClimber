@@ -7,14 +7,15 @@ extern Application* g_App;
 
 Application::Application()
 {
-	this->m_gameOptions.height = 600;
-	this->m_gameOptions.width = 600;
-	this->m_gameOptions.fov = 40;
-	this->m_gameOptions.mouseSensitivity = 0.1f;
-	this->m_gameOptions.name = "undefined";
-	this->m_deltaTime = 0.f;
-	this->m_resetAudio = false;
-	this->m_shouldQuit = false;
+	m_gameOptions.height = 600;
+	m_gameOptions.width = 600;
+	m_gameOptions.fov = 40;
+	m_gameOptions.mouseSensitivity = 0.1f;
+	m_gameOptions.name = "undefined";
+	m_deltaTime = 0.f;
+	m_resetAudio = false;
+	m_shouldQuit = false;
+	m_doneLoadingModels = false;
 }
 
 Application::~Application()
@@ -24,17 +25,17 @@ Application::~Application()
 
 void Application::stateChange()
 {
-	iGameState* gameState = this->m_gameStateStack.top();
-	this->m_viewLayerPtr->setViewMatrix(gameState->getViewMatrix());
-	this->m_viewLayerPtr->setProjectionMatrix(gameState->getProjectionMatrix());
-	this->m_viewLayerPtr->setModelsFromState(gameState->getModelsPtr());
-	this->m_viewLayerPtr->setgameObjectsFromState(gameState->getGameObjectsPtr());
-	this->m_viewLayerPtr->setBoundingBoxesFromActiveRoom(gameState->getActiveRoomBoundingBoxesPtr());
-	this->m_viewLayerPtr->setOrientedBoundingBoxesFromActiveRoom(gameState->getActiveRoomOrientedBoundingBoxesPtr());
-	this->m_viewLayerPtr->setWvpCBufferFromState(gameState->getWvpCBuffersPtr());
-	this->m_viewLayerPtr->setConstantBuffersFromGameState(gameState->getConstantBufferData());
+	iGameState* gameState = m_gameStateStack.top();
+	m_viewLayerPtr->setViewMatrix(gameState->getViewMatrix());
+	m_viewLayerPtr->setProjectionMatrix(gameState->getProjectionMatrix());
+	m_viewLayerPtr->setModelsFromState(gameState->getModelsPtr());
+	m_viewLayerPtr->setgameObjectsFromState(gameState->getGameObjectsPtr());
+	m_viewLayerPtr->setBoundingBoxesFromActiveRoom(gameState->getActiveRoomBoundingBoxesPtr());
+	m_viewLayerPtr->setOrientedBoundingBoxesFromActiveRoom(gameState->getActiveRoomOrientedBoundingBoxesPtr());
+	m_viewLayerPtr->setWvpCBufferFromState(gameState->getWvpCBuffersPtr());
+	m_viewLayerPtr->setConstantBuffersFromGameState(gameState->getConstantBufferData());
 	gameState->onEntry();
-	//gameState->updateCustomViewLayerVariables(this->m_viewLayerPtr.get());
+	//gameState->updateCustomViewLayerVariables(m_viewLayerPtr.get());
 }
 
 bool Application::initApplication(HINSTANCE hInstance, LPWSTR lpCmdLine, HWND hWnd, int nShowCmd)
@@ -46,12 +47,12 @@ bool Application::initApplication(HINSTANCE hInstance, LPWSTR lpCmdLine, HWND hW
 	//ShowCursor(FALSE);
 	//TODO: Check if we have sufficient resources
 
-	this->loadGameOptions("GameOptions.xml");
+	loadGameOptions("GameOptions.xml");
 
-	this->createWin32Window(hInstance, WINDOWTILE, hWnd);//Create Window
+	createWin32Window(hInstance, WINDOWTILE, hWnd);//Create Window
 	OutputDebugStringA("Window Created!\n");
 
-	this->m_window = hWnd;
+	m_window = hWnd;
 
 	DirectX::AUDIO_ENGINE_FLAGS audioFlag = DirectX::AudioEngine_EnvironmentalReverb
 		| DirectX::AudioEngine_ReverbUseFilters;
@@ -66,15 +67,15 @@ bool Application::initApplication(HINSTANCE hInstance, LPWSTR lpCmdLine, HWND hW
 		OutputDebugString(L"AudioError: No audio device found");
 	}
 
-	this->m_viewLayerPtr = std::make_unique<ViewLayer>();
-	this->m_viewLayerPtr->initialize(this->m_window, &this->m_gameOptions);
+	m_viewLayerPtr = std::make_unique<ViewLayer>();
+	m_viewLayerPtr->initialize(m_window, &m_gameOptions);
 	
-	this->m_gameStateStack.push(new MenuState());
-	this->m_gameStateStack.top()->initlialize(this->m_viewLayerPtr->getDevice(), this->m_viewLayerPtr->getContextDevice(), this->m_gameOptions, this->m_audioEngine);
+	m_gameStateStack.push(new MenuState());
+	m_gameStateStack.top()->initlialize(m_viewLayerPtr->getDevice(), m_viewLayerPtr->getContextDevice(), m_gameOptions, m_audioEngine, &m_doneLoadingModels);
 	stateChange();
 
 	
-	this->m_timer.start();
+	m_timer.start();
 
 	RAWINPUTDEVICE rawIDevice;
 	rawIDevice.usUsagePage = 0x01;
@@ -84,7 +85,7 @@ bool Application::initApplication(HINSTANCE hInstance, LPWSTR lpCmdLine, HWND hW
 	if (RegisterRawInputDevices(&rawIDevice, 1, sizeof(rawIDevice)) == FALSE)
 		return false;
 
-	ShowWindow(this->m_window, nShowCmd);
+	ShowWindow(m_window, nShowCmd);
 
 	return true;
 }
@@ -148,8 +149,8 @@ void Application::createWin32Window(HINSTANCE hInstance, const wchar_t* windowTi
 		WS_OVERLAPPEDWINDOW,        // Window style
 		CW_USEDEFAULT,				// Position, X
 		CW_USEDEFAULT,				// Position, Y
-		this->m_gameOptions.width,	// Width
-		this->m_gameOptions.height,	// Height
+		m_gameOptions.width,	// Width
+		m_gameOptions.height,	// Height
 		NULL,						// Parent window    
 		NULL,						// Menu
 		hInstance,					// Instance handle
@@ -163,7 +164,7 @@ void Application::createWin32Window(HINSTANCE hInstance, const wchar_t* windowTi
 	filter.dbcc_devicetype = DBT_DEVTYP_DEVICEINTERFACE;
 	filter.dbcc_classguid = KSCATEGORY_AUDIO;
 
-	this->m_hNewAudio = RegisterDeviceNotification(_d3d11Window, &filter,
+	m_hNewAudio = RegisterDeviceNotification(_d3d11Window, &filter,
 		DEVICE_NOTIFY_WINDOW_HANDLE);
 }
 
@@ -182,11 +183,11 @@ bool Application::loadGameOptions(std::string fileName)
 		}
 
 		//Here you can load any options you add into GameOptions.xml
-		this->m_gameOptions.height = std::stoi(optionsMap.at("Height"));
-		this->m_gameOptions.width = std::stoi(optionsMap.at("Width"));
-		this->m_gameOptions.fov = std::stof(optionsMap.at("FOV"));
-		this->m_gameOptions.mouseSensitivity = std::stof(optionsMap.at("mouseSensitivity"));
-		this->m_gameOptions.name = optionsMap.at("name");
+		m_gameOptions.height = std::stoi(optionsMap.at("Height"));
+		m_gameOptions.width = std::stoi(optionsMap.at("Width"));
+		m_gameOptions.fov = std::stof(optionsMap.at("FOV"));
+		m_gameOptions.mouseSensitivity = std::stof(optionsMap.at("mouseSensitivity"));
+		m_gameOptions.name = optionsMap.at("name");
 	}
 
 	return result;
@@ -206,30 +207,32 @@ void Application::applicationLoop()
 		else // Render/Logic Loop
 		{
 			// Delta Time
-			this->m_deltaTime = (float)m_timer.timeElapsed();
+			m_deltaTime = (float)m_timer.timeElapsed();
 			m_timer.restart();
 
 			// Draw Collision Primitives
-			if (this->m_input.getKeyboard()->isKeyPressed('T'))
-				this->m_viewLayerPtr->toggleDrawPrimitives(true);
+			if (m_input.getKeyboard()->isKeyPressed('T'))
+				m_viewLayerPtr->toggleDrawPrimitives(true);
 
-			if (this->m_input.getKeyboard()->isKeyPressed('G'))
-				this->m_viewLayerPtr->toggleDrawPrimitives(false);
+			if (m_input.getKeyboard()->isKeyPressed('G'))
+				m_viewLayerPtr->toggleDrawPrimitives(false);
 
-			this->GameStateChecks();
+			GameStateChecks();
 			// Update Layers
-			fetchedState = this->m_gameStateStack.top()->handleInput(this->m_input.getKeyboard(), this->m_input.getMouse(), this->m_deltaTime);
+			fetchedState = m_gameStateStack.top()->handleInput(m_input.getKeyboard(), m_input.getMouse(), m_deltaTime);
 			if (fetchedState != states::NONE)
 				pushNewState(fetchedState);
+
 			if (!m_shouldQuit)
 			{
-				this->m_gameStateStack.top()->update(this->m_deltaTime);
-			
-				//this->m_input.readBuffers();
-				this->audioUpdate();
+				m_gameStateStack.top()->update(m_deltaTime);
+				if (m_doneLoadingModels)
+				{
+					audioUpdate();
 
-				this->m_viewLayerPtr->update(this->m_deltaTime, this->m_gameStateStack.top()->getCameraPos());
-				this->m_viewLayerPtr->render(this->m_gameStateStack.top());
+				}
+				m_viewLayerPtr->update(m_deltaTime, m_gameStateStack.top()->getCameraPos());
+				m_viewLayerPtr->render(m_gameStateStack.top());
 			}
 		}
 	}
@@ -240,8 +243,8 @@ void Application::pushNewState(states state)
 	int gameTime = 0;
 	//If we enter this function we always push or pop something
 	bool newState = false;
-	std::vector<Model>* mdlPointer = this->m_gameStateStack.top()->getModelsPtr();
-	this->m_gameStateStack.top()->onLeave();
+	std::vector<Model>* mdlPointer = m_gameStateStack.top()->getModelsPtr();
+	m_gameStateStack.top()->onLeave();
 	switch (state)
 	{
 	case states::NONE:
@@ -249,19 +252,19 @@ void Application::pushNewState(states state)
 	case states::MENU:
 		break;
 	case states::GAME:
-		this->m_gameStateStack.push(new GameState());
+		m_gameStateStack.push(new GameState());
 		newState = true;
 		break;
 	case states::PAUSE:
 		break;
 	case states::POP:
-		delete this->m_gameStateStack.top();
-		this->m_gameStateStack.pop();
+		delete m_gameStateStack.top();
+		m_gameStateStack.pop();
 		break;
 	case states::WON:
-		gameTime = (int)dynamic_cast<GameState*>(this->m_gameStateStack.top())->getGameTimerPtr()->timeElapsed();
-		this->m_gameStateStack.push(new WinState);
-		dynamic_cast<WinState*>(this->m_gameStateStack.top())->setGameTime(gameTime);
+		gameTime = (int)dynamic_cast<GameState*>(m_gameStateStack.top())->getGameTimerPtr()->timeElapsed();
+		m_gameStateStack.push(new WinState);
+		dynamic_cast<WinState*>(m_gameStateStack.top())->setGameTime(gameTime);
 		newState = true;
 		break;
 	default:
@@ -270,13 +273,13 @@ void Application::pushNewState(states state)
 
 	if (newState)
 	{
-		this->m_gameStateStack.top()->setModelPointer(mdlPointer);
-		this->m_gameStateStack.top()->initlialize(this->m_viewLayerPtr->getDevice(), this->m_viewLayerPtr->getContextDevice(), this->m_gameOptions, this->m_audioEngine);
+		m_gameStateStack.top()->setModelPointer(mdlPointer);
+		m_gameStateStack.top()->initlialize(m_viewLayerPtr->getDevice(), m_viewLayerPtr->getContextDevice(), m_gameOptions, m_audioEngine, &m_doneLoadingModels);
 	}
-	if (this->m_gameStateStack.size() <= 0)
+	if (m_gameStateStack.size() <= 0)
 	{
 		PostQuitMessage(-1);
-		this->m_shouldQuit = true;
+		m_shouldQuit = true;
 	}
 	else
 	{
@@ -286,7 +289,7 @@ void Application::pushNewState(states state)
 
 void Application::GameStateChecks()
 {
-	iGameState* gameState = this->m_gameStateStack.top();
+	iGameState* gameState = m_gameStateStack.top();
 	if (gameState->m_majorChange)
 	{
 		stateChange();
@@ -306,7 +309,7 @@ void Application::audioUpdate()
 		{
 
 		}
-		this->m_resetAudio = false;
+		m_resetAudio = false;
 	}
 	else if (!m_audioEngine->Update())
 	{
