@@ -55,6 +55,7 @@ public:
 
 	// Update
 	void respawn();
+	void respawnLogic();
 	void updateHookHandBB(std::vector<DirectX::BoundingBox*> platformBB);
 	void update(float dt);
 	void shoot();

@@ -209,7 +209,6 @@ EdvinsRoom::EdvinsRoom()
 	Room::initParent();
 	this->m_entrencePosition = { -60, -3, -1, 1 };
 
-	
 	//Green light from portal
 	PointLight light;
 	light.plPosition = { -268.5, 4, 200 };
@@ -452,7 +451,7 @@ void EdvinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 void EdvinsRoom::onEntrance()
 {
 	Room::onEntrance();
-	this->m_player->setSpawnPosition(this->getEntrancePosition());
+	m_player->setSpawnPosition(this->getEntrancePosition());
 }
 
 void EdvinsRoom::init()

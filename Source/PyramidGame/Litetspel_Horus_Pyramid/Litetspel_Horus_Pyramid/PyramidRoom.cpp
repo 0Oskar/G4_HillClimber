@@ -138,8 +138,9 @@ std::vector<DirectX::BoundingBox*> PyramidRoom::getBBForHook()
 
 void PyramidRoom::onEntrance()
 {
-	Room::onEntrance();
 	this->m_gameTimerPointer->start();
+	m_player->setSpawnPosition(getEntrancePosition());
+
 	// Set respawn with current checkpoint
 	std::pair<int, XMVECTOR> checkpoint = this->m_checkpointHandler.getCurrent();
 	if (checkpoint.first != -1)

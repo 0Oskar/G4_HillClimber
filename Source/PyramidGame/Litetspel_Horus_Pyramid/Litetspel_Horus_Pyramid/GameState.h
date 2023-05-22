@@ -82,8 +82,7 @@ public:
 
 	// Initialization
 	void initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext, const GameOptions options, std::shared_ptr<DirectX::AudioEngine> audioEngine, volatile bool* doneLoadingModels);
-	static void playerInit(bool* finished, ID3D11Device* device, ID3D11DeviceContext* dContext, std::vector<Model>* modelList, Player* player, BoundingOrientedBox* pyramidOBB);
-	//static void playerInit();
+	//static void playerInit(bool* finished, ID3D11Device* device, ID3D11DeviceContext* dContext, std::vector<Model>* modelList, Player* player, BoundingOrientedBox* pyramidOBB);
 	
 	// Update
 	void update(const float dt);

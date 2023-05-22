@@ -941,7 +941,7 @@ states GameState::handleInput(Keyboard* keyboard, Mouse* mousePtr, float dt)
 		// For Debugging purposes
 		if (keyboard->isKeyPressed('R'))
 		{
-			m_player.getMoveCompPtr()->position = DirectX::XMVectorSet(-25.f, 6.f, -70.f, 1.f);
+			m_player.respawnLogic();
 			m_player.resetVelocity(); // Reset Velocity
 		}
 	}

@@ -12,13 +12,7 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Application.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="pch.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="ViewLayer.cpp">
@@ -51,9 +45,6 @@
     <ClCompile Include="HookHand.cpp">
       <Filter>Source\Game Logic</Filter>
     </ClCompile>
-    <ClCompile Include="DebugDraw.cpp">
-      <Filter>Source\Utilites</Filter>
-    </ClCompile>
     <ClCompile Include="Chain.cpp">
       <Filter>Source\Game Logic</Filter>
     </ClCompile>
@@ -65,9 +56,6 @@
     </ClCompile>
     <ClCompile Include="Shaders.cpp">
       <Filter>Source\View</Filter>
-    </ClCompile>
-    <ClCompile Include="Room.cpp">
-      <Filter>Source\Game Logic</Filter>
     </ClCompile>
     <ClCompile Include="TemplateRoom.cpp">
       <Filter>Source\Game Logic\Rooms</Filter>
@@ -103,9 +91,6 @@
     <ClCompile Include="MenuState.cpp">
       <Filter>Source\Game Logic\GameStates</Filter>
     </ClCompile>
-    <ClCompile Include="pugixml.cpp">
-      <Filter>Source\Utilites</Filter>
-    </ClCompile>
     <ClCompile Include="ShadowMapInstance.cpp">
       <Filter>Source\View</Filter>
     </ClCompile>
@@ -115,154 +100,169 @@
     <ClCompile Include="FindGemsRoom.cpp">
       <Filter>Source\Game Logic\Rooms</Filter>
     </ClCompile>
-    <ClCompile Include="circleAroundObject.cpp">
-      <Filter>Source\RotationalFiles</Filter>
-    </ClCompile>
     <ClCompile Include="WinState.cpp">
       <Filter>Source\Game Logic\GameStates</Filter>
     </ClCompile>
+    <ClCompile Include="Application.cpp">
+      <Filter>Source\Application</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Header</Filter>
+    </ClCompile>
+    <ClCompile Include="circleAroundObject.cpp">
+      <Filter>Header\Utilites</Filter>
+    </ClCompile>
+    <ClCompile Include="pugixml.cpp">
+      <Filter>Header\Utilites</Filter>
+    </ClCompile>
+    <ClCompile Include="DebugDraw.cpp">
+      <Filter>Header\Utilites</Filter>
+    </ClCompile>
+    <ClCompile Include="Room.cpp">
+      <Filter>Source\Game Logic\Rooms</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Application.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="pch.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="ViewLayer.h">
-      <Filter>Header\View</Filter>
-    </ClInclude>
-    <ClInclude Include="VertexBuffer.h">
-      <Filter>Header\View</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>Header\View</Filter>
-    </ClInclude>
-    <ClInclude Include="ConstantBuffer.h">
-      <Filter>Header\View</Filter>
-    </ClInclude>
-    <ClInclude Include="Player.h">
-      <Filter>Header\Game Logic</Filter>
-    </ClInclude>
     <ClInclude Include="MovementComponent.h">
-      <Filter>Header\Component</Filter>
-    </ClInclude>
-    <ClInclude Include="Input.h">
-      <Filter>Header\Application</Filter>
-    </ClInclude>
-    <ClInclude Include="Input_Mouse.h">
-      <Filter>Header\Application</Filter>
-    </ClInclude>
-    <ClInclude Include="Input_Keyboard.h">
-      <Filter>Header\Application</Filter>
-    </ClInclude>
-    <ClInclude Include="Model.h">
-      <Filter>Header\View</Filter>
-    </ClInclude>
-    <ClInclude Include="Timer.h">
-      <Filter>Header\Application</Filter>
-    </ClInclude>
-    <ClInclude Include="IndexBuffer.h">
-      <Filter>Header\View</Filter>
+      <Filter>Source\Game Logic\Component</Filter>
     </ClInclude>
     <ClInclude Include="PhysicsComponent.h">
-      <Filter>Header\Component</Filter>
-    </ClInclude>
-    <ClInclude Include="GameObject.h">
-      <Filter>Header\Game Logic</Filter>
-    </ClInclude>
-    <ClInclude Include="Material.h">
-      <Filter>Header\View</Filter>
-    </ClInclude>
-    <ClInclude Include="HookHand.h">
-      <Filter>Header\Game Logic</Filter>
+      <Filter>Source\Game Logic\Component</Filter>
     </ClInclude>
     <ClInclude Include="DebugDraw.h">
       <Filter>Header\Utilites</Filter>
     </ClInclude>
-    <ClInclude Include="BoundingPrim.h">
-      <Filter>Header\Game Logic</Filter>
-    </ClInclude>
-    <ClInclude Include="Chain.h">
-      <Filter>Header\Game Logic</Filter>
-    </ClInclude>
-    <ClInclude Include="Platform.h">
-      <Filter>Header\Game Logic\GameObjects</Filter>
-    </ClInclude>
     <ClInclude Include="AudioComponent.h">
-      <Filter>Header\Component</Filter>
-    </ClInclude>
-    <ClInclude Include="ResourceHandler.h">
-      <Filter>Header\Application</Filter>
-    </ClInclude>
-    <ClInclude Include="Shaders.h">
-      <Filter>Header\View</Filter>
-    </ClInclude>
-    <ClInclude Include="Room.h">
-      <Filter>Header\Game Logic</Filter>
-    </ClInclude>
-    <ClInclude Include="TemplateRoom.h">
-      <Filter>Header\Game Logic\Rooms</Filter>
-    </ClInclude>
-    <ClInclude Include="Portal.h">
-      <Filter>Header\Game Logic\GameObjects</Filter>
-    </ClInclude>
-    <ClInclude Include="CheckpointHandler.h">
-      <Filter>Header\Game Logic</Filter>
-    </ClInclude>
-    <ClInclude Include="Lever.h">
-      <Filter>Header\Game Logic\GameObjects</Filter>
-    </ClInclude>
-    <ClInclude Include="PyramidRoom.h">
-      <Filter>Header\Game Logic\Rooms</Filter>
-    </ClInclude>
-    <ClInclude Include="KevinsRoom.h">
-      <Filter>Header\Game Logic\Rooms</Filter>
+      <Filter>Source\Game Logic\Component</Filter>
     </ClInclude>
     <ClInclude Include="PyramidMathTools.h">
       <Filter>Header\Utilites</Filter>
     </ClInclude>
-    <ClInclude Include="EdvinsRoom.h">
-      <Filter>Header\Game Logic\Rooms</Filter>
+    <ClInclude Include="BoundingPrim.h">
+      <Filter>Source\Game Logic</Filter>
     </ClInclude>
-    <ClInclude Include="followingEnemy.h">
-      <Filter>Header\Game Logic\GameObjects</Filter>
+    <ClInclude Include="Chain.h">
+      <Filter>Source\Game Logic</Filter>
     </ClInclude>
-    <ClInclude Include="TristansRoom.h">
-      <Filter>Header\Game Logic\Rooms</Filter>
+    <ClInclude Include="CheckpointHandler.h">
+      <Filter>Source\Game Logic</Filter>
     </ClInclude>
-    <ClInclude Include="finalRoom.h">
-      <Filter>Header\Game Logic\Rooms</Filter>
+    <ClInclude Include="GameObject.h">
+      <Filter>Source\Game Logic</Filter>
     </ClInclude>
-    <ClInclude Include="StatusTextHandler.h">
-      <Filter>Header\View</Filter>
+    <ClInclude Include="HookHand.h">
+      <Filter>Source\Game Logic</Filter>
     </ClInclude>
-    <ClInclude Include="iGameState.h">
-      <Filter>Header\Game Logic\GameStates</Filter>
+    <ClInclude Include="Player.h">
+      <Filter>Source\Game Logic</Filter>
     </ClInclude>
-    <ClInclude Include="GameState.h">
-      <Filter>Header\Game Logic\GameStates</Filter>
+    <ClInclude Include="Application.h">
+      <Filter>Source\Application</Filter>
     </ClInclude>
-    <ClInclude Include="MenuState.h">
-      <Filter>Header\Game Logic\GameStates</Filter>
+    <ClInclude Include="pch.h">
+      <Filter>Header</Filter>
     </ClInclude>
-    <ClInclude Include="ShadowMapInstance.h">
-      <Filter>Header\View</Filter>
+    <ClInclude Include="Timer.h">
+      <Filter>Source\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="Input.h">
+      <Filter>Source\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="Input_Keyboard.h">
+      <Filter>Source\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="Input_Mouse.h">
+      <Filter>Source\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceHandler.h">
+      <Filter>Source\Application</Filter>
     </ClInclude>
     <ClInclude Include="Bell.h">
-      <Filter>Header\Game Logic\GameObjects</Filter>
+      <Filter>Source\Game Logic\GameObjects</Filter>
     </ClInclude>
-    <ClInclude Include="FindGemsRoom.h">
-      <Filter>Header\Game Logic\Rooms</Filter>
+    <ClInclude Include="followingEnemy.h">
+      <Filter>Source\Game Logic\GameObjects</Filter>
     </ClInclude>
-    <ClInclude Include="circleAroundObject.h">
-      <Filter>Header\RotationalFiles</Filter>
+    <ClInclude Include="Lever.h">
+      <Filter>Source\Game Logic\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Platform.h">
+      <Filter>Source\Game Logic\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Portal.h">
+      <Filter>Source\Game Logic\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="GameState.h">
+      <Filter>Source\Game Logic\GameStates</Filter>
+    </ClInclude>
+    <ClInclude Include="iGameState.h">
+      <Filter>Source\Game Logic\GameStates</Filter>
+    </ClInclude>
+    <ClInclude Include="MenuState.h">
+      <Filter>Source\Game Logic\GameStates</Filter>
     </ClInclude>
     <ClInclude Include="WinState.h">
-      <Filter>Header\Game Logic\GameStates</Filter>
+      <Filter>Source\Game Logic\GameStates</Filter>
+    </ClInclude>
+    <ClInclude Include="circleAroundObject.h">
+      <Filter>Header\Utilites</Filter>
+    </ClInclude>
+    <ClInclude Include="TristansRoom.h">
+      <Filter>Source\Game Logic\Rooms</Filter>
+    </ClInclude>
+    <ClInclude Include="EdvinsRoom.h">
+      <Filter>Source\Game Logic\Rooms</Filter>
+    </ClInclude>
+    <ClInclude Include="finalRoom.h">
+      <Filter>Source\Game Logic\Rooms</Filter>
+    </ClInclude>
+    <ClInclude Include="FindGemsRoom.h">
+      <Filter>Source\Game Logic\Rooms</Filter>
+    </ClInclude>
+    <ClInclude Include="KevinsRoom.h">
+      <Filter>Source\Game Logic\Rooms</Filter>
+    </ClInclude>
+    <ClInclude Include="PyramidRoom.h">
+      <Filter>Source\Game Logic\Rooms</Filter>
+    </ClInclude>
+    <ClInclude Include="TemplateRoom.h">
+      <Filter>Source\Game Logic\Rooms</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Source\View</Filter>
+    </ClInclude>
+    <ClInclude Include="ConstantBuffer.h">
+      <Filter>Source\View</Filter>
+    </ClInclude>
+    <ClInclude Include="IndexBuffer.h">
+      <Filter>Source\View</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>Source\View</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>Source\View</Filter>
+    </ClInclude>
+    <ClInclude Include="Shaders.h">
+      <Filter>Source\View</Filter>
+    </ClInclude>
+    <ClInclude Include="ShadowMapInstance.h">
+      <Filter>Source\View</Filter>
+    </ClInclude>
+    <ClInclude Include="StatusTextHandler.h">
+      <Filter>Source\View</Filter>
     </ClInclude>
     <ClInclude Include="Transition.h">
-      <Filter>Header\View</Filter>
+      <Filter>Source\View</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexBuffer.h">
+      <Filter>Source\View</Filter>
+    </ClInclude>
+    <ClInclude Include="ViewLayer.h">
+      <Filter>Source\View</Filter>
+    </ClInclude>
+    <ClInclude Include="Room.h">
+      <Filter>Source\Game Logic\Rooms</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -278,23 +278,11 @@
     <Filter Include="Source">
       <UniqueIdentifier>{f46278f2-671b-489f-bf85-756d106189ff}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header\View">
-      <UniqueIdentifier>{4c07c2d2-43c7-408c-a089-862bfaf0a2ea}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\View">
       <UniqueIdentifier>{f32f945d-d78a-4e88-920d-611972532cee}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header\Game Logic">
-      <UniqueIdentifier>{87335f24-2bb1-4c9c-87e7-1c6269fd7fea}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\Game Logic">
       <UniqueIdentifier>{cd5f00ab-8e73-4d95-a5e7-9d1dc118c879}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header\Component">
-      <UniqueIdentifier>{4fce57e3-555f-450d-8c3b-dce75d072a1a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header\Application">
-      <UniqueIdentifier>{b1a38e30-6e4b-416e-ab0b-f5780fb82f57}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source\Application">
       <UniqueIdentifier>{f8445f47-a972-44ab-9744-372cc19a2fbc}</UniqueIdentifier>
@@ -302,36 +290,25 @@
     <Filter Include="Header\Utilites">
       <UniqueIdentifier>{676380be-c6ba-4b54-aaf8-96063f3eacd2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Utilites">
-      <UniqueIdentifier>{bbc6c7d8-d633-4195-af44-b7eb7af64222}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header\Game Logic\GameObjects">
-      <UniqueIdentifier>{37e24367-417c-4768-a23c-e21bc4b7e941}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\Game Logic\GameObjects">
       <UniqueIdentifier>{2a608483-c701-4962-8eac-d4af998bd525}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source\Game Logic\Rooms">
       <UniqueIdentifier>{86a151c3-0c31-4e96-9dd7-aae14e610154}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header\Game Logic\Rooms">
-      <UniqueIdentifier>{62ba70f7-e626-4e2a-95af-a1c201023870}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header\Game Logic\GameStates">
-      <UniqueIdentifier>{7ebbd474-41df-4d8e-8a40-45fc23e72100}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\Game Logic\GameStates">
       <UniqueIdentifier>{5813678a-7fa9-4e91-a54f-a52102af6a53}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header\RotationalFiles">
-      <UniqueIdentifier>{b9f5b7d6-3b6b-4417-9e0c-9b47009f3868}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\RotationalFiles">
-      <UniqueIdentifier>{823bbb62-e776-430f-b6d9-1f4bee21286c}</UniqueIdentifier>
+    <Filter Include="Source\Game Logic\Component">
+      <UniqueIdentifier>{4fce57e3-555f-450d-8c3b-dce75d072a1a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Shader Files\PixelShader.hlsl" />
-    <Text Include="Shader Files\TransitionPS.hlsl" />
+    <Text Include="Shader Files\TransitionPS.hlsl">
+      <Filter>Shaders</Filter>
+    </Text>
+    <Text Include="Shader Files\PixelShader.hlsl">
+      <Filter>Shaders</Filter>
+    </Text>
   </ItemGroup>
 </Project>

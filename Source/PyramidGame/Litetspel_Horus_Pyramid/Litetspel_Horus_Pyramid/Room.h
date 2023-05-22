@@ -47,7 +47,7 @@ public:
 	virtual void update(const float dt, Camera* camera, Room*& activeRoom, bool& activeRoomChanged) = 0;
 	virtual void init() {};
 	virtual void portals() {};
-	virtual void onEntrance() { this->m_gameTimerPointer->stop(); };
+	virtual void onEntrance();
 	virtual void drawUI(DirectX::SpriteBatch* spriteBatchPtr, DirectX::SpriteFont* spriteFontPtr) { };
 
 
