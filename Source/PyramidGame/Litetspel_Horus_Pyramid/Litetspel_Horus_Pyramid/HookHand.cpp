@@ -25,6 +25,7 @@ void HookHand::init(GameObject* gObject, MovementComponent* movementComponent, P
 	this->m_hookGameObject = gObject;
 	this->m_gunGameObject = hookGun;
 	this->m_gemGameObject = hookGem;
+	m_gemGameObject->setVisibility(false); // Is Green
 	this->m_leftWingGameObject = hookHandLeftWing;
 	this->m_rightWingGameObject = hookHandRightWing;
 	this->m_chain.initialize(gObject, hookGun, chainGObjects);
@@ -197,6 +198,7 @@ DirectX::XMVECTOR HookHand::invertX(DirectX::XMVECTOR VectorToInvertX)
 void HookHand::update(const float dt)
 {
 	this->updateHandModel(dt);
+
 	if (m_hookState == hookState::shooting)
 	{
 		if (this->colide())
@@ -234,6 +236,7 @@ void HookHand::update(const float dt)
 	}
 	else if (m_hookState == hookState::hit)
 	{
+		m_gemGameObject->setVisibility(true);
 		this->m_toHeadDir = DirectX::XMVectorSubtract(this->m_hookGameObject->getPosition(), this->m_playerMovement->position);
 		this->m_hookState = hookState::flyYouFool;
 		this->m_hookGameObject->getphysicsCompPtr()->setVelocity({0.f, 0.f , 0.f });
@@ -249,6 +252,7 @@ void HookHand::update(const float dt)
 		if (DirectX::XMVectorGetByIndex(DirectX::XMVector3LengthEst(this->m_toHeadDir), 1) <= 1)
 		{
 			this->m_hookState = hookState::idle;
+			m_gemGameObject->setVisibility(false);
 		}
 	}
 	else
