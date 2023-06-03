@@ -16,7 +16,7 @@ protected:
 
 	std::vector<GameObject*> m_gameObjects;
 	std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* m_wvpCBuffers;
-	std::vector<Model>* m_models;
+	std::unordered_map<std::string, Model>* m_models;
 	std::vector<DirectX::BoundingBox> m_boundingBoxes;
 	std::vector<DirectX::BoundingOrientedBox> m_orientedBoundingBoxes;
 	std::vector<DirectX::BoundingBox> m_triggerBoundingBoxes;
@@ -26,7 +26,7 @@ protected:
 	PS_LIGHT_BUFFER m_lightData;
 	ResourceHandler* resourceHandler;
 	Player* m_player;
-	std::shared_ptr<DirectX::AudioEngine> audioEngine;
+	std::shared_ptr<DirectX::AudioEngine> m_audioEngine;
 	Timer* m_gameTimerPointer;
 	DirectX::XMVECTOR m_entrencePosition;
 	DirectX::XMVECTOR m_worldPosition;
@@ -42,7 +42,7 @@ protected:
 public:
 	Room();
 	~Room();
-	virtual void initialize(ID3D11Device* device, ID3D11DeviceContext* dContext, std::vector<Model>* models, std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* cBuffer, Player* player, XMVECTOR position, std::shared_ptr<DirectX::AudioEngine> audioEngine, Timer* gameTimer, GameOptions option);
+	virtual void initialize(ID3D11Device* device, ID3D11DeviceContext* dContext, std::unordered_map<std::string, Model>* models, std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* cBuffer, Player* player, XMVECTOR position, std::shared_ptr<DirectX::AudioEngine> audioEngine, Timer* gameTimer, GameOptions option);
 	void initParent();
 	virtual void update(const float dt, Camera* camera, Room*& activeRoom, bool& activeRoomChanged) = 0;
 	virtual void init() {};
@@ -51,10 +51,10 @@ public:
 	virtual void drawUI(DirectX::SpriteBatch* spriteBatchPtr, DirectX::SpriteFont* spriteFontPtr) { };
 
 
-	void addGameObjectToRoom(const bool dynamic, const bool colide, const float weight, const int mdlIndx, Model* mdl, const DirectX::XMVECTOR position, const DirectX::XMVECTOR scale3D, const DirectX::XMFLOAT3 boundingBoxSize = DirectX::XMFLOAT3(0, 0, 0), const DirectX::XMFLOAT3 acceleration = DirectX::XMFLOAT3(1, 1, 1), const DirectX::XMFLOAT3 deceleration = DirectX::XMFLOAT3(1, 1, 1));
-	void addPlatformToRoom(int mdlIndex, Model* mdl, DirectX::XMVECTOR position, DirectX::XMFLOAT3 platformBoundingBox, BoundingOrientedBox* pyramid = nullptr);
-	void addPortalToRoom(const XMVECTOR teleportLocation, const int mdlIndx, Model* mdl, const DirectX::XMVECTOR position, const DirectX::XMVECTOR scale3D, const DirectX::XMFLOAT3 boundingBoxSize, const int room = -1, const bool oneTimeUse = true);
-	void addLeverToRoom(const int mdlIndex, Model* mdl, const DirectX::XMVECTOR position, const DirectX::XMVECTOR rotation, const DirectX::XMFLOAT3 leverBB);
+	void addGameObjectToRoom(const bool dynamic, const bool colide, const float weight, Model* mdl, const DirectX::XMVECTOR position, const DirectX::XMVECTOR scale3D, const DirectX::XMFLOAT3 boundingBoxSize = DirectX::XMFLOAT3(0, 0, 0), const DirectX::XMFLOAT3 acceleration = DirectX::XMFLOAT3(1, 1, 1), const DirectX::XMFLOAT3 deceleration = DirectX::XMFLOAT3(1, 1, 1));
+	void addPlatformToRoom(Model* mdl, DirectX::XMVECTOR position, DirectX::XMFLOAT3 platformBoundingBox, BoundingOrientedBox* pyramid = nullptr);
+	void addPortalToRoom(const XMVECTOR teleportLocation, Model* mdl, const DirectX::XMVECTOR position, const DirectX::XMVECTOR scale3D, const DirectX::XMFLOAT3 boundingBoxSize, const int room = -1, const bool oneTimeUse = true);
+	void addLeverToRoom(Model* mdl, const DirectX::XMVECTOR position, const DirectX::XMVECTOR rotation, const DirectX::XMFLOAT3 leverBB);
 	void addObjectToRoom(GameObject* object);
 	void addRooms(std::vector<Room*>* rooms);
 	void updatePlayerBB();

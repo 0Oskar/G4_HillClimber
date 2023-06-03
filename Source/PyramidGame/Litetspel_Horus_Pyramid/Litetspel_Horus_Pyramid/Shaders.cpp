@@ -3,17 +3,17 @@
 
 Shaders::Shaders()
 {
-	this->m_device = nullptr;
-	this->m_deviceContext = nullptr;
+	m_device = nullptr;
+	m_deviceContext = nullptr;
 
-	this->m_vertexShader = nullptr;
-	this->m_hullShader = nullptr;
-	this->m_domainShader = nullptr;
-	this->m_geometryShader = nullptr;
-	this->m_pixelShader = nullptr;
-	this->m_computeShader = nullptr;
+	m_vertexShader = nullptr;
+	m_hullShader = nullptr;
+	m_domainShader = nullptr;
+	m_geometryShader = nullptr;
+	m_pixelShader = nullptr;
+	m_computeShader = nullptr;
 
-	this->m_topology = D3D_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	m_topology = D3D_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 }
 
 Shaders::~Shaders() {}
@@ -22,11 +22,11 @@ Shaders::~Shaders() {}
 void Shaders::initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, ShaderFiles names, LayoutType layoutType, D3D_PRIMITIVE_TOPOLOGY topology)
 {
 	// Device
-	this->m_device = device;
-	this->m_deviceContext = deviceContext;
+	m_device = device;
+	m_deviceContext = deviceContext;
 
 	// Topology
-	this->m_topology = topology;
+	m_topology = topology;
 
 	// Create Shaders
 	// Binary Large OBject (BLOB), for compiled shader, and errors.
@@ -66,11 +66,11 @@ void Shaders::initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContex
 			assert(SUCCEEDED(hr));
 		}
 
-		hr = this->m_device->CreateVertexShader(
+		hr = m_device->CreateVertexShader(
 			vsBlob->GetBufferPointer(),
 			vsBlob->GetBufferSize(),
 			nullptr,
-			&this->m_vertexShader
+			&m_vertexShader
 		);
 
 		assert(SUCCEEDED(hr) && "Error, Vertex shaders could not be created!");
@@ -82,7 +82,7 @@ void Shaders::initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContex
 				3,
 				vsBlob->GetBufferPointer(),
 				vsBlob->GetBufferSize(),
-				&this->m_layout
+				&m_layout
 			);
 			assert(SUCCEEDED(hr) && "Error, Input layout could not be created!");
 		}
@@ -93,7 +93,7 @@ void Shaders::initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContex
 				2,
 				vsBlob->GetBufferPointer(),
 				vsBlob->GetBufferSize(),
-				&this->m_layout
+				&m_layout
 			);
 			assert(SUCCEEDED(hr) && "Error, Input layout could not be created!");
 		}
@@ -132,11 +132,11 @@ void Shaders::initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContex
 			assert(SUCCEEDED(hr));
 		}
 
-		hr = this->m_device->CreateHullShader(
+		hr = m_device->CreateHullShader(
 			hsBlob->GetBufferPointer(),
 			hsBlob->GetBufferSize(),
 			nullptr,
-			&this->m_hullShader
+			&m_hullShader
 		);
 		assert(SUCCEEDED(hr) && "Error, Hull shaders could not be created!");
 		hsBlob->Release();
@@ -174,11 +174,11 @@ void Shaders::initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContex
 			assert(SUCCEEDED(hr));
 		}
 
-		hr = this->m_device->CreateDomainShader(
+		hr = m_device->CreateDomainShader(
 			dsBlob->GetBufferPointer(),
 			dsBlob->GetBufferSize(),
 			nullptr,
-			&this->m_domainShader
+			&m_domainShader
 		);
 		assert(SUCCEEDED(hr) && "Error, Domain shaders could not be created!");
 		dsBlob->Release();
@@ -216,11 +216,11 @@ void Shaders::initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContex
 			assert(SUCCEEDED(hr));
 		}
 
-		hr = this->m_device->CreateGeometryShader(
+		hr = m_device->CreateGeometryShader(
 			gsBlob->GetBufferPointer(),
 			gsBlob->GetBufferSize(),
 			nullptr,
-			&this->m_geometryShader);
+			&m_geometryShader);
 
 		assert(SUCCEEDED(hr) && "Error, Geometry shaders could not be created!");
 		gsBlob->Release();
@@ -258,11 +258,11 @@ void Shaders::initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContex
 			assert(false);
 		}
 
-		hr = this->m_device->CreatePixelShader(
+		hr = m_device->CreatePixelShader(
 			psBlob->GetBufferPointer(),
 			psBlob->GetBufferSize(),
 			nullptr,
-			&this->m_pixelShader
+			&m_pixelShader
 		);
 		assert(SUCCEEDED(hr) && "Error, Pixel shaders could not be created!");
 		psBlob->Release();
@@ -300,11 +300,11 @@ void Shaders::initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContex
 			assert(SUCCEEDED(hr));
 		}
 
-		hr = this->m_device->CreateComputeShader(
+		hr = m_device->CreateComputeShader(
 			csBlob->GetBufferPointer(),
 			csBlob->GetBufferSize(),
 			nullptr,
-			&this->m_computeShader
+			&m_computeShader
 		);
 		assert(SUCCEEDED(hr) && "Error, Compute shaders could not be created!");
 		csBlob->Release();
@@ -313,23 +313,23 @@ void Shaders::initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContex
 
 void Shaders::setShaders()
 {
-	this->m_deviceContext->IASetPrimitiveTopology(this->m_topology);
-	this->m_deviceContext->IASetInputLayout(this->m_layout.Get());
+	m_deviceContext->IASetPrimitiveTopology(m_topology);
+	m_deviceContext->IASetInputLayout(m_layout.Get());
 
-	this->m_deviceContext->VSSetShader(this->m_vertexShader.Get(), nullptr, 0);
-	this->m_deviceContext->HSSetShader(this->m_hullShader.Get(), nullptr, 0);
-	this->m_deviceContext->DSSetShader(this->m_domainShader.Get(), nullptr, 0);
-	this->m_deviceContext->GSSetShader(this->m_geometryShader.Get(), nullptr, 0);
-	this->m_deviceContext->PSSetShader(this->m_pixelShader.Get(), nullptr, 0);
-	this->m_deviceContext->CSSetShader(this->m_computeShader.Get(), nullptr, 0);
+	m_deviceContext->VSSetShader(m_vertexShader.Get(), nullptr, 0);
+	m_deviceContext->HSSetShader(m_hullShader.Get(), nullptr, 0);
+	m_deviceContext->DSSetShader(m_domainShader.Get(), nullptr, 0);
+	m_deviceContext->GSSetShader(m_geometryShader.Get(), nullptr, 0);
+	m_deviceContext->PSSetShader(m_pixelShader.Get(), nullptr, 0);
+	m_deviceContext->CSSetShader(m_computeShader.Get(), nullptr, 0);
 }
 
 void Shaders::unbindShaders()
 {
-	this->m_deviceContext->VSSetShader(nullptr, nullptr, 0);
-	this->m_deviceContext->HSSetShader(nullptr, nullptr, 0);
-	this->m_deviceContext->DSSetShader(nullptr, nullptr, 0);
-	this->m_deviceContext->GSSetShader(nullptr, nullptr, 0);
-	this->m_deviceContext->PSSetShader(nullptr, nullptr, 0);
-	this->m_deviceContext->CSSetShader(nullptr, nullptr, 0);
+	m_deviceContext->VSSetShader(nullptr, nullptr, 0);
+	m_deviceContext->HSSetShader(nullptr, nullptr, 0);
+	m_deviceContext->DSSetShader(nullptr, nullptr, 0);
+	m_deviceContext->GSSetShader(nullptr, nullptr, 0);
+	m_deviceContext->PSSetShader(nullptr, nullptr, 0);
+	m_deviceContext->CSSetShader(nullptr, nullptr, 0);
 }

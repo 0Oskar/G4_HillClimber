@@ -69,7 +69,7 @@ private:
 	std::vector<BoundingBox>* m_boundingBoxesFromActiveRoom;
 	std::vector<BoundingBox>* m_triggerBoxes;
 	std::vector<BoundingOrientedBox>* m_orientedBoundingBoxesFromActiveRoom;
-	std::vector<Model>* m_modelsFromState;
+	std::unordered_map<std::string, Model>* m_modelsFromState;
 	std::vector< ConstBuffer<VS_CONSTANT_BUFFER> >* m_wvpCBufferFromState;
 	DirectX::BoundingOrientedBox m_pyramidOBB;
 	constantBufferData* m_constantBufferDataFromStatePtr;
@@ -119,7 +119,7 @@ public:
 	void setBoundingBoxesFromActiveRoom(std::vector<BoundingBox>* bbFromRoom);
 	void setOrientedBoundingBoxesFromActiveRoom(std::vector<BoundingOrientedBox>* bbFromRoom);
 	void setTriggerBoxFromActiveRoom(std::vector<BoundingBox>* bbFromRoom);
-	void setModelsFromState(std::vector<Model>* models);
+	void setModelsFromState(std::unordered_map<std::string, Model>* models);
 	void setDirLightFromActiveRoom(PS_DIR_BUFFER dirLight);
 	void setFogDataFromActiveRoom(PS_FOG_BUFFER fogData);
 	void setConstantBuffersFromGameState(constantBufferData* cbDataFromState);

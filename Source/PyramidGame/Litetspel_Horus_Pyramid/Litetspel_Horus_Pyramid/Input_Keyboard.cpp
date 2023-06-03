@@ -4,35 +4,35 @@
 
 KeyboardEvent::KeyboardEvent()
 {
-	this->eventType = Event::Invalid;
-	this->key = 0u;
+	m_eventType = Event::Invalid;
+	m_key = 0u;
 }
 
 KeyboardEvent::KeyboardEvent(const Event type, const unsigned char key)
 {
-	this->eventType = type;
-	this->key = key;
+	m_eventType = type;
+	m_key = key;
 }
 
 bool KeyboardEvent::isPressed() const
 {
-	return this->eventType == Event::Pressed;
+	return m_eventType == Event::Pressed;
 }
 bool KeyboardEvent::isReleased() const
 {
-	return this->eventType == Event::Released;
+	return m_eventType == Event::Released;
 }
 bool KeyboardEvent::isValid() const
 {
-	return this->eventType != Event::Invalid;
+	return m_eventType != Event::Invalid;
 }
 Event KeyboardEvent::getEvent() const
 {
-	return this->eventType;
+	return m_eventType;
 }
 unsigned char KeyboardEvent::getKey() const
 {
-	return this->key;
+	return m_key;
 }
 
 
@@ -40,38 +40,38 @@ Keyboard::Keyboard()
 {
 	for (int i = 0; i < 256; i++)
 	{
-		this->keyStatus[i] = false;
+		m_keyStatus[i] = false;
 	}
 }
 
 void Keyboard::onKeyPressed(const unsigned char key)
 {
-	this->keyStatus[key] = true;
-	this->keyBuffer.push(KeyboardEvent(Event::Pressed, key));
+	m_keyStatus[key] = true;
+	m_keyBuffer.push(KeyboardEvent(Event::Pressed, key));
 }
 void Keyboard::onRelease(const unsigned char key)
 {
-	this->keyStatus[key] = false;
-	this->keyBuffer.push(KeyboardEvent(Event::Released, key));
+	m_keyStatus[key] = false;
+	m_keyBuffer.push(KeyboardEvent(Event::Released, key));
 }
 bool Keyboard::isKeyPressed(const unsigned char key) const
 {
-	return this->keyStatus[key];
+	return m_keyStatus[key];
 }
 bool Keyboard::empty() const
 {
-	return this->keyBuffer.empty();
+	return m_keyBuffer.empty();
 }
 KeyboardEvent Keyboard::readKey()
 {
-	if (this->keyBuffer.empty())
+	if (m_keyBuffer.empty())
 	{
 		return KeyboardEvent();
 	}
 	else
 	{
-		KeyboardEvent inputEvnt = this->keyBuffer.front();
-		this->keyBuffer.pop();
+		KeyboardEvent inputEvnt = m_keyBuffer.front();
+		m_keyBuffer.pop();
 		return inputEvnt;
 	}
 }

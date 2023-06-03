@@ -18,7 +18,7 @@ public:
 	Bell();
 	~Bell();
 
-	void initialize(int mdlIndex, int wvpCBufferIndex, Model* mdl);
+	void initialize(int wvpCBufferIndex, Model* mdl);
 
 	XMVECTOR getStartPos();
 	XMVECTOR getEndPos();

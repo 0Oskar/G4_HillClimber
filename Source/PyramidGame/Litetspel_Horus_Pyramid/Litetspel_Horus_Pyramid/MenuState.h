@@ -3,6 +3,7 @@
 #include"PyramidRoom.h"
 
 #define MODEL_COUNT 50
+#define THREAD_COUNT 4
 
 class MenuState : public iGameState
 {
@@ -27,8 +28,12 @@ private:
 	DirectX::XMFLOAT2 m_titelImagePosition;
 	DirectX::XMFLOAT2 m_infoImagePosition;
 
+	// Model Loading
 	volatile bool* m_doneLoadingModelsPtr;
+	std::vector<const char*> m_asyncModelNames;
+	std::future<void> m_asyncModelsFuture[THREAD_COUNT];
 	void loadModels();
+	
 public:
 	MenuState();
 	~MenuState();
@@ -38,7 +43,7 @@ public:
 	states handleInput(Keyboard* keyboard, Mouse* mousePtr, const float dt);
 
 	// Getters
-	std::vector<Model>* getModelsPtr();
+	std::unordered_map<std::string, Model>* getModelsPtr();
 	std::vector<GameObject*>* getGameObjectsPtr();
 	std::vector<BoundingBox>* getActiveRoomBoundingBoxesPtr(); // Empty
 	std::vector<BoundingOrientedBox>* getActiveRoomOrientedBoundingBoxesPtr(); // Empty
@@ -53,5 +58,7 @@ public:
 	void onLeave();
 	void onPop();
 
-	static void loadModelsThreadSafe(volatile bool* doneLoadingModels, Model* modelListPtr, ID3D11Device* device, ID3D11DeviceContext* dContext);
+	void addNewModelInitAsync(const char* modelFilePath, const MaterialData material, const wchar_t* texturePath);
+	void addNewModelInit(const char* modelFilePath, const MaterialData material, const wchar_t* texturePath);
+	static void loadModelsThreadSafe(uint32_t threadIndex, std::unordered_map<std::string, Model>* modelsList, std::vector<const char*>* modelNameList, uint32_t from, uint32_t to);
 };

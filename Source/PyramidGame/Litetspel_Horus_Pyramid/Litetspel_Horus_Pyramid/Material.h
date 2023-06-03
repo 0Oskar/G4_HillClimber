@@ -33,7 +33,6 @@ public:
 		}
 		m_materialBuffer.m_data = mat;
 		m_materialBuffer.init(device, dContext);
-		m_materialBuffer.upd();
 
 		if (texturePath != nullptr)
 		{
@@ -42,6 +41,11 @@ public:
 
 		dContext->PSSetConstantBuffers(0, 1, m_materialBuffer.GetAdressOf());
 		
+	}
+
+	void setMaterial(MaterialData mat)
+	{
+		m_materialBuffer.upd(&mat);
 	}
 
 	void setTexture(const WCHAR* texturePath)

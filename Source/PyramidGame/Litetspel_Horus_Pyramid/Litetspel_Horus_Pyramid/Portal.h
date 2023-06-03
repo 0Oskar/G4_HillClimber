@@ -7,7 +7,7 @@ class Portal : public GameObject
 private:
 
 	XMVECTOR m_teleportLocation;
-	Player* player;
+	Player* m_player;
 	int m_roomID;
 	bool m_changeActiveRoom;
 	bool m_oneTimeUse;
@@ -17,7 +17,7 @@ public:
 	Portal();
 	~Portal();
 	void setActiveStatus(const bool activeStatus);
-	void initialize(const int modelIndex, const int wvpCBufferIndex, Model* mdl, const XMVECTOR teleportLocation, Player* player, const int roomID, const bool oneTimeUse = true);
+	void initialize(const int wvpCBufferIndex, Model* mdl, const XMVECTOR teleportLocation, Player* player, const int roomID, const bool oneTimeUse = true);
 	void update();
 	void resetActiveRoomVariable();
 	bool shouldChangeActiveRoom() const;

@@ -3,6 +3,7 @@
 #include"WICTextureLoader.h"
 
 static const WCHAR* TEXTURE_PATH = L"Textures/";
+static const WCHAR* ERROR_TEXTURE = L"error_tex.png";
 
 class ResourceHandler
 {

@@ -34,7 +34,7 @@ public:
 
 	followingEnemy();
 
-	void init(bool colidable, int modelIndex, int wvpCBufferIndex, Model* mdl, Player *player);
+	void init(bool colidable, int wvpCBufferIndex, Model* mdl, Player *player);
 	void update(float dt);
 	void onPlayerColide();
 	void setReachedEdge(bool aValue);

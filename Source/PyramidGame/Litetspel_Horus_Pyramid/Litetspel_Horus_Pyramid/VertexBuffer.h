@@ -13,22 +13,22 @@ private:
 public:
 	VertexBuffer()
 	{
-		this->m_stride = 0;
-		this->m_nrOf = 0;
+		m_stride = 0;
+		m_nrOf = 0;
 	}
 
 	~VertexBuffer() {}
 
-	HRESULT initialize(ID3D11Device* device, T* data, const int nrOfVertices)
+	void initialize(ID3D11Device* device, T* data, const int nrOfVertices)
 	{
-		this->m_nrOf = nrOfVertices;
-		this->m_stride = UINT(sizeof(T));
+		m_nrOf = nrOfVertices;
+		m_stride = UINT(sizeof(T));
 
 		// Buffer Description
 		D3D11_BUFFER_DESC vertexBufferDesc;
 		ZeroMemory(&vertexBufferDesc, sizeof(vertexBufferDesc));
 
-		vertexBufferDesc.ByteWidth = this->m_stride * this->m_nrOf;
+		vertexBufferDesc.ByteWidth = m_stride * m_nrOf;
 		vertexBufferDesc.Usage = D3D11_USAGE_IMMUTABLE;
 		vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 		vertexBufferDesc.CPUAccessFlags = 0;
@@ -41,15 +41,16 @@ public:
 		vertexData.SysMemPitch = 0;
 		vertexData.SysMemSlicePitch = 0;
 
-		return device->CreateBuffer(&vertexBufferDesc, &vertexData, &this->m_buffer);
+		HRESULT hr = device->CreateBuffer(&vertexBufferDesc, &vertexData, &m_buffer);
+		assert(SUCCEEDED(hr) && "Error, vertex buffer could not be created!");
 	}
 
 	// Getters
-	ID3D11Buffer* Get() const { return this->m_buffer.Get(); }
-	ID3D11Buffer* const* GetAddressOf() const { return this->m_buffer.GetAddressOf(); }
+	ID3D11Buffer* Get() const { return m_buffer.Get(); }
+	ID3D11Buffer* const* GetAddressOf() const { return m_buffer.GetAddressOf(); }
 
-	const UINT getStride() const { return *this->m_stride; }
-	const UINT* getStridePointer() const { return &this->m_stride; }
+	const UINT getStride() const { return *m_stride; }
+	const UINT* getStridePointer() const { return &m_stride; }
 
-	UINT getSize() const { return this->m_nrOf; }
+	UINT getSize() const { return m_nrOf; }
 };

@@ -105,13 +105,27 @@ void MenuState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 
 void MenuState::update(float dt)
 {
-	bool boolean = false;
-	float angle;
+	bool allLoadingThreadsDone = true;
+	for (uint32_t i = 0; i < THREAD_COUNT; i++)
+	{
+		future_status status = m_asyncModelsFuture[i].wait_for(0ms);
+		if (m_asyncModelsFuture[i].wait_for(0ms) != future_status::ready)
+		{
+			allLoadingThreadsDone = false;
+		}
+	}
+	*m_doneLoadingModelsPtr = allLoadingThreadsDone;
 	Room* tempRoomPtr = &m_pyramidRoom;
+	bool activeRoomChanged = false;
+	//if (*m_doneLoadingModelsPtr)
+	//{
+		m_pyramidRoom.update(dt, &m_camera, tempRoomPtr, activeRoomChanged);
+	//}
+
+	float angle;
 	m_angle += 10 * dt;
 
 	angle = XMConvertToRadians(m_angle);
-	m_pyramidRoom.update(dt, &m_camera, tempRoomPtr, boolean);
 	for (size_t i = 0; i < m_gameObjects.size(); i++)
 	{
 		VS_CONSTANT_BUFFER wvpData;
@@ -170,211 +184,229 @@ void MenuState::afterChange()
 
 void MenuState::loadModels()
 {
-	m_models.resize(MODEL_COUNT);
-	uint32_t modelIndex = 0;
-
 	// Material
 	MaterialData mat;
 	mat.ambient = { 0.2f, 0.2f, 0.2f, 1.f };
 
-	//0 - Desert Ground
-	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
-	m_models[modelIndex++].loadVertexFromOBJ(m_device, m_dContext, "desertGround.obj", mat, L"sandTexture.png");
+	//-1 Error Model
+	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+	addNewModelInit("cube.obj", mat, L"error_tex.png");
 
-	//1 - Pyramid
-	mat.diffuse = DirectX::XMFLOAT4(0.9f, 0.7f, 0.3f, 1.0f);
-	m_models[modelIndex++].initializeModelBff(m_device, m_dContext, "BasePyramidNew.bff", mat, L"pyramidTexture.png");
+	//0 Desert Ground
+	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+	addNewModelInit("desertGround.obj", mat, L"sandTexture.png");
 
-	//2- HookHead model
-	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
-	m_models[modelIndex++].initializeModelBff(m_device, m_dContext, "Hook_Bird.bff", mat, L"ColorTexture.png");
+	//1 Pyramid
+	mat.diffuse = { 0.9f, 0.7f, 0.3f, 1.f };
+	mat.ambient = { 0.9f * 0.2f, 0.7f * 0.2f, 0.3f * 0.2f, 1.f };
+	addNewModelInit("BasePyramidNew.bff", mat, L"pyramidTexture.png");
 
-	//3- platform model
-	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
-	m_models[modelIndex++].loadVertexFromOBJ(m_device, m_dContext, "platform.obj", mat, L"platformTextureCracks1.png");
+	//2 HookHead model
+	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+	mat.ambient = { 0.2f, 0.2f, 0.2f, 1.f };
+	addNewModelInitAsync("Hook_Bird.bff", mat, L"ColorTexture.png");
 
-	//4- HookHand
-	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
-	m_models[modelIndex++].initializeModelBff(m_device, m_dContext, "Gauntlet_Base.bff", mat, L"ColorTexture.png");
+	//3 platform model
+	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+	addNewModelInit("platform.obj", mat, L"platformTextureCracks1.png");
 
-	//5- Chain Link
-	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
-	m_models[modelIndex++].initializeModelBff(m_device, m_dContext, "Hook_ChainLink.bff", mat, L"ColorTexture.png");
+	//4 HookHand
+	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+	addNewModelInitAsync("Gauntlet_Base.bff", mat, L"ColorTexture.png");
 
-	//6- Lever Room aka Kevins room
-	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
-	m_models[modelIndex++].loadVertexFromOBJ(m_device, m_dContext, "LeverRoom2.obj", mat, L"ColorTexture.png");
+	//5 Chain Link
+	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+	addNewModelInitAsync("Hook_ChainLink.bff", mat, L"ColorTexture.png");
 
-	//7 - Lever
-	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
-	m_models[modelIndex++].loadVertexFromOBJ(m_device, m_dContext, "Lever.obj", mat, L"ColorTexture.png");
+	//6 Lever Room aka Kevins room
+	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+	addNewModelInitAsync("LeverRoom2.obj", mat, L"ColorTexture.png");
+
+	//7 Lever
+	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+	addNewModelInitAsync("Lever.obj", mat, L"ColorTexture.png");
 
 	//8. PuzzleRoom (Edvin)
-	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
-	m_models[modelIndex++].initializeModelBff(m_device, m_dContext, "EdvinPuzzleRoom.bff", mat, L"ColorTexture.png");
+	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+	addNewModelInitAsync("EdvinPuzzleRoom.bff", mat, L"ColorTexture.png");
 
 	//9. Button (Edvin)
-	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
-	m_models[modelIndex++].initializeModelBff(m_device, m_dContext, "Button.bff", mat, L"Hyroglajf_0.png");
+	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+	addNewModelInitAsync("Button.bff", mat, L"Hyroglajf_0.png");
 
-	//10 - Portal
-	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
-	m_models[modelIndex++].initializeModelBff(m_device, m_dContext, "PortalGate.bff", mat, L"ColorTexture.png");
+	//10 Portal
+	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+	addNewModelInit("PortalGate.bff", mat, L"ColorTexture.png");
 
 	//11. Brick_1 (Edvin)
-	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
-	m_models[modelIndex++].initializeModelBff(m_device, m_dContext, "Brick_1.bff", mat, L"Hyroglajf_0.png");
+	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+	addNewModelInitAsync("Brick_1.bff", mat, L"Hyroglajf_0.png");
 
 	//12. Brick_2 (Edvin)
-	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
-	m_models[modelIndex++].initializeModelBff(m_device, m_dContext, "Brick_2.bff", mat, L"Hyroglajf_1.png");
+	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+	addNewModelInitAsync("Brick_2.bff", mat, L"Hyroglajf_1.png");
 
 	//13. Brick_3 (Edvin)
-	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
-	m_models[modelIndex++].initializeModelBff(m_device, m_dContext, "Brick_3.bff", mat, L"Hyroglajf_2.png");
+	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+	addNewModelInitAsync("Brick_3.bff", mat, L"Hyroglajf_2.png");
 
 	//14. Brick_4 (Edvin)
-	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
-	m_models[modelIndex++].initializeModelBff(m_device, m_dContext, "Brick_4.bff", mat, L"Hyroglajf_3.png");
+	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+	addNewModelInitAsync("Brick_4.bff", mat, L"Hyroglajf_3.png");
 
 	//15. Brick_5 (Edvin)
-	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
-	m_models[modelIndex++].initializeModelBff(m_device, m_dContext, "Brick_5.bff", mat, L"Hyroglajf_4.png");
+	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+	addNewModelInitAsync("Brick_5.bff", mat, L"Hyroglajf_4.png");
 
 	//16. Leaver Base (Edvin)
-	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
-	m_models[modelIndex++].initializeModelBff(m_device, m_dContext, "LeverBase.bff", mat, L"ColorTexture.png");
+	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+	addNewModelInitAsync("LeverBase.bff", mat, L"ColorTexture.png");
 
 	//17. Pedistal (Edvin)
-	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
-	m_models[modelIndex++].initializeModelBff(m_device, m_dContext, "Pedistal.bff", mat, L"ColorTexture.png");
+	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+	addNewModelInitAsync("Pedistal.bff", mat, L"ColorTexture.png");
 
 	//18. Cover (Edvin)
-	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
-	m_models[modelIndex++].initializeModelBff(m_device, m_dContext, "Cover.bff", mat, L"ColorTexture.png");
+	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+	addNewModelInitAsync("Cover.bff", mat, L"ColorTexture.png");
 
 	//19. checkpoint
-	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
-	m_models[modelIndex++].initializeModelBff(m_device, m_dContext, "checkpointPlatform.bff", mat, L"ColorTexture.png");
+	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+	addNewModelInit("checkpointPlatform.bff", mat, L"ColorTexture.png");
 
 	//20. Leaver Handle (Edvin)
-	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
-	m_models[modelIndex++].initializeModelBff(m_device, m_dContext, "LeverHandle.bff", mat, L"ColorTexture.png");
+	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+	addNewModelInitAsync("LeverHandle.bff", mat, L"ColorTexture.png");
 
 	//21. PuzzleRoom(Tristan)
-	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
-	m_models[modelIndex++].initializeModelBff(m_device, m_dContext, "TristansNewPuzzleRoom.bff", mat, L"ColorTexture.png");
+	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+	addNewModelInitAsync("TristansNewPuzzleRoom.bff", mat, L"ColorTexture.png");
 
 	//22. Pyramid Portal
-	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
-	m_models[modelIndex++].initializeModelBff(m_device, m_dContext, "PuzzleRoomGateExtended.bff", mat, L"ColorTexture.png");
+	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+	addNewModelInit("PuzzleRoomGateExtended.bff", mat, L"ColorTexture.png");
 
 	//23. Scorpion
-	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
-	m_models[modelIndex++].loadVertexFromOBJ(m_device, m_dContext, "scorpionDone.obj", mat, L"ColorTexture.png");
+	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+	addNewModelInitAsync("scorpionDone.obj", mat, L"ColorTexture.png");
 
 	//24. dartWallObj
-	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
-	m_models[modelIndex++].loadVertexFromOBJ(m_device, m_dContext, "dartTrapWall.obj", mat, L"ColorTexture.png");
+	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+	addNewModelInitAsync("dartTrapWall.obj", mat, L"ColorTexture.png");
 
 	//25. dartWalldarts
-	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
-	m_models[modelIndex++].loadVertexFromOBJ(m_device, m_dContext, "dartTrapWallDart.obj", mat, L"ColorTexture.png");
+	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+	addNewModelInitAsync("dartTrapWallDart.obj", mat, L"ColorTexture.png");
 
 	//26. expandingBridge
-	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
-	m_models[modelIndex++].loadVertexFromOBJ(m_device, m_dContext, "expandingBridge.obj", mat, L"ColorTexture.png");
+	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+	addNewModelInitAsync("expandingBridge.obj", mat, L"ColorTexture.png");
 
 	//27. Lever Grip (Tristan)
-	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
-	m_models[modelIndex++].initializeModelBff(m_device, m_dContext, "TristansLeverGrip.bff", mat, L"ColorTexture.png");
-
-	//28. finalRoom
-	//29. swingingAxe
+	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+	addNewModelInitAsync("TristansLeverGrip.bff", mat, L"ColorTexture.png");
 	 
-	//mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
-	//m_models[modelIndex++].loadVertexFromOBJ(m_device, m_dContext, "endRoom.obj", mat, L"ColorTexture.png");
+	//28. finalRoom
+	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+	addNewModelInitAsync("endRoom.obj", mat, L"ColorTexture.png");
 
-	/*mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
-	m_models[modelIndex++].loadVertexFromOBJ(m_device, m_dContext, "swingingAxe.obj", mat, L"ColorTexture.png");*/
-	std::thread sceneLoaderThread;
-	sceneLoaderThread = std::thread(MenuState::loadModelsThreadSafe, m_doneLoadingModelsPtr, &m_models[modelIndex], m_device, m_dContext);
-	sceneLoaderThread.detach();
-	unsigned nrOfMultiThreadedLoadingModels = 2; // check loadModelsThreadSafe() for the amount
-	modelIndex += nrOfMultiThreadedLoadingModels;
+	//29. swingingAxe
+	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+	addNewModelInitAsync("swingingAxe.obj", mat, L"ColorTexture.png");
 	
 	//30. Left Wing
-	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
-	m_models[modelIndex++].initializeModelBff(m_device, m_dContext, "Gauntlet_LeftWing.bff", mat, L"ColorTexture.png");
+	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+	addNewModelInitAsync("Gauntlet_LeftWing.bff", mat, L"ColorTexture.png");
 
 	//31. Right Wing
-	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
-	m_models[modelIndex++].initializeModelBff(m_device, m_dContext, "Gauntlet_RightWing.bff", mat, L"ColorTexture.png");
+	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+	addNewModelInitAsync("Gauntlet_RightWing.bff", mat, L"ColorTexture.png");
 
 	//32. Hook Highlight Gem
-	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
-	m_models[modelIndex++].initializeModelBff(m_device, m_dContext, "Gauntlet_GreenGem.bff", mat, L"ColorTexture.png");
+	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+	addNewModelInitAsync("Gauntlet_GreenGem.bff", mat, L"ColorTexture.png");
 
 	//33. Diamond
-	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
-	m_models[modelIndex++].initializeModelBff(m_device, m_dContext, "Diamond.bff", mat, L"ColorTexture.png");
+	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+	addNewModelInitAsync("Diamond.bff", mat, L"ColorTexture.png");
 
 	//33. Bell 2
-	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
-	m_models[modelIndex++].initializeModelBff(m_device, m_dContext, "Bell2.bff", mat, L"ColorTexture.png");
+	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+	addNewModelInitAsync("Bell2.bff", mat, L"ColorTexture.png");
 
 	//34. PalmTree
-	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
-	m_models[modelIndex++].loadVertexFromOBJ(m_device, m_dContext, "PalmTree.obj", mat, L"ColorTexture.png");
+	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+	addNewModelInit("PalmTree.obj", mat, L"ColorTexture.png");
 
 	//35. Hawk (36 temporarily)
-	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
-	m_models[modelIndex++].loadVertexFromOBJ(m_device, m_dContext, "Falcon2.obj", mat, L"ColorTexture.png");
+	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+	addNewModelInit("Falcon2.obj", mat, L"ColorTexture.png");
 
 	// Room (Viktor)
-	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
-	m_models[modelIndex++].initializeModelBff(m_device, m_dContext, "vRoom_New2.bff", mat, L"ColorTexture.png");
+	{
+		//36
+		mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+		addNewModelInitAsync("vRoom_New2.bff", mat, L"ColorTexture.png");
 
-	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
-	m_models[modelIndex++].initializeModelBff(m_device, m_dContext, "vGate_New.bff", mat, L"ColorTexture.png");
+		//37
+		mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+		addNewModelInitAsync("vGate_New.bff", mat, L"ColorTexture.png");
 
-	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
-	m_models[modelIndex++].initializeModelBff(m_device, m_dContext, "vLever_New.bff", mat, L"ColorTexture.png");
+		//38
+		mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+		addNewModelInitAsync("vLever_New.bff", mat, L"ColorTexture.png");
 
-	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
-	m_models[modelIndex++].initializeModelBff(m_device, m_dContext, "vGem1_New.bff", mat, L"ColorTexture.png");
+		//39
+		mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+		addNewModelInitAsync("vGem1_New.bff", mat, L"ColorTexture.png");
+
+		//40
+		mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+		addNewModelInitAsync("vGem2_New.bff", mat, L"ColorTexture.png");
+
+		//41
+		mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+		addNewModelInitAsync("vGem3_New.bff", mat, L"ColorTexture.png");
+
+		//42
+		mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+		addNewModelInitAsync("vGem4_New.bff", mat, L"ColorTexture.png");
+
+		//43
+		mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+		addNewModelInitAsync("vGem5_New.bff", mat, L"ColorTexture.png");
+
+		//44
+		mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+		addNewModelInitAsync("vPedistal_New.bff", mat, L"ColorTexture.png");
+
+		//45
+		mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+		addNewModelInitAsync("vRamp_New.bff", mat, L"ColorTexture.png");
+	}
 	
-	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
-	m_models[modelIndex++].initializeModelBff(m_device, m_dContext, "vGem2_New.bff", mat, L"ColorTexture.png");
+	//46. Cactus
+	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+	addNewModelInit("cactus2.obj", mat, L"ColorTexture.png");
 
-	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
-	m_models[modelIndex++].initializeModelBff(m_device, m_dContext, "vGem3_New.bff", mat, L"ColorTexture.png");
+	//47. Pillars
+	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+	addNewModelInit("Entrence.obj", mat, L"ColorTexture.png");
 
-	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
-	m_models[modelIndex++].initializeModelBff(m_device, m_dContext, "vGem4_New.bff", mat, L"ColorTexture.png");
-	
-	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
-	m_models[modelIndex++].initializeModelBff(m_device, m_dContext, "vGem5_New.bff", mat, L"ColorTexture.png");
-	
-	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
-	m_models[modelIndex++].initializeModelBff(m_device, m_dContext, "vPedistal_New.bff", mat, L"ColorTexture.png");
+	//48. Clouds
+	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+	addNewModelInit("Clouds.obj", mat, L"ColorTexture.png");
 
-	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.0f);
-	m_models[modelIndex++].initializeModelBff(m_device, m_dContext, "vRamp_New.bff", mat, L"ColorTexture.png");
-
-	// Not Viktor
-	
-	//47. Cactus
-	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
-	m_models[modelIndex++].loadVertexFromOBJ(m_device, m_dContext, "cactus2.obj", mat, L"ColorTexture.png");
-
-	//48. Pillar
-	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
-	m_models[modelIndex++].loadVertexFromOBJ(m_device, m_dContext, "Entrence.obj", mat, L"ColorTexture.png");
-
-	//49. Clouds
-	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
-	m_models[modelIndex++].loadVertexFromOBJ(m_device, m_dContext, "Clouds.obj", mat, L"ColorTexture.png");
+	// Start async loading threads
+	OutputDebugStringA("Threaded model loading begin\n");
+	uint32_t startIndex = 0;
+	uint32_t perThreadCount = (uint32_t)m_asyncModelNames.size() / THREAD_COUNT;
+	for (uint32_t i = 0; i < THREAD_COUNT; i++)
+	{
+		uint32_t endIndex = startIndex + perThreadCount;
+		m_asyncModelsFuture[i] = async(launch::async, MenuState::loadModelsThreadSafe, i, &m_models, &m_asyncModelNames, startIndex, endIndex);
+		startIndex = endIndex + 1;
+	}
 }
 
 
@@ -399,22 +431,29 @@ void MenuState::onPop()
 		delete m_audioComponent;
 }
 
-void MenuState::loadModelsThreadSafe(volatile bool* doneLoadingModels, Model* modelListPtr, ID3D11Device* device, ID3D11DeviceContext* dContext)
+void MenuState::addNewModelInitAsync(const char* modelFilePath, const MaterialData material, const wchar_t* texturePath)
 {
-	// Material
-	MaterialData mat;
-	mat.ambient = { 0.2f, 0.2f, 0.2f, 1.f };
-	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
-
-	// Models
-	unsigned modelIndex = 0;
-	modelListPtr[modelIndex++].loadVertexFromOBJ(device, dContext, "endRoom.obj", mat, L"ColorTexture.png");
-	modelListPtr[modelIndex++].loadVertexFromOBJ(device, dContext, "swingingAxe.obj", mat, L"ColorTexture.png");
-
-	*doneLoadingModels = true;
+	m_models[modelFilePath].initForAsyncLoad(m_device, m_dContext, modelFilePath, material, texturePath);
+	m_asyncModelNames.push_back(modelFilePath);
 }
 
-std::vector<Model>* MenuState::getModelsPtr()
+void MenuState::addNewModelInit(const char* modelFilePath, const MaterialData material, const wchar_t* texturePath)
+{
+	m_models[modelFilePath].loadModel(m_device, m_dContext, modelFilePath, material, texturePath);
+}
+
+void MenuState::loadModelsThreadSafe(uint32_t threadIndex, std::unordered_map<std::string, Model>* modelsListPtr, std::vector<const char*>* modelNameList, uint32_t from, uint32_t to)
+{
+	std::unordered_map<std::string, Model>& modelMap = *modelsListPtr;
+	for (uint32_t i = from; i < to; i++)
+	{
+		modelMap[modelNameList->at(i)].loadModelAsync();
+	}
+	std::string message = "Thread " + to_string(threadIndex) + " done!";
+	OutputDebugStringA(message.c_str());
+}
+
+std::unordered_map<std::string, Model>* MenuState::getModelsPtr()
 {
 	return &m_models;
 }
@@ -464,14 +503,8 @@ XMFLOAT3 MenuState::getCameraPos() const
 
 void MenuState::drawUI(DirectX::SpriteBatch* spriteBatchPtr, DirectX::SpriteFont* spriteFontPtr)
 {
-	//std::string helpText = "Press -Enter- key to continiue.";
-	//std::string titleName = "HORUS PYRAMID";
-
 	spriteBatchPtr->Draw(m_titelImage, m_titelImagePosition);
 
 	if (m_doneLoadingModelsPtr && *m_doneLoadingModelsPtr)
 		spriteBatchPtr->Draw(m_infoImage, m_infoImagePosition);
-	
-	//spriteFontPtr->DrawString(spriteBatchPtr, helpText.c_str(), DirectX::XMFLOAT2((float)m_gameOptions.width / 2, (float)m_gameOptions.height / 2), DirectX::Colors::Green, 0.f, DirectX::XMFLOAT2(100.f, 0.f));
-	//spriteFontPtr->DrawString(spriteBatchPtr, titleName.c_str(), DirectX::XMFLOAT2((float)m_gameOptions.width / 2, (float)m_gameOptions.height / 10), DirectX::Colors::Yellow, 0.f, DirectX::XMFLOAT2(70.f, 0.f));
 }

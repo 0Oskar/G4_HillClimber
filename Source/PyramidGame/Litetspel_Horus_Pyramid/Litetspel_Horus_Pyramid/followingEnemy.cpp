@@ -3,34 +3,34 @@
 
 followingEnemy::followingEnemy()
 {
-	this->m_hasColided = false;
-	this->reachedEdge = true;
-	this->scorpionSpawnPos = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+	m_hasColided = false;
+	reachedEdge = true;
+	scorpionSpawnPos = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 }
 
-void followingEnemy::init(bool colidable, int modelIndex, int wvpCBufferIndex, Model* mdl, Player *player)
+void followingEnemy::init(bool colidable, int wvpCBufferIndex, Model* mdl, Player *player)
 {
-	this->initializeDynamic(colidable, false, modelIndex, wvpCBufferIndex, 16, DirectX::XMFLOAT3(1, 1, 1), DirectX::XMFLOAT3(0, 0, 0), mdl);
-	this->thePlayer = player;
+	initializeDynamic(colidable, false, wvpCBufferIndex, 16, DirectX::XMFLOAT3(1, 1, 1), DirectX::XMFLOAT3(0, 0, 0), mdl);
+	thePlayer = player;
 
 
 	XMFLOAT3 scorpionPos;
-	XMStoreFloat3(&scorpionPos, this->getMoveCompPtr()->position);
+	XMStoreFloat3(&scorpionPos, getMoveCompPtr()->position);
 
 	XMFLOAT4 scorpionRot;
-	XMStoreFloat4(&scorpionRot, this->getMoveCompPtr()->rotation);
+	XMStoreFloat4(&scorpionRot, getMoveCompPtr()->rotation);
 
-	this->scorpionBB = BoundingOrientedBox(scorpionPos, XMFLOAT3(1.2f, 2.f, 1.2f), scorpionRot);	
+	scorpionBB = BoundingOrientedBox(scorpionPos, XMFLOAT3(1.2f, 2.f, 1.2f), scorpionRot);	
 }
 
 void followingEnemy::update(float dt)
 {	
 	followPlayer(dt);
-	this->scorpionBB.Center = XMFLOAT3(this->getMoveCompPtr()->position.m128_f32[0], this->getMoveCompPtr()->position.m128_f32[1], this->getMoveCompPtr()->position.m128_f32[2]);
-	XMVECTOR aRotation = XMQuaternionRotationRollPitchYawFromVector(this->getMoveCompPtr()->rotation);
+	scorpionBB.Center = XMFLOAT3(getMoveCompPtr()->position.m128_f32[0], getMoveCompPtr()->position.m128_f32[1], getMoveCompPtr()->position.m128_f32[2]);
+	XMVECTOR aRotation = XMQuaternionRotationRollPitchYawFromVector(getMoveCompPtr()->rotation);
 	XMFLOAT4 rot;
 	XMStoreFloat4(&rot, aRotation);
-	this->scorpionBB.Orientation = rot;
+	scorpionBB.Orientation = rot;
 }
 	
 
@@ -41,7 +41,7 @@ void followingEnemy::onPlayerColide()
 
 void followingEnemy::setReachedEdge(bool aValue)
 {
-	this->reachedEdge = aValue;
+	reachedEdge = aValue;
 }
 
 BoundingOrientedBox* followingEnemy::getBB()
@@ -51,7 +51,7 @@ BoundingOrientedBox* followingEnemy::getBB()
 
 bool followingEnemy::getReachedEdge()
 {
-	return this->reachedEdge;
+	return reachedEdge;
 }
 
 void followingEnemy::followPlayer(float dt)
@@ -59,35 +59,35 @@ void followingEnemy::followPlayer(float dt)
 	XMVECTOR walkDirection;
 	XMVECTOR playerPosition;
 	XMVECTOR previousPosition;
-	XMVECTOR scorpionPos = this->getMoveCompPtr()->position;
+	XMVECTOR scorpionPos = getMoveCompPtr()->position;
 
-	if (this->getSpawnPosOnce == false)
+	if (getSpawnPosOnce == false)
 	{
-		this->scorpionSpawnPos = this->getMoveCompPtr()->position;
-		this->getSpawnPosOnce = true;
+		scorpionSpawnPos = getMoveCompPtr()->position;
+		getSpawnPosOnce = true;
 	}
 	
 
 	XMVECTOR upDir = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
-	XMVECTOR playerRotation = this->thePlayer->getMoveCompPtr()->rotation;
+	XMVECTOR playerRotation = thePlayer->getMoveCompPtr()->rotation;
 	float playerRotationY = XMVectorGetY(playerRotation);
 
-	playerPosition = this->thePlayer->getMoveCompPtr()->position;
+	playerPosition = thePlayer->getMoveCompPtr()->position;
 	playerPosition = XMVectorSetY(playerPosition, 5.f);
 	previousPosition = playerPosition;
 
 
 	XMVECTOR walkBackDirection;
-	walkBackDirection = this->scorpionSpawnPos - scorpionPos;
+	walkBackDirection = scorpionSpawnPos - scorpionPos;
 	walkBackDirection = XMVector3Normalize(walkBackDirection);
 
 	walkDirection = playerPosition -scorpionPos;
 	walkDirection = XMVector3Normalize(walkDirection);
 
-	if (this-> reachedEdge == false)
+	if ( reachedEdge == false)
 	{
-		this->getMoveCompPtr()->position += (walkDirection * dt * 9);
+		getMoveCompPtr()->position += (walkDirection * dt * 9);
 
 
 		float targetRotation = (float)atan2((double)(walkDirection.m128_f32[0]), (double)(walkDirection.m128_f32[2])) + XM_PI;
@@ -105,19 +105,19 @@ void followingEnemy::followPlayer(float dt)
 
 		currentRotationY += (rotationDifference)*dt * 5;
 		
-		this->getMoveCompPtr()->rotation = XMVectorSet(0.0f, currentRotationY, 0.0f, 0.0f);
+		getMoveCompPtr()->rotation = XMVectorSet(0.0f, currentRotationY, 0.0f, 0.0f);
 	}
 
 	else
 	{
 		if (XMVectorGetX(walkBackDirection) <= 0.f && XMVectorGetY(walkBackDirection) <= 0.f && XMVectorGetZ(walkBackDirection) <= 0.f)
 		{
-			this->getMoveCompPtr()->rotation = XMVectorSet(0.0f, XMConvertToRadians(180.0f), 0.0f, 0.0f);
+			getMoveCompPtr()->rotation = XMVectorSet(0.0f, XMConvertToRadians(180.0f), 0.0f, 0.0f);
 		}
 
 		else 
 		{
-			this->getMoveCompPtr()->position += (walkBackDirection * dt * 9);
+			getMoveCompPtr()->position += (walkBackDirection * dt * 9);
 
 			float targetRotation = (float)atan2((double)(walkBackDirection.m128_f32[0]), (double)(walkBackDirection.m128_f32[2])) + XM_PI;
 
@@ -135,7 +135,7 @@ void followingEnemy::followPlayer(float dt)
 
 			currentRotationY += (rotationDifference)*dt * 5;
 
-			this->getMoveCompPtr()->rotation = XMVectorSet(0.0f, currentRotationY, 0.0f, 0.0f);
+			getMoveCompPtr()->rotation = XMVectorSet(0.0f, currentRotationY, 0.0f, 0.0f);
 		}
 	}
 }

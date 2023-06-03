@@ -243,7 +243,7 @@ void Application::pushNewState(states state)
 	int gameTime = 0;
 	//If we enter this function we always push or pop something
 	bool newState = false;
-	std::vector<Model>* mdlPointer = m_gameStateStack.top()->getModelsPtr();
+	std::unordered_map<std::string, Model>* mdlPointer = m_gameStateStack.top()->getModelsPtr();
 	m_gameStateStack.top()->onLeave();
 	switch (state)
 	{

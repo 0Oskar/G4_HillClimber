@@ -12,11 +12,10 @@ Player::Player() : GameObject()
 
 Player::~Player() {}
 
-void Player::initialize(int modelIndex, int wvpCBufferIndex, float mass, DirectX::XMFLOAT3 acceleration, DirectX::XMFLOAT3 deceleration, GameObject* gObj, GameObject* hookGun, GameObject* hookGem, GameObject* hookHandLeftWing, GameObject* hookHandRightWing, std::vector<GameObject*>* chainGObjects, std::shared_ptr<DirectX::AudioEngine> audioEngine, std::vector<DirectX::BoundingBox*> platformBB)
+void Player::initialize(int wvpCBufferIndex, float mass, DirectX::XMFLOAT3 acceleration, DirectX::XMFLOAT3 deceleration, GameObject* gObj, GameObject* hookGun, GameObject* hookGem, GameObject* hookHandLeftWing, GameObject* hookHandRightWing, std::vector<GameObject*>* chainGObjects, std::shared_ptr<DirectX::AudioEngine> audioEngine, std::vector<DirectX::BoundingBox*> platformBB)
 {
 	m_isStatic = true;
 	m_collidable = true;
-	m_modelIndex = modelIndex;
 	m_wvpCBufferIndex = wvpCBufferIndex;
 
 	XMFLOAT3 boundingbox(1.f, 4.f, 1.f);
@@ -39,7 +38,7 @@ void Player::addAABB(DirectX::BoundingBox* aabb)
 }
 void Player::addAABBFromVector(std::vector<DirectX::BoundingBox>* aabb)
 {
-	for (int i = 0; i < aabb->size(); i++)
+	for (size_t i = 0; i < aabb->size(); i++)
 	{
 		m_collidableAABBoxes.push_back(&aabb->at(i));
 	}
@@ -52,7 +51,7 @@ void Player::clearAABB()
 
 void Player::addOrientedBBFromVector(std::vector<DirectX::BoundingOrientedBox>* obb)
 {
-	for (int i = 0; i < obb->size(); i++)
+	for (size_t i = 0; i < obb->size(); i++)
 	{
 		m_collidableOrientedBoxes.push_back(&obb->at(i));
 	}

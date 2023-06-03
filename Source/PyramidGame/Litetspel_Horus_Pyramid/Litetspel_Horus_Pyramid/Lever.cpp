@@ -21,9 +21,9 @@ Lever::~Lever()
 	}
 }
 
-void Lever::init(bool colidable, int modelIndex, int wvpCBufferIndex, Model* mdl)
+void Lever::init(bool colidable, int wvpCBufferIndex, Model* mdl)
 {
-	this->initializeStatic(colidable, modelIndex, wvpCBufferIndex, mdl);
+	initializeStatic(colidable, wvpCBufferIndex, mdl);
 }
 
 void Lever::onPlayerColide()
@@ -33,57 +33,57 @@ void Lever::onPlayerColide()
 
 void Lever::toggleActivateLever()
 {
-	if (this->activated == false)
+	if (activated == false)
 	{
-		this->activated = true;
+		activated = true;
 		canUseLever = false;
 	}
-	else if (this->activated == true)
+	else if (activated == true)
 	{
-		this->activated = false;
+		activated = false;
 		canUseLever = false;
 	}
 }
 
 bool Lever::getLeverValue()
 {
-	return this-> activated;
+	return  activated;
 }
 
 bool Lever::getCanUseLever()
 {
-	if (this->activated == false)
+	if (activated == false)
 	{
 		return false;
 	}
-	return this->canUseLever;
+	return canUseLever;
 }
 
 void Lever::setPlayerBoundingBox(DirectX::BoundingBox* boundingBox)
 {
-	this->m_playerBoundingBox = boundingBox;
-	this->leverTriggerBox = this->getAABB();
+	m_playerBoundingBox = boundingBox;
+	leverTriggerBox = getAABB();
 }
 
 void Lever::setCnaUseLever(bool state)
 {
-	this->canUseLever = state;
+	canUseLever = state;
 }
 
 void Lever::collidesWithPlayer()
 {
-	if (this->leverTriggerBox.Intersects(*m_playerBoundingBox))
+	if (leverTriggerBox.Intersects(*m_playerBoundingBox))
 	{
 		onPlayerColide();
 	}
 	else
 	{
-		this->canUseLever = false;
+		canUseLever = false;
 	}
 }
 
 void Lever::initAudioComponent(std::shared_ptr<DirectX::AudioEngine> audioEngine, MovementComponent* playerMovementComponent)
 {
-	this->m_audioComponent->init(audioEngine, playerMovementComponent);
-	this->m_audioComponent->loadSound(m_sound);
+	m_audioComponent->init(audioEngine, playerMovementComponent);
+	m_audioComponent->loadSound(m_sound);
 }

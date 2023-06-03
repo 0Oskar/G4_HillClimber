@@ -7,15 +7,14 @@ class WinState : public iGameState
 private:
 	MovementComponent* m_cameraMovementComponentPtr;
 	AudioComponent* m_audioComponent;
-	void setupLight();
-	std::pair<std::string, int> score[10];
-	int nrOfHighScore;
-	int ownTime;
+	std::pair<std::string, int> m_score[10];
+	int m_nrOfHighScore;
+	int m_ownTime;
 
 	//Sound
 	const std::wstring winSound = L"Sounds/MainMenu.wav";
 
-
+	void setupLight();
 	void readHighScoreFromFile();
 public:
 	WinState();
@@ -26,7 +25,7 @@ public:
 	states handleInput(Keyboard* keyboard, Mouse* mousePtr, const float dt);
 
 	//Get
-	std::vector<Model>* getModelsPtr();
+	std::unordered_map<std::string, Model>* getModelsPtr();
 	std::vector<GameObject*>* getGameObjectsPtr();
 	std::vector<BoundingBox>* getActiveRoomBoundingBoxesPtr(); // Empty
 	std::vector<BoundingOrientedBox>* getActiveRoomOrientedBoundingBoxesPtr(); // Empty

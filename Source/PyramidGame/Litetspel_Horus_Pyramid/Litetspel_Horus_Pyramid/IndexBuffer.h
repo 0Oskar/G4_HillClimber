@@ -9,13 +9,13 @@ private:
 public:
 	IndexBuffer() 
 	{
-		this->indexBufferPtr = nullptr;
-		this->size = 0;
+		indexBufferPtr = nullptr;
+		size = 0;
 	}
 
-	HRESULT init(ID3D11Device* device, DWORD* data, const UINT nrOf)
+	void init(ID3D11Device* device, DWORD* data, const UINT nrOf)
 	{
-		this->size = nrOf;
+		size = nrOf;
 
 		D3D11_SUBRESOURCE_DATA bufferData;
 		bufferData.pSysMem = data;
@@ -28,12 +28,12 @@ public:
 		bufferDesc.CPUAccessFlags = 0;
 		bufferDesc.MiscFlags = 0;
 
-		HRESULT hr = device->CreateBuffer(&bufferDesc, &bufferData, this->indexBufferPtr.GetAddressOf());
-		return hr;
+		HRESULT hr = device->CreateBuffer(&bufferDesc, &bufferData, indexBufferPtr.GetAddressOf());
+		assert(SUCCEEDED(hr) && "Error, index buffer could not be created!");
 	}
 	UINT getSize() const
 	{
-		return this->size;
+		return size;
 	}
 	ID3D11Buffer* Get()
 	{

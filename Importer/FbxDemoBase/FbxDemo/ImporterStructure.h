@@ -3,7 +3,7 @@
 struct MeshBFF
 {
 	char name[64];
-	unsigned int nrOfVertex;
+	unsigned int nrOfVertex = 0;
 };
 
 struct VertexBFF

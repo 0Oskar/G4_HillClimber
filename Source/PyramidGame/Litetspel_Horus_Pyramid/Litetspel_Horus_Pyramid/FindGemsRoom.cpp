@@ -47,18 +47,18 @@ void FindGemsRoom::createSceneObjects()
 	// Room
 	pos = DirectX::XMVectorSet(0.f, 5.5f, 7.8f, 1.f);
 	++nrOfCurrentLModels;
-	addGameObjectToRoom(true, false, 1, nrOfCurrentLModels, &m_models->at(nrOfCurrentLModels), pos, scale, XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
+	addGameObjectToRoom(true, false, 1, &m_models->at("vRoom_New2.bff"), pos, scale, XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
 
 	// Trasure Gate
 	++nrOfCurrentLModels;
-	addGameObjectToRoom(true, false, 1, nrOfCurrentLModels, &m_models->at(nrOfCurrentLModels), gatePos, scale, XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
+	addGameObjectToRoom(true, false, 1, &m_models->at("vGate_New.bff"), gatePos, scale, XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
 	gate = m_gameObjects.back();
 
 	// Lever top part
 	pos = DirectX::XMVectorSet(0, -1.5f, 43.1f, 1.f) + DirectX::XMVectorSet(1.2f, 0.f, 0.f, 0.f); // extra offset bc of Rot
 	rot = DirectX::XMVectorSet(0.f, 0.f, pMath::convertDegreesToRadians(45.0f), 0.f);
 	++nrOfCurrentLModels;
-	addLeverToRoom(nrOfCurrentLModels, &m_models->at(nrOfCurrentLModels), pos, rot, XMFLOAT3(2.f, 3.f, 1.f)); // fix bounding box so it match my lever
+	addLeverToRoom(&m_models->at("vLever_New.bff"), pos, rot, XMFLOAT3(2.f, 3.f, 1.f)); // fix bounding box so it match my lever
 	m_gameObjects.back()->getMoveCompPtr()->rotation = rot;
 	m_Lever.emplace_back(dynamic_cast<Lever*>(m_gameObjects.back()));
 	m_Lever[0]->setPlayerBoundingBox(m_player->getAABBPtr());
@@ -68,65 +68,65 @@ void FindGemsRoom::createSceneObjects()
 	// Gem 1
 	pos = m_PreFixedSpawnpoints.at(m_SpawnIndex[0]);
 	++nrOfCurrentLModels;
-	addLeverToRoom(nrOfCurrentLModels, &m_models->at(nrOfCurrentLModels), pos, rot, XMFLOAT3(2.5f, 3.5f, 2.5f)); // fix bounding box so it match the gems
+	addLeverToRoom(&m_models->at("vGem1_New.bff"), pos, rot, XMFLOAT3(2.5f, 3.5f, 2.5f)); // fix bounding box so it match the gems
 	m_Gems.emplace_back(dynamic_cast<Lever*>(m_gameObjects.back())); 
 	m_Gems.at(0)->setPlayerBoundingBox(m_player->getAABBPtr());
 
 	// Gem 2
 	pos = m_PreFixedSpawnpoints.at(m_SpawnIndex[1]);
 	++nrOfCurrentLModels;
-	addLeverToRoom(nrOfCurrentLModels, &m_models->at(nrOfCurrentLModels), pos, rot, XMFLOAT3(2.5f, 3.5f, 2.5f)); // fix bounding box so it match the gems
+	addLeverToRoom(&m_models->at("vGem2_New.bff"), pos, rot, XMFLOAT3(2.5f, 3.5f, 2.5f)); // fix bounding box so it match the gems
 	m_Gems.emplace_back(dynamic_cast<Lever*>(m_gameObjects.back())); 
 	m_Gems.at(1)->setPlayerBoundingBox(m_player->getAABBPtr());
 
 	// Gem 3
 	pos = m_PreFixedSpawnpoints.at(m_SpawnIndex[2]);
 	++nrOfCurrentLModels;
-	addLeverToRoom(nrOfCurrentLModels, &m_models->at(nrOfCurrentLModels), pos, rot, XMFLOAT3(2.5f, 3.5f, 2.5f)); // fix bounding box so it match the gems
+	addLeverToRoom(&m_models->at("vGem3_New.bff"), pos, rot, XMFLOAT3(2.5f, 3.5f, 2.5f)); // fix bounding box so it match the gems
 	m_Gems.emplace_back(dynamic_cast<Lever*>(m_gameObjects.back())); 
 	m_Gems.at(2)->setPlayerBoundingBox(m_player->getAABBPtr());
 
 	// Gem 4
 	pos = m_PreFixedSpawnpoints.at(m_SpawnIndex[3]);
 	++nrOfCurrentLModels;
-	addLeverToRoom(nrOfCurrentLModels, &m_models->at(nrOfCurrentLModels), pos, rot, XMFLOAT3(2.5f, 3.5f, 2.5f)); // fix bounding box so it match the gems
+	addLeverToRoom(&m_models->at("vGem4_New.bff"), pos, rot, XMFLOAT3(2.5f, 3.5f, 2.5f)); // fix bounding box so it match the gems
 	m_Gems.emplace_back(dynamic_cast<Lever*>(m_gameObjects.back())); 
 	m_Gems.at(3)->setPlayerBoundingBox(m_player->getAABBPtr()); 
 
 	// Gem 5
 	pos = m_PreFixedSpawnpoints.at(m_SpawnIndex[4]);
 	++nrOfCurrentLModels;
-	addLeverToRoom(nrOfCurrentLModels, &m_models->at(nrOfCurrentLModels), pos, rot, XMFLOAT3(2.5f, 3.5f, 2.5f)); // fix bounding box so it match the gems
+	addLeverToRoom(&m_models->at("vGem5_New.bff"), pos, rot, XMFLOAT3(2.5f, 3.5f, 2.5f)); // fix bounding box so it match the gems
 	m_Gems.emplace_back(dynamic_cast<Lever*>(m_gameObjects.back())); 
 	m_Gems.at(4)->setPlayerBoundingBox(m_player->getAABBPtr()); 
 
 	// Gem Slots
 	pos = DirectX::XMVectorSet(0.8f, 2.9f, 2.5f, 1.f);
-	addLeverToRoom(nrOfCurrentLModels, &m_models->at(nrOfCurrentLModels), pos, rot, XMFLOAT3(2.f, 2.f, 4.f)); // fix bounding box so it match the gems
+	addLeverToRoom(&m_models->at("vGem5_New.bff"), pos, rot, XMFLOAT3(2.f, 2.f, 4.f)); // fix bounding box so it match the gems
 	m_gemSlots.emplace_back(dynamic_cast<Lever*>(m_gameObjects.back())); 
 	m_gemSlots.at(0)->setPlayerBoundingBox(m_player->getAABBPtr()); 
 	m_gemSlots.at(0)->setScale(DirectX::XMVectorSet(0.01f, 0.01f, 0.01f, 1.f)); // 0.01
 
 	pos = DirectX::XMVectorSet(-0.8f, 1.1f, -2.5f, 1.f);
-	addLeverToRoom(nrOfCurrentLModels, &m_models->at(nrOfCurrentLModels), pos, rot, XMFLOAT3(2, 2, 4)); // fix bounding box so it match the gems
+	addLeverToRoom(&m_models->at("vGem5_New.bff"), pos, rot, XMFLOAT3(2, 2, 4)); // fix bounding box so it match the gems
 	m_gemSlots.emplace_back(dynamic_cast<Lever*>(m_gameObjects.back())); 
 	m_gemSlots.at(1)->setPlayerBoundingBox(m_player->getAABBPtr()); 
 	m_gemSlots.at(1)->setScale(DirectX::XMVectorSet(0.01f, 0.01f, 0.01f, 1.f)); 
 
 	pos = DirectX::XMVectorSet(2.5f, 0.9f, -1.9f, 1.f);
-	addLeverToRoom(nrOfCurrentLModels, &m_models->at(nrOfCurrentLModels), pos, rot, XMFLOAT3(4, 2, 2)); // fix bounding box so it match the gems
+	addLeverToRoom(&m_models->at("vGem5_New.bff"), pos, rot, XMFLOAT3(4, 2, 2)); // fix bounding box so it match the gems
 	m_gemSlots.emplace_back(dynamic_cast<Lever*>(m_gameObjects.back())); 
 	m_gemSlots.at(2)->setPlayerBoundingBox(m_player->getAABBPtr()); 
 	m_gemSlots.at(2)->setScale(DirectX::XMVectorSet(0.01f, 0.01f, 0.01f, 1.f)); 
 
 	pos = DirectX::XMVectorSet(2.5f, 4.6f, 0.8f, 1.f);
-	addLeverToRoom(nrOfCurrentLModels, &m_models->at(nrOfCurrentLModels), pos, rot, XMFLOAT3(4.f, 2.f, 2.f)); // fix bounding box so it match the gems
+	addLeverToRoom(&m_models->at("vGem5_New.bff"), pos, rot, XMFLOAT3(4.f, 2.f, 2.f)); // fix bounding box so it match the gems
 	m_gemSlots.emplace_back(dynamic_cast<Lever*>(m_gameObjects.back())); 
 	m_gemSlots.at(3)->setPlayerBoundingBox(m_player->getAABBPtr()); 
 	m_gemSlots.at(3)->setScale(DirectX::XMVectorSet(0.01f, 0.01f, 0.01f, 1.f)); 
 
 	pos = DirectX::XMVectorSet(-2.5f, 2.9f, -0.85f, 1.f);
-	addLeverToRoom(nrOfCurrentLModels, &m_models->at(nrOfCurrentLModels), pos, rot, XMFLOAT3(4, 2, 2)); // fix bounding box so it match the gems
+	addLeverToRoom(&m_models->at("vGem5_New.bff"), pos, rot, XMFLOAT3(4, 2, 2)); // fix bounding box so it match the gems
 	m_gemSlots.emplace_back(dynamic_cast<Lever*>(m_gameObjects.back())); 
 	m_gemSlots.at(4)->setPlayerBoundingBox(m_player->getAABBPtr()); 
 	m_gemSlots.at(4)->setScale(DirectX::XMVectorSet(0.01f, 0.01f, 0.01f, 1.f)); 
@@ -134,18 +134,18 @@ void FindGemsRoom::createSceneObjects()
 	// Pedistal for gems
 	++nrOfCurrentLModels;
 	pos = m_PreFixedSpawnpoints[5] + DirectX::XMVectorSet(0, -3, 0, 0);
-	addGameObjectToRoom(true, false, 1, nrOfCurrentLModels, &m_models->at(nrOfCurrentLModels), pos, scale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
+	addGameObjectToRoom(true, false, 1, &m_models->at("vPedistal_New.bff"), pos, scale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
 	pos = m_PreFixedSpawnpoints[6] + DirectX::XMVectorSet(0, -3, 0, 0);
-	addGameObjectToRoom(true, false, 1, nrOfCurrentLModels, &m_models->at(nrOfCurrentLModels), pos, scale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
+	addGameObjectToRoom(true, false, 1, &m_models->at("vPedistal_New.bff"), pos, scale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
 	pos = m_PreFixedSpawnpoints[7] + DirectX::XMVectorSet(0, -3, 0, 0);
-	addGameObjectToRoom(true, false, 1, nrOfCurrentLModels, &m_models->at(nrOfCurrentLModels), pos, scale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
+	addGameObjectToRoom(true, false, 1, &m_models->at("vPedistal_New.bff"), pos, scale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
 	
 	// Ramp to back room
 	++nrOfCurrentLModels;
 	pos = DirectX::XMVectorSet(0, -1.1f, 30, 1);
 	scale = DirectX::XMVectorSet(1, 1, 1, 1);
 	rot = DirectX::XMVectorSet(0.f, 0.f, 0.f, 1.f);
-	addGameObjectToRoom(true, false, 1, nrOfCurrentLModels, &m_models->at(nrOfCurrentLModels), pos, scale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
+	addGameObjectToRoom(true, false, 1, &m_models->at("vRamp_New.bff"), pos, scale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
 
 }
 
@@ -412,7 +412,7 @@ void FindGemsRoom::portals()
 	DirectX::XMVECTOR rot = DirectX::XMVectorSet(0.f, pMath::convertDegreesToRadians(180), 0.f, 0.f);
 	DirectX::XMVECTOR scale = DirectX::XMVectorSet(1, 1, 1, 1);
 
-	addPortalToRoom(pos2, 10, &m_models->at(10), pos, scale, DirectX::XMFLOAT3(5, 6, 4), 0, true);
+	addPortalToRoom(pos2, &m_models->at("PortalGate.bff"), pos, scale, DirectX::XMFLOAT3(5, 6, 4), 0, true);
 	m_gameObjects.back()->getMoveCompPtr()->rotation = rot;
 	m_portal = dynamic_cast<Portal*>(m_gameObjects.back());
 	m_portal->setActiveStatus(false);

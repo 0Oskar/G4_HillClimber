@@ -70,7 +70,7 @@ public:
 	ID3D11Buffer* const* GetAdressOf() const { return buffer.GetAddressOf(); }
 	HRESULT init(ID3D11Device* device, ID3D11DeviceContext* dContext)
 	{
-		this->dContextPtr = dContext;
+		dContextPtr = dContext;
 
 		D3D11_BUFFER_DESC constantBufferDesc;
 		ZeroMemory(&constantBufferDesc, sizeof(D3D11_BUFFER_DESC));
@@ -81,19 +81,22 @@ public:
 		constantBufferDesc.MiscFlags = 0;
 		constantBufferDesc.StructureByteStride = 0;
 
-		HRESULT hr = device->CreateBuffer(&constantBufferDesc, 0, buffer.GetAddressOf());
+		D3D11_SUBRESOURCE_DATA subresourceData;
+		subresourceData.pSysMem = &m_data;
+		subresourceData.SysMemPitch = 0;
+		subresourceData.SysMemSlicePitch = 0;
+
+		HRESULT hr = device->CreateBuffer(&constantBufferDesc, &subresourceData, buffer.GetAddressOf());
 		assert(SUCCEEDED(hr) && "Error, failed to create constant buffer!");
 		return hr;
-		
-
 	}
 	void upd(T* data = nullptr)
 	{
 		if (data)
-			this->m_data = *data;
+			m_data = *data;
 
 		D3D11_MAPPED_SUBRESOURCE mapSubresource;
-		HRESULT hr = this->dContextPtr->Map(this->buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mapSubresource);
+		HRESULT hr = dContextPtr->Map(buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &mapSubresource);
 		assert(SUCCEEDED(hr) && "Error, failed to map CBuffer!");
 		CopyMemory(mapSubresource.pData, &m_data, sizeof(T));
 		

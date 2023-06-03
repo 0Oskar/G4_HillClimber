@@ -35,11 +35,11 @@ private:
 
 	Transition()
 	{
-		this->m_dContext = nullptr;
-		this->m_fadeIn = false;
-		this->m_animationDone = true;
-		this->m_fadeCBuffer.m_data.color = { 0.f, 0.f, 0.f };
-		this->m_fadeCBuffer.m_data.alpha = 0.f;
+		m_dContext = nullptr;
+		m_fadeIn = false;
+		m_animationDone = true;
+		m_fadeCBuffer.m_data.color = { 0.f, 0.f, 0.f };
+		m_fadeCBuffer.m_data.alpha = 0.f;
 	}
 
 public:
@@ -54,7 +54,7 @@ public:
 
 	void initialize(ID3D11Device* device, ID3D11DeviceContext* dContext)
 	{
-		this->m_dContext = dContext;
+		m_dContext = dContext;
 		VertexPosTex vertices[]
 		{
 			{
@@ -83,67 +83,67 @@ public:
 			}
 		};
 
-		this->m_vertexBuffer.initialize(device, vertices, 6);
+		m_vertexBuffer.initialize(device, vertices, 6);
 
-		this->m_fadeCBuffer.init(device, dContext);
+		m_fadeCBuffer.init(device, dContext);
 
 		ShaderFiles shaderFiles;
 		shaderFiles.vs = L"Shader Files\\TransitionVS.hlsl";
 		shaderFiles.ps = L"Shader Files\\TransitionPS.hlsl";
-		this->m_shaders.initialize(device, dContext, shaderFiles);
+		m_shaders.initialize(device, dContext, shaderFiles);
 	}
 
 	void fadeIn(XMFLOAT3 color)
 	{
-		this->m_fadeCBuffer.m_data.color = color;
-		this->m_fadeIn = true;
-		this->m_animationDone = false;
+		m_fadeCBuffer.m_data.color = color;
+		m_fadeIn = true;
+		m_animationDone = false;
 	}
 	void fadeOut()
 	{
-		this->m_fadeIn = false;
-		this->m_animationDone = false;
+		m_fadeIn = false;
+		m_animationDone = false;
 	}
 
 	void update(float dt)
 	{
-		if (this->m_fadeIn)
+		if (m_fadeIn)
 		{
-			if (this->m_fadeCBuffer.m_data.alpha < 1.f)
-				this->m_fadeCBuffer.m_data.alpha += dt * 2;
+			if (m_fadeCBuffer.m_data.alpha < 1.f)
+				m_fadeCBuffer.m_data.alpha += dt * 2;
 			else
 			{
-				this->m_fadeCBuffer.m_data.alpha = 1.f;
-				this->m_animationDone = true;
+				m_fadeCBuffer.m_data.alpha = 1.f;
+				m_animationDone = true;
 			}
 		}
 		else
 		{
-			if (this->m_fadeCBuffer.m_data.alpha > 0.f)
-				this->m_fadeCBuffer.m_data.alpha -= dt * 2;
+			if (m_fadeCBuffer.m_data.alpha > 0.f)
+				m_fadeCBuffer.m_data.alpha -= dt * 2;
 			else
 			{
-				this->m_fadeCBuffer.m_data.alpha = 0.f;
-				this->m_animationDone = true;
+				m_fadeCBuffer.m_data.alpha = 0.f;
+				m_animationDone = true;
 			}
 		}
 	}
 
 	bool isAnimationDone() const
 	{
-		return this->m_animationDone;
+		return m_animationDone;
 	}
 
 	void render()
 	{
-		this->m_fadeCBuffer.upd();
-		this->m_dContext->PSSetConstantBuffers(0, 1, this->m_fadeCBuffer.GetAdressOf());
+		m_fadeCBuffer.upd();
+		m_dContext->PSSetConstantBuffers(0, 1, m_fadeCBuffer.GetAdressOf());
 
-		this->m_shaders.setShaders();
+		m_shaders.setShaders();
 
 		UINT vertexOffset = 0;
-		this->m_dContext->IASetVertexBuffers(0, 1, this->m_vertexBuffer.GetAddressOf(), this->m_vertexBuffer.getStridePointer(), &vertexOffset);
+		m_dContext->IASetVertexBuffers(0, 1, m_vertexBuffer.GetAddressOf(), m_vertexBuffer.getStridePointer(), &vertexOffset);
 
-		this->m_dContext->Draw(this->m_vertexBuffer.getSize(), 0);
+		m_dContext->Draw(m_vertexBuffer.getSize(), 0);
 	}
 };

@@ -3,9 +3,9 @@
 
 ShadowMapInstance::ShadowMapInstance()
 {
-	this->m_deviceContext = nullptr;
-	this->m_width = 0;
-	this->m_height = 0;
+	m_deviceContext = nullptr;
+	m_width = 0;
+	m_height = 0;
 }
 
 ShadowMapInstance::~ShadowMapInstance() {}
@@ -13,25 +13,25 @@ ShadowMapInstance::~ShadowMapInstance() {}
 void ShadowMapInstance::initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, UINT width, UINT height)
 {
 	// Device
-	this->m_deviceContext = deviceContext;
+	m_deviceContext = deviceContext;
 
 	// Dimensions
-	this->m_width = width;
-	this->m_height = height;
+	m_width = width;
+	m_height = height;
 
 	// Viewport
 	m_viewport.TopLeftX = 0.f;
 	m_viewport.TopLeftY = 0.f;
-	m_viewport.Width = (float)this->m_width;
-	m_viewport.Height = (float)this->m_height;
+	m_viewport.Width = (float)m_width;
+	m_viewport.Height = (float)m_height;
 	m_viewport.MinDepth = 0.f;
 	m_viewport.MaxDepth = 1.f;
 
 	// Resources
 	// Texture 2D
 	D3D11_TEXTURE2D_DESC textureDesc;
-	textureDesc.Width = this->m_width;
-	textureDesc.Height = this->m_height;
+	textureDesc.Width = m_width;
+	textureDesc.Height = m_height;
 	textureDesc.MipLevels = 1;
 	textureDesc.ArraySize = 1;
 	textureDesc.Format = DXGI_FORMAT_R24G8_TYPELESS;
@@ -53,7 +53,7 @@ void ShadowMapInstance::initialize(ID3D11Device* device, ID3D11DeviceContext* de
 	depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	depthStencilViewDesc.Texture2D.MipSlice = 0;
-	hr = device->CreateDepthStencilView(depthMap, &depthStencilViewDesc, this->m_shadowMapDSV.GetAddressOf());
+	hr = device->CreateDepthStencilView(depthMap, &depthStencilViewDesc, m_shadowMapDSV.GetAddressOf());
 	assert(SUCCEEDED(hr) && "Error, failed to create shadow map depth stencil view!");
 
 	// Shader Resource View
@@ -62,7 +62,7 @@ void ShadowMapInstance::initialize(ID3D11Device* device, ID3D11DeviceContext* de
 	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	shaderResourceViewDesc.Texture2D.MipLevels = textureDesc.MipLevels;
 	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
-	hr = device->CreateShaderResourceView(depthMap, &shaderResourceViewDesc, this->m_shadowMapSRV.GetAddressOf());
+	hr = device->CreateShaderResourceView(depthMap, &shaderResourceViewDesc, m_shadowMapSRV.GetAddressOf());
 	assert(SUCCEEDED(hr) && "Error, failed to create shadow map shader resource view!");
 
 	depthMap->Release();
@@ -107,7 +107,7 @@ void ShadowMapInstance::initialize(ID3D11Device* device, ID3D11DeviceContext* de
 	rasterizerDesc.FrontCounterClockwise = false;
 	rasterizerDesc.DepthClipEnable = true;
 
-	hr = device->CreateRasterizerState(&rasterizerDesc, this->m_rasterizerState.GetAddressOf());
+	hr = device->CreateRasterizerState(&rasterizerDesc, m_rasterizerState.GetAddressOf());
 	assert(SUCCEEDED(hr) && "Error, failed to create shadow map rasterizer state!");
 
 	// Sampler
@@ -131,8 +131,8 @@ void ShadowMapInstance::initialize(ID3D11Device* device, ID3D11DeviceContext* de
 	assert(SUCCEEDED(hr) && "Error when creating shadow map sampler state!");
 
 	// World Bounding Sphere
-	this->m_worldBoundingSphere.Center = { 0.f, 0.f, 0.f };
-	this->m_worldBoundingSphere.Radius = 100.f;
+	m_worldBoundingSphere.Center = { 0.f, 0.f, 0.f };
+	m_worldBoundingSphere.Radius = 100.f;
 
 	// Shader
 	ShaderFiles shaderFiles;
@@ -184,7 +184,7 @@ void ShadowMapInstance::update()
 
 ID3D11ShaderResourceView* ShadowMapInstance::getShadowMapSRV()
 {
-	return this->m_shadowMapSRV.Get();
+	return m_shadowMapSRV.Get();
 }
 
 ID3D11ShaderResourceView* const* ShadowMapInstance::getShadowMapSRVConstPtr()

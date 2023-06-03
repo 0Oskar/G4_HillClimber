@@ -62,7 +62,7 @@ public:
 	// Getters
 	DirectX::XMMATRIX* getViewMatrix() const;
 	DirectX::XMMATRIX* getProjectionMatrix() const;
-	std::vector<Model>* getModelsPtr();
+	std::unordered_map<std::string, Model>* getModelsPtr();
 	std::vector<GameObject*>* getGameObjectsPtr();
 	std::vector<GameObject*>* getActiveRoomGameObjectsPtr();
 	std::vector<BoundingBox>* getActiveRoomBoundingBoxesPtr();
@@ -73,16 +73,16 @@ public:
 	PS_DIR_BUFFER getActiveRoomDirectionalLight();
 	PS_FOG_BUFFER getActiveRoomFogData();
 	PS_LIGHT_BUFFER getActiveRoomLightData();
-	void addGameObjectToWorld(const bool dynamic, const bool colide, const float weight, const int mdlIndx, Model* mdl, const DirectX::XMVECTOR position, const DirectX::XMVECTOR scale3D, const DirectX::XMFLOAT3 boundingBoxSize, const DirectX::XMFLOAT3 acceleration, const DirectX::XMFLOAT3 deceleration);
-	void addPlatformToWorld(const int mdlIndex, DirectX::BoundingOrientedBox* pyramid, Model* mdl, const DirectX::XMVECTOR position, const DirectX::XMFLOAT3 platformBoundingBox);
-	void addLeverToWorld(const int mdlIndex, Model* mdl, const DirectX::XMVECTOR position, const DirectX::XMVECTOR rotation, const DirectX::XMFLOAT3 leverBB);
-	void addPortalToWorld(const XMVECTOR teleportLocation, const int mdlIndx, Model* mdl, const DirectX::XMVECTOR position, const DirectX::XMVECTOR scale3D, const DirectX::XMFLOAT3 boundingBoxSize, const int room);
+	void addGameObjectToWorld(const bool dynamic, const bool colide, const float weight, Model* mdl, const DirectX::XMVECTOR position, const DirectX::XMVECTOR scale3D, const DirectX::XMFLOAT3 boundingBoxSize, const DirectX::XMFLOAT3 acceleration, const DirectX::XMFLOAT3 deceleration);
+	void addPlatformToWorld(DirectX::BoundingOrientedBox* pyramid, Model* mdl, const DirectX::XMVECTOR position, const DirectX::XMFLOAT3 platformBoundingBox);
+	void addLeverToWorld(Model* mdl, const DirectX::XMVECTOR position, const DirectX::XMVECTOR rotation, const DirectX::XMFLOAT3 leverBB);
+	void addPortalToWorld(const XMVECTOR teleportLocation, Model* mdl, const DirectX::XMVECTOR position, const DirectX::XMVECTOR scale3D, const DirectX::XMFLOAT3 boundingBoxSize, const int room);
 	void looseALife(const bool looseLife);
 	std::wstring getRoomUITexturePath();
 
 	// Initialization
 	void initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext, const GameOptions options, std::shared_ptr<DirectX::AudioEngine> audioEngine, volatile bool* doneLoadingModels);
-	//static void playerInit(bool* finished, ID3D11Device* device, ID3D11DeviceContext* dContext, std::vector<Model>* modelList, Player* player, BoundingOrientedBox* pyramidOBB);
+	//static void playerInit(bool* finished, ID3D11Device* device, ID3D11DeviceContext* dContext, std::unordered_map<std::string, Model>* modelList, Player* player, BoundingOrientedBox* pyramidOBB);
 	
 	// Update
 	void update(const float dt);

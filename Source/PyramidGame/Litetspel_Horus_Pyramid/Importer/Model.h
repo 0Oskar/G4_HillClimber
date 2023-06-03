@@ -9,4 +9,10 @@ class ModelBFF
 		VertexBFF* vertexArr;
 		MaterialBFF material;
 		CameraBFF camera;
+		std::string fileName;
+		bool loaded = false;
+
+		bool loadSucceded() {
+			return mesh.nrOfVertex != 0;
+		}
 };

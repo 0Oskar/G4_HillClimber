@@ -14,9 +14,11 @@
 #define NOMINMAX // std::min/std::max wont work without this
 #include <algorithm>
 #include <map>
+#include <unordered_map>
 #include <vector>
 #include <queue>
 #include <string>
+#include <string_view>
 #include <sstream>
 #include <ctime>
 #include <thread>
@@ -24,7 +26,7 @@
 
 #include <math.h>
 #include <fstream>
-#include<stack>
+#include <stack>
 #include <random>
 #include <algorithm>
 #include <iterator>

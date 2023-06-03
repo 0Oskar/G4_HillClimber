@@ -37,7 +37,7 @@ private:
 	CheckpointHandler m_checkpointHandler;
 	const XMVECTOR platformPush = XMVectorSet(0, 0, -10, 0 );
 	std::vector<DirectX::BoundingBox*> platformBB;
-	int completedRooms;
+	uint32_t completedRooms;
 public:
 	PyramidRoom();
 	~PyramidRoom();

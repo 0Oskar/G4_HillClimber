@@ -22,7 +22,7 @@ private:
 public:
 	Lever();
 	~Lever();
-	void init(bool colidable, int modelIndex, int wvpCBufferIndex, Model* mdl);
+	void init(bool colidable, int wvpCBufferIndex, Model* mdl);
 	void onPlayerColide();
 	void toggleActivateLever();
 	bool getLeverValue();

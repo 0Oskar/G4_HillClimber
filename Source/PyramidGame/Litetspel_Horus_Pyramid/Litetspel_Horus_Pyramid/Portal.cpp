@@ -3,12 +3,12 @@
 
 Portal::Portal()
 {
-	this->m_teleportLocation = XMVectorSet(0.f, 0.f, 0.f, 1.f);
-	this->player = nullptr;
-	this->m_changeActiveRoom = false;
-	this->m_roomID = -1;
-	this->m_oneTimeUse = false;
-	this->m_active = false;
+	m_teleportLocation = XMVectorSet(0.f, 0.f, 0.f, 1.f);
+	m_player = nullptr;
+	m_changeActiveRoom = false;
+	m_roomID = -1;
+	m_oneTimeUse = false;
+	m_active = false;
 }
 
 Portal::~Portal()
@@ -18,34 +18,34 @@ Portal::~Portal()
 
 void Portal::setActiveStatus(bool activeStatus)
 {
-	this->m_active = activeStatus;
+	m_active = activeStatus;
 }
 
-void Portal::initialize(int modelIndex, int wvpCBufferIndex, Model* mdl, XMVECTOR teleportLocation,Player * player, int roomID, bool oneTimeUse)
+void Portal::initialize(int wvpCBufferIndex, Model* mdl, XMVECTOR teleportLocation,Player * player, int roomID, bool oneTimeUse)
 {
 
-	this->m_teleportLocation = teleportLocation + XMVectorSet(0.f, player->getAABB().Extents.y + 0.1f, 0.f, 1.f);
+	m_teleportLocation = teleportLocation + XMVectorSet(0.f, player->getAABB().Extents.y + 0.1f, 0.f, 1.f);
 
-	this->player = player;
-	this->m_roomID = roomID;
-	this->m_oneTimeUse = oneTimeUse;
-	this->m_active = true;
+	m_player = player;
+	m_roomID = roomID;
+	m_oneTimeUse = oneTimeUse;
+	m_active = true;
 
-	initializeStatic(false, modelIndex, wvpCBufferIndex, mdl);
+	initializeStatic(false, wvpCBufferIndex, mdl);
 	
 }
 
 void Portal::update()
 {
 	if (!m_active) return;
-	if (getAABB().Intersects(player->getAABB()))
+	if (getAABB().Intersects(m_player->getAABB()))
 	{
-		if (this->m_oneTimeUse)
-			this->m_active = false;
+		if (m_oneTimeUse)
+			m_active = false;
 
-		this->player->getphysicsCompPtr()->setVelocity({ 0.f, 0.f, 0.f });
-		this->player->setPosition(this->m_teleportLocation);
-		this->player->getphysicsCompPtr()->setVelocity({0.f, 0.f, 0.f});
+		m_player->getphysicsCompPtr()->setVelocity({ 0.f, 0.f, 0.f });
+		m_player->setPosition(m_teleportLocation);
+		m_player->getphysicsCompPtr()->setVelocity({0.f, 0.f, 0.f});
 		if (m_roomID != -1)
 		{
 			m_changeActiveRoom = true;
@@ -55,13 +55,13 @@ void Portal::update()
 
 void Portal::resetActiveRoomVariable()
 {
-	this->m_changeActiveRoom = false;
+	m_changeActiveRoom = false;
 }
 
 bool Portal::shouldChangeActiveRoom() const
 {
-	if (this->m_roomID != -1)
-		return this->m_changeActiveRoom;
+	if (m_roomID != -1)
+		return m_changeActiveRoom;
 	else
 		return false;
 }

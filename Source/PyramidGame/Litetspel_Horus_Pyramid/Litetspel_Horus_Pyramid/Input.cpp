@@ -3,7 +3,7 @@
 
 Input::Input()
 {
-	this->m_cursorEnabled = false;
+	m_cursorEnabled = false;
 }
 
 LRESULT Input::handleMessages(HWND hwnd, UINT& uMsg, WPARAM& wParam, LPARAM& lParam)
@@ -31,7 +31,7 @@ LRESULT Input::handleMessages(HWND hwnd, UINT& uMsg, WPARAM& wParam, LPARAM& lPa
 	}
 	case WM_LBUTTONDOWN:
 	{
-		if (!this->m_cursorEnabled)
+		if (!m_cursorEnabled)
 		{
 			while (ShowCursor(FALSE) >= 0);
 			RECT windowRect;
@@ -98,7 +98,7 @@ LRESULT Input::handleMessages(HWND hwnd, UINT& uMsg, WPARAM& wParam, LPARAM& lPa
 		mPos.x = LOWORD(lParam);
 		mPos.y = HIWORD(lParam);
 
-		this->m_Mouse.onMove(mPos);
+		m_Mouse.onMove(mPos);
 		return 0;
 	}
 	case WM_MOUSEWHEEL:
@@ -142,7 +142,7 @@ LRESULT Input::handleMessages(HWND hwnd, UINT& uMsg, WPARAM& wParam, LPARAM& lPa
 	}
 	case WM_ACTIVATE:
 	{
-		if (!this->m_cursorEnabled)
+		if (!m_cursorEnabled)
 		{
 			if (wParam & WM_ACTIVATE || wParam & WA_CLICKACTIVE)
 			{
@@ -167,28 +167,28 @@ LRESULT Input::handleMessages(HWND hwnd, UINT& uMsg, WPARAM& wParam, LPARAM& lPa
 
 void Input::readBuffers()
 {
-	if (!this->m_Keyboard.empty())
+	if (!m_Keyboard.empty())
 	{
-		KeyboardEvent readEvent = this->m_Keyboard.readKey();
+		KeyboardEvent readEvent = m_Keyboard.readKey();
 	}
 
-	if (!this->m_Mouse.empty())
+	if (!m_Mouse.empty())
 	{
-		MouseEvent mouseEvnt = this->m_Mouse.readEvent();
+		MouseEvent mouseEvnt = m_Mouse.readEvent();
 	}
 }
 
 MouseEvent Input::getMouseEvent()
 {
-	return this->m_Mouse.readEvent();
+	return m_Mouse.readEvent();
 }
 
 Keyboard* Input::getKeyboard()
 {
-	return &this->m_Keyboard;
+	return &m_Keyboard;
 }
 
 Mouse* Input::getMouse()
 {
-	return &this->m_Mouse;
+	return &m_Mouse;
 }

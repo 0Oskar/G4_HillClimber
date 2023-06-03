@@ -26,13 +26,13 @@ Room::~Room()
 	}
 	m_gameObjects.clear();
 
-	for (int i = 0; i < m_rooms.size(); i++) //Not created here. Will release in gamestate
+	for (size_t i = 0; i < m_rooms.size(); i++) //Not created here. Will release in gamestate
 	{
 		m_rooms.at(i) = nullptr;
 	}
 }
 
-void Room::initialize(ID3D11Device* device, ID3D11DeviceContext* dContext, std::vector<Model>* models, std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* cBuffer, Player* player, XMVECTOR position, std::shared_ptr<DirectX::AudioEngine> audioEngine, Timer* gameTimer, GameOptions option)
+void Room::initialize(ID3D11Device* device, ID3D11DeviceContext* dContext, std::unordered_map<std::string, Model>* models, std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* cBuffer, Player* player, XMVECTOR position, std::shared_ptr<DirectX::AudioEngine> audioEngine, Timer* gameTimer, GameOptions option)
 {
 	m_device = device;
 	m_dContext = dContext;
@@ -40,7 +40,7 @@ void Room::initialize(ID3D11Device* device, ID3D11DeviceContext* dContext, std::
 	m_worldPosition = position;
 	m_wvpCBuffers = cBuffer;
 	m_models = models;
-	audioEngine = audioEngine;
+	m_audioEngine = audioEngine;
 	m_gameTimerPointer = gameTimer;
 
 	resourceHandler = &ResourceHandler::get();
@@ -67,7 +67,7 @@ void Room::initParent()
 }
 void Room::update(float dt, Camera* camera, Room* &activeRoom, bool &activeRoomChanged)
 {
-	for (int i = 0; i < m_gameObjects.size(); i++)
+	for (size_t i = 0; i < m_gameObjects.size(); i++)
 	{
 		Portal* portalPtr = dynamic_cast<Portal*>(m_gameObjects[i]);
 
@@ -91,8 +91,8 @@ void Room::update(float dt, Camera* camera, Room* &activeRoom, bool &activeRoomC
 		DirectX::XMMATRIX viewPMtrx = camera->getViewMatrix() * camera->getProjectionMatrix();
 		wvpData.wvp = m_gameObjects[i]->getWorldMatrix() * viewPMtrx;
 		wvpData.worldMatrix = m_gameObjects[i]->getWorldMatrix();
-
-		m_wvpCBuffers->at(m_gameObjects.at(i)->getWvpCBufferIndex()).upd(&wvpData);
+		int wvpbufferIndex = m_gameObjects.at(i)->getWvpCBufferIndex();
+		m_wvpCBuffers->at(wvpbufferIndex).upd(&wvpData);
 	}
 }
 
@@ -102,7 +102,7 @@ void Room::onEntrance()
 	m_player->setSpawnPosition(getEntrancePosition());
 }
 
-void Room::addGameObjectToRoom(bool dynamic, bool colide, float weight, int mdlIndx, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR scale3D, DirectX::XMFLOAT3 boundingBoxSize, DirectX::XMFLOAT3 acceleration, DirectX::XMFLOAT3 deceleration)
+void Room::addGameObjectToRoom(bool dynamic, bool colide, float weight, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR scale3D, DirectX::XMFLOAT3 boundingBoxSize, DirectX::XMFLOAT3 acceleration, DirectX::XMFLOAT3 deceleration)
 {
 	m_gameObjects.emplace_back(new GameObject());
 	GameObject* gObject = m_gameObjects.back();
@@ -111,11 +111,11 @@ void Room::addGameObjectToRoom(bool dynamic, bool colide, float weight, int mdlI
 	int bufferIndex = (int)m_wvpCBuffers->size() - 1;
 	if (dynamic)
 	{
-		gObject->initializeDynamic(colide, false, mdlIndx, bufferIndex, weight, acceleration, deceleration, mdl);
+		gObject->initializeDynamic(colide, false, bufferIndex, weight, acceleration, deceleration, mdl);
 	}
 	else
 	{
-		gObject->initializeStatic(colide, mdlIndx, bufferIndex, mdl);
+		gObject->initializeStatic(colide, bufferIndex, mdl);
 	}
 
 	gObject->setScale(scale3D);
@@ -133,12 +133,12 @@ void Room::addGameObjectToRoom(bool dynamic, bool colide, float weight, int mdlI
 	else
 		gObject->setBoundingBox(boundingBoxSize);
 }
-void Room::addPlatformToRoom(int mdlIndex, Model* mdl, DirectX::XMVECTOR position, DirectX::XMFLOAT3 platformBoundingBox, BoundingOrientedBox* pyramid)
+void Room::addPlatformToRoom(Model* mdl, DirectX::XMVECTOR position, DirectX::XMFLOAT3 platformBoundingBox, BoundingOrientedBox* pyramid)
 {
 	m_wvpCBuffers->emplace_back();
 	m_wvpCBuffers->back().init(m_device, m_dContext);
 	m_gameObjects.emplace_back(new Platform());
-	dynamic_cast<Platform*>(m_gameObjects.back())->init(true, mdlIndex, (int)m_wvpCBuffers->size() - 1, pyramid, mdl);
+	dynamic_cast<Platform*>(m_gameObjects.back())->init(true, (int)m_wvpCBuffers->size() - 1, pyramid, mdl);
 
 	XMVECTOR pos = m_worldPosition + position;
 	m_gameObjects.back()->setBoundingBox(platformBoundingBox);
@@ -147,7 +147,7 @@ void Room::addPlatformToRoom(int mdlIndex, Model* mdl, DirectX::XMVECTOR positio
 		m_player->addAABB(m_gameObjects.back()->getAABBPtr());
 }
 
-void Room::addPortalToRoom(XMVECTOR teleportLocation, int mdlIndx, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR scale3D, DirectX::XMFLOAT3 boundingBoxSize, int room, bool oneTimeUse)
+void Room::addPortalToRoom(XMVECTOR teleportLocation, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR scale3D, DirectX::XMFLOAT3 boundingBoxSize, int room, bool oneTimeUse)
 {
 	m_wvpCBuffers->emplace_back();
 	m_wvpCBuffers->back().init(m_device, m_dContext);
@@ -156,9 +156,9 @@ void Room::addPortalToRoom(XMVECTOR teleportLocation, int mdlIndx, Model* mdl, D
 	XMVECTOR pos = m_worldPosition + teleportLocation;
 	m_gameObjects.emplace_back(new Portal());
 	if(room != -1)
-		dynamic_cast<Portal*>(m_gameObjects.back())->initialize(mdlIndx, (int)m_wvpCBuffers->size() - 1, mdl, m_rooms[room]->getEntrancePosition() + XMVectorSet(0.f, m_player->getAABB().Extents.y + 0.1f, 0, 0), m_player, room, oneTimeUse);
+		dynamic_cast<Portal*>(m_gameObjects.back())->initialize((int)m_wvpCBuffers->size() - 1, mdl, m_rooms[room]->getEntrancePosition() + XMVectorSet(0.f, m_player->getAABB().Extents.y + 0.1f, 0, 0), m_player, room, oneTimeUse);
 	else
-		dynamic_cast<Portal*>(m_gameObjects.back())->initialize(mdlIndx, (int)m_wvpCBuffers->size() - 1, mdl, pos, m_player, room, oneTimeUse);
+		dynamic_cast<Portal*>(m_gameObjects.back())->initialize((int)m_wvpCBuffers->size() - 1, mdl, pos, m_player, room, oneTimeUse);
 
 	pos = m_worldPosition + position;
 
@@ -168,14 +168,14 @@ void Room::addPortalToRoom(XMVECTOR teleportLocation, int mdlIndx, Model* mdl, D
 	//m_player.addAABB(m_gameObjects.back()->getAABBPtr());
 }
 
-void Room::addLeverToRoom(int mdlIndex, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation, DirectX::XMFLOAT3 leverBB)
+void Room::addLeverToRoom(Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR rotation, DirectX::XMFLOAT3 leverBB)
 {
 	XMVECTOR pos = m_worldPosition + position;
 
 	m_wvpCBuffers->emplace_back();
 	m_wvpCBuffers->back().init(m_device, m_dContext);
 	m_gameObjects.emplace_back(new Lever());
-	dynamic_cast<Lever*>(m_gameObjects.back())->init(false, mdlIndex, (int)m_wvpCBuffers->size() - 1, mdl);
+	dynamic_cast<Lever*>(m_gameObjects.back())->init(false, (int)m_wvpCBuffers->size() - 1, mdl);
 	m_gameObjects.back()->setPosition(pos);
 	m_gameObjects.back()->setBoundingBox(leverBB);
 	m_gameObjects.back()->getMoveCompPtr()->rotation = rotation;
@@ -247,7 +247,7 @@ DirectX::XMVECTOR Room::getEntrancePosition() const
 
 void Room::addRooms(std::vector<Room*>* rooms)
 {
-	for (int i = 0; i < rooms->size(); i++)
+	for (size_t i = 0; i < rooms->size(); i++)
 	{
 		m_rooms.emplace_back(rooms->at(i));
 	}

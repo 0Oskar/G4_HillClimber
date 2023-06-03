@@ -14,12 +14,12 @@ private:
 public:
 	AudioComponent() 
 	{ 
-		this->playerMovementComp = nullptr;
-		this->resourceHandler = &ResourceHandler::get();
+		playerMovementComp = nullptr;
+		resourceHandler = &ResourceHandler::get();
 	};
 	~AudioComponent()
 	{
-		//this->playerMovementComp = nullptr;
+		//playerMovementComp = nullptr;
 		for (int i = 0; i < (int)m_effect.size(); i++)
 		{
 			if (m_effect.at(i) != nullptr)
@@ -34,19 +34,19 @@ public:
 	}
 	void init(std::shared_ptr<DirectX::AudioEngine> audioEngine, MovementComponent* playerMovementComponent, size_t nrOfChannels = 1)
 	{
-		this->m_audioEngine = audioEngine;
-		this->playerMovementComp = playerMovementComponent;
-		this->m_effect.resize(nrOfChannels);
+		m_audioEngine = audioEngine;
+		playerMovementComp = playerMovementComponent;
+		m_effect.resize(nrOfChannels);
 		for (size_t i = 0; i < nrOfChannels; i++)
 		{
-			this->m_effect.emplace_back();
+			m_effect.emplace_back();
 		}
 	}
 	void loadSound(std::wstring sound)
 	{
 		if (m_audioEngine)
 		{
-			this->resourceHandler->loadAudio(sound, this->m_audioEngine);
+			resourceHandler->loadAudio(sound, m_audioEngine);
 		}
 	}
 	void playSound(std::wstring sound, int channelNr = 0, bool loop = false, float volume = 1.0f, float pitch = 1.0f) //Play sound to player

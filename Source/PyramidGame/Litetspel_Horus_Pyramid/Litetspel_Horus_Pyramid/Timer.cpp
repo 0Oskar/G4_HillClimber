@@ -4,24 +4,24 @@
 using namespace std::chrono;
 Timer::Timer(const bool remember)
 {
-	this->m_startTime = high_resolution_clock::now();
-	this->m_stopTime = high_resolution_clock::now();
-	this->m_isRunning = false;
-	this->m_timeAdd = 0;
-	this->m_remeber = remember;
-	this->m_resumeValue = 0;
+	m_startTime = high_resolution_clock::now();
+	m_stopTime = high_resolution_clock::now();
+	m_isRunning = false;
+	m_timeAdd = 0;
+	m_remeber = remember;
+	m_resumeValue = 0;
 }
 double Timer::timeElapsed() const
 {
-	if (this->m_isRunning)
+	if (m_isRunning)
 	{
 		auto elapsed = std::chrono::duration<double>(high_resolution_clock::now() - m_startTime);
-		return elapsed.count() + this->m_timeAdd;
+		return elapsed.count() + m_timeAdd;
 	}
 	else
 	{
 		auto elapsed = std::chrono::duration<double>(m_stopTime - m_startTime);
-		return elapsed.count() + this->m_timeAdd;
+		return elapsed.count() + m_timeAdd;
 	}
 }
 bool Timer::start()
@@ -31,9 +31,9 @@ bool Timer::start()
 		canStart = false;
 	else
 	{
-		if (this->m_remeber)
+		if (m_remeber)
 		{
-			this->addTime(m_resumeValue);
+			addTime((int)m_resumeValue);
 		}
 		m_startTime = high_resolution_clock::now();
 		m_isRunning = true;
@@ -46,13 +46,13 @@ bool Timer::stop()
 	bool canStop = true;
 	if (m_isRunning)
 	{
-		if (this->m_remeber)
+		if (m_remeber)
 		{
 			auto time = std::chrono::duration_cast<std::chrono::seconds>(high_resolution_clock::now() - m_startTime);
-			this->m_resumeValue = time.count();
+			m_resumeValue = (double)time.count();
 		}
 		m_stopTime = high_resolution_clock::now();
-		this->m_isRunning = false;
+		m_isRunning = false;
 	}
 	else
 		canStop = false;
@@ -67,10 +67,10 @@ void Timer::restart()
 
 void Timer::addTime(const int timeAdd)
 {
-	this->m_timeAdd += timeAdd;
+	m_timeAdd += timeAdd;
 }
 
 bool Timer::isActive() const
 {
-	return this->m_isRunning;
+	return m_isRunning;
 }

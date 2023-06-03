@@ -4,11 +4,16 @@
 namespace ImporterBFF
 {
 	//Hidden
-	ModelBFF LoadModelFromFile(const char* filePath)
+	void LoadModelFromFile(ModelBFF& model)
 	{
-		ModelBFF model;
+		std::string fullFilePath = "../../../../Models/" + model.fileName;
+		std::ifstream MeshFile(fullFilePath, std::ifstream::binary);
 
-		std::ifstream MeshFile(filePath, std::ifstream::binary);
+		// Failed to find file, return empty model
+		if (!MeshFile.is_open())
+		{
+			return;
+		}
 
 		MeshFile.read((char*)&model.mesh, sizeof(MeshBFF));
 
@@ -27,14 +32,12 @@ namespace ImporterBFF
 		MeshFile.read((char*)&model.camera, sizeof(CameraBFF));
 
 		MeshFile.close();
-
-		return model;
 	}
 
 
 	//std::string Model::MeshName(Model model)
 	//{
-	//	return std::to_string(this->material.Diffuse[0]);
+	//	return std::to_string(material.Diffuse[0]);
 	//}
 
 	Manager::Manager()
@@ -48,20 +51,41 @@ namespace ImporterBFF
 		return instance;
 	}
 
+	void Manager::InitModelAsync(const char* fileName)
+	{
+		// Check if insertion is successful or not
+		if (map.find(fileName) == map.end())
+		{
+			//add to list
+			ModelBFF& newModel = map[fileName];
+			newModel.fileName = fileName;
+		}
+	}
+
+	const ModelBFF& Manager::LoadModelAsync(const char* fileName)
+	{
+		ModelBFF& newModel = map[fileName];
+		
+		//load bff file
+		LoadModelFromFile(newModel);
+		newModel.loaded = true;
+
+		return newModel;
+	}
+
 	const ModelBFF& Manager::LoadModel(const char* fileName)
 	{
 		// Check if insertion is successful or not
 		if (map.find(fileName) == map.end())
 		{
-			std::string fullFilePath = "../../../../Models/" + (std::string)fileName;
+			//add to list
+			ModelBFF& newModel = map[fileName];
+			newModel.fileName = fileName;
 
-			ModelBFF someModel;
-			someModel = LoadModelFromFile(fullFilePath.c_str());
-
-			//Ladda in
-			map[fileName] = someModel; //add to list
+			//load bff file
+			LoadModelFromFile(newModel);
+			newModel.loaded = true;
 		}
-
 		return map[fileName];
 	}
 

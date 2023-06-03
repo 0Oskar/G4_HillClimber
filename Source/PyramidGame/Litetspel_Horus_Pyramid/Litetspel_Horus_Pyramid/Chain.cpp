@@ -17,9 +17,9 @@ void Chain::simulateLinks(GameObject* link1, GameObject* link2, bool notFirst, f
 		XMVECTOR linkVectorNorm = XMVector3NormalizeEst(linkVector);
 		// force = -k * (x - d)
 		if (notFirst)
-			finalForce = finalForce + (linkVectorNorm * ((linkLength - this->m_length) * -this->m_constant));
+			finalForce = finalForce + (linkVectorNorm * ((linkLength - m_length) * -m_constant));
 		else
-			finalForce = finalForce + (linkVectorNorm * ((linkLength - this->m_length) * -(this->m_constant * 3)));
+			finalForce = finalForce + (linkVectorNorm * ((linkLength - m_length) * -(m_constant * 3)));
 
 		// Apply friction
 		XMFLOAT3 velocty1 = link1->getphysicsCompPtr()->getVelocity();
@@ -32,7 +32,7 @@ void Chain::simulateLinks(GameObject* link1, GameObject* link2, bool notFirst, f
 			0.f
 		);
 		// friction force = -k * velocity
-		finalForce += -(velocityDifference)*this->m_friction;
+		finalForce += -(velocityDifference)*m_friction;
 
 		// Apply force
 		if (notFirst)
@@ -43,71 +43,71 @@ void Chain::simulateLinks(GameObject* link1, GameObject* link2, bool notFirst, f
 
 void Chain::linkRetractionUpdate()
 {
-	int nrOfLinks = std::ceil(XMVectorGetX(XMVector3LengthEst(this->m_hookGObject->getPosition() - this->m_gaunletGObject->getPosition())) / (this->m_length));
+	uint32_t nrOfLinks = (uint32_t)std::ceil(XMVectorGetX(XMVector3LengthEst(m_hookGObject->getPosition() - m_gaunletGObject->getPosition())) / (m_length));
 	if (nrOfLinks > NR_OF_CHAIN_LINKS)
 		nrOfLinks = NR_OF_CHAIN_LINKS;
 
-	for (int i = 0; i < nrOfLinks; i++)
-		this->m_chainRetracted[i] = false;
+	for (uint32_t i = 0; i < nrOfLinks; i++)
+		m_chainRetracted[i] = false;
 
 	for (int i = nrOfLinks - 1; i < NR_OF_CHAIN_LINKS; i++)
-		this->m_chainRetracted[i] = true;
+		m_chainRetracted[i] = true;
 }
 
 Chain::Chain()
 {
-	this->m_visible = true;
-	this->m_shooting = false;
-	this->m_retracting = false;
-	this->m_chainGObjects = nullptr;
-	this->m_nrOfUnretractedLinks = 0;
-	this->m_hookGObject = nullptr;
-	this->m_gaunletGObject = nullptr;
+	m_visible = true;
+	m_shooting = false;
+	m_retracting = false;
+	m_chainGObjects = nullptr;
+	m_nrOfUnretractedLinks = 0;
+	m_hookGObject = nullptr;
+	m_gaunletGObject = nullptr;
 
-	this->m_constant = 20.f;
-	this->m_length = 0.6f;
-	this->m_friction = 0.45f;
+	m_constant = 20.f;
+	m_length = 0.6f;
+	m_friction = 0.45f;
 }
 
 Chain::~Chain() {}
 
 void Chain::initialize(GameObject* hookGObject, GameObject* gaunletGObject, std::vector<GameObject*>* chainGObjects)
 {
-	this->m_chainGObjects = chainGObjects;
-	this->m_hookGObject = hookGObject;
-	this->m_gaunletGObject = gaunletGObject;
-	this->m_chainRetracted.resize(NR_OF_CHAIN_LINKS);
+	m_chainGObjects = chainGObjects;
+	m_hookGObject = hookGObject;
+	m_gaunletGObject = gaunletGObject;
+	m_chainRetracted.resize(NR_OF_CHAIN_LINKS);
 	XMVECTOR pos;
-	XMFLOAT3 hookPos = this->m_hookGObject->getMoveCompPtr()->getPositionF3();
+	XMFLOAT3 hookPos = m_hookGObject->getMoveCompPtr()->getPositionF3();
 	for (size_t i = 0; i < NR_OF_CHAIN_LINKS; i++)
 	{
-		pos = XMVectorSet(hookPos.x, hookPos.y, hookPos.z - this->m_length - (float)i * this->m_length, 1.f);
-		this->m_chainGObjects->at(i)->setPosition(pos);
-		this->m_chainRetracted[i] = i > 0 ? true : false;
+		pos = XMVectorSet(hookPos.x, hookPos.y, hookPos.z - m_length - (float)i * m_length, 1.f);
+		m_chainGObjects->at(i)->setPosition(pos);
+		m_chainRetracted[i] = i > 0 ? true : false;
 	}
-	this->m_nrOfUnretractedLinks = 1;
+	m_nrOfUnretractedLinks = 1;
 }
 
 bool Chain::isVisible() const
 {
-	return this->m_visible;
+	return m_visible;
 }
 
 void Chain::setVisibility(bool visible)
 {
-	this->m_visible = visible;
-	for (size_t i = 0; i < this->m_chainGObjects->size(); i++)
-		this->m_chainGObjects->at(i)->setVisibility(visible);
+	m_visible = visible;
+	for (size_t i = 0; i < m_chainGObjects->size(); i++)
+		m_chainGObjects->at(i)->setVisibility(visible);
 }
 
 void Chain::setShooting(bool shooting)
 {
-	this->m_shooting = shooting;
+	m_shooting = shooting;
 }
 
 void Chain::setRetracting(bool retracting)
 {
-	this->m_retracting = retracting;
+	m_retracting = retracting;
 }
 
 void Chain::update(float dt)
@@ -115,28 +115,28 @@ void Chain::update(float dt)
 	int lastUnRetractedlink = 0;
 	GameObject* link1;
 	GameObject* link2;
-	this->linkRetractionUpdate();
+	linkRetractionUpdate();
 
 	// Head to Hand
-	for (size_t i = 0; i < NR_OF_CHAIN_LINKS; i++)
+	for (uint32_t i = 0; i < NR_OF_CHAIN_LINKS; i++)
 	{
 		if (i == 0)
 		{
-			link1 = this->m_hookGObject;
-			link2 = this->m_chainGObjects->at(i);
+			link1 = m_hookGObject;
+			link2 = m_chainGObjects->at(i);
 		}
 		else
 		{
-			if (this->m_chainRetracted[i])
+			if (m_chainRetracted[i])
 				break;
 			
-			link1 = this->m_chainGObjects->at(i - 1);
-			link2 = this->m_chainGObjects->at(i);
+			link1 = m_chainGObjects->at(i - 1);
+			link2 = m_chainGObjects->at(i);
 			lastUnRetractedlink = i;
 		}
 
-		if (!this->m_chainRetracted[i])
-			this->simulateLinks(link1, link2, i != 0, dt);
+		if (!m_chainRetracted[i])
+			simulateLinks(link1, link2, i != 0, dt);
 	}
 
 	// Hand to Head
@@ -144,35 +144,35 @@ void Chain::update(float dt)
 	{
 		if (i == lastUnRetractedlink)
 		{
-			link1 = this->m_gaunletGObject;
-			link2 = this->m_chainGObjects->at(i);
+			link1 = m_gaunletGObject;
+			link2 = m_chainGObjects->at(i);
 		}
 		else
 		{
-			link1 = this->m_chainGObjects->at((size_t)i + 1);
-			link2 = this->m_chainGObjects->at(i);
+			link1 = m_chainGObjects->at((size_t)i + 1);
+			link2 = m_chainGObjects->at(i);
 		}
 
 
-		if (!this->m_chainRetracted[i])
-			this->simulateLinks(link1, link2, i != lastUnRetractedlink, dt);
+		if (!m_chainRetracted[i])
+			simulateLinks(link1, link2, i != lastUnRetractedlink, dt);
 	}
 
-	if (this->m_nrOfUnretractedLinks == 1)
-		this->m_chainGObjects->at(0)->setVisibility(false);
+	if (m_nrOfUnretractedLinks == 1)
+		m_chainGObjects->at(0)->setVisibility(false);
 	else
-		this->m_chainGObjects->at(0)->setVisibility(true);
+		m_chainGObjects->at(0)->setVisibility(true);
 
 	// Update Position with Velocity
 	for (size_t i = 0; i < NR_OF_CHAIN_LINKS; i++)
 	{
-		if (this->m_chainRetracted[i])
+		if (m_chainRetracted[i])
 		{
-			this->m_chainGObjects->at(i)->setPosition(this->m_gaunletGObject->getPosition());
-			this->m_chainGObjects->at(i)->setRotation(this->m_gaunletGObject->getRotation());
-			this->m_chainGObjects->at(i)->getphysicsCompPtr()->setVelocity({ 0.f, 0.f, 0.f });
+			m_chainGObjects->at(i)->setPosition(m_gaunletGObject->getPosition());
+			m_chainGObjects->at(i)->setRotation(m_gaunletGObject->getRotation());
+			m_chainGObjects->at(i)->getphysicsCompPtr()->setVelocity({ 0.f, 0.f, 0.f });
 		}
-		XMFLOAT3 velocity = this->m_chainGObjects->at(i)->getphysicsCompPtr()->getVelocity();
-		this->m_chainGObjects->at(i)->getphysicsCompPtr()->updatePositionNoDecel(dt);
+		XMFLOAT3 velocity = m_chainGObjects->at(i)->getphysicsCompPtr()->getVelocity();
+		m_chainGObjects->at(i)->getphysicsCompPtr()->updatePositionNoDecel(dt);
 	}
 }

@@ -4,8 +4,8 @@
 class KeyboardEvent
 {
 private:
-	Event eventType;
-	unsigned char key;
+	Event m_eventType;
+	unsigned char m_key;
 public:
 
 	KeyboardEvent();
@@ -21,8 +21,8 @@ public:
 class Keyboard
 {
 private:
-	bool keyStatus[256];
-	std::queue<KeyboardEvent> keyBuffer;
+	bool m_keyStatus[256];
+	std::queue<KeyboardEvent> m_keyBuffer;
 
 public:
 	Keyboard();

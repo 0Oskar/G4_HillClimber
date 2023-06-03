@@ -41,7 +41,7 @@ private:
 public:
 	Platform();
 	~Platform();
-	void init(const bool colidable, const int modelIndex, const int wvpCBufferIndex, DirectX::BoundingOrientedBox* pyramid, Model* mdl);
+	void init(const bool colidable, const int wvpCBufferIndex, DirectX::BoundingOrientedBox* pyramid, Model* mdl);
 	void update(const float dt);
 	void onPlayerColide();
 	void onDestroy();

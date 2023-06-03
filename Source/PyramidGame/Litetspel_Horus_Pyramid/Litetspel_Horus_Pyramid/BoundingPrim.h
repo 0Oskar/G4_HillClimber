@@ -9,7 +9,7 @@ private:
 public:
 	BoundingPrim(T boundingPrim)
 	{
-		this->boundingPrimitive = boundingPrim;
+		boundingPrimitive = boundingPrim;
 	}
 	T getBoundingPrim()
 	{

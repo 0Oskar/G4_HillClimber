@@ -2,120 +2,51 @@
 #include"Model.h"
 
 
-Model::Model()
-{
-	m_deviceContextPtr = nullptr;
-	m_devicePtr = nullptr;
-	m_drawWithIndex = false;
-	myManager = &ImporterBFF::Manager::GetInstance();
-}
-
-void Model::initModel(ID3D11Device* device, ID3D11DeviceContext* dContext, MaterialData material, std::wstring texturePath)
-{
-	m_devicePtr = device;
-	m_deviceContextPtr = dContext;
-
-	std::vector<Vertex> vertices
-	{
-		Vertex(
-			-0.5f, -0.5f, 0.f,
-			0.f, 0.f, -1.f,
-			0.0f, 1.0f
-		),
-		Vertex(
-			-0.5f, 0.5f, 0.f,
-			0.f, 1.f, -1.f,
-			0.0f, 0.0f
-		),
-		Vertex(
-			0.5f, 0.5f, 0.f,
-			0.f, 0.f, -1.f,
-			1.0f, 0.0f
-		),
-		Vertex(
-			0.5f, -0.5f, 0.f,
-			0.f, 0.f, -1.f,
-			1.0f, 1.0f
-		)
-	};
-	HRESULT hr = m_vertexBuffer.initialize(m_devicePtr, vertices.data(), (int)vertices.size());
-	assert(SUCCEEDED(hr) && "Error, vertex buffer could not be created!");
-
-	DWORD indicies[] =
-	{
-		0, 1, 2,
-		0, 2, 3
-	};
-	m_drawWithIndex = true;
-	hr = m_indexBuffer.init(m_devicePtr, indicies, ARRAYSIZE(indicies));
-	assert(SUCCEEDED(hr) && "Error, index buffer could not be created!");
-
-	if (texturePath != L"")
-	{
-		wstring path = (TEXTURE_PATH + texturePath);
-		m_material.init(device, dContext, material, path.c_str());
-		m_originalTexture = path;
-	}
-	else
-		m_material.init(device, dContext, material);
-}
-
-void Model::loadVertexVector(ID3D11Device* device, ID3D11DeviceContext* dContext, std::vector<Vertex> vertexVector, MaterialData material, std::wstring texturePath)
-{
-	m_devicePtr = device;
-	m_deviceContextPtr = dContext;
-
-	HRESULT hr = m_vertexBuffer.initialize(m_devicePtr, vertexVector.data(), (int)vertexVector.size());
-	assert(SUCCEEDED(hr) && "Error, vertex buffer could not be created!");
-
-	m_vertices = vertexVector;
-
-	if (texturePath != L"")
-	{
-		wstring path = (TEXTURE_PATH + texturePath);
-		m_material.init(device, dContext, material, path.c_str());
-		m_originalTexture = path;
-	}
-	else
-		m_material.init(device, dContext, material);
-}
-
-void Model::loadVertexFromOBJ(ID3D11Device* device, ID3D11DeviceContext* dContext, std::string modelFilePath, MaterialData material, std::wstring texturePath)
-{
-	m_devicePtr = device;
-	m_deviceContextPtr = dContext;
-
+void Model::loadOBJModel()
+{	
 	// Values Contained
 	bool hasNormals = false;
 	bool hasTexcoords = false;
 
 	// Vertices
-	std::vector<DirectX::XMFLOAT3> vertexPositions;
-	std::vector<DirectX::XMFLOAT3> vertexNormals;
-	std::vector<DirectX::XMFLOAT2> vertexTexcoords;
+	vector<DirectX::XMFLOAT3> vertexPositions;
+	vector<DirectX::XMFLOAT3> vertexNormals;
+	vector<DirectX::XMFLOAT2> vertexTexcoords;
 
 	// Faces
-	std::vector<UINT> vertexPosIndices;
-	std::vector<UINT> vertexNormIndices;
-	std::vector<UINT> vertexTexIndices;
+	vector<UINT> vertexPosIndices;
+	vector<UINT> vertexNormIndices;
+	vector<UINT> vertexTexIndices;
 
 	// Material
-	std::string materialFilePath = "";
+	string materialFilePath = "";
 
 	// File Stream
-	m_modelPath = modelFilePath;
-	std::stringstream sStream;
-	std::ifstream inFileStream("Models/" + modelFilePath);
-	std::string line = "";
-	std::string prefix = "";
+	stringstream sStream;
+	ifstream inFileStream(MODEL_PATH + m_modelPath, ios::in);
+	string line = "";
+	string prefix = "";
 	DirectX::XMFLOAT3 tempF3;
 	DirectX::XMFLOAT2 tempF2;
 	UINT tempUINT;
+	bool fileFound = true;
 
 	if (!inFileStream.is_open())
-		assert(false && "Error, could not open OBJ file!");
+	{
+		fileFound = false;
+		MaterialData mat;
+		mat.diffuse = { .9f, .9f, .9f, 1.f };
+		mat.ambient = { .2f, .2f, .2f, 1.f };
+		mat.specular = { 1.f, 1.f, 1.f, 1.f };
+		mat.shininess = 32;
+		
+		// Load error model and material
+		inFileStream.open(string(MODEL_PATH) + ERROR_MODEL, ios::in);
+		//m_material.setMaterial(mat);
+		m_material.setTexture((wstring(TEXTURE_PATH) + ERROR_TEXTURE).c_str());
+	}
 
-	while (std::getline(inFileStream, line))
+	while (getline(inFileStream, line))
 	{
 		sStream.clear();
 		sStream.str(line);
@@ -196,37 +127,39 @@ void Model::loadVertexFromOBJ(ID3D11Device* device, ID3D11DeviceContext* dContex
 	for (size_t i = 0; i < m_vertices.size(); ++i)
 	{
 		m_vertices[i].position = vertexPositions[vertexPosIndices[i] - 1];
-		//m_vertices[i].color = vertexPositions[vertexPosIndices[i] - 1];
 		if (vertexTexcoords.size())
 			m_vertices[i].textureCoord = vertexTexcoords[vertexTexIndices[i] - 1];
-			
+
 		if (vertexNormals.size())
 			m_vertices[i].normal = vertexNormals[vertexNormIndices[i] - 1];
 	}
 
-	HRESULT hr = m_vertexBuffer.initialize(m_devicePtr, m_vertices.data(), (int)m_vertices.size());
-	assert(SUCCEEDED(hr) && "Error, vertex buffer could not be created!");
-
-	if (texturePath != L"")
-	{
-		wstring path = (TEXTURE_PATH + texturePath);
-		m_material.init(device, dContext, material, path.c_str());
-		m_originalTexture = path;
-	}
+	m_vertexBuffer.initialize(m_devicePtr, m_vertices.data(), (int)m_vertices.size());
+	
+	string loadedMessage;
+	if (fileFound)
+		loadedMessage = "OBJ model loaded: " + m_modelPath + "\n";
 	else
-		m_material.init(device, dContext, material);
-
-	std::string loadedMessage = "OBJ Model loaded: " + modelFilePath + "\n";
+		loadedMessage = "OBJ model could not be loaded: " + m_modelPath + "\n";
+	
 	OutputDebugStringA(loadedMessage.c_str());
 }
 
-void Model::initializeModelBff(ID3D11Device* device, ID3D11DeviceContext* dContext, std::string modelFilePath, MaterialData material, std::wstring texturePath)
+void Model::loadBffModel(bool async)
 {
-	m_devicePtr = device;
-	m_deviceContextPtr = dContext;
-
-	m_modelPath = modelFilePath;
-	ModelBFF myModel = myManager->LoadModel(modelFilePath.c_str());
+	ModelBFF myModel;
+	if (async)
+	{
+		myModel = m_myManager->LoadModelAsync(m_modelPath.c_str());
+	}
+	else {
+		myModel = m_myManager->LoadModel(m_modelPath.c_str());
+	}
+	if (!myModel.loadSucceded())
+	{
+		loadOBJModel(); // Will trigger error model load
+		return;
+	}
 	m_vertices.resize(myModel.mesh.nrOfVertex);
 	for (unsigned int i = 0; i < myModel.mesh.nrOfVertex; i++)
 	{
@@ -235,89 +168,253 @@ void Model::initializeModelBff(ID3D11Device* device, ID3D11DeviceContext* dConte
 		m_vertices[i].textureCoord = XMFLOAT2(myModel.vertexArr[i].uv);
 	}
 
-	HRESULT hr = m_vertexBuffer.initialize(m_devicePtr, m_vertices.data(), (int)m_vertices.size());
-	assert(SUCCEEDED(hr) && "Error, vertex buffer could not be created!");
+	m_vertexBuffer.initialize(m_devicePtr, m_vertices.data(), (int)m_vertices.size());
+
+	//printBffModel(myModel); //For testing
+	string loadedMessage = "BFF Model loaded: " + m_modelPath + "\n";
+	OutputDebugStringA(loadedMessage.c_str());
+}
+
+Model::Model()
+{
+	m_deviceContextPtr = nullptr;
+	m_devicePtr = nullptr;
+	m_drawWithIndex = false;
+	m_loaded = false;
+	m_myManager = &ImporterBFF::Manager::GetInstance();
+}
+
+void Model::initForAsyncLoad(ID3D11Device* device, ID3D11DeviceContext* dContext, const char* modelFilePath, const MaterialData material, const wchar_t* texturePath)
+{
+	// Device
+	m_devicePtr = device;
+	m_deviceContextPtr = dContext;
+
+	// Mesh
+	m_modelPath = modelFilePath;
+	string fileFormat = m_modelPath.substr(m_modelPath.find(".") + 1);
+	if (fileFormat == "obj")
+		m_format = ModelFormat::ModelFormat_obj;
+	else if (fileFormat == "bff")
+	{
+		m_format = ModelFormat::ModelFormat_bff;
+		m_myManager->InitModelAsync(m_modelPath.c_str());
+	}
+	else
+		m_format = ModelFormat::ModelFormat_custom;
+
+	// Material
+	if (texturePath != L"")
+	{
+		wstring path = (wstring(TEXTURE_PATH) + texturePath);
+		m_material.init(device, dContext, material, path.c_str());
+		m_texturePath = path;
+	}
+	else
+	{
+		m_material.init(device, dContext, material);
+	}
+}
+
+void Model::loadModelAsync()
+{
+	string loadedMessage = "Async Model load started: " + m_modelPath + "\n";
+	OutputDebugStringA(loadedMessage.c_str());
+	switch (m_format)
+	{
+		case ModelFormat::ModelFormat_obj: loadOBJModel(); break;
+		case ModelFormat::ModelFormat_bff: loadBffModel(true); break;
+	}
+
+	m_loaded = true;
+}
+
+void Model::loadModel(ID3D11Device* device, ID3D11DeviceContext* dContext, const char* modelFilePath, const MaterialData material, const wchar_t* texturePath)
+{
+	// Device
+	m_devicePtr = device;
+	m_deviceContextPtr = dContext;
+
+	// Material
+	if (texturePath != L"")
+	{
+		wstring path = (wstring(TEXTURE_PATH) + texturePath);
+		m_material.init(device, dContext, material, path.c_str());
+		m_texturePath = path;
+	}
+	else
+	{
+		m_material.init(device, dContext, material);
+	}
+
+	// Mesh
+	m_modelPath = modelFilePath;
+	string fileFormat = m_modelPath.substr(m_modelPath.find(".") + 1);
+	if (fileFormat == "obj") {
+		m_format = ModelFormat::ModelFormat_obj;
+		loadOBJModel();
+	}
+	else if (fileFormat == "bff")
+	{
+		m_format = ModelFormat::ModelFormat_obj;
+		loadBffModel();
+	}
+	else
+	{
+		m_format = ModelFormat::ModelFormat_custom;
+	}
+	m_loaded = true;
+}
+
+void Model::initCubeModel(ID3D11Device* device, ID3D11DeviceContext* dContext, MaterialData material, wstring texturePath)
+{
+	m_devicePtr = device;
+	m_deviceContextPtr = dContext;
+
+	vector<Vertex> vertices
+	{
+		Vertex(
+			-0.5f, -0.5f, 0.f,
+			0.f, 0.f, -1.f,
+			0.0f, 1.0f
+		),
+		Vertex(
+			-0.5f, 0.5f, 0.f,
+			0.f, 1.f, -1.f,
+			0.0f, 0.0f
+		),
+		Vertex(
+			0.5f, 0.5f, 0.f,
+			0.f, 0.f, -1.f,
+			1.0f, 0.0f
+		),
+		Vertex(
+			0.5f, -0.5f, 0.f,
+			0.f, 0.f, -1.f,
+			1.0f, 1.0f
+		)
+	};
+	m_vertexBuffer.initialize(m_devicePtr, vertices.data(), (int)vertices.size());
+
+	DWORD indicies[] =
+	{
+		0, 1, 2,
+		0, 2, 3
+	};
+	m_drawWithIndex = true;
+	m_indexBuffer.init(m_devicePtr, indicies, ARRAYSIZE(indicies));
 
 	if (texturePath != L"")
 	{
 		wstring path = (TEXTURE_PATH + texturePath);
 		m_material.init(device, dContext, material, path.c_str());
-		m_originalTexture = path;
+		m_texturePath = path;
 	}
 	else
 		m_material.init(device, dContext, material);
 
-	//printBffModel(myModel); //For testing
-	std::string loadedMessage = "BFF Model loaded: " + modelFilePath + "\n";
-	OutputDebugStringA(loadedMessage.c_str());
+	m_format = ModelFormat::ModelFormat_custom;
+	m_loaded = true;
+}
+
+void Model::initModelFromData(ID3D11Device* device, ID3D11DeviceContext* dContext, vector<Vertex> vertexVector, MaterialData material, wstring texturePath)
+{
+	m_devicePtr = device;
+	m_deviceContextPtr = dContext;
+
+	m_vertexBuffer.initialize(m_devicePtr, vertexVector.data(), (int)vertexVector.size());
+	
+	m_vertices = vertexVector;
+
+	if (texturePath != L"")
+	{
+		wstring path = (TEXTURE_PATH + texturePath);
+		m_material.init(device, dContext, material, path.c_str());
+		m_texturePath = path;
+	}
+	else
+	{
+		m_material.init(device, dContext, material);
+	}
+
+	m_format = ModelFormat::ModelFormat_custom;
+	m_loaded = true;
 }
 
 void Model::printBffModel(ModelBFF model) const
 {
 	for (unsigned int i = 0; i < model.mesh.nrOfVertex; i++)
 	{
-		std::string vtxNr = "\nvtx:		" + std::to_string(i) + "\n";
+		string vtxNr = "\nvtx:		" + to_string(i) + "\n";
 
-		std::string vtxPos = "Pos:		" + 
-			(std::to_string(model.vertexArr[i].pos[0]) + " " +
-			(std::to_string(model.vertexArr[i].pos[1])) + " " +
-			(std::to_string(model.vertexArr[i].pos[2]))) + "\n";
+		string vtxPos = "Pos:		" + 
+			(to_string(model.vertexArr[i].pos[0]) + " " +
+			(to_string(model.vertexArr[i].pos[1])) + " " +
+			(to_string(model.vertexArr[i].pos[2]))) + "\n";
 
-		std::string uv = "uv:			" + 
-			(std::to_string(model.vertexArr[i].uv[0]) + " " +
-			(std::to_string(model.vertexArr[i].uv[1]))) + "\n";
+		string uv = "uv:			" + 
+			(to_string(model.vertexArr[i].uv[0]) + " " +
+			(to_string(model.vertexArr[i].uv[1]))) + "\n";
 
-		std::string normal = "Normal:		" + 
-			(std::to_string(model.vertexArr[i].norm[0]) + " " +
-			(std::to_string(model.vertexArr[i].norm[1])) + " " +
-			(std::to_string(model.vertexArr[i].norm[2]))) + "\n";
+		string normal = "Normal:		" + 
+			(to_string(model.vertexArr[i].norm[0]) + " " +
+			(to_string(model.vertexArr[i].norm[1])) + " " +
+			(to_string(model.vertexArr[i].norm[2]))) + "\n";
 
-		std::string biNormal = "Binormal:	" + 
-			(std::to_string(model.vertexArr[i].biNorm[0]) + " " +
-			(std::to_string(model.vertexArr[i].biNorm[1])) + " " +
-			(std::to_string(model.vertexArr[i].biNorm[2]))) + "\n";
+		string biNormal = "Binormal:	" + 
+			(to_string(model.vertexArr[i].biNorm[0]) + " " +
+			(to_string(model.vertexArr[i].biNorm[1])) + " " +
+			(to_string(model.vertexArr[i].biNorm[2]))) + "\n";
 
-		std::string tangent = "Tan:		" + 
-			(std::to_string(model.vertexArr[i].tan[0]) + " " +
-			(std::to_string(model.vertexArr[i].tan[1])) + " " +
-			(std::to_string(model.vertexArr[i].tan[2]))) + "\n";
-
-
-
-		std::string pos = "Pos:    "+
-			(std::to_string(model.camera.pos[0]) + " " +
-			(std::to_string(model.camera.pos[1])) + " " +
-			(std::to_string(model.camera.pos[2]))) + "\n";
-
-		std::string upVec = "upVec:    " +
-			(std::to_string(model.camera.upVec[0]) + " " +
-			(std::to_string(model.camera.upVec[1])) + " " +
-			(std::to_string(model.camera.upVec[2]))) + "\n";
-
-		std::string forwardVec = "forwardVec:    " +
-			(std::to_string(model.camera.forwardVec[0]) + " " +
-			(std::to_string(model.camera.forwardVec[1])) + " " +
-			(std::to_string(model.camera.forwardVec[2]))) + "\n";
-
-		std::string nearPlane = "nearPlane:    " +
-			(std::to_string(model.camera.nearPlane) + "\n"); 
+		string tangent = "Tan:		" + 
+			(to_string(model.vertexArr[i].tan[0]) + " " +
+			(to_string(model.vertexArr[i].tan[1])) + " " +
+			(to_string(model.vertexArr[i].tan[2]))) + "\n";
 
 
-		std::string farPlane = "farPlane:    " +
-			(std::to_string(model.camera.farPlane) + "\n");
 
-		std::string FOV = "FOV:    " +
-			(std::to_string(model.camera.FOV) + "\n");
+		string pos = "Pos:    "+
+			(to_string(model.camera.pos[0]) + " " +
+			(to_string(model.camera.pos[1])) + " " +
+			(to_string(model.camera.pos[2]))) + "\n";
+
+		string upVec = "upVec:    " +
+			(to_string(model.camera.upVec[0]) + " " +
+			(to_string(model.camera.upVec[1])) + " " +
+			(to_string(model.camera.upVec[2]))) + "\n";
+
+		string forwardVec = "forwardVec:    " +
+			(to_string(model.camera.forwardVec[0]) + " " +
+			(to_string(model.camera.forwardVec[1])) + " " +
+			(to_string(model.camera.forwardVec[2]))) + "\n";
+
+		string nearPlane = "nearPlane:    " +
+			(to_string(model.camera.nearPlane) + "\n"); 
+
+
+		string farPlane = "farPlane:    " +
+			(to_string(model.camera.farPlane) + "\n");
+
+		string FOV = "FOV:    " +
+			(to_string(model.camera.FOV) + "\n");
 
 
 
 		//OutputDebugStringA((vtxNr + vtxPos + uv + normal + biNormal + tangent + pos + upVec + forwardVec + nearPlane + farPlane + FOV).c_str());
 	}
-	//OutputDebugStringA(std::to_string(model.material.Diffuse[1]).c_str());
+	//OutputDebugStringA(to_string(model.material.Diffuse[1]).c_str());
 }
 
-void Model::draw(DirectX::XMMATRIX& viewProjMtx)
+bool Model::is_loaded() const
 {
+	return m_loaded;
+}
+
+void Model::draw()
+{
+	if (!m_loaded)
+		return;
+
 	m_material.upd(m_deviceContextPtr);
 
 	UINT vertexOffset = 0;

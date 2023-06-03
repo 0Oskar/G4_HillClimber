@@ -64,7 +64,7 @@ void KevinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 			m_gameTimerPointer->addTime(5);
 		}
 	
-		for (int i = 0; i < deathTrapBB.size(); i++)
+		for (size_t i = 0; i < deathTrapBB.size(); i++)
 		{
 			if (deathTrapBB[i].Intersects(m_player->getAABB()))
 			{
@@ -92,7 +92,7 @@ void KevinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 			m_gameTimerPointer->addTime(5);
 		}
 
-		for (int i = 0; i < deathTrapBB.size(); i++)
+		for (size_t i = 0; i < deathTrapBB.size(); i++)
 		{
 			if (deathTrapBB[i].Intersects(m_player->getAABB()))
 			{
@@ -104,7 +104,7 @@ void KevinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 			}
 		}
 
-		for (int i = 0; i < dartTrap.size(); i++)
+		for (size_t i = 0; i < dartTrap.size(); i++)
 		{
 			if (dartTrap[i]->getAABB().Intersects(m_player->getAABB()))
 			{
@@ -216,7 +216,7 @@ void KevinsRoom::portals()
 	//Add portals here
 	vec = DirectX::XMVectorSet(-9.f, 8.f, -29.f, 1.f);
 	XMVECTOR vecScale = DirectX::XMVectorSet(1.3f, 1.3f, -1.3f, 1.f);
-	addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), 10, &m_models->at(10), vec, NormalScale, DirectX::XMFLOAT3(3.f, 8.f, 0.6f), 0, false);
+	addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), &m_models->at("PortalGate.bff"), vec, NormalScale, DirectX::XMFLOAT3(3.f, 8.f, 0.6f), 0, false);
 	m_gameObjects.back()->setRotation(XMVectorSet(0.0f, XMConvertToRadians(180), 0.0f, 0.0f));
 	portalPtr = dynamic_cast<Portal*>(m_gameObjects.back());
 }
@@ -297,33 +297,33 @@ void KevinsRoom::createSceneObjects()
 
 	//Puzzle Room (Kevins Lever room)
 	vec = DirectX::XMVectorSet(-10.f, 2, -100 + 140.f, 1.f);
-	addGameObjectToRoom(false, false, 2, 6, &m_models->at(6), vec, DirectX::XMVectorSet(1, 1, 1, 1), DirectX::XMFLOAT3(1.f, 1.f, 1.f));
+	addGameObjectToRoom(false, false, 2, &m_models->at("LeverRoom2.obj"), vec, DirectX::XMVectorSet(1, 1, 1, 1), DirectX::XMFLOAT3(1.f, 1.f, 1.f));
 	m_gameObjects.back()->setRotation({ 0.0f, XMConvertToRadians(180), 0.0f, 0.f });
 	
 
 	//platform
 	vec = DirectX::XMVectorSet(-9.f, 23.5f, -88.5f + 140.f, 1.f);
-	addPlatformToRoom(3, &m_models->at(3), vec, DirectX::XMFLOAT3(4.f, 0.5f, 2.5f));
+	addPlatformToRoom(&m_models->at("platform.obj"), vec, DirectX::XMFLOAT3(4.f, 0.5f, 2.5f));
 	m_gameObjects.back()->setScale({ 0.0f,0.0f,0.0f, 0.0f });
 
 	//Lever
 	vec = DirectX::XMVectorSet(-15.f, 5.f, -87.5f + 140.f, 1.f);
 	rotation = DirectX::XMVectorSet(0.f, pMath::convertDegreesToRadians(-90), pMath::convertDegreesToRadians(-270), 1.f);
-	addLeverToRoom(7, &m_models->at(7), vec, rotation, DirectX::XMFLOAT3(2.f, 2.f, 2.f));
+	addLeverToRoom(&m_models->at("Lever.obj"), vec, rotation, DirectX::XMFLOAT3(2.f, 2.f, 2.f));
 
 	lever.emplace_back(dynamic_cast<Lever*>(m_gameObjects.back()));
 
 	//Lever
 	vec = DirectX::XMVectorSet(8.8f, 4.f, -110.f + 140.f, 1.f);
 	rotation = DirectX::XMVectorSet(0.f, 0.f, pMath::convertDegreesToRadians(-270), 1.f);
-	addLeverToRoom(7, &m_models->at(7), vec, rotation, DirectX::XMFLOAT3(2.f, 2.f, 2.f));
+	addLeverToRoom(&m_models->at("Lever.obj"), vec, rotation, DirectX::XMFLOAT3(2.f, 2.f, 2.f));
 
 	lever.emplace_back(dynamic_cast<Lever*>(m_gameObjects.back()));
 
 	//Lever
 	vec = DirectX::XMVectorSet(-8.f, 30.f, -39.8f + 140.f, 1.f);
 	rotation = DirectX::XMVectorSet(0.f, 0.f, pMath::convertDegreesToRadians(-270), 1.f);
-	addLeverToRoom(7, &m_models->at(7), vec, rotation, DirectX::XMFLOAT3(2.f, 2.f, 2.f));
+	addLeverToRoom(&m_models->at("Lever.obj"), vec, rotation, DirectX::XMFLOAT3(2.f, 2.f, 2.f));
 
 	//Win object
 	wonPuzzleObject.emplace_back(dynamic_cast<Lever*>(m_gameObjects.back()));
@@ -332,14 +332,14 @@ void KevinsRoom::createSceneObjects()
 
 	//DARTS
 	vec = DirectX::XMVectorSet(10.f, 27, -80 + 140.f, 1.f);
-	addGameObjectToRoom(true, false, 2, 25, &m_models->at(25), vec, DirectX::XMVectorSet(1.f, 1.f, 1.f, 1), DirectX::XMFLOAT3(2.f, 5.f, 5.5f));
+	addGameObjectToRoom(true, false, 2, &m_models->at("dartTrapWallDart.obj"), vec, DirectX::XMVectorSet(1.f, 1.f, 1.f, 1), DirectX::XMFLOAT3(2.f, 5.f, 5.5f));
 	m_gameObjects.back()->setDrawBB(true);
 	trapBB.emplace_back(m_gameObjects.back()->getAABBPtr());
 
 	dartTrap.emplace_back(m_gameObjects.back());
 
 	vec = DirectX::XMVectorSet(10.f, 27, -50 + 140.f, 1.f);
-	addGameObjectToRoom(true, false, 2, 25, &m_models->at(25), vec, DirectX::XMVectorSet(1.f, 1.f, 1.f, 1.f), DirectX::XMFLOAT3(2.f, 5.f, 5.5f));
+	addGameObjectToRoom(true, false, 2, &m_models->at("dartTrapWallDart.obj"), vec, DirectX::XMVectorSet(1.f, 1.f, 1.f, 1.f), DirectX::XMFLOAT3(2.f, 5.f, 5.5f));
 	m_gameObjects.back()->setDrawBB(true);
 	trapBB.emplace_back(m_gameObjects.back()->getAABBPtr());
 
@@ -359,7 +359,7 @@ void KevinsRoom::createSceneObjects()
 
 	scorpion = new followingEnemy();
 
-	scorpion->init(true, 23, (int)m_wvpCBuffers->size() - 1, &m_models->at(23), m_player);
+	scorpion->init(true, (int)m_wvpCBuffers->size() - 1, &m_models->at("scorpionDone.obj"), m_player);
 
 	scorpion->getMoveCompPtr()->position = XMVectorSet(-11.f, 2.9f, -100.f + 140.f, 1.f) + m_worldPosition;
 
@@ -371,21 +371,21 @@ void KevinsRoom::createSceneObjects()
 
 	//dartTrapWall
 	vec = DirectX::XMVectorSet(7.f, 30.f, -80.f + 140.f, 1.f);
-	addGameObjectToRoom(false, false, 2, 24, &m_models->at(24), vec, DirectX::XMVectorSet(1, 1, 1, 1), DirectX::XMFLOAT3(1.f, 1.f, 1.f));
+	addGameObjectToRoom(false, false, 2, &m_models->at("dartTrapWall.obj"), vec, DirectX::XMVectorSet(1, 1, 1, 1), DirectX::XMFLOAT3(1.f, 1.f, 1.f));
 
 	dartTrapWall.emplace_back(m_gameObjects.back());
 	m_gameObjects.back()->setRotation(XMVectorSet(0.0f, XMConvertToRadians(180.0f), 0.0f, 0.0f));
 
 	//dartTrapWall2
 	vec = DirectX::XMVectorSet(7.f, 30.f, -50.f + 140.f, 1.f);
-	addGameObjectToRoom(false, false, 2, 24, &m_models->at(24), vec, DirectX::XMVectorSet(1, 1, 1, 1), DirectX::XMFLOAT3(1.f, 1.f, 1.f));
+	addGameObjectToRoom(false, false, 2, &m_models->at("dartTrapWall.obj"), vec, DirectX::XMVectorSet(1, 1, 1, 1), DirectX::XMFLOAT3(1.f, 1.f, 1.f));
 
 	dartTrapWall.emplace_back(m_gameObjects.back());
 	m_gameObjects.back()->setRotation(XMVectorSet(0.0f, XMConvertToRadians(180.0f), 0.0f, 0.0f));
 
 	//ExpandingBridge
 	vec = DirectX::XMVectorSet(-14.f, 22.5f, -76.f + 140.f, 1.f);
-	addGameObjectToRoom(true, true, 2, 26, &m_models->at(26), vec, DirectX::XMVectorSet(1, 1, 1, 1), DirectX::XMFLOAT3(5.f, 1.f, 10.f));
+	addGameObjectToRoom(true, true, 2, &m_models->at("expandingBridge.obj"), vec, DirectX::XMVectorSet(1, 1, 1, 1), DirectX::XMFLOAT3(5.f, 1.f, 10.f));
 	
 	expandingBridge.emplace_back(m_gameObjects.back());
 

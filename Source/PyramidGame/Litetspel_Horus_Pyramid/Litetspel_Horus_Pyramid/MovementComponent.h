@@ -25,50 +25,50 @@ public:
 
 	MovementComponent()
 	{
-		this->scale = DirectX::XMVectorSet(1.f, 1.f, 1.f, 0.f);
-		this->rotation = DirectX::XMVectorSet(0.f, 0.f, 0.f, 1.f);
-		this->localRotation = DirectX::XMVectorSet(0.f, 0.f, 0.f, 1.f);
-		this->position = DirectX::XMVectorSet(0.f, 0.f, 0.f, 1.f);
+		scale = DirectX::XMVectorSet(1.f, 1.f, 1.f, 0.f);
+		rotation = DirectX::XMVectorSet(0.f, 0.f, 0.f, 1.f);
+		localRotation = DirectX::XMVectorSet(0.f, 0.f, 0.f, 1.f);
+		position = DirectX::XMVectorSet(0.f, 0.f, 0.f, 1.f);
 
-		this->forward = DirectX::XMVectorSet(0.f, 0.f, 1.f, 0.f);
-		this->left = DirectX::XMVectorSet(-1.f, 0.f, 0.f, 0.f);
-		this->right = DirectX::XMVectorSet(1.f, 0.f, 0.f, 0.f);
-		this->backward = DirectX::XMVectorSet(0.f, 0.f, -1.f, 0.f);
-		this->up = DirectX::XMVectorSet(0.f, 1.f, 0.f, 0.f);
-		this->down = DirectX::XMVectorSet(0.f, -1.f, 0.f, 0.f);
+		forward = DirectX::XMVectorSet(0.f, 0.f, 1.f, 0.f);
+		left = DirectX::XMVectorSet(-1.f, 0.f, 0.f, 0.f);
+		right = DirectX::XMVectorSet(1.f, 0.f, 0.f, 0.f);
+		backward = DirectX::XMVectorSet(0.f, 0.f, -1.f, 0.f);
+		up = DirectX::XMVectorSet(0.f, 1.f, 0.f, 0.f);
+		down = DirectX::XMVectorSet(0.f, -1.f, 0.f, 0.f);
 
 		
-		this->viewMatrix = new DirectX::XMMATRIX(DirectX::XMMatrixIdentity());
+		viewMatrix = new DirectX::XMMATRIX(DirectX::XMMatrixIdentity());
 	}
 	MovementComponent(const MovementComponent& otherMoveComponent)
 	{
-		this->scale = otherMoveComponent.scale;
-		this->rotation = otherMoveComponent.rotation;
-		this->localRotation = otherMoveComponent.localRotation;
-		this->position = otherMoveComponent.position;
+		scale = otherMoveComponent.scale;
+		rotation = otherMoveComponent.rotation;
+		localRotation = otherMoveComponent.localRotation;
+		position = otherMoveComponent.position;
 
-		this->forward = otherMoveComponent.forward;
-		this->left = otherMoveComponent.left;
-		this->right = otherMoveComponent.right;
-		this->backward = otherMoveComponent.backward;
-		this->up = otherMoveComponent.up;
-		this->down = otherMoveComponent.down;
+		forward = otherMoveComponent.forward;
+		left = otherMoveComponent.left;
+		right = otherMoveComponent.right;
+		backward = otherMoveComponent.backward;
+		up = otherMoveComponent.up;
+		down = otherMoveComponent.down;
 
 		// View Matrix
-		if (this->viewMatrix)
+		if (viewMatrix)
 		{
-			delete this->viewMatrix;
-			this->viewMatrix = nullptr;
+			delete viewMatrix;
+			viewMatrix = nullptr;
 		}
 		if (otherMoveComponent.viewMatrix != nullptr)
-			this->viewMatrix = new DirectX::XMMATRIX(*otherMoveComponent.viewMatrix);
+			viewMatrix = new DirectX::XMMATRIX(*otherMoveComponent.viewMatrix);
 	}
 	~MovementComponent()
 	{
-		if (this->viewMatrix)
+		if (viewMatrix)
 		{
-			delete this->viewMatrix;
-			this->viewMatrix = nullptr;
+			delete viewMatrix;
+			viewMatrix = nullptr;
 		}
 	}
 
@@ -77,26 +77,26 @@ public:
 		if (this == &otherMoveComponent)
 			return *this;
 
-		this->scale = otherMoveComponent.scale;
-		this->rotation = otherMoveComponent.rotation;
-		this->localRotation = otherMoveComponent.localRotation;
-		this->position = otherMoveComponent.position;
+		scale = otherMoveComponent.scale;
+		rotation = otherMoveComponent.rotation;
+		localRotation = otherMoveComponent.localRotation;
+		position = otherMoveComponent.position;
 
-		this->forward = otherMoveComponent.forward;
-		this->left = otherMoveComponent.left;
-		this->right = otherMoveComponent.right;
-		this->backward = otherMoveComponent.backward;
-		this->up = otherMoveComponent.up;
-		this->down = otherMoveComponent.down;
+		forward = otherMoveComponent.forward;
+		left = otherMoveComponent.left;
+		right = otherMoveComponent.right;
+		backward = otherMoveComponent.backward;
+		up = otherMoveComponent.up;
+		down = otherMoveComponent.down;
 
 		// View Matrix
-		if (this->viewMatrix)
+		if (viewMatrix)
 		{
-			delete this->viewMatrix;
-			this->viewMatrix = nullptr;
+			delete viewMatrix;
+			viewMatrix = nullptr;
 		}
 		if (otherMoveComponent.viewMatrix != nullptr)
-			this->viewMatrix = new DirectX::XMMATRIX(*otherMoveComponent.viewMatrix);
+			viewMatrix = new DirectX::XMMATRIX(*otherMoveComponent.viewMatrix);
 
 		return *this;
 	}
@@ -104,38 +104,38 @@ public:
 	DirectX::XMFLOAT3 getPositionF3() const
 	{
 		DirectX::XMFLOAT3 positionF3;
-		DirectX::XMStoreFloat3(&positionF3, this->position);
+		DirectX::XMStoreFloat3(&positionF3, position);
 		return positionF3;
 	}
 
 	void move(DirectX::XMVECTOR moveVector)
 	{
-		this->position = DirectX::XMVectorAdd(moveVector, this->position);
+		position = DirectX::XMVectorAdd(moveVector, position);
 	}
 
 	void updateViewMatrix()
 	{
-		DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationRollPitchYawFromVector(this->rotation);
+		DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationRollPitchYawFromVector(rotation);
 		// Look at
 		DirectX::XMVECTOR lookAt = XMVector3TransformCoord(DirectX::XMVectorSet(0.f, 0.f, 1.f, 0.f), rotationMatrix);
 		// Add position to lookAt
-		lookAt = DirectX::XMVectorAdd(this->position, lookAt);
+		lookAt = DirectX::XMVectorAdd(position, lookAt);
 		// Up
 		DirectX::XMVECTOR up = XMVectorSet(0.f, 1.f, 0.f, 0.f);
 
 		// Update View Matrix with new Rotation
-		*viewMatrix = DirectX::XMMatrixLookAtLH(this->position, lookAt, up);
+		*viewMatrix = DirectX::XMMatrixLookAtLH(position, lookAt, up);
 
 		// Update Direction Vectors
-		this->updateDirVectors();
+		updateDirVectors();
 	}
 
 	void updateDirVectors()
 	{
-		DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationY(DirectX::XMVectorGetY(this->rotation));
-		this->forward = XMVector3TransformCoord(DirectX::XMVectorSet(0.f, 0.f, 1.f, 0.f), rotationMatrix);
-		this->left = XMVector3TransformCoord(DirectX::XMVectorSet(-1.f, 0.f, 0.f, 0.f), rotationMatrix);
-		this->right = XMVector3TransformCoord(DirectX::XMVectorSet(1.f, 0.f, 0.f, 0.f), rotationMatrix);
-		this->backward = XMVector3TransformCoord(DirectX::XMVectorSet(0.f, 0.f, -1.f, 0.f), rotationMatrix);
+		DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationY(DirectX::XMVectorGetY(rotation));
+		forward = XMVector3TransformCoord(DirectX::XMVectorSet(0.f, 0.f, 1.f, 0.f), rotationMatrix);
+		left = XMVector3TransformCoord(DirectX::XMVectorSet(-1.f, 0.f, 0.f, 0.f), rotationMatrix);
+		right = XMVector3TransformCoord(DirectX::XMVectorSet(1.f, 0.f, 0.f, 0.f), rotationMatrix);
+		backward = XMVector3TransformCoord(DirectX::XMVectorSet(0.f, 0.f, -1.f, 0.f), rotationMatrix);
 	}
 };

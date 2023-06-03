@@ -50,7 +50,7 @@ public:
 
 	TristansRoom();
 	~TristansRoom();
-	void addBellToRoom(int mdlIndex, Model* mdl, DirectX::XMVECTOR position);
+	void addBellToRoom(Model* mdl, DirectX::XMVECTOR position);
 	void update(float dt, Camera* camera, Room*& activeRoom, bool& activeRoomChanged);
 	void onEntrance();
 	void init();

@@ -22,9 +22,9 @@ namespace ImporterBFF
 		Manager(Manager const&) = delete;
 		void operator =(Manager const&) = delete;
 
+		void InitModelAsync(const char* fileName);
+		const ModelBFF& LoadModelAsync(const char* fileName);
 		const ModelBFF& LoadModel(const char* fileName);
-
-		
 
 		/*void printToConsole(const char* fileName);*/
 

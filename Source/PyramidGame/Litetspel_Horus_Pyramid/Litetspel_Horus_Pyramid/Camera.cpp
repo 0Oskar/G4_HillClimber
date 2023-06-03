@@ -9,31 +9,31 @@ void Camera::setProjectionMatrix(float fovAngle, float aspectRatio, float nearZ,
 
 Camera::Camera()
 {
-	this->m_projectionMatrix = new DirectX::XMMATRIX(DirectX::XMMatrixIdentity());
-	this->m_mouseSense = 0;
-	this->m_movementComp = nullptr;
+	m_projectionMatrix = new DirectX::XMMATRIX(DirectX::XMMatrixIdentity());
+	m_mouseSense = 0;
+	m_movementComp = nullptr;
 }
 
 Camera::~Camera()
 {
-	delete this->m_projectionMatrix;
+	delete m_projectionMatrix;
 }
 
 void Camera::initialize(float mouseSense, float fovAngle, float aspectRatio, float nearZ, float farZ)
 {
-	this->m_mouseSense = mouseSense / 10.f;
+	m_mouseSense = mouseSense / 10.f;
 
-	this->setProjectionMatrix(fovAngle, aspectRatio, nearZ, farZ);
-	this->m_movementComp->updateViewMatrix();
+	setProjectionMatrix(fovAngle, aspectRatio, nearZ, farZ);
+	m_movementComp->updateViewMatrix();
 
 	// Components
-	if (!this->m_movementComp)
-		this->m_movementComp = new MovementComponent();
+	if (!m_movementComp)
+		m_movementComp = new MovementComponent();
 }
 
 void Camera::updateView()
 {
-	this->m_movementComp->updateViewMatrix();
+	m_movementComp->updateViewMatrix();
 }
 
 void Camera::update(MouseEvent mouseEvent, float dt)
@@ -46,8 +46,8 @@ void Camera::update(MouseEvent mouseEvent, float dt)
 
 		// Set Pitch
 		DirectX::XMFLOAT3 rotationF3;
-		DirectX::XMStoreFloat3(&rotationF3, this->m_movementComp->rotation);
-		rotationF3.x += mouseDelta.y * this->m_mouseSense;
+		DirectX::XMStoreFloat3(&rotationF3, m_movementComp->rotation);
+		rotationF3.x += mouseDelta.y * m_mouseSense;
 
 		// Limit pitch to straight up or straight down with a little fudge-factor to avoid gimbal lock
 		float limit = DirectX::XM_PI / 2.0f - 0.01f;
@@ -55,7 +55,7 @@ void Camera::update(MouseEvent mouseEvent, float dt)
 		rotationF3.x = min(+limit, rotationF3.x);
 
 		// Set Yaw
-		rotationF3.y += mouseDelta.x * this->m_mouseSense;;
+		rotationF3.y += mouseDelta.x * m_mouseSense;;
 
 		// Keep longitude in sane range by wrapping
 		if (rotationF3.x > DirectX::XM_PI)
@@ -64,38 +64,38 @@ void Camera::update(MouseEvent mouseEvent, float dt)
 			rotationF3.y += DirectX::XM_PI * 2.0f;
 
 		// Update Movement Component
-		this->m_movementComp->rotation = DirectX::XMLoadFloat3(&rotationF3);
-		this->m_movementComp->updateViewMatrix();
+		m_movementComp->rotation = DirectX::XMLoadFloat3(&rotationF3);
+		m_movementComp->updateViewMatrix();
 	}
 }
 
 DirectX::XMMATRIX* Camera::getProjectionMatrixPtr() const
 {
-	return this->m_projectionMatrix;
+	return m_projectionMatrix;
 }
 
 DirectX::XMMATRIX* Camera::getViewMatrixPtr() const
 {
-	return this->m_movementComp->viewMatrix;
+	return m_movementComp->viewMatrix;
 }
 
 DirectX::XMMATRIX Camera::getProjectionMatrix() const
 {
-	return *this->m_projectionMatrix;
+	return *m_projectionMatrix;
 }
 
 DirectX::XMMATRIX Camera::getViewMatrix() const
 {
-	return *this->m_movementComp->viewMatrix;
+	return *m_movementComp->viewMatrix;
 }
 
 void Camera::followMoveComp(MovementComponent* moveComp)
 {
-	this->m_movementComp = moveComp;
+	m_movementComp = moveComp;
 }
 
 void Camera::setPosition(DirectX::XMVECTOR newPosition)
 {
-	this->m_movementComp->position = newPosition;
-	this->m_movementComp->updateViewMatrix();
+	m_movementComp->position = newPosition;
+	m_movementComp->updateViewMatrix();
 }

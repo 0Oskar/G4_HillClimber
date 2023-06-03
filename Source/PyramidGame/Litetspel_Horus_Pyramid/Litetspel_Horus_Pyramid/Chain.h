@@ -2,7 +2,7 @@
 
 #include "GameObject.h"
 
-const int NR_OF_CHAIN_LINKS = 100;
+const uint32_t NR_OF_CHAIN_LINKS = 100;
 
 class Chain
 {

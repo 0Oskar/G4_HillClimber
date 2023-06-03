@@ -15,7 +15,7 @@ public:
 	void addCheckpointGameObject(int index, XMVECTOR gameObjectPosition);
 
 	// Getters
-	int size() const;
+	uint32_t size() const;
 	int getCurrentIndex() const;
 	XMVECTOR getCurrentpos() const;
 	std::pair<int, XMVECTOR> getCurrent() const;

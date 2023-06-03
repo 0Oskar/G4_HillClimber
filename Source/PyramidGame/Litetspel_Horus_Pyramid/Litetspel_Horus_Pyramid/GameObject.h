@@ -13,13 +13,12 @@ protected:
 	bool m_isStatic;
 	bool m_drawBB;
 	bool m_useDeceleration;
-	int m_modelIndex;
 	int m_wvpCBufferIndex;
 	
 	// Componenets
 	MovementComponent* m_movementComp;
 	PhysicsComponent* m_physicsComp;
-	Model* m_modelptr;
+	Model* m_modelPtr;
 	std::wstring m_texturePath;
 
 public:
@@ -29,8 +28,8 @@ public:
 	GameObject& operator=(const GameObject& otherGameObject);
 
 	// Initialization
-	void initializeStatic(bool collidable, int modelIndex, int wvpCBufferIndex, Model* mdl);
-	void initializeDynamic(bool collidable, bool useDeceleration, int modelIndex, int wvpCBufferIndex, float mass, DirectX::XMFLOAT3 acceleration, DirectX::XMFLOAT3 deceleration, Model* mdl);
+	void initializeStatic(bool collidable, int wvpCBufferIndex, Model* mdl);
+	void initializeDynamic(bool collidable, bool useDeceleration, int wvpCBufferIndex, float mass, DirectX::XMFLOAT3 acceleration, DirectX::XMFLOAT3 deceleration, Model* mdl);
 
 	// Update
 	virtual void update(float dt);
@@ -44,14 +43,14 @@ public:
 	DirectX::XMMATRIX getWorldMatrix() const;
 
 	DirectX::XMMATRIX getTranslationMatrix() const;
-	int getModelIndex() const;
 	int getWvpCBufferIndex() const;
 	void setWvpCBufferIndex(int index);
 	MovementComponent* getMoveCompPtr();
 	PhysicsComponent* getphysicsCompPtr();
 	DirectX::BoundingBox getAABB();
 	DirectX::BoundingBox* getAABBPtr();
-	std::wstring getTexturePath();
+	Model* getModelPtr() const;
+	std::wstring getTexturePath() const;
 
 	void setTexturePath(std::wstring texturePath);
 

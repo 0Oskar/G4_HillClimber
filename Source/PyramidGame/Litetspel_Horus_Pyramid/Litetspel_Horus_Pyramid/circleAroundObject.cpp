@@ -7,9 +7,9 @@ circleAroundObject::circleAroundObject()
 
 circleAroundObject::circleAroundObject(GameObject* rotatingObject, XMVECTOR centerOfRotation, float theRadius)
 {
-	this->theObject = rotatingObject;
-	this->center = centerOfRotation;
-	this->radius = theRadius;
+	theObject = rotatingObject;
+	center = centerOfRotation;
+	radius = theRadius;
 }
 
 void circleAroundObject::rotateAround(std::string whichAxis, float dt)
@@ -28,23 +28,23 @@ void circleAroundObject::rotateAround(std::string whichAxis, float dt)
 		float flyMax = 30 * speed;
 
 
-		this->flySpeed += (dt * 1000);
+		flySpeed += (dt * 1000);
 
-		if (this->flySpeed >= flyMax)
+		if (flySpeed >= flyMax)
 		{
-			this->angle--;
+			angle--;
 			objectRotation.m128_f32[1] += XMConvertToRadians(1);
 
-			if (this->angle <= 0.f)
+			if (angle <= 0.f)
 			{
-				this->angle = 360.f;
+				angle = 360.f;
 			}
 
-			this->flySpeed = flySpeedStartValue;
+			flySpeed = flySpeedStartValue;
 		}
 
-		float newPosX = (centerX + cos(XMConvertToRadians(this->angle)) * radius);
-		float newPosZ = (centerZ + sin(XMConvertToRadians(this->angle)) * radius);
+		float newPosX = (centerX + cos(XMConvertToRadians(angle)) * radius);
+		float newPosZ = (centerZ + sin(XMConvertToRadians(angle)) * radius);
 
 		objectPosition.m128_f32[0] = newPosX;
 		objectPosition.m128_f32[2] = newPosZ;
