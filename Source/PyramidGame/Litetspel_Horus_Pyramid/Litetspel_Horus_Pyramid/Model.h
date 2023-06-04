@@ -31,7 +31,7 @@ private:
 	bool m_drawWithIndex;
 	bool m_loaded;
 
-	void loadOBJModel();
+	void loadOBJModel(bool async = false);
 	void loadBffModel(bool async = false);
 
 public:

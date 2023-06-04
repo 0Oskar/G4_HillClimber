@@ -79,7 +79,7 @@ void Chain::initialize(GameObject* hookGObject, GameObject* gaunletGObject, std:
 	m_chainRetracted.resize(NR_OF_CHAIN_LINKS);
 	XMVECTOR pos;
 	XMFLOAT3 hookPos = m_hookGObject->getMoveCompPtr()->getPositionF3();
-	for (size_t i = 0; i < NR_OF_CHAIN_LINKS; i++)
+	for (uint32_t i = 0; i < NR_OF_CHAIN_LINKS; i++)
 	{
 		pos = XMVectorSet(hookPos.x, hookPos.y, hookPos.z - m_length - (float)i * m_length, 1.f);
 		m_chainGObjects->at(i)->setPosition(pos);

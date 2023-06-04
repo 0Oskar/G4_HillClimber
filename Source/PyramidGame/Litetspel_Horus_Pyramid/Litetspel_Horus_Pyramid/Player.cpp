@@ -4,7 +4,7 @@
 Player::Player() : GameObject()
 {
 	m_lastFly = false;
-	m_QAmode = false;
+	m_godMode = false;
 	m_lastOnGroundYPos = -1.f;
 	m_failThreshold = 10.f;
 	m_spawning = false;
@@ -88,7 +88,7 @@ void Player::respawnLogic()
 
 bool Player::getinUse()
 {
-	return inUse;
+	return m_inUse;
 }
 
 void Player::resetVelocity()
@@ -101,9 +101,9 @@ void Player::flyDown(float speed)
 	m_physicsComp->addForceDir(Direction::DOWN, speed);
 }
 
-bool Player::getQAMode() const
+bool Player::getGodMode() const
 {
-	return m_QAmode;
+	return m_godMode;
 }
 
 bool Player::getIsSpawning() const
@@ -133,17 +133,17 @@ void Player::update(float dt)
 			m_lastFly = false;
 
 			// Fail State
-			if (!m_QAmode && m_lastOnGroundYPos != -1 && m_lastOnGroundYPos > XMVectorGetY(m_movementComp->position) + m_failThreshold)
+			if (!m_godMode && m_lastOnGroundYPos != -1 && m_lastOnGroundYPos > XMVectorGetY(m_movementComp->position) + m_failThreshold)
 			{
 				respawn();
 			}
 
 			// Handle Collisions
-			if (m_QAmode) // Pyramid intersection turned off in QA Mode
+			if (m_godMode) // Pyramid intersection turned off in God Mode
 			{
-				BoundingOrientedBox QAPyramidOBB = m_pyramidOBB;
-				QAPyramidOBB.Extents = XMFLOAT3(0.f, 0.f, 0.f);
-				m_physicsComp->handleCollision(m_collidableAABBoxes, QAPyramidOBB, dt, m_collidableOrientedBoxes);
+				//BoundingOrientedBox godModePyramidOBB = m_pyramidOBB;
+				//godModePyramidOBB.Extents = XMFLOAT3(0.f, 0.f, 0.f);
+				//m_physicsComp->handleCollision(m_collidableAABBoxes, godModePyramidOBB, dt, m_collidableOrientedBoxes);
 			}
 			else
 				m_physicsComp->handleCollision(m_collidableAABBoxes, m_pyramidOBB, dt, m_collidableOrientedBoxes);
@@ -152,7 +152,7 @@ void Player::update(float dt)
 		m_physicsComp->updatePosition(dt, true); // If Camera is not following player, remove last argument( Only dt)
 
 		// Gravity or Flying Deceleration
-		if (m_QAmode)
+		if (m_godMode)
 			m_physicsComp->addYDecel(dt);
 		else
 			m_physicsComp->addGravity(dt);
@@ -177,13 +177,7 @@ void Player::shoot()
 
 bool Player::canMove()
 {
-	bool canMove = true;
-	if (m_hookHand.shouldFly())
-	{
-		canMove = false;
-	}
-	
-	return canMove;
+	return !m_hookHand.shouldFly();
 }
 
 void Player::jump(float dt)
@@ -194,18 +188,18 @@ void Player::jump(float dt)
 
 void Player::setUse(bool isUsing)
 {
-	inUse = isUsing;
+	m_inUse = isUsing;
 }
 
-void Player::movePlayer(Direction dir, float dt)
+void Player::movePlayer(Direction dir, float dt, float multiplier)
 {
 	if (canMove())
-		m_physicsComp->addForceDir(dir, dt);
+		m_physicsComp->addForceDir(dir, dt, multiplier);
 }
 
-void Player::setQAMode(bool qaMode)
+void Player::setGodMode(bool godMode)
 {
-	m_QAmode = qaMode;
+	m_godMode = godMode;
 }
 
 void Player::retract()

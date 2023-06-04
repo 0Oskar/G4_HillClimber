@@ -149,12 +149,17 @@ void ShadowMapInstance::buildLightMatrix(PS_DIR_BUFFER directionalLight, XMFLOAT
 	VS_DIRECTIONAL_CBUFFER lightMatrices;
 	XMVECTOR lightDirection = XMLoadFloat4(&directionalLight.lightDirection);
 	XMVECTOR lookAt = XMLoadFloat3(&position);
-	lookAt = XMVectorSetW(lookAt, 1.f);
-	XMVECTOR lightPosition = (m_worldBoundingSphere.Radius * lightDirection) + lookAt;
+	lookAt = DirectX::XMVectorSetW(lookAt, 1.f);
+	XMVECTOR lightPosition = DirectX::XMVectorAdd(DirectX::XMVectorScale(lightDirection, m_worldBoundingSphere.Radius), lookAt);
 
 	XMVECTOR up = DirectX::XMVectorSet(0.f, 1.f, 0.f, 0.f);
 
-	lightMatrices.lightViewMatrix = XMMatrixLookAtLH(lightPosition, lookAt, up);
+	XMVECTOR eyeDirection = DirectX::XMVectorSubtract(lookAt, lightPosition);
+	if (DirectX::XMVector3Equal(eyeDirection, DirectX::XMVectorZero()))
+	{
+		lookAt = DirectX::XMVectorAdd(lookAt, DirectX::XMVectorSet(0.f, 0.f, 1.f, 0.f));
+	}
+	lightMatrices.lightViewMatrix = DirectX::XMMatrixLookAtLH(lightPosition, lookAt, up);
 
 	// Transform World Bounding Sphere to Light Local View Space
 	XMFLOAT3 worldSphereCenterLightSpace;
@@ -171,7 +176,7 @@ void ShadowMapInstance::buildLightMatrix(PS_DIR_BUFFER directionalLight, XMFLOAT
 	float f = m_worldBoundingSphere.Radius * 6.f;
 
 	// Local Projection Matrix
-	lightMatrices.lightProjMatrix = XMMatrixOrthographicOffCenterLH(l, r, b, t, n, f);
+	lightMatrices.lightProjMatrix = DirectX::XMMatrixOrthographicOffCenterLH(l, r, b, t, n, f);
 
 	// Update data
 	m_lightMatrixCBuffer.upd(&lightMatrices);

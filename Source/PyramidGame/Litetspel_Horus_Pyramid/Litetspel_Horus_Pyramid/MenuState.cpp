@@ -444,12 +444,15 @@ void MenuState::addNewModelInit(const char* modelFilePath, const MaterialData ma
 
 void MenuState::loadModelsThreadSafe(uint32_t threadIndex, std::unordered_map<std::string, Model>* modelsListPtr, std::vector<const char*>* modelNameList, uint32_t from, uint32_t to)
 {
+	std::string message = "Thread " + to_string(threadIndex) + " Start!\n";
+	OutputDebugStringA(message.c_str());
+
 	std::unordered_map<std::string, Model>& modelMap = *modelsListPtr;
 	for (uint32_t i = from; i < to; i++)
 	{
 		modelMap[modelNameList->at(i)].loadModelAsync();
 	}
-	std::string message = "Thread " + to_string(threadIndex) + " done!";
+	message = "Thread " + to_string(threadIndex) + " Done!\n";
 	OutputDebugStringA(message.c_str());
 }
 

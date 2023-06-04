@@ -2,7 +2,7 @@
 #include"Model.h"
 
 
-void Model::loadOBJModel()
+void Model::loadOBJModel(bool async)
 {	
 	// Values Contained
 	bool hasNormals = false;
@@ -137,10 +137,14 @@ void Model::loadOBJModel()
 	m_vertexBuffer.initialize(m_devicePtr, m_vertices.data(), (int)m_vertices.size());
 	
 	string loadedMessage;
+	if (async)
+	{
+		loadedMessage = "	";
+	}
 	if (fileFound)
-		loadedMessage = "OBJ model loaded: " + m_modelPath + "\n";
+		loadedMessage += "OBJ model loaded: " + m_modelPath + "\n";
 	else
-		loadedMessage = "OBJ model could not be loaded: " + m_modelPath + "\n";
+		loadedMessage += "OBJ model could not be loaded: " + m_modelPath + "\n";
 	
 	OutputDebugStringA(loadedMessage.c_str());
 }
@@ -148,11 +152,14 @@ void Model::loadOBJModel()
 void Model::loadBffModel(bool async)
 {
 	ModelBFF myModel;
+	string loadedMessage;
 	if (async)
 	{
+		loadedMessage = "	BFF Model loaded: " + m_modelPath + "\n";
 		myModel = m_myManager->LoadModelAsync(m_modelPath.c_str());
 	}
 	else {
+		loadedMessage = "BFF Model loaded: " + m_modelPath + "\n";
 		myModel = m_myManager->LoadModel(m_modelPath.c_str());
 	}
 	if (!myModel.loadSucceded())
@@ -171,7 +178,6 @@ void Model::loadBffModel(bool async)
 	m_vertexBuffer.initialize(m_devicePtr, m_vertices.data(), (int)m_vertices.size());
 
 	//printBffModel(myModel); //For testing
-	string loadedMessage = "BFF Model loaded: " + m_modelPath + "\n";
 	OutputDebugStringA(loadedMessage.c_str());
 }
 
@@ -218,11 +224,11 @@ void Model::initForAsyncLoad(ID3D11Device* device, ID3D11DeviceContext* dContext
 
 void Model::loadModelAsync()
 {
-	string loadedMessage = "Async Model load started: " + m_modelPath + "\n";
+	string loadedMessage = "	Async Model load started: " + m_modelPath + "\n";
 	OutputDebugStringA(loadedMessage.c_str());
 	switch (m_format)
 	{
-		case ModelFormat::ModelFormat_obj: loadOBJModel(); break;
+		case ModelFormat::ModelFormat_obj: loadOBJModel(true); break;
 		case ModelFormat::ModelFormat_bff: loadBffModel(true); break;
 	}
 

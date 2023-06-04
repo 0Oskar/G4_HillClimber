@@ -894,50 +894,60 @@ states GameState::handleInput(Keyboard* keyboard, Mouse* mousePtr, float dt)
 		}
 
 		// Controls
+		float playerSpeedMultiplier = 1.f;
+
+		// God Mode 
+		if (m_player.getGodMode())
+		{
+			if (keyboard->isKeyPressed((unsigned char)VK_SHIFT))
+			{
+				playerSpeedMultiplier = 3.f;
+			}
+
+			if (keyboard->isKeyPressed((unsigned char)VK_CONTROL))
+			{
+				m_player.flyDown(dt);
+			}
+		}
+
+		static float _godModeToggleTimer = 0.f;
+		_godModeToggleTimer += dt;
+		if (_godModeToggleTimer > 0.3f && keyboard->isKeyPressed('P'))
+		{
+			_godModeToggleTimer = 0.f;
+			bool godModeToggle = !m_player.getGodMode();
+			m_player.setGodMode(godModeToggle);
+
+			if (godModeToggle)
+				StatusTextHandler::get().sendText("God Mode ON!", 0.5f);
+			else
+				StatusTextHandler::get().sendText("God Mode OFF!", 0.5f);
+		}
+
+		// Movement
 		if (keyboard->isKeyPressed('W'))
-			m_player.movePlayer(Direction::FORWARD, dt);
+			m_player.movePlayer(Direction::FORWARD, dt, playerSpeedMultiplier);
 
 		if (keyboard->isKeyPressed('S'))
-			m_player.movePlayer(Direction::BACKWARD, dt);
+			m_player.movePlayer(Direction::BACKWARD, dt, playerSpeedMultiplier);
 
 		if (keyboard->isKeyPressed('A'))
-			m_player.movePlayer(Direction::LEFT, dt);
+			m_player.movePlayer(Direction::LEFT, dt, playerSpeedMultiplier);
 
 		if (keyboard->isKeyPressed('D'))
-			m_player.movePlayer(Direction::RIGHT, dt);
+			m_player.movePlayer(Direction::RIGHT, dt, playerSpeedMultiplier);
 
 		if (keyboard->isKeyPressed(' ')) // Space
 		{
-			if (m_player.getQAMode())
-				m_player.movePlayer(Direction::UP, dt);
+			if (m_player.getGodMode())
+				m_player.movePlayer(Direction::UP, dt, playerSpeedMultiplier);
 			else
 				m_player.jump(dt);
 		}
 
-		if (keyboard->isKeyPressed((unsigned char)16)) // Shift
-			m_player.flyDown(dt);
-
-		if (keyboard->isKeyPressed('E'))
-		{
-			m_player.setUse(true);
-		}
-		else
-		{
-			m_player.setUse(false);
-		}
-
-		// QA Toggle
-		if (keyboard->isKeyPressed('P'))
-		{
-			m_player.setQAMode(false);
-			StatusTextHandler::get().sendText("QA Mode OFF!", 0.5);
-		}
-		if (keyboard->isKeyPressed('O'))
-		{
-			m_player.setQAMode(true);
-			StatusTextHandler::get().sendText("QA Mode ON!", 0.5);
-		}
-
+		// Action
+		m_player.setUse(keyboard->isKeyPressed('E'));
+		
 		// For Debugging purposes
 		if (keyboard->isKeyPressed('R'))
 		{

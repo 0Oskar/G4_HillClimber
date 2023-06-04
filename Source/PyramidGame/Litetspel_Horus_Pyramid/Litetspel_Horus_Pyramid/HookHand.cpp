@@ -85,9 +85,9 @@ void HookHand::reset()
 {
 	float hookSpeedForward = 100.f;
 	hookSpeedRetract = 100.f;
-	/*m_hookState = hookState::idle;
+	m_hookState = hookState::idle;
 	m_hookGameObject->getMoveCompPtr()->rotation = m_playerMovement->rotation + hookRotOffsetConst;
-	m_hookGameObject->getMoveCompPtr()->position = DirectX::XMVectorAdd(m_gunGameObject->getMoveCompPtr()->position, hookPosOffset);*/
+	m_hookGameObject->getMoveCompPtr()->position = DirectX::XMVectorAdd(m_gunGameObject->getMoveCompPtr()->position, hookPosOffset);
 }
 
 bool HookHand::colide()

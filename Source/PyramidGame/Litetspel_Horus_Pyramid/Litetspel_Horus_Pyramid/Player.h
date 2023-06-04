@@ -17,13 +17,13 @@ private:
 	HookHand m_hookHand;
 	XMVECTOR m_spawnPosition;
 
-	bool inUse;
+	bool m_inUse;
 
 	float m_lastOnGroundYPos;
 	float m_failThreshold;
 	bool m_lastFly;
 
-	bool m_QAmode;
+	bool m_godMode;
 	bool canMove();
 
 	bool m_spawning;
@@ -47,7 +47,7 @@ public:
 	void flyDown(float speed);
 
 	// Getters
-	bool getQAMode() const;
+	bool getGodMode() const;
 	bool getIsSpawning() const;
 
 	// Setters
@@ -65,9 +65,9 @@ public:
 
 	void setUse(bool isUsing);
 
-	void movePlayer(Direction dir, float dt);
+	void movePlayer(Direction dir, float dt, float multiplier = 1.f);
 
-	void setQAMode(bool qaMode);
+	void setGodMode(bool godMode);
 
 	void retract();
 
