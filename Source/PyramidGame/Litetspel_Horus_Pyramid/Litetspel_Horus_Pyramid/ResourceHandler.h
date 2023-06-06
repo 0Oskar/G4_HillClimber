@@ -11,11 +11,11 @@ private:
 	ResourceHandler() {};
 	std::map<const std::wstring, ID3D11ShaderResourceView*> map;
 	std::map<const std::wstring, DirectX::SoundEffect*> audioMap;
-	bool createTextureFromFile(ID3D11Device* device, const WCHAR* txturePath)
+	bool createTextureFromFile(ID3D11Device* device, ID3D11DeviceContext* dContext, const WCHAR* txturePath)
 	{
 		bool couldLoad = true;
 		map[txturePath] = nullptr;
-		HRESULT hr = DirectX::CreateWICTextureFromFile(device, txturePath, nullptr, &map[txturePath]);
+		HRESULT hr = DirectX::CreateWICTextureFromFile(device, dContext, txturePath, nullptr, &map[txturePath]);
 		if (FAILED(hr))
 		{
 			couldLoad = false;
@@ -54,7 +54,7 @@ public:
 		{
 			if (m_device != nullptr)
 			{
-				createTextureFromFile(m_device, texturePath);
+				createTextureFromFile(m_device, m_dContext, texturePath);
 			}
 			return map[texturePath];
 		}

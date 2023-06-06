@@ -5,7 +5,8 @@
 
 struct MaterialData
 {
-	DirectX::XMFLOAT4 ambient;
+	DirectX::XMFLOAT3 ambient;
+	float globalAmbientContribution;
 	DirectX::XMFLOAT4 diffuse;
 	DirectX::XMFLOAT4 specular;
 	int shininess;

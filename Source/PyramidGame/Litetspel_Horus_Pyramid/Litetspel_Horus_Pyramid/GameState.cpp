@@ -531,7 +531,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	m_timerString = "Time: ";
 
 	// Crosshair
-	m_crossHairSRV = m_resourceHandler->getTexture(L"Textures/crosshair.png");
+	m_crossHairSRV = m_resourceHandler->getTexture(L"Textures/crosshair2.png");
 	ID3D11Resource* crosshairTexture = 0;
 	m_crossHairSRV->GetResource(&crosshairTexture);
 	ID3D11Texture2D* crosshairTexture2D = 0;
@@ -714,7 +714,7 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 		options.fov,
 		(float)options.width / (float)options.height,
 		0.1f,
-		1000.f
+		10000.f
 	);
 
 	//Add rooms vector to rooms then add portals
@@ -869,9 +869,10 @@ states GameState::handleInput(Keyboard* keyboard, Mouse* mousePtr, float dt)
 		KeyboardEvent keyboardEvent = keyboard->readKey();
 		if (keyboardEvent.getEvent() == Event::Pressed)
 		{
-			if (keyboardEvent.getKey() == (char)27)
+			if (keyboardEvent.getKey() == VK_ESCAPE)
 				changeStateTo = states::POP;
-
+			else if (keyboardEvent.getKey() == VK_OEM_PLUS) // '+' key
+				changeStateTo = states::RELOAD_SHADERS;
 		}
 	}
 
@@ -899,14 +900,14 @@ states GameState::handleInput(Keyboard* keyboard, Mouse* mousePtr, float dt)
 		// God Mode 
 		if (m_player.getGodMode())
 		{
-			if (keyboard->isKeyPressed((unsigned char)VK_SHIFT))
+			if (keyboard->isKeyPressed(VK_SHIFT))
 			{
 				playerSpeedMultiplier = 3.f;
 			}
 
-			if (keyboard->isKeyPressed((unsigned char)VK_CONTROL))
+			if (keyboard->isKeyPressed(VK_CONTROL))
 			{
-				m_player.flyDown(dt);
+				m_player.movePlayer(Direction::DOWN, dt, playerSpeedMultiplier);
 			}
 		}
 

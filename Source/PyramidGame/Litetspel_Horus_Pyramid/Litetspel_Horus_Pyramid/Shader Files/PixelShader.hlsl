@@ -19,16 +19,17 @@ struct PointLight
 
 cbuffer materialBuffer : register(b0)
 {
-    float4 ambient;
-    float4 diffuse;
-    float4 specular;
-    float shininess;
+    float3 ambientM;
+    float globalAmbientContributionM;
+    float4 diffuseM;
+    float4 specularM;
+    float shininessM;
 };
 
 cbuffer lightBuffer : register(b1)
 {
-    float3 ambientColor;
-    float strength;
+    float3 directionalAmbientColor;
+    float directionalAmbientStrength;
     PointLight pointLights[5];
     int nrOfPointLights;
     float3 padd;
@@ -49,16 +50,16 @@ cbuffer fog : register(b3)
 };
 
 
-Texture2D objTexture : TEXTURE : register(t0);
+Texture2D diffuseTexture : TEXTURE : register(t0);
 Texture2D shadowMap : TEXTURE : register(t1);
 
 SamplerState samplerState : SAMPLER : register(s0);
 SamplerComparisonState shadowSampler : SAMPLER : register(s1);
 
-float4 pointLightCalculation(float4 matAmbient, float4 matDiffuse, float4 lightAmbient, float4 lightDiffuse, float3 lightPos, float lightRange, float3 pposition, float3 pnormal, float3 attenuation)
+float3 pointLightCalculation(float3 matAmbient, float4 matDiffuse, float3 lightAmbient, float4 lightDiffuse, float3 lightPos, float lightRange, float3 pposition, float3 pnormal, float3 attenuation)
 {
-    float4 calcAmbient = float4(0, 0, 0, 1);
-    float4 calcDiffuse = float4(0, 0, 0, 1);
+    float3 calcAmbient = float3(0, 0, 0);
+    float3 calcDiffuse = float3(0, 0, 0);
     float diffuseValue = 0;
     float3 lightVec = float3(0, 0, 0);
     
@@ -68,14 +69,12 @@ float4 pointLightCalculation(float4 matAmbient, float4 matDiffuse, float4 lightA
     if(lightVecDist <= lightRange)
     {
         lightVec = lightVec / lightVecDist;
-        
         calcAmbient = matAmbient * lightAmbient;
-        
         diffuseValue = dot(lightVec, pnormal);
         
         if(diffuseValue > 0.0f)
         {
-            calcDiffuse = diffuseValue * matDiffuse * lightDiffuse;
+            calcDiffuse = diffuseValue * matDiffuse.xyz * lightDiffuse.xyz;
         }
         
         float atten = 1.0f / dot(attenuation, float3(1.0, lightVecDist, lightVecDist * lightVecDist));
@@ -84,7 +83,7 @@ float4 pointLightCalculation(float4 matAmbient, float4 matDiffuse, float4 lightA
         return saturate(calcAmbient + calcDiffuse);
     }
     
-    return float4(0, 0, 0, 1);
+    return float3(0, 0, 0);
 }
 
 float calculateShadowFactor(float4 shadowPosition)
@@ -120,27 +119,50 @@ float calculateShadowFactor(float4 shadowPosition)
 
 float4 main(PS_IN input) : SV_TARGET
 {
-    float4 pixelColorFromTexture = objTexture.Sample(samplerState, input.texcoord);
-    float3 ambientclr = ambientColor * strength;
-    float diffBright = saturate(dot(input.normal, dirLightDirection.xyz));
+    float4 diffuse = diffuseM * diffuseTexture.Sample(samplerState, input.texcoord);
     
-    float3 lightDiffuse = ambientclr + ((dirLightColor.xyz * diffBright) * calculateShadowFactor(input.positionShadow));
-    float4 fColor = float4(diffuse.xyz * pixelColorFromTexture.xyz * lightDiffuse.xyz, 1);
+    // Global Ambient
+    const float3 skyColor = float3(0.25, 0.55, 0.9);
+    const float3 horizonColor = float3(0.89, 0.824, 0.651);
+    const float3 groundColor = float3(1.0, 0.871, 0.55);
+    const float skyStrength = 0.5;
+    const float blendStrength = 1.0;
+    
+    float skyContribution = dot(float3(0.f, 1.f, 0.f), input.normal) * 0.3;
+    skyContribution = clamp(skyContribution, 0.0, 1.0);
+    float groundContribution = dot(float3(0.f, -1.f, 0.f), input.normal);
+    groundContribution = saturate(groundContribution);
+    
+    float3 skyAmbientColor = (skyColor * skyContribution) + (groundColor * groundContribution);
+    skyAmbientColor *= diffuse.rgb * globalAmbientContributionM;
+    
+    // Directional Light
+    float3 ambientDirectionalLight = directionalAmbientColor * directionalAmbientStrength;
+    float diffBright = saturate(dot(input.normal, dirLightDirection.xyz));
+    float3 directionalLightDiffuse = ambientDirectionalLight + ((dirLightColor.xyz * diffBright) * calculateShadowFactor(input.positionShadow));
+    
+    float4 fColor = float4((diffuse.xyz * directionalLightDiffuse.xyz) + skyAmbientColor, 1.0);
     
     float3 wPosToCamera = cameraPos - input.positionW;
     float distance = length(wPosToCamera);
     wPosToCamera = wPosToCamera / distance; //Normalize
     for (int i = 0; i < nrOfPointLights; i++)
     {
-        fColor = saturate(fColor + pointLightCalculation(ambient, diffuse, pointLights[i].plAmbient, pointLights[i].plDiffuse, pointLights[i].plPosition, pointLights[i].plRange, input.positionW, input.normal, pointLights[i].att)); 
+        fColor = float4(saturate(fColor.rgb + pointLightCalculation(ambientM, diffuseM, pointLights[i].plAmbient.rgb, pointLights[i].plDiffuse, pointLights[i].plPosition, pointLights[i].plRange, input.positionW, input.normal, pointLights[i].att)), 1.f);
     }
     
-    //fog
+    // Fog
     if (fogRange != 0)
     {
+        float height = normalize(input.positionW).y;
+        float skyBlend = pow(clamp(height, 0.0, 1.0), skyStrength);
+        float groundBlend = pow(clamp(height, -1.0, 0.0) * -1.0, blendStrength);
+        float horizonBlend = pow(1.0 - (skyBlend + groundBlend), blendStrength);
+    
+        float3 skyFogColor = (skyColor * skyBlend) + (groundColor * groundBlend) + (horizonColor * horizonBlend);
+        
         float fogLerp = saturate((distance - fogStart) / fogRange);
-        fColor = float4(lerp(fColor.xyz, fogColor, fogLerp), 1);
+        fColor = float4(lerp(fColor.xyz, skyFogColor, fogLerp), 1);
     }
-    return float4(fColor.xyz, 1);
-    //return float4(calculateShadowFactor(input.positionShadow), 0, 0, 1);
+    return float4(fColor.xyz, 1.0);
 }

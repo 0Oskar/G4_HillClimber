@@ -38,6 +38,8 @@ void Shaders::initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContex
 	flags |= D3DCOMPILE_DEBUG;
 #endif
 
+	m_files = names;
+
 	// Create Vertex Shader
 	if (names.vs != L"")
 	{
@@ -64,6 +66,11 @@ void Shaders::initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContex
 			if (vsBlob)
 				vsBlob->Release();
 			assert(SUCCEEDED(hr));
+		}
+
+		if (m_vertexShader.Get())
+		{
+			m_vertexShader.ReleaseAndGetAddressOf();
 		}
 
 		hr = m_device->CreateVertexShader(
@@ -97,6 +104,7 @@ void Shaders::initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContex
 			);
 			assert(SUCCEEDED(hr) && "Error, Input layout could not be created!");
 		}
+		m_layoutType = layoutType;
 
 	}
 
@@ -258,12 +266,18 @@ void Shaders::initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContex
 			assert(false);
 		}
 
+		if (m_pixelShader.Get())
+		{
+			m_pixelShader.ReleaseAndGetAddressOf();
+		}
+
 		hr = m_device->CreatePixelShader(
 			psBlob->GetBufferPointer(),
 			psBlob->GetBufferSize(),
 			nullptr,
 			&m_pixelShader
 		);
+
 		assert(SUCCEEDED(hr) && "Error, Pixel shaders could not be created!");
 		psBlob->Release();
 	}
@@ -280,7 +294,7 @@ void Shaders::initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContex
 			names.cs,
 			nullptr,
 			D3D_COMPILE_STANDARD_FILE_INCLUDE,
-			"CS_main",
+			"main",
 			"cs_5_0",
 			flags,
 			0,
@@ -300,15 +314,26 @@ void Shaders::initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContex
 			assert(SUCCEEDED(hr));
 		}
 
+		if (m_computeShader.Get())
+		{
+			m_computeShader.ReleaseAndGetAddressOf();
+		}
+
 		hr = m_device->CreateComputeShader(
 			csBlob->GetBufferPointer(),
 			csBlob->GetBufferSize(),
 			nullptr,
 			&m_computeShader
 		);
+		
 		assert(SUCCEEDED(hr) && "Error, Compute shaders could not be created!");
 		csBlob->Release();
 	}
+}
+
+void Shaders::reloadShaders()
+{
+	initialize(m_device, m_deviceContext, m_files, m_layoutType, m_topology);
 }
 
 void Shaders::setShaders()

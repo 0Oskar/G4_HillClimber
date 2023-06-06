@@ -48,7 +48,7 @@ void ViewLayer::initDeviceAndSwapChain()
 	);
 	assert(SUCCEEDED(hr) && "Error, failed to create device and swapchain!");
 
-
+	m_deviceContext->QueryInterface(__uuidof(ID3DUserDefinedAnnotation), (void**)(&m_annotation));
 
 	// Back Buffer Texture
 	ID3D11Texture2D* backBuffer = nullptr;
@@ -271,6 +271,25 @@ void ViewLayer::initConstantBuffer()
 	m_lightBuffer.init(m_device.Get(), m_deviceContext.Get());
 	m_dirLightBuffer.init(m_device.Get(), m_deviceContext.Get());
 	m_fogBuffer.init(m_device.Get(), m_deviceContext.Get());
+	m_cameraBuffer.init(m_device.Get(), m_deviceContext.Get());
+}
+
+void ViewLayer::initSky()
+{
+	// Shader
+	ShaderFiles shaders;
+	shaders.vs = L"Shader Files\\SkyVS.hlsl";
+	shaders.ps = L"Shader Files\\SkyPS.hlsl";
+	m_skyShaders.initialize(m_device.Get(), m_deviceContext.Get(), shaders);
+
+	// Cube Mesh
+	MaterialData mat;
+	mat.ambient = { 0.0f, 0.0f, 0.0f};
+	mat.globalAmbientContribution = 1.f;
+	mat.diffuse = { 0.9f, 0.9f, 0.9f, 1.0f };
+	mat.specular = {1.0f, 1.0f, 1.0f, 1.0f };
+	mat.shininess = 32;
+	m_skyCube.loadModel(m_device.Get(), m_deviceContext.Get(), "cube.obj", mat, L"");
 }
 
 void ViewLayer::initSamplerState()
@@ -281,7 +300,8 @@ void ViewLayer::initSamplerState()
 	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
 	samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	samplerDesc.Filter = D3D11_FILTER_ANISOTROPIC;
+	samplerDesc.MaxAnisotropy = 16;
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 	samplerDesc.MinLOD = 0;
 
@@ -302,6 +322,7 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 	initDepthStencilBuffer();
 	initShaders();
 	initConstantBuffer();
+	initSky();
 
 	// Lights
 	PointLight pLight;
@@ -399,6 +420,12 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 	m_shadowInstance.initialize(m_device.Get(), m_deviceContext.Get(), 4096, 4096);
 }
 
+void ViewLayer::reloadShaders()
+{
+	m_shaders.reloadShaders();
+	m_skyShaders.reloadShaders();
+}
+
 void ViewLayer::update(float dt, XMFLOAT3 cameraPos)
 {
 	// Transition
@@ -434,11 +461,14 @@ void ViewLayer::update(float dt, XMFLOAT3 cameraPos)
 void ViewLayer::render(iGameState* gameState)
 {
 	// Clear Frame
+	m_annotation->BeginEvent(L"Clear");
 	m_deviceContext->ClearRenderTargetView(m_outputRTV.Get(), clearColor);
 	m_deviceContext->ClearDepthStencilView(m_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	m_annotation->EndEvent();
 
 	// Shadow Mapping
 	{
+		m_annotation->BeginEvent(L"ShadowMapping");
 		m_shadowInstance.bindViewsAndRenderTarget();
 		DirectX::XMMATRIX viewPMtrx = (*m_viewMatrix) * (*m_projectionMatrix);
 		for (size_t i = 0; i < m_gameObjectsFromState->size(); i++)
@@ -477,9 +507,11 @@ void ViewLayer::render(iGameState* gameState)
 				}
 			}
 		}
+		m_annotation->EndEvent();
 	}
 
 	// Set Render Target
+	m_annotation->BeginEvent(L"Draw Meshes");
 	m_deviceContext->OMSetRenderTargets(1, m_outputRTV.GetAddressOf(), m_depthStencilView.Get());
 	//m_deviceContext->OMSetBlendState(m_states->Opaque(), nullptr, 0xFFFFFFFF);
 	m_deviceContext->OMSetDepthStencilState(m_states->DepthDefault(), 0);
@@ -540,14 +572,32 @@ void ViewLayer::render(iGameState* gameState)
 			}
 		}
 	}
+	m_deviceContext->PSSetShaderResources(1, 1, &m_nullSRV);
+	m_annotation->EndEvent();
+
+	// Sky
+	m_annotation->BeginEvent(L"Sky");
+	m_deviceContext->OMSetDepthStencilState(m_states->DepthDefault(), 0);
+	m_skyShaders.setShaders();
+	
+	m_cameraBuffer.m_data = XMMatrixScaling(-1.f, -1.f, -1.f) * (*m_viewMatrix) * (*m_projectionMatrix);
+	m_cameraBuffer.upd();
+	m_deviceContext->VSSetConstantBuffers(0, 1, m_cameraBuffer.GetAdressOf());
+
+	m_skyCube.draw();
+	m_annotation->EndEvent();
+
 	// Draw Transition Quad
+	m_annotation->BeginEvent(L"Transition");
 	m_deviceContext->OMSetDepthStencilState(m_states->DepthNone(), 0);
 	m_transition->render();
 	m_deviceContext->OMSetDepthStencilState(m_states->DepthDefault(), 0);
+	m_annotation->EndEvent();
 
 	// Draw Primitives
 	if (m_drawPrimitives)
 	{
+		m_annotation->BeginEvent(L"Primitives");
 		m_deviceContext->OMSetBlendState(m_states->Opaque(), nullptr, 0xFFFFFFFF);
 		m_deviceContext->OMSetDepthStencilState(m_states->DepthNone(), 0);
 		m_deviceContext->RSSetState(m_states->CullNone());
@@ -602,9 +652,10 @@ void ViewLayer::render(iGameState* gameState)
 		//DX::Draw(m_batch.get(), m_pyramidOBB, DirectX::Colors::Blue);
 
 		m_batch->End();
+		m_annotation->EndEvent();
 	}
 
-	
+	m_annotation->BeginEvent(L"Sprites");
 	// Draw Sprites
 	m_deviceContext->RSSetState(m_spriteRasterizerState.Get());
 	
@@ -612,22 +663,26 @@ void ViewLayer::render(iGameState* gameState)
 	m_spriteBatch->Begin(SpriteSortMode_Deferred, m_states->AlphaBlend());
 	gameState->drawUI(m_spriteBatch.get(), m_spriteFont16.get());
 
+	m_annotation->EndEvent();
 
 	// - Shadowmap Debug
 	if (drawShadowmapDebug)
 	{
+		m_annotation->BeginEvent(L"Shadowmap Debug");
 		RECT shadowMapImg;
 		shadowMapImg.left = 0;
 		shadowMapImg.top = 0;
 		shadowMapImg.right = 500;
 		shadowMapImg.bottom = 500;
 		m_spriteBatch->Draw(m_shadowInstance.getShadowMapSRV(), shadowMapImg);
+		m_annotation->EndEvent();
 	}
 	
 	// - Sprite End
 	m_spriteFont16->DrawString(m_spriteBatch.get(), m_fpsString.c_str(), DirectX::XMFLOAT2((float)m_options->width - 110.f, 10.f), DirectX::Colors::White, 0.f, DirectX::XMFLOAT2(0.f, 0.f));
 	m_statusTextHandler->render(m_spriteFont32.get(), m_spriteBatch.get());
 	m_spriteBatch->End();
+	m_annotation->EndEvent();
 
 	// Swap Frames
 	m_swapChain->Present(0, 0);

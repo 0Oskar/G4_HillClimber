@@ -66,7 +66,9 @@ void PyramidRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& acti
 	//strHej += "\n";
 	//OutputDebugStringA(strHej.c_str());
 
-	//clouds->getMoveCompPtr()->rotation += DirectX::XMVectorSet(0, pMath::convertDegreesToRadians(1) * dt, 0, 10);
+	// Cloude Rotation
+	const float cloudeRotationScaling = 0.5f;
+	clouds->getMoveCompPtr()->rotation += DirectX::XMVectorSet(0.f, pMath::convertDegreesToRadians(1.f) * dt * cloudeRotationScaling, 0.f, 1.f);
 }
 
 void PyramidRoom::init(DirectX::BoundingOrientedBox* pyramidBB)
@@ -207,15 +209,19 @@ void PyramidRoom::createBoundingBoxes()
 
 void PyramidRoom::createSceneObjects()
 {
-	DirectX::XMVECTOR NormalScale = DirectX::XMVectorSet(1, 1, 1, 1);
+	DirectX::XMVECTOR NormalScale = DirectX::XMVectorSet(1.f, 1.f, 1.f, 1.f);
 	DirectX::XMVECTOR vec = DirectX::XMVectorSet(0.f, -10.f, 0.f, 1.f);
 	DirectX::XMVECTOR rotation = DirectX::XMVectorSet(0.f, 0.f, 0.f, 1.f);
 	
 	addPalmTrees();
-	addCactais();
+	//addCactais(); this is stupid
+	
 	// Pillars
-	vec = DirectX::XMVectorSet(-25, -1.5, -50, 1.f);
+	vec = DirectX::XMVectorSet(-25.f, -1.5f, -50.f, 1.f);
 	addGameObjectToRoom(false, false, 0, &m_models->at("Entrence.obj"), vec, NormalScale);
+
+	vec = DirectX::XMVectorSet(-25.f, 3.f, -50.f, 1.f);
+	addGameObjectToRoom(false, false, 0, &m_models->at("ddh.obj"), vec, DirectX::XMVectorSet(2.f, 2.f, 2.f, 1.f));
 
 	// Clouds
 	vec = DirectX::XMVectorSet(0.f, 300.f, 315.f, 1.f);
@@ -892,16 +898,19 @@ void PyramidRoom::addPalmTrees()
 	DirectX::XMVECTOR pos;
 	DirectX::XMVECTOR rot;
 	DirectX::XMVECTOR scale;
+
+	const int amount = 20;
+	const float palmHeight = -1.f;
 	
 	//Infront section
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < amount; i++)
 	{
 		float posXNumber = float(rand() % 800);
 		float posZNumber = float(rand() % 400);
 		float Rotnumber = float(rand() % 360);
 		float scaleNumber = float(rand() % 2 + 2);
 		
-		pos = DirectX::XMVectorSet(posXNumber - 400.f, 0.f, posZNumber - 400.f - 100.f, 1.f);
+		pos = DirectX::XMVectorSet(posXNumber - 400.f, palmHeight, posZNumber - 400.f - 100.f, 1.f);
 
 		palmTreePos.emplace_back(pos);
 		rot = DirectX::XMVectorSet(0, Rotnumber, 0, 1);
@@ -911,14 +920,14 @@ void PyramidRoom::addPalmTrees()
 	}
 
 	//Right section
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < amount; i++)
 	{
 		float posXNumber = float(rand() % 300);
 		float posZNumber = float(rand() % 1200);
 		float Rotnumber = float(rand() % 360);
 		float scaleNumber = float(rand() % 2 + 2);
 		
-		pos = DirectX::XMVectorSet(posXNumber + 300.f + 100.f, 0.f, posZNumber - 300.f, 1.f);
+		pos = DirectX::XMVectorSet(posXNumber + 300.f + 100.f, palmHeight, posZNumber - 300.f, 1.f);
 		rot = DirectX::XMVectorSet(0.f, Rotnumber, 0.f, 1.f);
 		scale = DirectX::XMVectorSet(scaleNumber * 0.01f, scaleNumber * 0.01f, scaleNumber * 0.01f, 1.f);
 		addGameObjectToRoom(false, false, 0, &m_models->at("PalmTree.obj"), pos, scale);
@@ -926,14 +935,14 @@ void PyramidRoom::addPalmTrees()
 	}
 
 	//Left section
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < amount; i++)
 	{
 		float posXNumber = float(rand() % 300);
 		float posZNumber = float(rand() % 1200);
 		float Rotnumber = float(rand() % 360);
 		float scaleNumber = float(rand() % 2 + 2);
 		
-		pos = DirectX::XMVectorSet((posXNumber * -1.f) - 400.f, 0.f, posZNumber - 300.f, 1.f);
+		pos = DirectX::XMVectorSet((posXNumber * -1.f) - 400.f, palmHeight, posZNumber - 300.f, 1.f);
 		rot = DirectX::XMVectorSet(0.f, Rotnumber, 0.f, 1.f);
 		scale = DirectX::XMVectorSet(scaleNumber * 0.01f, scaleNumber * 0.01f, scaleNumber * 0.01f, 1.f);
 		addGameObjectToRoom(false, false, 0, &m_models->at("PalmTree.obj"), pos, scale);

@@ -218,9 +218,12 @@ void Application::applicationLoop()
 				m_viewLayerPtr->toggleDrawPrimitives(false);
 
 			GameStateChecks();
+
 			// Update Layers
 			fetchedState = m_gameStateStack.top()->handleInput(m_input.getKeyboard(), m_input.getMouse(), m_deltaTime);
-			if (fetchedState != states::NONE)
+			if (fetchedState == states::RELOAD_SHADERS)
+				m_viewLayerPtr->reloadShaders();
+			else if (fetchedState != states::NONE)
 				pushNewState(fetchedState);
 
 			if (!m_shouldQuit)

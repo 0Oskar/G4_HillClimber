@@ -1,9 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 
-
 <GameOptions>
-  <Width>1920</Width>
-  <Height>1000</Height>
+  <Width>1600</Width>
+  <Height>900</Height>
   <FOV>75</FOV>
   <mouseSensitivity>0.02</mouseSensitivity>
   <name>Player1</name>

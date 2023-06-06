@@ -35,8 +35,9 @@ void Model::loadOBJModel(bool async)
 	{
 		fileFound = false;
 		MaterialData mat;
+		mat.ambient = { .2f, .2f, .2f};
+		mat.globalAmbientContribution = 1.f;
 		mat.diffuse = { .9f, .9f, .9f, 1.f };
-		mat.ambient = { .2f, .2f, .2f, 1.f };
 		mat.specular = { 1.f, 1.f, 1.f, 1.f };
 		mat.shininess = 32;
 		
@@ -272,11 +273,10 @@ void Model::loadModel(ID3D11Device* device, ID3D11DeviceContext* dContext, const
 	m_loaded = true;
 }
 
-void Model::initCubeModel(ID3D11Device* device, ID3D11DeviceContext* dContext, MaterialData material, wstring texturePath)
+void Model::initQuadModel(ID3D11Device* device, ID3D11DeviceContext* dContext, MaterialData material, wstring texturePath, bool flipped)
 {
 	m_devicePtr = device;
 	m_deviceContextPtr = dContext;
-
 	vector<Vertex> vertices
 	{
 		Vertex(
@@ -300,6 +300,22 @@ void Model::initCubeModel(ID3D11Device* device, ID3D11DeviceContext* dContext, M
 			1.0f, 1.0f
 		)
 	};
+	if (flipped)
+	{
+		for (uint32_t i = 0; i < 4; i++)
+		{
+			XMVECTOR position = XMLoadFloat3(&vertices[i].position);
+			position = XMVectorScale(position, -1.f);
+			XMStoreFloat3(&vertices[i].position, position);
+
+			XMVECTOR normal = XMLoadFloat3(&vertices[i].normal);
+			normal = XMVectorScale(normal, -1.f);
+			XMStoreFloat3(&vertices[i].normal, normal);
+
+			vertices[i].textureCoord.x = 1.f - vertices[i].textureCoord.x;
+			vertices[i].textureCoord.y = 1.f - vertices[i].textureCoord.y;
+		}
+	}
 	m_vertexBuffer.initialize(m_devicePtr, vertices.data(), (int)vertices.size());
 
 	DWORD indicies[] =

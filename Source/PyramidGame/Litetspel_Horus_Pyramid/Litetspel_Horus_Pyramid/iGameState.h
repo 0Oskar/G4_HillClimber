@@ -12,6 +12,7 @@ enum class states
 	WON,
 	PAUSE,
 	POP,
+	RELOAD_SHADERS
 };
 
 class iGameState

@@ -41,7 +41,7 @@ public:
 	void loadModelAsync();
 	void loadModel(ID3D11Device* device, ID3D11DeviceContext* dContext, const char* modelFilePath, const MaterialData material, const wchar_t* texturePath = L"");
 
-	void initCubeModel(ID3D11Device* device, ID3D11DeviceContext* dContext, const MaterialData material, const std::wstring texturePath = L"");
+	void initQuadModel(ID3D11Device* device, ID3D11DeviceContext* dContext, const MaterialData material, const std::wstring texturePath = L"", bool flipped = false);
 	void initModelFromData(ID3D11Device* device, ID3D11DeviceContext* dContext, std::vector<Vertex> vertexVector, const MaterialData material, const std::wstring texturePath = L"");
 	void printBffModel(const ModelBFF model) const;
 	

@@ -13,7 +13,6 @@ namespace pMath
 
 		return radians;
 	}
-
     static float RayAABBIntersect(Vector3 rayOrigin, Vector3 rayDirection, Vector3 aabbMin, Vector3 aabbMax, float tmin, float tmax)
     {
         Vector3 invD = XMVectorReciprocal(rayDirection);

@@ -20,6 +20,7 @@ private:
 	// Device
 	Microsoft::WRL::ComPtr< ID3D11Device > m_device;
 	Microsoft::WRL::ComPtr< ID3D11DeviceContext > m_deviceContext;
+	Microsoft::WRL::ComPtr< ID3DUserDefinedAnnotation > m_annotation;
 
 	// Render Target
 	Microsoft::WRL::ComPtr< IDXGISwapChain > m_swapChain;
@@ -33,11 +34,15 @@ private:
 
 	D3D11_VIEWPORT m_viewport;
 
+	// NUll SRV
+	ID3D11ShaderResourceView* m_nullSRV = nullptr;
+
 	// SamplerState
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> m_samplerState;
 
 	// Shaders
 	Shaders m_shaders;
+	Shaders m_skyShaders;
 
 	// Constant Buffer
 	Microsoft::WRL::ComPtr< ID3D11Buffer > m_constantBuffer;
@@ -77,10 +82,14 @@ private:
 	ConstBuffer<PS_LIGHT_BUFFER> m_lightBuffer;
 	ConstBuffer<PS_FOG_BUFFER> m_fogBuffer;
 	ConstBuffer<PS_DIR_BUFFER> m_dirLightBuffer;
+	ConstBuffer<DirectX::XMMATRIX> m_cameraBuffer;
 	PS_DIR_BUFFER m_dirLight;
 
 	DirectX::XMMATRIX* m_viewMatrix;
 	DirectX::XMMATRIX* m_projectionMatrix;
+
+	// Sky
+	Model m_skyCube;
 
 	// Transition
 	Transition* m_transition;
@@ -100,6 +109,7 @@ private:
 	void initSamplerState();
 	void initShaders();
 	void initConstantBuffer();
+	void initSky();
 
 public:
 	ViewLayer();
@@ -127,6 +137,9 @@ public:
 	void setWvpCBufferFromState(std::vector< ConstBuffer<VS_CONSTANT_BUFFER> >* models);
 	// Initialization
 	void initialize(HWND window, GameOptions* options);
+
+	// Reload
+	void reloadShaders();
 
 	// Update
 	void update(float dt, XMFLOAT3 cameraPos);

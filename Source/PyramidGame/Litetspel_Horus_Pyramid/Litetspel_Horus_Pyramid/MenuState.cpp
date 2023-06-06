@@ -62,7 +62,7 @@ void MenuState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 	m_audioComponent->loadSound(m_menuSound);
 
 	m_camera.followMoveComp(m_cameraMovementComponentPtr);
-	m_camera.initialize(options.mouseSensitivity, options.fov, (float)options.width / (float)options.height, 0.1f, 1000.f);
+	m_camera.initialize(options.mouseSensitivity, options.fov, (float)options.width / (float)options.height, 0.1f, 10000.f);
 	
 	m_doneLoadingModelsPtr = doneLoadingModels;
 	loadModels();
@@ -163,15 +163,17 @@ states MenuState::handleInput(Keyboard* keyboard, Mouse* mousePtr, float dt)
 		KeyboardEvent keyboardEvent = keyboard->readKey();
 		if (keyboardEvent.getEvent() == Event::Pressed)
 		{
-			if (keyboardEvent.getKey() == (char)27) // ESC
+			if (keyboardEvent.getKey() == VK_ESCAPE)
 				changeStateTo = states::POP;
-			else if (keyboardEvent.getKey() == (char)13) // ENTER
+			else if (keyboardEvent.getKey() == VK_RETURN) // ENTER
 			{
 				if (*m_doneLoadingModelsPtr)
 				{
 					changeStateTo = states::GAME;
 				}
 			}
+			else if (keyboardEvent.getKey() == VK_OEM_PLUS) // '+' key
+				changeStateTo = states::RELOAD_SHADERS;
 		}
 	}
 
@@ -186,7 +188,8 @@ void MenuState::loadModels()
 {
 	// Material
 	MaterialData mat;
-	mat.ambient = { 0.2f, 0.2f, 0.2f, 1.f };
+	mat.ambient = { 0.2f, 0.2f, 0.2f};
+	mat.globalAmbientContribution = 1.f;
 
 	//-1 Error Model
 	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
@@ -194,24 +197,29 @@ void MenuState::loadModels()
 
 	//0 Desert Ground
 	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+	mat.globalAmbientContribution = 0.f;
 	addNewModelInit("desertGround.obj", mat, L"sandTexture.png");
 
 	//1 Pyramid
 	mat.diffuse = { 0.9f, 0.7f, 0.3f, 1.f };
-	mat.ambient = { 0.9f * 0.2f, 0.7f * 0.2f, 0.3f * 0.2f, 1.f };
+	mat.ambient = { 0.9f * 0.2f, 0.7f * 0.2f, 0.3f * 0.2f};
+	mat.globalAmbientContribution = 0.f;
 	addNewModelInit("BasePyramidNew.bff", mat, L"pyramidTexture.png");
 
 	//2 HookHead model
 	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
-	mat.ambient = { 0.2f, 0.2f, 0.2f, 1.f };
+	mat.ambient = { 0.2f, 0.2f, 0.2f};
+	mat.globalAmbientContribution = 1.f;
 	addNewModelInitAsync("Hook_Bird.bff", mat, L"ColorTexture.png");
 
 	//3 platform model
 	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+	mat.globalAmbientContribution = 0.3f;
 	addNewModelInit("platform.obj", mat, L"platformTextureCracks1.png");
 
 	//4 HookHand
 	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+	mat.globalAmbientContribution = 1.f;
 	addNewModelInitAsync("Gauntlet_Base.bff", mat, L"ColorTexture.png");
 
 	//5 Chain Link
@@ -236,10 +244,12 @@ void MenuState::loadModels()
 
 	//10 Portal
 	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+	mat.globalAmbientContribution = 0.5f;
 	addNewModelInit("PortalGate.bff", mat, L"ColorTexture.png");
 
 	//11. Brick_1 (Edvin)
 	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+	mat.globalAmbientContribution = 1.f;
 	addNewModelInitAsync("Brick_1.bff", mat, L"Hyroglajf_0.png");
 
 	//12. Brick_2 (Edvin)
@@ -272,10 +282,12 @@ void MenuState::loadModels()
 
 	//19. checkpoint
 	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+	mat.globalAmbientContribution = 0.5f;
 	addNewModelInit("checkpointPlatform.bff", mat, L"ColorTexture.png");
 
 	//20. Leaver Handle (Edvin)
 	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+	mat.globalAmbientContribution = 1.f;
 	addNewModelInitAsync("LeverHandle.bff", mat, L"ColorTexture.png");
 
 	//21. PuzzleRoom(Tristan)
@@ -284,10 +296,12 @@ void MenuState::loadModels()
 
 	//22. Pyramid Portal
 	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+	mat.globalAmbientContribution = 0.5f;
 	addNewModelInit("PuzzleRoomGateExtended.bff", mat, L"ColorTexture.png");
 
 	//23. Scorpion
 	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+	mat.globalAmbientContribution = 1.f;
 	addNewModelInitAsync("scorpionDone.obj", mat, L"ColorTexture.png");
 
 	//24. dartWallObj
@@ -391,11 +405,18 @@ void MenuState::loadModels()
 
 	//47. Pillars
 	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+	mat.globalAmbientContribution = 0.7f;
 	addNewModelInit("Entrence.obj", mat, L"ColorTexture.png");
 
 	//48. Clouds
 	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+	mat.globalAmbientContribution = 0.f;
 	addNewModelInit("Clouds.obj", mat, L"ColorTexture.png");
+	
+	//49. Clouds
+	mat.diffuse = { 0.5f, 0.5f, 0.5f, 0.5f };
+	mat.globalAmbientContribution = 1.f;
+	addNewModelInit("ddh.obj", mat, L"DefaultWhite.jpg");
 
 	// Start async loading threads
 	OutputDebugStringA("Threaded model loading begin\n");

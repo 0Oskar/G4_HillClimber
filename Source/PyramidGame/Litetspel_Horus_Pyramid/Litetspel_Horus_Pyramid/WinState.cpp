@@ -74,7 +74,7 @@ void WinState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext, 
 	m_audioComponent->loadSound(winSound);
 
 	m_camera.followMoveComp(m_cameraMovementComponentPtr);
-	m_camera.initialize(options.mouseSensitivity, options.fov, (float)options.width / (float)options.height, 0.1f, 1000.f);
+	m_camera.initialize(options.mouseSensitivity, options.fov, (float)options.width / (float)options.height, 0.1f, 10000.f);
 
 	readHighScoreFromFile();
 
@@ -113,10 +113,12 @@ states WinState::handleInput(Keyboard* keyboard, Mouse* mousePtr, float dt)
 		KeyboardEvent keyboardEvent = keyboard->readKey();
 		if (keyboardEvent.getEvent() == Event::Pressed)
 		{
-			if (keyboardEvent.getKey() == (char)27)
+			if (keyboardEvent.getKey() == VK_ESCAPE)
 				changeStateTo = states::POP;
-			else if (keyboardEvent.getKey() == (char)13)
+			else if (keyboardEvent.getKey() == VK_RETURN) // ENTER
 				changeStateTo = states::GAME;
+			else if (keyboardEvent.getKey() == VK_OEM_PLUS) // '+' key
+				changeStateTo = states::RELOAD_SHADERS;
 		}
 	}
 
