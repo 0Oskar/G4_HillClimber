@@ -22,7 +22,6 @@ VS_OUT main(VS_IN input)
     output.WPosition = input.Position.xyz;
     output.HPosition = mul(worldViewProjMatrix, float4(output.WPosition, 0.f));
     output.Position = output.HPosition.xyww;
-    output.WPosition *= -1.f;
 
     return output;
 }

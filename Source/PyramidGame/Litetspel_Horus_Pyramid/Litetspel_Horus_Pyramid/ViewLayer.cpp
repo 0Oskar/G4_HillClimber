@@ -234,7 +234,6 @@ void ViewLayer::setDirLightFromActiveRoom(PS_DIR_BUFFER dirLight)
 	m_dirLight = dirLight;
 	m_dirLightBuffer.m_data = m_dirLight;
 	m_dirLightBuffer.upd();
-	
 }
 
 void ViewLayer::setFogDataFromActiveRoom(PS_FOG_BUFFER fogData)
@@ -289,7 +288,7 @@ void ViewLayer::initSky()
 	mat.diffuse = { 0.9f, 0.9f, 0.9f, 1.0f };
 	mat.specular = {1.0f, 1.0f, 1.0f, 1.0f };
 	mat.shininess = 32;
-	m_skyCube.loadModel(m_device.Get(), m_deviceContext.Get(), "cube.obj", mat, L"");
+	m_skyCube.loadModel(m_device.Get(), m_deviceContext.Get(), "cube2.obj", mat, L"");
 }
 
 void ViewLayer::initSamplerState()
@@ -583,6 +582,7 @@ void ViewLayer::render(iGameState* gameState)
 	m_cameraBuffer.m_data = XMMatrixScaling(-1.f, -1.f, -1.f) * (*m_viewMatrix) * (*m_projectionMatrix);
 	m_cameraBuffer.upd();
 	m_deviceContext->VSSetConstantBuffers(0, 1, m_cameraBuffer.GetAdressOf());
+	m_deviceContext->PSSetConstantBuffers(2, 1, m_dirLightBuffer.GetAdressOf());
 
 	m_skyCube.draw();
 	m_annotation->EndEvent();

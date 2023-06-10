@@ -43,7 +43,6 @@ private:
 	std::vector<GameObject*>* m_chainGObjects;
 	bool m_gameOver;
 	
-
 	//UI Stuff
 	ID3D11ShaderResourceView* m_crossHairSRV;
 	DirectX::XMFLOAT2 m_crosshairPosition;
