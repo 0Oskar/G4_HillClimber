@@ -44,6 +44,11 @@ public:
 		
 	}
 
+	MaterialData* getMaterial()
+	{
+		return &m_materialBuffer.m_data;
+	}
+
 	void setMaterial(MaterialData mat)
 	{
 		m_materialBuffer.upd(&mat);

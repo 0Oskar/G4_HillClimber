@@ -165,7 +165,7 @@ float4 main(PS_IN input) : SV_TARGET
         float3 skyFogColor = (skyColor * skyBlend) + (groundColor * groundBlend) + (horizonColor * horizonBlend);
         
         float fogLerp = saturate((distance - fogStart) / fogRange);
-        fColor = float4(lerp(fColor.xyz, skyFogColor, fogLerp), 1);
+        fColor = float4(lerp(fColor.xyz, skyFogColor * diffuseM.a, fogLerp), 1);
     }
-    return float4(fColor.xyz, 1.0);
+    return float4(fColor.xyz, diffuseM.a);
 }

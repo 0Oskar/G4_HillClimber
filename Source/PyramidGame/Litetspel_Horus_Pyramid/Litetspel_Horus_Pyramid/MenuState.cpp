@@ -409,12 +409,12 @@ void MenuState::loadModels()
 	addNewModelInit("Entrence.obj", mat, L"ColorTexture.png");
 
 	//48. Clouds
-	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+	mat.diffuse = { 1.f, 1.f, 1.f, 0.6f };
 	mat.globalAmbientContribution = 0.f;
 	addNewModelInit("Clouds.obj", mat, L"ColorTexture.png");
 	
 	//49. Clouds
-	mat.diffuse = { 0.5f, 0.5f, 0.5f, 0.5f };
+	mat.diffuse = { 0.5f, 0.5f, 0.5f, 1.f };
 	mat.globalAmbientContribution = 1.f;
 	addNewModelInit("ddh.obj", mat, L"DefaultWhite.jpg");
 

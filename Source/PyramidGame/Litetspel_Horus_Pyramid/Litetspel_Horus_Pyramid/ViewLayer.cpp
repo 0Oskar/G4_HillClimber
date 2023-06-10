@@ -512,7 +512,7 @@ void ViewLayer::render(iGameState* gameState)
 	// Set Render Target
 	m_annotation->BeginEvent(L"Draw Meshes");
 	m_deviceContext->OMSetRenderTargets(1, m_outputRTV.GetAddressOf(), m_depthStencilView.Get());
-	//m_deviceContext->OMSetBlendState(m_states->Opaque(), nullptr, 0xFFFFFFFF);
+	m_deviceContext->OMSetBlendState(m_states->Opaque(), nullptr, 0xFFFFFFFF);
 	m_deviceContext->OMSetDepthStencilState(m_states->DepthDefault(), 0);
 	m_deviceContext->RSSetState(m_states->CullClockwise());
 	m_deviceContext->RSSetViewports(1, &m_viewport);
@@ -532,6 +532,7 @@ void ViewLayer::render(iGameState* gameState)
 	m_deviceContext->PSSetShaderResources(1, 1, m_shadowInstance.getShadowMapSRVConstPtr());
 
 	// Draw
+	std::vector<GameObject*> transparentObjects;
 	DirectX::XMMATRIX viewPMtrx = (*m_viewMatrix) * (*m_projectionMatrix);
 	for (size_t i = 0; i < m_gameObjectsFromState->size(); i++)
 	{
@@ -541,6 +542,12 @@ void ViewLayer::render(iGameState* gameState)
 		{
 			Model* model = gObject->getModelPtr();
 			if (!model->is_loaded()) { continue; }
+
+			if (model->m_material.getMaterial()->diffuse.w < 1.f)
+			{
+				transparentObjects.push_back(gObject);
+				continue;
+			}
 
 			int wvpIndex = gObject->getWvpCBufferIndex();
 			// Set Constant buffer
@@ -561,6 +568,12 @@ void ViewLayer::render(iGameState* gameState)
 			{
 				Model* model = gObject->getModelPtr();
 				if (!model->is_loaded()) { continue; }
+
+				if (model->m_material.getMaterial()->diffuse.w < 1.f)
+				{
+					transparentObjects.push_back(gObject);
+					continue;
+				}
 
 				int wvpIndex = gObject->getWvpCBufferIndex();
 				// Set Constant buffer
@@ -585,6 +598,34 @@ void ViewLayer::render(iGameState* gameState)
 	m_deviceContext->PSSetConstantBuffers(2, 1, m_dirLightBuffer.GetAdressOf());
 
 	m_skyCube.draw();
+	m_annotation->EndEvent();
+
+	m_annotation->BeginEvent(L"Transparent Meshes");
+	m_deviceContext->OMSetRenderTargets(1, m_outputRTV.GetAddressOf(), m_depthStencilView.Get());
+	m_deviceContext->OMSetBlendState(m_states->AlphaBlend(), nullptr, 0xFFFFFFFF);
+	m_deviceContext->OMSetDepthStencilState(m_states->DepthDefault(), 0);
+	m_deviceContext->RSSetState(m_states->CullClockwise());
+	m_deviceContext->RSSetViewports(1, &m_viewport);
+
+	m_shaders.setShaders();
+	m_deviceContext->PSSetShaderResources(1, 1, m_shadowInstance.getShadowMapSRVConstPtr());
+
+	m_deviceContext->PSSetConstantBuffers(1, 1, m_lightBuffer.GetAdressOf());
+	m_deviceContext->PSSetConstantBuffers(2, 1, m_dirLightBuffer.GetAdressOf());
+	m_deviceContext->PSSetConstantBuffers(3, 1, m_fogBuffer.GetAdressOf());
+
+	for (size_t i = 0; i < transparentObjects.size(); i++)
+	{
+		GameObject* gObject = transparentObjects[i];
+		Model* model = gObject->getModelPtr();
+		int wvpIndex = gObject->getWvpCBufferIndex();
+
+		// Set Constant buffer
+		m_deviceContext->VSSetConstantBuffers(0, 1, m_wvpCBufferFromState->at(wvpIndex).GetAdressOf());
+		// Draw Model
+		model->m_material.setTexture(gObject->getTexturePath().c_str());
+		model->draw();
+	}
 	m_annotation->EndEvent();
 
 	// Draw Transition Quad
