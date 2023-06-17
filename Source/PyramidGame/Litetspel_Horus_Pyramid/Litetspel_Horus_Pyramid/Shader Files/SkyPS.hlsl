@@ -7,8 +7,8 @@ struct PS_IN
 
 cbuffer directionalLight : register(b2)
 {
-    float4 dirLightDirection;
-    float4 dirLightColor;
+    float3 dirLightDirection;
+    float3 dirLightColor;
 };
 
 // Functions
@@ -41,7 +41,7 @@ float4 main(PS_IN input) : SV_TARGET
     const float sunRadiusA = 0.02f;
     const float sunRadiusB = 0.035f;
     
-    float angleToSun = saturate(dot(normalize(input.WPosition), -normalize(dirLightDirection.xyz)));
+    float angleToSun = saturate(dot(normalize(input.WPosition), -normalize(dirLightDirection)));
     float circleRadiusMin = min(sunRadiusA, sunRadiusB);
     circleRadiusMin *= circleRadiusMin;
     float circleRadiusMax = max(sunRadiusA, sunRadiusB);
@@ -51,7 +51,7 @@ float4 main(PS_IN input) : SV_TARGET
     float circleResult = pow(saturate(remap(angleToSun, circleRadius, float2(1.f, 0.f))), 1.f);
     
     const float sunFinalStrength = 1.45f;
-    float3 sunFinalColor = dirLightColor.rgb * circleResult;
+    float3 sunFinalColor = dirLightColor * circleResult;
     
     finalColor.rgb = (sunFinalColor * sunFinalStrength) + (finalColor.rgb * (1.f - length(sunFinalColor)));
     

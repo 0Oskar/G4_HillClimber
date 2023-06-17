@@ -7,16 +7,6 @@ struct PS_IN
     float4 positionShadow : POSITION1;
 };
 
-struct PointLight
-{
-    float4 plAmbient;
-    float4 plDiffuse;
-    float3 plPosition;
-    float plRange;
-    float3 att;
-    float padding;
-};
-
 cbuffer materialBuffer : register(b0)
 {
     float3 ambientM;
@@ -26,29 +16,25 @@ cbuffer materialBuffer : register(b0)
     float shininessM;
 };
 
-cbuffer lightBuffer : register(b1)
+struct PointLight
 {
-    float3 directionalAmbientColor;
-    float directionalAmbientStrength;
-    PointLight pointLights[5];
+    float3 position;
+    float3 diffuse;
+    float range;
+};
+
+cbuffer PerFrameBuffer : register(b1)
+{
+    PointLight pointLights[20];
     int nrOfPointLights;
-    float3 padd;
-};
-
-cbuffer directionalLight : register(b2)
-{
-    float4 dirLightDirection;
-    float4 dirLightColor;
-};
-
-cbuffer fog : register(b3)
-{
+    float3 skyLightDirection;
+    float3 skyLightColor;
+    float skyLightIntensity;
     float3 cameraPos;
     float fogStart;
-    float3 fogColor;
-    float fogRange;
+    float fogEnd;
+    float3 ambientColor;
 };
-
 
 Texture2D diffuseTexture : TEXTURE : register(t0);
 Texture2D shadowMap : TEXTURE : register(t1);
@@ -56,29 +42,36 @@ Texture2D shadowMap : TEXTURE : register(t1);
 SamplerState samplerState : SAMPLER : register(s0);
 SamplerComparisonState shadowSampler : SAMPLER : register(s1);
 
-float3 pointLightCalculation(float3 matAmbient, float4 matDiffuse, float3 lightAmbient, float4 lightDiffuse, float3 lightPos, float lightRange, float3 pposition, float3 pnormal, float3 attenuation)
+float3 pointLightCalculation(float3 ambient, float3 diffuse, float3 position, float3 normal, PointLight light)
 {
     float3 calcAmbient = float3(0, 0, 0);
     float3 calcDiffuse = float3(0, 0, 0);
     float diffuseValue = 0;
     float3 lightVec = float3(0, 0, 0);
     
-    lightVec = lightPos - pposition;
+    lightVec = light.position - position;
     float lightVecDist = length(lightVec);
     
-    if(lightVecDist <= lightRange)
+    if (lightVecDist <= light.range)
     {
+        float lightDistSq = dot(lightVec, lightVec);
+        float invLightDist = rsqrt(lightDistSq);
+                    
+        float radiusSq = light.range * light.range;
+        float distanceFalloff = radiusSq * (invLightDist * invLightDist);
+        float attenuation = max(0, distanceFalloff - rsqrt(distanceFalloff));
+    
         lightVec = lightVec / lightVecDist;
-        calcAmbient = matAmbient * lightAmbient;
-        diffuseValue = dot(lightVec, pnormal);
+        calcAmbient = ambient * light.diffuse;
+        diffuseValue = dot(lightVec, normal);
         
-        if(diffuseValue > 0.0f)
+        if (diffuseValue > 0.0f)
         {
-            calcDiffuse = diffuseValue * matDiffuse.xyz * lightDiffuse.xyz;
+            calcDiffuse = diffuseValue * diffuse * light.diffuse;
         }
         
-        float atten = 1.0f / dot(attenuation, float3(1.0, lightVecDist, lightVecDist * lightVecDist));
-        calcDiffuse *= atten;
+        //float atten = 1.0f / dot(attenuation, float3(1.0, lightVecDist, lightVecDist * lightVecDist));
+        calcDiffuse *= attenuation;
         
         return saturate(calcAmbient + calcDiffuse);
     }
@@ -88,38 +81,28 @@ float3 pointLightCalculation(float3 matAmbient, float4 matDiffuse, float3 lightA
 
 float calculateShadowFactor(float4 shadowPosition)
 {
-    // Shadow Mapping
     float2 shadowUV = shadowPosition.xy / shadowPosition.w * 0.5f + 0.5f;
     shadowUV.y = 1.0f - shadowUV.y;
-
     float shadowDepth = shadowPosition.z / shadowPosition.w;
 
     float shadowFactor = 0;
-    //[flatten]
-    //if (shadowDepth < 0.f || shadowDepth > 1.f) // if the pixels depth is beyond the shadow map, skip shadow sampling(Pixel is lit by light)
-    //{
-    //    shadowFactor = 1.f;
-    //}
-    //else
+    const int sampleRange = 1;
+    [unroll]
+    for (int x = -sampleRange; x <= sampleRange; x++)
     {
-        const int sampleRange = 1;
         [unroll]
-        for (int x = -sampleRange; x <= sampleRange; x++)
+        for (int y = -sampleRange; y <= sampleRange; y++)
         {
-            [unroll]
-            for (int y = -sampleRange; y <= sampleRange; y++)
-            {
-                shadowFactor += shadowMap.SampleCmpLevelZero(shadowSampler, shadowUV, shadowDepth, int2(x, y));
-            }
+            shadowFactor += shadowMap.SampleCmpLevelZero(shadowSampler, shadowUV, shadowDepth, int2(x, y));
         }
-        shadowFactor /= ((sampleRange * 2 + 1) * (sampleRange * 2 + 1));
     }
+    shadowFactor /= ((sampleRange * 2 + 1) * (sampleRange * 2 + 1));
     return shadowFactor;
 }
 
 float4 main(PS_IN input) : SV_TARGET
 {
-    float4 diffuse = diffuseM * diffuseTexture.Sample(samplerState, input.texcoord);
+    float3 diffuse = diffuseM.rgb * diffuseTexture.Sample(samplerState, input.texcoord).rgb;
     
     // Global Ambient
     const float3 skyColor = float3(0.25, 0.55, 0.9);
@@ -134,25 +117,24 @@ float4 main(PS_IN input) : SV_TARGET
     groundContribution = saturate(groundContribution);
     
     float3 skyAmbientColor = (skyColor * skyContribution) + (groundColor * groundContribution);
-    skyAmbientColor *= diffuse.rgb * globalAmbientContributionM;
+    skyAmbientColor *= diffuse * globalAmbientContributionM;
     
     // Directional Light
-    float3 ambientDirectionalLight = directionalAmbientColor * directionalAmbientStrength;
-    float diffBright = saturate(dot(input.normal, dirLightDirection.xyz));
-    float3 directionalLightDiffuse = ambientDirectionalLight + ((dirLightColor.xyz * diffBright) * calculateShadowFactor(input.positionShadow));
+    float diffBright = saturate(dot(input.normal, skyLightDirection));
+    float3 directionalLightDiffuse = ambientColor + ((skyLightColor * diffBright * skyLightIntensity) * calculateShadowFactor(input.positionShadow));
     
-    float4 fColor = float4((diffuse.xyz * directionalLightDiffuse.xyz) + skyAmbientColor, 1.0);
+    float4 fColor = float4((diffuse * directionalLightDiffuse) + skyAmbientColor, 1.0);
     
     float3 wPosToCamera = cameraPos - input.positionW;
     float distance = length(wPosToCamera);
     wPosToCamera = wPosToCamera / distance; //Normalize
     for (int i = 0; i < nrOfPointLights; i++)
     {
-        fColor = float4(saturate(fColor.rgb + pointLightCalculation(ambientM, diffuseM, pointLights[i].plAmbient.rgb, pointLights[i].plDiffuse, pointLights[i].plPosition, pointLights[i].plRange, input.positionW, input.normal, pointLights[i].att)), 1.f);
+        fColor = float4(saturate(fColor.rgb + pointLightCalculation(ambientM, diffuse, input.positionW, input.normal, pointLights[i])), 1.f);
     }
     
     // Fog
-    if (fogRange != 0)
+    if (fogEnd != 0)
     {
         float3 direction = normalize(-wPosToCamera);
         float altitude = direction.y;
@@ -164,7 +146,7 @@ float4 main(PS_IN input) : SV_TARGET
     
         float3 skyFogColor = (skyColor * skyBlend) + (groundColor * groundBlend) + (horizonColor * horizonBlend);
         
-        float fogLerp = saturate((distance - fogStart) / fogRange);
+        float fogLerp = saturate((distance - fogStart) / fogEnd);
         fColor = float4(lerp(fColor.xyz, skyFogColor * diffuseM.a, fogLerp), 1);
     }
     return float4(fColor.xyz, diffuseM.a);

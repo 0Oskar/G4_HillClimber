@@ -13,6 +13,36 @@
 class ViewLayer
 {
 private:
+	struct RenderTexture
+	{
+		ID3D11Texture2D* rtt;
+		ID3D11RenderTargetView* rtv;
+		ID3D11ShaderResourceView* srv;
+		ID3D11UnorderedAccessView* uav;
+		DXGI_FORMAT format;
+
+		RenderTexture()
+		{
+			rtt = nullptr;
+			rtv = nullptr;
+			srv = nullptr;
+			uav = nullptr;
+			format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		}
+
+		~RenderTexture()
+		{
+			if (rtt)
+				rtt->Release();
+			if (rtv)
+				rtv->Release();
+			if (srv)
+				srv->Release();
+			if (uav)
+				uav->Release();
+		}
+	};
+
 	// Window
 	HWND m_window;
 	GameOptions* m_options;
@@ -25,7 +55,13 @@ private:
 	// Render Target
 	Microsoft::WRL::ComPtr< IDXGISwapChain > m_swapChain;
 	Microsoft::WRL::ComPtr< ID3D11RenderTargetView > m_outputRTV;
-	float clearColor[4] = { 0.5f, 0.5f, 0.5f, 1.f };
+	float m_clearColor[4] = { 0.5f, 0.5f, 0.5f, 1.f };
+	float m_clearColorBlack[4] = { 0.f, 0.f, 0.f, 1.f };
+	float m_clearColorWhite[4] = { 1.f, 1.f, 1.f, 1.f };
+
+	enum GBufferType { DIFFUSE_GB, NORMAL_SHADOWMASK_GB, SPECULAR_SHININESS_GB, AMBIENT_GLOBALAMBIENTCONTR_GB, DEPTH_GB, GB_NUM };
+	
+	RenderTexture m_gBuffer[GBufferType::GB_NUM];
 
 	// Depth Buffer
 	Microsoft::WRL::ComPtr< ID3D11DepthStencilView > m_depthStencilView;
@@ -34,14 +70,19 @@ private:
 
 	D3D11_VIEWPORT m_viewport;
 
-	// NUll SRV
+	// NUll Views
 	ID3D11ShaderResourceView* m_nullSRV = nullptr;
+	ID3D11ShaderResourceView* m_nullSRVs[GB_NUM] = { m_nullSRV, m_nullSRV, m_nullSRV, m_nullSRV, m_nullSRV };
+	ID3D11RenderTargetView* m_nullRTV = nullptr;
+	ID3D11RenderTargetView* m_nullRTVs[GB_NUM] = { m_nullRTV, m_nullRTV, m_nullRTV, m_nullRTV, m_nullRTV };
 
 	// SamplerState
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> m_samplerState;
 
 	// Shaders
-	Shaders m_shaders;
+	Shaders m_GBufferShaders;
+	Shaders m_lightingShaders;
+	Shaders m_forwardLightingShaders;
 	Shaders m_skyShaders;
 
 	// Constant Buffer
@@ -52,7 +93,6 @@ private:
 
 	// Shadow Mapping
 	ShadowMapInstance m_shadowInstance;
-	bool drawShadowmapDebug = false;
 	
 	// SpriteBatch
 	std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
@@ -60,14 +100,12 @@ private:
 	std::unique_ptr<DirectX::SpriteFont> m_spriteFont16;
 	std::unique_ptr<DirectX::SpriteFont> m_spriteFont32;
 
-
 	// Primitive Batch
 	std::unique_ptr< DirectX::CommonStates > m_states;
 	std::unique_ptr< DirectX::BasicEffect > m_effect;
 	std::unique_ptr< DirectX::PrimitiveBatch<DirectX::VertexPositionColor> > m_batch;
 	Microsoft::WRL::ComPtr< ID3D11InputLayout > m_batchInputLayout;
-	bool m_drawPrimitives;
-
+	
 	// Objects from state
 	std::vector<GameObject*>* m_gameObjectsFromState;
 	std::vector<GameObject*>* m_gameObjectsFromActiveRoom;
@@ -75,16 +113,16 @@ private:
 	std::vector<BoundingBox>* m_triggerBoxes;
 	std::vector<BoundingOrientedBox>* m_orientedBoundingBoxesFromActiveRoom;
 	std::unordered_map<std::string, Model>* m_modelsFromState;
-	std::vector< ConstBuffer<VS_CONSTANT_BUFFER> >* m_wvpCBufferFromState;
 	DirectX::BoundingOrientedBox m_pyramidOBB;
-	constantBufferData* m_constantBufferDataFromStatePtr;
 
-	ConstBuffer<PS_LIGHT_BUFFER> m_lightBuffer;
-	ConstBuffer<PS_FOG_BUFFER> m_fogBuffer;
-	ConstBuffer<PS_DIR_BUFFER> m_dirLightBuffer;
-	ConstBuffer<DirectX::XMMATRIX> m_cameraBuffer;
-	PS_DIR_BUFFER m_dirLight;
+	ConstBuffer<PS_PER_FRAME_BUFFER> m_perFrameBuffer;
+	PS_PER_FRAME_BUFFER* m_constantBufferDataFromStatePtr;
 
+	std::vector< ConstBuffer<VS_WVPW_CONSTANT_BUFFER> >* m_wvpCBufferFromState;
+	ConstBuffer<VS_VP_MATRICES_CBUFFER> m_inverseMatricesBuffer;
+	ConstBuffer<DirectX::XMMATRIX> m_skyboxCameraBuffer;
+	ConstBuffer<DIR_LIGHT_DATA> m_skyboxSunLightBuffer;
+	
 	DirectX::XMMATRIX* m_viewMatrix;
 	DirectX::XMMATRIX* m_projectionMatrix;
 
@@ -102,8 +140,15 @@ private:
 	// Status Text
 	StatusTextHandler* m_statusTextHandler;
 
+	// Debug Drawing
+	bool m_drawPhysicsPrimitives = false;
+	bool m_drawLightsDebug = false;
+	bool m_drawShadowmapDebug = false;
+	bool m_drawGBufferDebug = false;
+
 	// Initialization Functions
 	void initDeviceAndSwapChain();
+	void initRenderTarget(RenderTexture& rtv, UINT width, UINT height, DXGI_FORMAT format, UINT mipLevels = 1);
 	void initViewPort();
 	void initDepthStencilBuffer();
 	void initSamplerState();
@@ -130,11 +175,9 @@ public:
 	void setOrientedBoundingBoxesFromActiveRoom(std::vector<BoundingOrientedBox>* bbFromRoom);
 	void setTriggerBoxFromActiveRoom(std::vector<BoundingBox>* bbFromRoom);
 	void setModelsFromState(std::unordered_map<std::string, Model>* models);
-	void setDirLightFromActiveRoom(PS_DIR_BUFFER dirLight);
-	void setFogDataFromActiveRoom(PS_FOG_BUFFER fogData);
-	void setConstantBuffersFromGameState(constantBufferData* cbDataFromState);
-	void setLightDataFromActiveRoom(PS_LIGHT_BUFFER lightData);
-	void setWvpCBufferFromState(std::vector< ConstBuffer<VS_CONSTANT_BUFFER> >* models);
+	void setPerFrameDataFromState(PS_PER_FRAME_BUFFER* cbDataFromState);
+	void setWvpCBufferFromState(std::vector< ConstBuffer<VS_WVPW_CONSTANT_BUFFER> >* models);
+
 	// Initialization
 	void initialize(HWND window, GameOptions* options);
 
@@ -146,5 +189,13 @@ public:
 
 	// Render
 	void render(iGameState* gameState);
-	void toggleDrawPrimitives(bool toggle);
+
+	// Debug
+	bool getDrawPhysicsPrimitives() const;
+	bool getDrawLightsDebug() const;
+	bool getDrawGBufferDebug() const;
+
+	void setDrawPhysicsPrimitives(bool enabled);
+	void setDrawLightsDebug(bool enabled);
+	void setDrawGBufferDebug(bool enabled);
 };

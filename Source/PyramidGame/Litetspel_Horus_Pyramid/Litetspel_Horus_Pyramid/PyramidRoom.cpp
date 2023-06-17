@@ -5,11 +5,9 @@ PyramidRoom::PyramidRoom()
 {
 	Room::initParent();
 	completedRooms = 0;
-	m_fogData.fogEnd = 600.0f;
-	m_fogData.fogStart = 300.0f;
-	m_fogData.fogColor = { 0.5, 0.5f, 0.5f };
-	//m_fogData.fogColor = { 0.79f, 0.67f, 0.42f };
-
+	m_perFrameData.fogStart = 250.0f;
+	m_perFrameData.fogEnd = 600.0f;
+	m_perFrameData.ambientColor = { 0.7f, 0.7f, 0.7f };
 }
 PyramidRoom::~PyramidRoom()
 {
@@ -86,50 +84,92 @@ void PyramidRoom::init(DirectX::BoundingOrientedBox* pyramidBB)
 
 void PyramidRoom::portals()
 {
+	m_lights.clear();
 	DirectX::XMVECTOR NormalScale = DirectX::XMVectorSet(1, 1, 1, 1);
 	DirectX::XMVECTOR vec = DirectX::XMVectorSet(0.f, -10.f, 0.f, 1.f);
 	DirectX::XMVECTOR vec2 = DirectX::XMVectorSet(0.f, -10.f, 0.f, 1.f);
 	DirectX::XMVECTOR rotation = DirectX::XMVectorSet(0.f, 0.f, 0.f, 1.f);
 
+	PointLight light;
+	light.diffuse = { 0.f, 0.5f, 0.f };
+	light.range = 4.5f;
+	XMVECTOR lightOffset = XMVectorSet(0.f, 4.5f, -2.f, 1.f);
+
 	// Portals Level 1
 	vec = DirectX::XMVectorSet(-160.3f, 105.f, 124.f, 1.f);
+	XMStoreFloat3(&light.position, vec + lightOffset);
+	m_lights.push_back(light);
+	int lightID = createLight(light);
 	addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), &m_models->at("PuzzleRoomGateExtended.bff"), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 1);
 
 	vec = DirectX::XMVectorSet(208.3f, 105.f, 124.f, 1.f);
+	XMStoreFloat3(&light.position, vec + lightOffset);
+	m_lights.push_back(light);
+	lightID = createLight(light);
 	addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), &m_models->at("PuzzleRoomGateExtended.bff"), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 1);
 	
 	// Portals Level 2
-	vec = DirectX::XMVectorSet(-220.7f, 190.f, 210.f, 1.f); 
+	vec = DirectX::XMVectorSet(-220.7f, 190.f, 210.f, 1.f);
+	XMStoreFloat3(&light.position, vec + lightOffset);
+	m_lights.push_back(light);
+	lightID = createLight(light);
 	addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), &m_models->at("PuzzleRoomGateExtended.bff"), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 2);
 
 	vec = DirectX::XMVectorSet(-30.7f, 190.f, 210.f, 1.f);
+	XMStoreFloat3(&light.position, vec + lightOffset);
+	m_lights.push_back(light);
+	lightID = createLight(light);
 	addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), &m_models->at("PuzzleRoomGateExtended.bff"), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 2);
 
 	vec = DirectX::XMVectorSet(175.f, 190.f, 210.f, 1.f);
+	XMStoreFloat3(&light.position, vec + lightOffset);
+	m_lights.push_back(light);
+	lightID = createLight(light);
 	addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), &m_models->at("PuzzleRoomGateExtended.bff"), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 2);
 
 	vec = DirectX::XMVectorSet(360.f, 190.f, 210.f, 1.f);
+	XMStoreFloat3(&light.position, vec + lightOffset);
+	m_lights.push_back(light);
+	lightID = createLight(light);
 	addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), &m_models->at("PuzzleRoomGateExtended.bff"), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 2);
 	
 	// Portals Level 3
 	vec = DirectX::XMVectorSet(-310.f, 265.f, 289.f, 1.f);
+	XMStoreFloat3(&light.position, vec + lightOffset);
+	m_lights.push_back(light);
+	lightID = createLight(light);
 	addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), &m_models->at("PuzzleRoomGateExtended.bff"), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 3);
 
 	vec = DirectX::XMVectorSet(-100.f, 265.f, 289.f, 1.f);
+	XMStoreFloat3(&light.position, vec + lightOffset);
+	m_lights.push_back(light);
+	lightID = createLight(light);
 	addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), &m_models->at("PuzzleRoomGateExtended.bff"), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 3); 
 
 	vec = DirectX::XMVectorSet(30.f, 265.f, 289.f, 1.f);
+	XMStoreFloat3(&light.position, vec + lightOffset);
+	m_lights.push_back(light);
+	lightID = createLight(light);
 	addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), &m_models->at("PuzzleRoomGateExtended.bff"), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 3); 
 
 	vec = DirectX::XMVectorSet(330.f, 265.f, 289.f, 1.f);
+	XMStoreFloat3(&light.position, vec + lightOffset);
+	m_lights.push_back(light);
+	lightID = createLight(light);
 	addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), &m_models->at("PuzzleRoomGateExtended.bff"), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 3);
 
 	// Portals Level 4
 	vec = DirectX::XMVectorSet(0.7f, 430.f, 458.f, 1.f);
+	XMStoreFloat3(&light.position, vec + lightOffset);
+	m_lights.push_back(light);
+	lightID = createLight(light);
 	addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), &m_models->at("PuzzleRoomGateExtended.bff"), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 4);
 
 	// Portals Level 5 finalRoom
-	vec = DirectX::XMVectorSet(0.7f, 580.f, 610.f, 1.f); 
+	vec = DirectX::XMVectorSet(0.7f, 580.f, 610.f, 1.f);
+	XMStoreFloat3(&light.position, vec + lightOffset);
+	m_lights.push_back(light);
+	lightID = createLight(light);
 	addPortalToRoom(XMVectorSet(0.f, 0.f, 0.f, 1.f), &m_models->at("PuzzleRoomGateExtended.bff"), vec, NormalScale, DirectX::XMFLOAT3(8.f, 3.f, 0.6f), 5);
 }
 
@@ -183,6 +223,11 @@ void PyramidRoom::onEntrance()
 				platformPtr->pushToLocation(platformPtr->getPosition() + platformPush);
 			}
 		}
+	}
+
+	for (size_t i = 0; i < m_lights.size(); i++)
+	{
+		changeLight((int)i, m_lights[i]);
 	}
 }
 

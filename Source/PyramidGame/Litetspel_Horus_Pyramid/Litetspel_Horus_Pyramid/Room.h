@@ -15,15 +15,13 @@ protected:
 	ID3D11DeviceContext* m_dContext;
 
 	std::vector<GameObject*> m_gameObjects;
-	std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* m_wvpCBuffers;
+	std::vector<ConstBuffer<VS_WVPW_CONSTANT_BUFFER>>* m_wvpCBuffers;
 	std::unordered_map<std::string, Model>* m_models;
 	std::vector<DirectX::BoundingBox> m_boundingBoxes;
 	std::vector<DirectX::BoundingOrientedBox> m_orientedBoundingBoxes;
 	std::vector<DirectX::BoundingBox> m_triggerBoundingBoxes;
 	std::vector<Room*> m_rooms;
-	PS_DIR_BUFFER m_dirLight;
-	PS_FOG_BUFFER m_fogData;
-	PS_LIGHT_BUFFER m_lightData;
+	PS_PER_FRAME_BUFFER m_perFrameData;
 	ResourceHandler* resourceHandler;
 	Player* m_player;
 	std::shared_ptr<DirectX::AudioEngine> m_audioEngine;
@@ -42,7 +40,7 @@ protected:
 public:
 	Room();
 	~Room();
-	virtual void initialize(ID3D11Device* device, ID3D11DeviceContext* dContext, std::unordered_map<std::string, Model>* models, std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* cBuffer, Player* player, XMVECTOR position, std::shared_ptr<DirectX::AudioEngine> audioEngine, Timer* gameTimer, GameOptions option);
+	virtual void initialize(ID3D11Device* device, ID3D11DeviceContext* dContext, std::unordered_map<std::string, Model>* models, std::vector<ConstBuffer<VS_WVPW_CONSTANT_BUFFER>>* cBuffer, Player* player, XMVECTOR position, std::shared_ptr<DirectX::AudioEngine> audioEngine, Timer* gameTimer, GameOptions option);
 	void initParent();
 	virtual void update(const float dt, Camera* camera, Room*& activeRoom, bool& activeRoomChanged) = 0;
 	virtual void init() {};
@@ -59,9 +57,10 @@ public:
 	void addRooms(std::vector<Room*>* rooms);
 	void updatePlayerBB();
 	
-	int createLight(const XMFLOAT3 position, const float range, const XMFLOAT4 ambientColor, const XMFLOAT4 diffuseColor, const XMFLOAT3 atteniation = { 1, 0, 0 });
+	int createLight(const XMFLOAT3 position, const float range, const XMFLOAT3 diffuseColor);
 	int createLight(const PointLight pLight);
-	void changeLight(const int index, const XMFLOAT3 position, const float range, const XMFLOAT4 ambientColor, const XMFLOAT4 diffuseColor, const XMFLOAT3 atteniation = { 1, 0, 0 });
+	void changeLight(const int index, const XMFLOAT3 position, const float range, const XMFLOAT3 diffuseColor);
+	void changeLight(const int index, PointLight light);
 	PointLight* getLight(const int index);
 	std::vector<GameObject*>* getGameObjectsPtr();
 	std::vector<BoundingBox>* getBoundingBoxPtr();
@@ -69,9 +68,7 @@ public:
 	std::vector<BoundingBox>* getTriggerBoxes();
 	DirectX::XMVECTOR getEntrancePosition() const;
 	DirectX::XMVECTOR getRelativePosition(const DirectX::XMVECTOR pos) const;
-	PS_DIR_BUFFER getDirectionalLight() const;
-	PS_FOG_BUFFER getFogData() const;
-	PS_LIGHT_BUFFER getLightData() const;
-
+	PS_PER_FRAME_BUFFER getPerFrameData();
+	
 	bool m_completed;
 };

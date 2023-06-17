@@ -28,9 +28,9 @@ MenuState::~MenuState()
 
 void MenuState::setupLight()
 {
-	m_constantbufferData.dirBuffer.lightColor = { 1, 1, 1, 1 };
-	m_constantbufferData.dirBuffer.lightDirection = { 1, 1, 1, 1 };
-
+	m_perFrameData.skyLightColor = { 1.f, 1.f, 1.f};
+	m_perFrameData.skyLightIntensity = 1.f;
+	m_perFrameData.skyLightDirection = { 1.f, 1.f, 1.f };
 }
 
 void MenuState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext, GameOptions options, std::shared_ptr<DirectX::AudioEngine> audioEngine, volatile bool* doneLoadingModels)
@@ -69,9 +69,7 @@ void MenuState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 
 	m_pyramidRoom.initialize(m_device, m_dContext, &m_models, &m_wvpCBuffers, nullptr, XMVectorSet(0, 0, 0, 1), audioEngine, nullptr, options);
 	m_pyramidRoom.init(&pyramid);
-	m_constantbufferData.dirBuffer = m_pyramidRoom.getDirectionalLight();
-	m_constantbufferData.fogBuffer = m_pyramidRoom.getFogData();
-	m_constantbufferData.lightBuffer = m_pyramidRoom.getLightData();
+	m_perFrameData = m_pyramidRoom.getPerFrameData();
 
 	m_cameraMovementComponentPtr->position = { 0, 100, 0 };
 
@@ -128,7 +126,7 @@ void MenuState::update(float dt)
 	angle = XMConvertToRadians(m_angle);
 	for (size_t i = 0; i < m_gameObjects.size(); i++)
 	{
-		VS_CONSTANT_BUFFER wvpData;
+		VS_WVPW_CONSTANT_BUFFER wvpData;
 		DirectX::XMMATRIX viewPMtrx = m_camera.getViewMatrix() * m_camera.getProjectionMatrix();
 		wvpData.wvp = m_gameObjects.at(i)->getWorldMatrix() * viewPMtrx;
 		wvpData.worldMatrix = m_gameObjects[i]->getWorldMatrix();
@@ -174,6 +172,12 @@ states MenuState::handleInput(Keyboard* keyboard, Mouse* mousePtr, float dt)
 			}
 			else if (keyboardEvent.getKey() == VK_OEM_PLUS) // '+' key
 				changeStateTo = states::RELOAD_SHADERS;
+			else if (keyboardEvent.getKey() == 'T')
+				changeStateTo = states::TOGGLE_DRAW_PHYSICS_PRIMITVES;
+			else if (keyboardEvent.getKey() == 'G')
+				changeStateTo = states::TOGGLE_DRAW_LIGHTS_DEBUG;
+			else if (keyboardEvent.getKey() == '0')
+				changeStateTo = states::TOGGLE_GBUFFER_DEBUG;
 		}
 	}
 
@@ -469,7 +473,7 @@ void MenuState::loadModelsThreadSafe(uint32_t threadIndex, std::unordered_map<st
 	OutputDebugStringA(message.c_str());
 
 	std::unordered_map<std::string, Model>& modelMap = *modelsListPtr;
-	for (uint32_t i = from; i < to; i++)
+	for (uint32_t i = from; i <= to; i++)
 	{
 		modelMap[modelNameList->at(i)].loadModelAsync();
 	}
@@ -497,12 +501,12 @@ std::vector<BoundingOrientedBox>* MenuState::getActiveRoomOrientedBoundingBoxesP
 	return nullptr;
 }
 
-constantBufferData* MenuState::getConstantBufferData()
+PS_PER_FRAME_BUFFER* MenuState::getPerFrameData()
 {
-	return &m_constantbufferData;
+	return &m_perFrameData;
 }
 
-std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* MenuState::getWvpCBuffersPtr() 
+std::vector<ConstBuffer<VS_WVPW_CONSTANT_BUFFER>>* MenuState::getWvpCBuffersPtr() 
 {
 	return &m_wvpCBuffers;
 }

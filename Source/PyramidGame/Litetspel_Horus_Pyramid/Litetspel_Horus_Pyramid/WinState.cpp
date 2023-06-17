@@ -51,8 +51,9 @@ WinState::~WinState()
 
 void WinState::setupLight()
 {
-	m_constantbufferData.dirBuffer.lightColor = { 1, 1, 1, 1 };
-	m_constantbufferData.dirBuffer.lightDirection = { 1, 1, 1, 1 };
+	m_perFrameData.skyLightColor = { 1.f, 1.f, 1.f };
+	m_perFrameData.skyLightIntensity = 1.f;
+	m_perFrameData.skyLightDirection = { 1.f, 1.f, 1.f };
 }
 
 void WinState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext, GameOptions options, std::shared_ptr<DirectX::AudioEngine> audioEngine, volatile bool* doneLoadingModels)
@@ -88,7 +89,7 @@ void WinState::update(float dt)
 {
 	for (size_t i = 0; i < m_gameObjects.size(); i++)
 	{
-		VS_CONSTANT_BUFFER wvpData;
+		VS_WVPW_CONSTANT_BUFFER wvpData;
 		DirectX::XMMATRIX viewPMtrx = m_camera.getViewMatrix() * m_camera.getProjectionMatrix();
 		wvpData.wvp = m_gameObjects.at(i)->getWorldMatrix() * viewPMtrx;
 		wvpData.worldMatrix = m_gameObjects[i]->getWorldMatrix();
@@ -119,6 +120,12 @@ states WinState::handleInput(Keyboard* keyboard, Mouse* mousePtr, float dt)
 				changeStateTo = states::GAME;
 			else if (keyboardEvent.getKey() == VK_OEM_PLUS) // '+' key
 				changeStateTo = states::RELOAD_SHADERS;
+			else if (keyboardEvent.getKey() == 'T')
+				changeStateTo = states::TOGGLE_DRAW_PHYSICS_PRIMITVES;
+			else if (keyboardEvent.getKey() == 'G')
+				changeStateTo = states::TOGGLE_DRAW_LIGHTS_DEBUG;
+			else if (keyboardEvent.getKey() == '0')
+				changeStateTo = states::TOGGLE_GBUFFER_DEBUG;
 		}
 	}
 
@@ -171,12 +178,12 @@ std::vector<BoundingOrientedBox>* WinState::getActiveRoomOrientedBoundingBoxesPt
 	return nullptr;
 }
 
-constantBufferData* WinState::getConstantBufferData()
+PS_PER_FRAME_BUFFER* WinState::getPerFrameData()
 {
-	return &m_constantbufferData;
+	return &m_perFrameData;
 }
 
-std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* WinState::getWvpCBuffersPtr()
+std::vector<ConstBuffer<VS_WVPW_CONSTANT_BUFFER>>* WinState::getWvpCBuffersPtr()
 {
 	return &m_wvpCBuffers;
 }

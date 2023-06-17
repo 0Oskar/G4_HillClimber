@@ -18,7 +18,7 @@ private:
 	Microsoft::WRL::ComPtr< ID3D11DepthStencilView > m_shadowMapDSV;
 
 	// Constant Buffers
-	ConstBuffer<VS_DIRECTIONAL_CBUFFER> m_lightMatrixCBuffer;
+	ConstBuffer<VS_VP_MATRICES_CBUFFER> m_lightMatrixCBuffer;
 
 	// Pipeline States
 	Microsoft::WRL::ComPtr< ID3D11DepthStencilState > m_depthStencilState;
@@ -45,7 +45,7 @@ public:
 	void initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, UINT width, UINT height);
 
 	// Update
-	void buildLightMatrix(PS_DIR_BUFFER directionalLight, XMFLOAT3 position = XMFLOAT3(0,0,0));
+	void buildLightMatrix(XMFLOAT3 lightDirection, XMFLOAT3 position = XMFLOAT3(0,0,0));
 	void update();
 
 	// Render

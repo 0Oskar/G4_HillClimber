@@ -32,7 +32,7 @@ Room::~Room()
 	}
 }
 
-void Room::initialize(ID3D11Device* device, ID3D11DeviceContext* dContext, std::unordered_map<std::string, Model>* models, std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* cBuffer, Player* player, XMVECTOR position, std::shared_ptr<DirectX::AudioEngine> audioEngine, Timer* gameTimer, GameOptions option)
+void Room::initialize(ID3D11Device* device, ID3D11DeviceContext* dContext, std::unordered_map<std::string, Model>* models, std::vector<ConstBuffer<VS_WVPW_CONSTANT_BUFFER>>* cBuffer, Player* player, XMVECTOR position, std::shared_ptr<DirectX::AudioEngine> audioEngine, Timer* gameTimer, GameOptions option)
 {
 	m_device = device;
 	m_dContext = dContext;
@@ -55,15 +55,15 @@ void Room::initParent()
 	m_wvpCBuffers = nullptr;
 	m_entrencePosition = DirectX::XMVectorZero();
 	m_worldPosition = DirectX::XMVectorZero();
-	m_dirLight.lightColor = { .8f, .8f, .8f, 1.f };
-	m_dirLight.lightDirection = {-0.8f, 1.0f, -0.7f, 0.0f };
-	m_fogData.cameraPos = XMFLOAT3(0, 0, 0);
-	m_fogData.fogEnd = 0;
-	m_fogData.fogStart = 0;
-	m_fogData.fogColor = { 0.5f, 0.5f, 0.5f };
-	m_lightData.lightColor = DirectX::XMFLOAT3(1.f, 1.0f, 1.0f);
-	m_lightData.strength = 0.5f;
-	m_lightData.nrOfPointLights = 0;
+
+	m_perFrameData.skyLightDirection = {-0.8f, 1.0f, -0.7f, };
+	m_perFrameData.skyLightColor = DirectX::XMFLOAT3(1.f, 1.0f, 1.0f);
+	m_perFrameData.skyLightIntensity = 1.f;
+	m_perFrameData.cameraPos = XMFLOAT3(0, 0, 0);
+	m_perFrameData.nrOfPointLights = 0;
+	m_perFrameData.fogStart = 0.f;
+	m_perFrameData.fogEnd = 0.f;
+	m_perFrameData.ambientColor = { 0.8f, 0.8f, 0.8f };
 }
 void Room::update(float dt, Camera* camera, Room* &activeRoom, bool &activeRoomChanged)
 {
@@ -87,7 +87,7 @@ void Room::update(float dt, Camera* camera, Room* &activeRoom, bool &activeRoomC
 			m_gameObjects[i]->update(dt);
 		}
 
-		VS_CONSTANT_BUFFER wvpData;
+		VS_WVPW_CONSTANT_BUFFER wvpData;
 		DirectX::XMMATRIX viewPMtrx = camera->getViewMatrix() * camera->getProjectionMatrix();
 		wvpData.wvp = m_gameObjects[i]->getWorldMatrix() * viewPMtrx;
 		wvpData.worldMatrix = m_gameObjects[i]->getWorldMatrix();
@@ -265,56 +265,59 @@ void Room::updatePlayerBB()
 	m_player->addOrientedBBFromVector(&m_orientedBoundingBoxes);
 }
 
-int Room::createLight(XMFLOAT3 position, float range, XMFLOAT4 ambientColor, XMFLOAT4 diffuseColor, XMFLOAT3 atteniation)
+int Room::createLight(XMFLOAT3 position, float range, XMFLOAT3 diffuseColor)
 {
-	if(m_lightData.nrOfPointLights <= 5)
+	if(m_perFrameData.nrOfPointLights <= 5)
 	{
 		XMFLOAT3 wPos;
 		XMStoreFloat3(&wPos, m_worldPosition + XMLoadFloat3(&position));
 		PointLight pLight;
-		pLight.plPosition = wPos;
-		pLight.plRange = range;
-		pLight.plAmbient = ambientColor;
-		pLight.plDiffuse = diffuseColor;
-		pLight.att = atteniation;
+		pLight.position = wPos;
+		pLight.range = range;
+		pLight.diffuse = diffuseColor;
 
-		m_lightData.pointLights[m_lightData.nrOfPointLights++] = pLight;
+		m_perFrameData.pointLights[m_perFrameData.nrOfPointLights++] = pLight;
 	}	
 	else
 	{
 		assert(false && "Error, adding more lights to room than allowed.");
 	}
-	return m_lightData.nrOfPointLights - 1;
+	return m_perFrameData.nrOfPointLights - 1;
 }
 
 int Room::createLight(PointLight pLight)
 {
 	XMFLOAT3 wPos;
-	XMStoreFloat3(&wPos, m_worldPosition + XMLoadFloat3(&pLight.plPosition));
-	pLight.plPosition = wPos;
-	if (m_lightData.nrOfPointLights <= 5)
+	XMStoreFloat3(&wPos, m_worldPosition + XMLoadFloat3(&pLight.position));
+	pLight.position = wPos;
+	if (m_perFrameData.nrOfPointLights <= MAX_POINT_LIGHTS)
 	{
-		m_lightData.pointLights[m_lightData.nrOfPointLights++] = pLight;
+		m_perFrameData.pointLights[m_perFrameData.nrOfPointLights++] = pLight;
 	}
 	else
 	{
 		assert(false && "Error, adding more lights to room than allowed.");
 	}
-	return m_lightData.nrOfPointLights - 1;
+	return m_perFrameData.nrOfPointLights - 1;
 }
 
-void Room::changeLight(int index, XMFLOAT3 position, float range, XMFLOAT4 ambientColor, XMFLOAT4 diffuseColor, XMFLOAT3 atteniation)
+void Room::changeLight(int index, XMFLOAT3 position, float range, XMFLOAT3 diffuseColor)
 {
-	m_lightData.pointLights[index].plPosition = position;
-	m_lightData.pointLights[index].plRange = range;
-	m_lightData.pointLights[index].plAmbient = ambientColor;
-	m_lightData.pointLights[index].plDiffuse = ambientColor;
-	m_lightData.pointLights[index].att = atteniation;
+	m_perFrameData.pointLights[index].position = position;
+	m_perFrameData.pointLights[index].diffuse = diffuseColor;
+	m_perFrameData.pointLights[index].range = range;
+}
+
+void Room::changeLight(const int index, PointLight light)
+{
+	m_perFrameData.pointLights[index].position = light.position;
+	m_perFrameData.pointLights[index].diffuse = light.diffuse;
+	m_perFrameData.pointLights[index].range = light.range;
 }
 
 PointLight* Room::getLight(int index)
 {
-	return &m_lightData.pointLights[index];
+	return &m_perFrameData.pointLights[index];
 }
 
 DirectX::XMVECTOR Room::getRelativePosition(DirectX::XMVECTOR pos) const
@@ -323,17 +326,7 @@ DirectX::XMVECTOR Room::getRelativePosition(DirectX::XMVECTOR pos) const
 	return temp;
 }
 
-PS_DIR_BUFFER Room::getDirectionalLight() const
+PS_PER_FRAME_BUFFER Room::getPerFrameData()
 {
-	return m_dirLight;
-}
-
-PS_FOG_BUFFER Room::getFogData() const
-{
-	return m_fogData;
-}
-
-PS_LIGHT_BUFFER Room::getLightData() const
-{
-	return m_lightData;
+	return m_perFrameData;
 }

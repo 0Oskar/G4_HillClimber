@@ -34,7 +34,7 @@ private:
 	DirectX::XMVECTOR buttonRot = DirectX::XMVectorSet(0.f, pMath::convertDegreesToRadians(0), 0, 1);
 
 	//Bricks
-	std::vector<GameObject*> bricks;
+	std::vector<GameObject*> m_bricks;
 	int hyroglajfArr[5];
 
 	//Lever

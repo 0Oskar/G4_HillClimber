@@ -33,7 +33,7 @@ void Application::stateChange()
 	m_viewLayerPtr->setBoundingBoxesFromActiveRoom(gameState->getActiveRoomBoundingBoxesPtr());
 	m_viewLayerPtr->setOrientedBoundingBoxesFromActiveRoom(gameState->getActiveRoomOrientedBoundingBoxesPtr());
 	m_viewLayerPtr->setWvpCBufferFromState(gameState->getWvpCBuffersPtr());
-	m_viewLayerPtr->setConstantBuffersFromGameState(gameState->getConstantBufferData());
+	m_viewLayerPtr->setPerFrameDataFromState(gameState->getPerFrameData());
 	gameState->onEntry();
 	//gameState->updateCustomViewLayerVariables(m_viewLayerPtr.get());
 }
@@ -148,9 +148,9 @@ void Application::createWin32Window(HINSTANCE hInstance, const wchar_t* windowTi
 		windowTitle,				// Window text
 		WS_OVERLAPPEDWINDOW,        // Window style
 		CW_USEDEFAULT,				// Position, X
-		CW_USEDEFAULT,				// Position, Y
-		m_gameOptions.width,	// Width
-		m_gameOptions.height,	// Height
+		0,							// Position, Y
+		m_gameOptions.width,		// Width
+		m_gameOptions.height,		// Height
 		NULL,						// Parent window    
 		NULL,						// Menu
 		hInstance,					// Instance handle
@@ -210,25 +210,63 @@ void Application::applicationLoop()
 			m_deltaTime = (float)m_timer.timeElapsed();
 			m_timer.restart();
 
-			// Draw Collision Primitives
-			if (m_input.getKeyboard()->isKeyPressed('T'))
-				m_viewLayerPtr->toggleDrawPrimitives(true);
-
-			if (m_input.getKeyboard()->isKeyPressed('G'))
-				m_viewLayerPtr->toggleDrawPrimitives(false);
-
 			GameStateChecks();
 
 			// Update Layers
+			static float _viewLayerDebugToggleTimer = 0.f;
+			_viewLayerDebugToggleTimer += m_deltaTime;
 			fetchedState = m_gameStateStack.top()->handleInput(m_input.getKeyboard(), m_input.getMouse(), m_deltaTime);
 			if (fetchedState == states::RELOAD_SHADERS)
 				m_viewLayerPtr->reloadShaders();
+			else if (fetchedState == states::TOGGLE_DRAW_PHYSICS_PRIMITVES)
+			{
+				if (_viewLayerDebugToggleTimer > 0.3f)
+				{
+					_viewLayerDebugToggleTimer = 0.f;
+					bool drawPrimitves = !m_viewLayerPtr->getDrawPhysicsPrimitives();
+					m_viewLayerPtr->setDrawPhysicsPrimitives(drawPrimitves);
+
+					if (drawPrimitves)
+						StatusTextHandler::get().sendText("Draw Physics Debug ON!", 0.5f);
+					else
+						StatusTextHandler::get().sendText("Draw Physics Debug OFF!", 0.5f);
+				}
+			}
+			else if (fetchedState == states::TOGGLE_DRAW_LIGHTS_DEBUG)
+			{
+				if (_viewLayerDebugToggleTimer > 0.3f)
+				{
+					_viewLayerDebugToggleTimer = 0.f;
+					bool drawLights = !m_viewLayerPtr->getDrawLightsDebug();
+					m_viewLayerPtr->setDrawLightsDebug(drawLights);
+
+					if (drawLights)
+						StatusTextHandler::get().sendText("Draw Lights Debug ON!", 0.5f);
+					else
+						StatusTextHandler::get().sendText("Draw Lights Debug OFF!", 0.5f);
+				}
+			}
+			else if (fetchedState == states::TOGGLE_GBUFFER_DEBUG)
+			{
+				if (_viewLayerDebugToggleTimer > 0.3f)
+				{
+					_viewLayerDebugToggleTimer = 0.f;
+					bool drawGBuffer = !m_viewLayerPtr->getDrawGBufferDebug();
+					m_viewLayerPtr->setDrawGBufferDebug(drawGBuffer);
+
+					if (drawGBuffer)
+						StatusTextHandler::get().sendText("Draw G-Buffer Debug ON!", 0.5f);
+					else
+						StatusTextHandler::get().sendText("Draw G-Buffer Debug OFF!", 0.5f);
+				}
+			}
 			else if (fetchedState != states::NONE)
 				pushNewState(fetchedState);
 
 			if (!m_shouldQuit)
 			{
 				m_gameStateStack.top()->update(m_deltaTime);
+				m_viewLayerPtr->setPerFrameDataFromState(m_gameStateStack.top()->getPerFrameData());
 				if (m_doneLoadingModels)
 				{
 					audioUpdate();

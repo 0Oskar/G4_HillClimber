@@ -24,13 +24,14 @@ private:
 
 	//Rotating objects around specific point variables
 	float angle = 360.0f;
-
 	//Change both of these if you're changing speed (Will change speed of all rotating objects)
 	float flySpeed = 3.0f;
 	float flySpeedStartValue = 3.0f;
 
 	std::vector<XMVECTOR> palmTreePos;
-	////////////////////////////////
+
+	// Lights
+	std::vector<PointLight> m_lights;
 
 	GameObject* clouds;
 	DirectX::BoundingOrientedBox m_pyramidOOB;

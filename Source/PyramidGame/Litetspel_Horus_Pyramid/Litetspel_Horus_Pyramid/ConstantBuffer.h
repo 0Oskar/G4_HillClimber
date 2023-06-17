@@ -2,54 +2,44 @@
 
 #include "pch.h"
 
+#define MAX_POINT_LIGHTS 20
 
 struct PointLight
 {
-	XMFLOAT4 plAmbient;
-	XMFLOAT4 plDiffuse;
-	XMFLOAT3 plPosition;
-	float plRange;
-	XMFLOAT3 att;
-	float padding;
+	DirectX::XMFLOAT3 position;
+	float range;
+	DirectX::XMFLOAT3 diffuse;
+	float pad;
 };
-struct VS_CONSTANT_BUFFER
+struct VS_WVPW_CONSTANT_BUFFER
 {
-	DirectX::XMMATRIX wvp;
-	DirectX::XMMATRIX worldMatrix;
+	XMMATRIX wvp;
+	XMMATRIX worldMatrix;
 };
-struct VS_DIRECTIONAL_CBUFFER
+struct VS_VP_MATRICES_CBUFFER
 {
-	DirectX::XMMATRIX lightViewMatrix;
-	DirectX::XMMATRIX lightProjMatrix;
+	XMMATRIX viewMatrix;
+	XMMATRIX projMatrix;
 };
 
-struct PS_FOG_BUFFER
+struct PS_PER_FRAME_BUFFER
 {
-	XMFLOAT3 cameraPos;
+	PointLight pointLights[MAX_POINT_LIGHTS];
+	uint32_t nrOfPointLights;
+	DirectX::XMFLOAT3 skyLightDirection;
+	DirectX::XMFLOAT3 skyLightColor;
+	float skyLightIntensity;
+	DirectX::XMFLOAT3 cameraPos;
 	float fogStart;
-	XMFLOAT3 fogColor;
 	float fogEnd;
+	DirectX::XMFLOAT3 ambientColor;
 };
 
-struct PS_LIGHT_BUFFER
+struct DIR_LIGHT_DATA
 {
+	DirectX::XMFLOAT3 lightDirection;
 	DirectX::XMFLOAT3 lightColor;
-	float strength;
-	PointLight pointLights[5];
-	int nrOfPointLights;
-};
-
-struct PS_DIR_BUFFER
-{
-	DirectX::XMFLOAT4 lightDirection;
-	DirectX::XMFLOAT4 lightColor;
-};
-
-struct constantBufferData
-{
-	PS_FOG_BUFFER fogBuffer;
-	PS_LIGHT_BUFFER lightBuffer;
-	PS_DIR_BUFFER dirBuffer;
+	DirectX::XMFLOAT2 pad;
 };
 
 template<class T>

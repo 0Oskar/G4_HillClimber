@@ -62,6 +62,58 @@ void ViewLayer::initDeviceAndSwapChain()
 	backBuffer->Release();
 }
 
+void ViewLayer::initRenderTarget(RenderTexture& rtv, UINT width, UINT height, DXGI_FORMAT format, UINT mipLevels)
+{
+	// Texture
+	D3D11_TEXTURE2D_DESC textureDesc;
+	ZeroMemory(&textureDesc, sizeof(D3D11_TEXTURE2D_DESC));
+	textureDesc.Width = width;
+	textureDesc.Height = height;
+	textureDesc.MipLevels = mipLevels;
+	textureDesc.ArraySize = 1;
+	textureDesc.Format = format;
+	textureDesc.SampleDesc.Count = 1;
+	textureDesc.Usage = D3D11_USAGE_DEFAULT;
+	textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
+	textureDesc.CPUAccessFlags = 0;
+	textureDesc.MiscFlags = 0;
+	if (mipLevels > 1)
+		textureDesc.MiscFlags |= D3D11_RESOURCE_MISC_GENERATE_MIPS;
+
+	HRESULT hr = m_device->CreateTexture2D(&textureDesc, NULL, &rtv.rtt);
+	assert(SUCCEEDED(hr) && "Error, render target texture could not be created!");
+
+	// Render Rarget View
+	D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
+	ZeroMemory(&renderTargetViewDesc, sizeof(D3D11_RENDER_TARGET_VIEW_DESC));
+	renderTargetViewDesc.Format = textureDesc.Format;
+	renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+	renderTargetViewDesc.Texture2D.MipSlice = 0;
+
+	hr = m_device->CreateRenderTargetView(rtv.rtt, &renderTargetViewDesc, &rtv.rtv);
+	assert(SUCCEEDED(hr) && "Error, render target view could not be created!");
+
+	// Shader Resource View
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+	ZeroMemory(&srvDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
+	srvDesc.Format = textureDesc.Format;
+	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Texture2D.MostDetailedMip = 0;
+	srvDesc.Texture2D.MipLevels = mipLevels;
+
+	hr = m_device->CreateShaderResourceView(rtv.rtt, &srvDesc, &rtv.srv);
+	assert(SUCCEEDED(hr) && "Error, shader resource view could not be created!");
+
+	// Unordered Access View
+	D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
+	uavDesc.Format = textureDesc.Format;
+	uavDesc.ViewDimension = D3D11_UAV_DIMENSION::D3D11_UAV_DIMENSION_TEXTURE2D;
+	uavDesc.Texture2D.MipSlice = 0;
+
+	hr = m_device->CreateUnorderedAccessView(rtv.rtt, &uavDesc, &rtv.uav);
+	assert(SUCCEEDED(hr) && "Error, unordered access view could not be created!");
+}
+
 void ViewLayer::initViewPort()
 {
 	RECT winRect;
@@ -83,7 +135,7 @@ void ViewLayer::initDepthStencilBuffer()
 	dsBufferDesc.Height = m_options->height;
 	dsBufferDesc.MipLevels = 1;
 	dsBufferDesc.ArraySize = 1;
-	dsBufferDesc.Format = DXGI_FORMAT_R24G8_TYPELESS;
+	dsBufferDesc.Format = DXGI_FORMAT_R32_TYPELESS;
 	dsBufferDesc.SampleDesc.Count = 1;
 	dsBufferDesc.SampleDesc.Quality = 0;
 	dsBufferDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -96,13 +148,24 @@ void ViewLayer::initDepthStencilBuffer()
 
 	// Create Depth Stencil View
 	D3D11_DEPTH_STENCIL_VIEW_DESC dsViewDesc;
-	dsViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	dsViewDesc.Format = DXGI_FORMAT_D32_FLOAT;
 	dsViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	dsViewDesc.Flags = 0;
 	dsViewDesc.Texture2D.MipSlice = 0;
 
 	hr = m_device->CreateDepthStencilView(m_depthStencilBuffer.Get(), &dsViewDesc, &m_depthStencilView);
 	assert(SUCCEEDED(hr) && "Error, failed to create depth stencil view!");
+
+	// Create Shader Resource View
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+	ZeroMemory(&srvDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
+	srvDesc.Format = m_gBuffer[DEPTH_GB].format = DXGI_FORMAT_R32_FLOAT;
+	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Texture2D.MostDetailedMip = 0;
+	srvDesc.Texture2D.MipLevels = 1;
+
+	hr = m_device->CreateShaderResourceView(m_depthStencilBuffer.Get(), &srvDesc, &m_gBuffer[DEPTH_GB].srv);
+	assert(SUCCEEDED(hr) && "Error, shader resource view could not be created!");
 
 	// Create Depth Stencil State
 	D3D11_DEPTH_STENCIL_DESC dsDesc;
@@ -135,9 +198,17 @@ void ViewLayer::initDepthStencilBuffer()
 void ViewLayer::initShaders()
 {
 	ShaderFiles shaders;
-	shaders.vs = L"Shader Files\\VertexShader.hlsl";
-	shaders.ps = L"Shader Files\\PixelShader.hlsl";
-	m_shaders.initialize(m_device.Get(), m_deviceContext.Get(), shaders);
+	shaders.vs = L"Shader Files\\GeneralVS.hlsl";
+	shaders.ps = L"Shader Files\\GBufferPS.hlsl";
+	m_GBufferShaders.initialize(m_device.Get(), m_deviceContext.Get(), shaders);
+
+	shaders.vs = L"Shader Files\\FullscreenQuadVS.hlsl";
+	shaders.ps = L"Shader Files\\LightingPS.hlsl";
+	m_lightingShaders.initialize(m_device.Get(), m_deviceContext.Get(), shaders);
+
+	shaders.vs = L"Shader Files\\GeneralVS.hlsl";
+	shaders.ps = L"Shader Files\\ForwardLightingPS.hlsl";
+	m_forwardLightingShaders.initialize(m_device.Get(), m_deviceContext.Get(), shaders);
 
 	CD3D11_RASTERIZER_DESC rastDesc(
 		D3D11_FILL_SOLID, 
@@ -164,9 +235,6 @@ ViewLayer::ViewLayer()
 
 	resourceHandler = &ResourceHandler::get();
 	
-
-	m_drawPrimitives = false;
-
 	m_viewMatrix = nullptr;
 	m_projectionMatrix = nullptr;
 	m_fps = 0;
@@ -229,37 +297,15 @@ void ViewLayer::setModelsFromState(std::unordered_map<std::string, Model>* model
 	m_modelsFromState = models;
 }
 
-void ViewLayer::setDirLightFromActiveRoom(PS_DIR_BUFFER dirLight)
+void ViewLayer::setPerFrameDataFromState(PS_PER_FRAME_BUFFER* perFrameDataFromState)
 {
-	m_dirLight = dirLight;
-	m_dirLightBuffer.m_data = m_dirLight;
-	m_dirLightBuffer.upd();
+	m_constantBufferDataFromStatePtr = perFrameDataFromState;
+	m_perFrameBuffer.m_data = *m_constantBufferDataFromStatePtr;
+	m_perFrameBuffer.upd();
 }
 
-void ViewLayer::setFogDataFromActiveRoom(PS_FOG_BUFFER fogData)
-{
-	m_fogBuffer.m_data = fogData;
-}
 
-void ViewLayer::setConstantBuffersFromGameState(constantBufferData* cbDataFromState)
-{
-	m_constantBufferDataFromStatePtr = cbDataFromState;
-	m_lightBuffer.m_data = cbDataFromState->lightBuffer;
-	m_dirLightBuffer.m_data = cbDataFromState->dirBuffer;
-	m_dirLight = cbDataFromState->dirBuffer;
-	m_fogBuffer.m_data = cbDataFromState->fogBuffer;
-	m_dirLightBuffer.upd();
-	m_fogBuffer.upd();
-	m_lightBuffer.upd();
-}
-
-void ViewLayer::setLightDataFromActiveRoom(PS_LIGHT_BUFFER lightData)
-{
-	m_lightBuffer.m_data = lightData;
-	m_lightBuffer.upd();
-}
-
-void ViewLayer::setWvpCBufferFromState(std::vector< ConstBuffer<VS_CONSTANT_BUFFER> >* buffers)
+void ViewLayer::setWvpCBufferFromState(std::vector< ConstBuffer<VS_WVPW_CONSTANT_BUFFER> >* buffers)
 {
 	m_wvpCBufferFromState = buffers;
 }
@@ -267,10 +313,9 @@ void ViewLayer::setWvpCBufferFromState(std::vector< ConstBuffer<VS_CONSTANT_BUFF
 
 void ViewLayer::initConstantBuffer()
 {
-	m_lightBuffer.init(m_device.Get(), m_deviceContext.Get());
-	m_dirLightBuffer.init(m_device.Get(), m_deviceContext.Get());
-	m_fogBuffer.init(m_device.Get(), m_deviceContext.Get());
-	m_cameraBuffer.init(m_device.Get(), m_deviceContext.Get());
+	m_perFrameBuffer.init(m_device.Get(), m_deviceContext.Get());
+	m_skyboxCameraBuffer.init(m_device.Get(), m_deviceContext.Get());
+	m_inverseMatricesBuffer.init(m_device.Get(), m_deviceContext.Get());
 }
 
 void ViewLayer::initSky()
@@ -323,42 +368,41 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 	initConstantBuffer();
 	initSky();
 
+	// G-Buffer
+	// - Diffuse
+	initRenderTarget(m_gBuffer[GBufferType::DIFFUSE_GB], m_options->width, m_options->height, DXGI_FORMAT_R8G8B8A8_UNORM);
+	// - Normal, Shadow Mask
+	initRenderTarget(m_gBuffer[GBufferType::NORMAL_SHADOWMASK_GB], m_options->width, m_options->height, DXGI_FORMAT_R32G32B32A32_FLOAT);
+	// - Specular, Shininess
+	initRenderTarget(m_gBuffer[GBufferType::SPECULAR_SHININESS_GB], m_options->width, m_options->height, DXGI_FORMAT_R8G8B8A8_UNORM);
+	// - Ambient, Global Ambient Contribution
+	initRenderTarget(m_gBuffer[GBufferType::AMBIENT_GLOBALAMBIENTCONTR_GB], m_options->width, m_options->height, DXGI_FORMAT_R8G8B8A8_UNORM);
+
 	// Lights
 	PointLight pLight;
-	pLight.plPosition = { 0, 10, 0 };
-	pLight.plDiffuse = { 0, 0, 0, 1 };
-	pLight.plAmbient = { 0, 0, 0, 1 };
-	pLight.plRange = 100;
-	pLight.att = { 0, 1, 0 };
+	pLight.position = { 0, 10, 0 };
+	pLight.diffuse = { 0, 0, 0};
+	pLight.range = 100;
 	// - Ambient Light buffer
-	PS_LIGHT_BUFFER lightBuffer;
-	lightBuffer.lightColor = DirectX::XMFLOAT3(1.f, 1.0f, 1.0f); //Set default behaviour in room.cpp and change for induvidual rooms in theire class by accesing m_lightData
-	lightBuffer.strength = 0.1f;
-	lightBuffer.nrOfPointLights = 1;
-	lightBuffer.pointLights[0] = pLight;
-	m_lightBuffer.m_data = lightBuffer;
-	m_lightBuffer.upd();
+	PS_PER_FRAME_BUFFER perFrameData;
+	perFrameData.nrOfPointLights = 1;
+	perFrameData.pointLights[0] = pLight;
 	// - Directional Light buffer
-	PS_DIR_BUFFER dirBuffer;
-	dirBuffer.lightColor = DirectX::XMFLOAT4(0.f, 0.f, 0.f, 1.f);
-	dirBuffer.lightDirection = DirectX::XMFLOAT4(-0.8f, 1.0f, -0.7f, 0.0f);
-	m_dirLightBuffer.m_data = dirBuffer;
-	m_dirLightBuffer.upd();
+	perFrameData.skyLightColor = DirectX::XMFLOAT3(0.f, 0.f, 0.f);
+	perFrameData.skyLightIntensity = 1.f;
+	perFrameData.skyLightDirection = DirectX::XMFLOAT3(-0.8f, 1.0f, -0.7f);
+	// - Fog, Just set for init, change in room with m_fogData member variable.
+	perFrameData.fogStart = 50.0f;
+	perFrameData.fogEnd = 100.0f;
+	perFrameData.ambientColor = XMFLOAT3(0.8f, 0.8f, 0.8f);
 
-	// Fog
-	PS_FOG_BUFFER fogBuffer; //Just set for init, change in room with m_fogData member variable.
-	fogBuffer.fogEnd = 100.0f;
-	fogBuffer.fogStart = 50.0f;
-	fogBuffer.fogColor = XMFLOAT3(0.5f, 0.5f, 0.5f);
-
-	m_fogBuffer.m_data = fogBuffer;
-	m_fogBuffer.upd();
+	m_perFrameBuffer.m_data = perFrameData;
+	m_perFrameBuffer.upd();
 
 	// Pyramid Oriented Bounding Box for drawing only(Seperate from box in gamestate)
 	DirectX::XMFLOAT3 center(0.f, 62.f, 80.f);
 	DirectX::XMFLOAT3 extents(450.f, 550.f, 1.f);
-	float rotationX = XMConvertToRadians(46.f);
-	LPCWSTR test = std::to_wstring(rotationX).c_str();
+	constexpr float rotationX = XMConvertToRadians(46.f);
 	DirectX::XMVECTOR quaternion = DirectX::XMQuaternionRotationRollPitchYaw(rotationX, 0.f, 0.f);
 	DirectX::XMFLOAT4 orientation;
 	DirectX::XMStoreFloat4(&orientation, quaternion);
@@ -421,7 +465,9 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 
 void ViewLayer::reloadShaders()
 {
-	m_shaders.reloadShaders();
+	m_GBufferShaders.reloadShaders();
+	m_lightingShaders.reloadShaders();
+	m_forwardLightingShaders.reloadShaders();
 	m_skyShaders.reloadShaders();
 }
 
@@ -430,7 +476,7 @@ void ViewLayer::update(float dt, XMFLOAT3 cameraPos)
 	// Transition
 	m_transition->update(dt);
 
-	//FPS Counter
+	// FPS Counter
 	m_fps++;
 	if (1.0 < m_timer.timeElapsed())
 	{
@@ -439,21 +485,11 @@ void ViewLayer::update(float dt, XMFLOAT3 cameraPos)
 		m_fps = 0;
 	}
 
-	clearColor[0] = m_fogBuffer.m_data.fogColor.x;
-	clearColor[1] = m_fogBuffer.m_data.fogColor.y;
-	clearColor[2] = m_fogBuffer.m_data.fogColor.z;
+	// Shadow matrix and per frame buffer
+	m_shadowInstance.buildLightMatrix(m_perFrameBuffer.m_data.skyLightDirection, cameraPos);
+	m_perFrameBuffer.m_data.cameraPos = cameraPos;
 
-	m_shadowInstance.buildLightMatrix(m_constantBufferDataFromStatePtr->dirBuffer, cameraPos);
-
-	m_lightBuffer.m_data = m_constantBufferDataFromStatePtr->lightBuffer;
-	m_dirLightBuffer.m_data = m_constantBufferDataFromStatePtr->dirBuffer;
-	m_dirLight = m_constantBufferDataFromStatePtr->dirBuffer;
-	m_fogBuffer.m_data = m_constantBufferDataFromStatePtr->fogBuffer;
-	m_dirLightBuffer.upd();
-	m_fogBuffer.m_data.cameraPos = cameraPos;
-	m_fogBuffer.upd();
-	m_lightBuffer.upd();
-
+	// Status text
 	m_statusTextHandler->update(dt);
 }
 
@@ -461,8 +497,20 @@ void ViewLayer::render(iGameState* gameState)
 {
 	// Clear Frame
 	m_annotation->BeginEvent(L"Clear");
-	m_deviceContext->ClearRenderTargetView(m_outputRTV.Get(), clearColor);
+	m_deviceContext->ClearRenderTargetView(m_outputRTV.Get(), m_clearColor);
 	m_deviceContext->ClearDepthStencilView(m_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	
+	ID3D11RenderTargetView* gBufferRTVs[] = {
+		m_gBuffer[GBufferType::DIFFUSE_GB].rtv,
+		m_gBuffer[GBufferType::NORMAL_SHADOWMASK_GB].rtv,
+		m_gBuffer[GBufferType::SPECULAR_SHININESS_GB].rtv,
+		m_gBuffer[GBufferType::AMBIENT_GLOBALAMBIENTCONTR_GB].rtv
+	};
+	m_deviceContext->ClearRenderTargetView(gBufferRTVs[DIFFUSE_GB], m_clearColorBlack);
+	m_deviceContext->ClearRenderTargetView(gBufferRTVs[NORMAL_SHADOWMASK_GB], m_clearColorWhite);
+	m_deviceContext->ClearRenderTargetView(gBufferRTVs[SPECULAR_SHININESS_GB], m_clearColorBlack);
+	m_deviceContext->ClearRenderTargetView(gBufferRTVs[AMBIENT_GLOBALAMBIENTCONTR_GB], m_clearColorBlack);
+
 	m_annotation->EndEvent();
 
 	// Shadow Mapping
@@ -509,26 +557,22 @@ void ViewLayer::render(iGameState* gameState)
 		m_annotation->EndEvent();
 	}
 
+	m_annotation->BeginEvent(L"G-Buffer");
+
 	// Set Render Target
-	m_annotation->BeginEvent(L"Draw Meshes");
-	m_deviceContext->OMSetRenderTargets(1, m_outputRTV.GetAddressOf(), m_depthStencilView.Get());
+	m_deviceContext->OMSetRenderTargets(GB_NUM - 1, gBufferRTVs, m_depthStencilView.Get());
+
+	// Set states
 	m_deviceContext->OMSetBlendState(m_states->Opaque(), nullptr, 0xFFFFFFFF);
 	m_deviceContext->OMSetDepthStencilState(m_states->DepthDefault(), 0);
 	m_deviceContext->RSSetState(m_states->CullClockwise());
 	m_deviceContext->RSSetViewports(1, &m_viewport);
 
 	// Set Shaders
-	m_shaders.setShaders();
-
-	// Set Sampler
-	m_deviceContext->PSSetSamplers(0, 1, m_samplerState.GetAddressOf());
-
-	// Set Constant Buffer
-	m_deviceContext->PSSetConstantBuffers(1, 1, m_lightBuffer.GetAdressOf());
-	m_deviceContext->PSSetConstantBuffers(2, 1, m_dirLightBuffer.GetAdressOf());
-	m_deviceContext->PSSetConstantBuffers(3, 1, m_fogBuffer.GetAdressOf());
+	m_GBufferShaders.setShaders();
 
 	// Set Shadow Map
+	m_deviceContext->PSSetSamplers(0, 1, m_samplerState.GetAddressOf());
 	m_deviceContext->PSSetShaderResources(1, 1, m_shadowInstance.getShadowMapSRVConstPtr());
 
 	// Draw
@@ -584,35 +628,68 @@ void ViewLayer::render(iGameState* gameState)
 			}
 		}
 	}
-	m_deviceContext->PSSetShaderResources(1, 1, &m_nullSRV);
+	
+	m_deviceContext->PSSetShaderResources(0, GB_NUM, m_nullSRVs);
+	m_deviceContext->OMSetRenderTargets(GB_NUM - 1, m_nullRTVs, nullptr);
+	m_annotation->EndEvent();
+
+	// Lighting
+	m_annotation->BeginEvent(L"Lighting");
+	m_lightingShaders.setShaders();
+	m_deviceContext->OMSetDepthStencilState(m_states->DepthNone(), 0);
+	m_deviceContext->OMSetRenderTargets(1, m_outputRTV.GetAddressOf(), nullptr);
+	m_deviceContext->RSSetState(m_states->CullNone());
+
+	// Set Constant Buffer
+	m_perFrameBuffer.upd();
+	m_deviceContext->PSSetConstantBuffers(1, 1, m_perFrameBuffer.GetAdressOf());
+
+	XMVECTOR det = XMMatrixDeterminant(*m_viewMatrix);
+	det = XMMatrixDeterminant(*m_projectionMatrix);
+	m_inverseMatricesBuffer.m_data.viewMatrix = XMMatrixTranspose(XMMatrixInverse(&det, *m_viewMatrix));
+	m_inverseMatricesBuffer.m_data.projMatrix = XMMatrixTranspose(XMMatrixInverse(&det, *m_projectionMatrix));
+	m_inverseMatricesBuffer.upd();
+	m_deviceContext->PSSetConstantBuffers(2, 1, m_inverseMatricesBuffer.GetAdressOf());
+
+	// Textures
+	ID3D11ShaderResourceView* gBufferSRVs[] = {
+		m_gBuffer[GBufferType::DIFFUSE_GB].srv,
+		m_gBuffer[GBufferType::NORMAL_SHADOWMASK_GB].srv,
+		m_gBuffer[GBufferType::SPECULAR_SHININESS_GB].srv,
+		m_gBuffer[GBufferType::AMBIENT_GLOBALAMBIENTCONTR_GB].srv,
+		m_gBuffer[GBufferType::DEPTH_GB].srv
+	};
+	m_deviceContext->PSSetShaderResources(0, GB_NUM, gBufferSRVs);
+
+	m_deviceContext->Draw(4, 0);
+	m_deviceContext->PSSetShaderResources(0, GB_NUM, m_nullSRVs);
 	m_annotation->EndEvent();
 
 	// Sky
 	m_annotation->BeginEvent(L"Sky");
+	m_deviceContext->OMSetRenderTargets(1, m_outputRTV.GetAddressOf(), m_depthStencilView.Get());
 	m_deviceContext->OMSetDepthStencilState(m_states->DepthDefault(), 0);
+	m_deviceContext->RSSetState(m_states->CullClockwise());
 	m_skyShaders.setShaders();
 	
-	m_cameraBuffer.m_data = XMMatrixScaling(-1.f, -1.f, -1.f) * (*m_viewMatrix) * (*m_projectionMatrix);
-	m_cameraBuffer.upd();
-	m_deviceContext->VSSetConstantBuffers(0, 1, m_cameraBuffer.GetAdressOf());
-	m_deviceContext->PSSetConstantBuffers(2, 1, m_dirLightBuffer.GetAdressOf());
+	m_skyboxCameraBuffer.m_data = XMMatrixScaling(-1.f, -1.f, -1.f) * (*m_viewMatrix) * (*m_projectionMatrix);
+	m_skyboxCameraBuffer.upd();
+	m_deviceContext->VSSetConstantBuffers(0, 1, m_skyboxCameraBuffer.GetAdressOf());
+	m_deviceContext->PSSetConstantBuffers(2, 1, m_skyboxSunLightBuffer.GetAdressOf());
 
 	m_skyCube.draw();
 	m_annotation->EndEvent();
 
+	// Transparent Meshes
 	m_annotation->BeginEvent(L"Transparent Meshes");
-	m_deviceContext->OMSetRenderTargets(1, m_outputRTV.GetAddressOf(), m_depthStencilView.Get());
 	m_deviceContext->OMSetBlendState(m_states->AlphaBlend(), nullptr, 0xFFFFFFFF);
 	m_deviceContext->OMSetDepthStencilState(m_states->DepthDefault(), 0);
-	m_deviceContext->RSSetState(m_states->CullClockwise());
 	m_deviceContext->RSSetViewports(1, &m_viewport);
 
-	m_shaders.setShaders();
+	m_forwardLightingShaders.setShaders();
 	m_deviceContext->PSSetShaderResources(1, 1, m_shadowInstance.getShadowMapSRVConstPtr());
 
-	m_deviceContext->PSSetConstantBuffers(1, 1, m_lightBuffer.GetAdressOf());
-	m_deviceContext->PSSetConstantBuffers(2, 1, m_dirLightBuffer.GetAdressOf());
-	m_deviceContext->PSSetConstantBuffers(3, 1, m_fogBuffer.GetAdressOf());
+	m_deviceContext->PSSetConstantBuffers(1, 1, m_perFrameBuffer.GetAdressOf());
 
 	for (size_t i = 0; i < transparentObjects.size(); i++)
 	{
@@ -626,6 +703,8 @@ void ViewLayer::render(iGameState* gameState)
 		model->m_material.setTexture(gObject->getTexturePath().c_str());
 		model->draw();
 	}
+	m_deviceContext->PSSetShaderResources(1, 1, &m_nullSRV);
+	m_deviceContext->OMSetRenderTargets(1, m_outputRTV.GetAddressOf(), nullptr);
 	m_annotation->EndEvent();
 
 	// Draw Transition Quad
@@ -636,7 +715,7 @@ void ViewLayer::render(iGameState* gameState)
 	m_annotation->EndEvent();
 
 	// Draw Primitives
-	if (m_drawPrimitives)
+	if (m_drawPhysicsPrimitives || m_drawLightsDebug)
 	{
 		m_annotation->BeginEvent(L"Primitives");
 		m_deviceContext->OMSetBlendState(m_states->Opaque(), nullptr, 0xFFFFFFFF);
@@ -650,47 +729,63 @@ void ViewLayer::render(iGameState* gameState)
 		m_effect->SetProjection(*(m_projectionMatrix));
 		// Apply Effect
 		m_effect->Apply(m_deviceContext.Get());
-		for (size_t i = 0; i < m_gameObjectsFromState->size(); i++)
+
+		if (m_drawPhysicsPrimitives)
 		{
-			if (m_gameObjectsFromState->at(i)->getDrawBB())
+			m_annotation->BeginEvent(L"Physics");
+			for (size_t i = 0; i < m_gameObjectsFromState->size(); i++)
 			{
-				// Draw Primitive
-				DX::Draw(m_batch.get(), *(m_gameObjectsFromState->at(i)->getAABBPtr()), DirectX::Colors::Blue);
-			}
-		}
-		if (m_gameObjectsFromActiveRoom != nullptr)
-		{
-			for (size_t i = 0; i < m_gameObjectsFromActiveRoom->size(); i++)
-			{
-				if (m_gameObjectsFromActiveRoom->at(i)->collidable())
+				if (m_gameObjectsFromState->at(i)->getDrawBB())
 				{
 					// Draw Primitive
-					DX::Draw(m_batch.get(), *(m_gameObjectsFromActiveRoom->at(i)->getAABBPtr()), DirectX::Colors::Blue);
+					DX::Draw(m_batch.get(), *(m_gameObjectsFromState->at(i)->getAABBPtr()), DirectX::Colors::Blue);
 				}
 			}
-		}
-		if (m_orientedBoundingBoxesFromActiveRoom != nullptr)
-		{
-			for (size_t i = 0; i < m_orientedBoundingBoxesFromActiveRoom->size(); i++)
+			if (m_gameObjectsFromActiveRoom != nullptr)
 			{
-				DX::Draw(m_batch.get(), m_orientedBoundingBoxesFromActiveRoom->at(i), DirectX::Colors::Red);
+				for (size_t i = 0; i < m_gameObjectsFromActiveRoom->size(); i++)
+				{
+					if (m_gameObjectsFromActiveRoom->at(i)->collidable())
+					{
+						// Draw Primitive
+						DX::Draw(m_batch.get(), *(m_gameObjectsFromActiveRoom->at(i)->getAABBPtr()), DirectX::Colors::Blue);
+					}
+				}
+			}
+			if (m_orientedBoundingBoxesFromActiveRoom != nullptr)
+			{
+				for (size_t i = 0; i < m_orientedBoundingBoxesFromActiveRoom->size(); i++)
+				{
+					DX::Draw(m_batch.get(), m_orientedBoundingBoxesFromActiveRoom->at(i), DirectX::Colors::Red);
+				}
+			}
+			if (m_boundingBoxesFromActiveRoom != nullptr)
+			{
+				for (size_t i = 0; i < m_boundingBoxesFromActiveRoom->size(); i++)
+				{
+					DX::Draw(m_batch.get(), m_boundingBoxesFromActiveRoom->at(i), DirectX::Colors::Red);
+				}
+			}
+			if (m_triggerBoxes != nullptr)
+			{
+				for (size_t i = 0; i < m_triggerBoxes->size(); i++)
+				{
+					DX::Draw(m_batch.get(), m_triggerBoxes->at(i), DirectX::Colors::DarkTurquoise);
+				}
+			}
+			m_annotation->EndEvent();
+		}
+		if (m_drawLightsDebug)
+		{
+			// Point Lights
+			BoundingSphere sphere;
+			for (uint32_t i = 0; i < m_perFrameBuffer.m_data.nrOfPointLights; i++)
+			{
+				sphere.Center = m_perFrameBuffer.m_data.pointLights[i].position;
+				sphere.Radius = m_perFrameBuffer.m_data.pointLights[i].range;
+				DX::Draw(m_batch.get(), sphere, DirectX::Colors::LightGoldenrodYellow);
 			}
 		}
-		if (m_boundingBoxesFromActiveRoom != nullptr)
-		{
-			for (size_t i = 0; i < m_boundingBoxesFromActiveRoom->size(); i++)
-			{
-				DX::Draw(m_batch.get(), m_boundingBoxesFromActiveRoom->at(i), DirectX::Colors::Red);
-			}
-		}
-		if (m_triggerBoxes != nullptr)
-		{
-			for (size_t i = 0; i < m_triggerBoxes->size(); i++)
-			{
-				DX::Draw(m_batch.get(), m_triggerBoxes->at(i), DirectX::Colors::DarkTurquoise);
-			}
-		}
-		//DX::Draw(m_batch.get(), m_pyramidOBB, DirectX::Colors::Blue);
 
 		m_batch->End();
 		m_annotation->EndEvent();
@@ -704,10 +799,9 @@ void ViewLayer::render(iGameState* gameState)
 	m_spriteBatch->Begin(SpriteSortMode_Deferred, m_states->AlphaBlend());
 	gameState->drawUI(m_spriteBatch.get(), m_spriteFont16.get());
 
-	m_annotation->EndEvent();
 
-	// - Shadowmap Debug
-	if (drawShadowmapDebug)
+	// - Pass Textures Debug
+	if (m_drawShadowmapDebug)
 	{
 		m_annotation->BeginEvent(L"Shadowmap Debug");
 		RECT shadowMapImg;
@@ -716,6 +810,28 @@ void ViewLayer::render(iGameState* gameState)
 		shadowMapImg.right = 500;
 		shadowMapImg.bottom = 500;
 		m_spriteBatch->Draw(m_shadowInstance.getShadowMapSRV(), shadowMapImg);
+		m_annotation->EndEvent();
+	}
+
+	uint32_t gBufferDebugtextureCount = GB_NUM;
+	if (m_drawGBufferDebug)
+	{
+		m_annotation->BeginEvent(L"G-Buffer Debug");
+		uint32_t width = m_options->width / gBufferDebugtextureCount;
+		uint32_t height = m_options->height / gBufferDebugtextureCount;
+
+		RECT img;
+		img.top = 0;
+		img.left = 0;
+		img.right = width;
+		img.bottom = height;
+
+		for (uint32_t i = 0; i < GB_NUM; i++)
+		{
+			m_spriteBatch->Draw(m_gBuffer[i].srv, img);
+			img.top = img.bottom;
+			img.bottom = img.bottom + height;
+		}
 		m_annotation->EndEvent();
 	}
 	
@@ -729,7 +845,32 @@ void ViewLayer::render(iGameState* gameState)
 	m_swapChain->Present(0, 0);
 }
 
-void ViewLayer::toggleDrawPrimitives(bool toggle)
+bool ViewLayer::getDrawPhysicsPrimitives() const
 {
-	m_drawPrimitives = toggle;
+	return m_drawPhysicsPrimitives;
+}
+
+bool ViewLayer::getDrawLightsDebug() const
+{
+	return m_drawLightsDebug;
+}
+
+bool ViewLayer::getDrawGBufferDebug() const
+{
+	return m_drawGBufferDebug;
+}
+
+void ViewLayer::setDrawPhysicsPrimitives(bool enabled)
+{
+	m_drawPhysicsPrimitives = enabled;
+}
+
+void ViewLayer::setDrawLightsDebug(bool enabled)
+{
+	m_drawLightsDebug = enabled;
+}
+
+void ViewLayer::setDrawGBufferDebug(bool enabled)
+{
+	m_drawGBufferDebug = enabled;
 }

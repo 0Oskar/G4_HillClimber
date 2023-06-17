@@ -394,15 +394,14 @@ void FindGemsRoom::init()
 	
 	//XMFLOAT3 Pos;
 	//XMStoreFloat3(&Pos, (m_worldPosition + DirectX::XMVectorSet(0, 0, -20 ,0)));
-	//m_PortalLight.plPosition = (Pos);
+	//m_PortalLight.position = (Pos);
 	//m_PortalLight.att = { 1, 0, 0.5 };
-	//m_PortalLight.plDiffuse = { 0,1,0,0 };
-	//m_PortalLight.plAmbient = { 0,0,0,1 };
+	//m_PortalLight.diffuse = { 0,1,0,0 };
 
-	//m_PortalLight.plRange = 20;
+	//m_PortalLight.range = 20;
 
 	//int lightIndex = createLight(m_PortalLight);
-	//createLight(m_PortalLight.plPosition, m_PortalLight.plRange, m_PortalLight.plAmbient, m_PortalLight.plDiffuse, m_PortalLight.att);
+	//createLight(m_PortalLight.position, m_PortalLight.range, m_PortalLight.diffuse, m_PortalLight.att);
 }
 
 void FindGemsRoom::portals()

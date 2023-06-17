@@ -143,14 +143,14 @@ void ShadowMapInstance::initialize(ID3D11Device* device, ID3D11DeviceContext* de
 	m_lightMatrixCBuffer.init(device, deviceContext);
 }
 
-void ShadowMapInstance::buildLightMatrix(PS_DIR_BUFFER directionalLight, XMFLOAT3 position)
+void ShadowMapInstance::buildLightMatrix(XMFLOAT3 lightDirection, XMFLOAT3 position)
 {
 	// Light View Matrix
-	VS_DIRECTIONAL_CBUFFER lightMatrices;
-	XMVECTOR lightDirection = XMLoadFloat4(&directionalLight.lightDirection);
+	VS_VP_MATRICES_CBUFFER lightMatrices;
+	XMVECTOR lightDirectionVec = XMLoadFloat3(&lightDirection);
 	XMVECTOR lookAt = XMLoadFloat3(&position);
 	lookAt = DirectX::XMVectorSetW(lookAt, 1.f);
-	XMVECTOR lightPosition = DirectX::XMVectorAdd(DirectX::XMVectorScale(lightDirection, m_worldBoundingSphere.Radius), lookAt);
+	XMVECTOR lightPosition = DirectX::XMVectorAdd(DirectX::XMVectorScale(lightDirectionVec, m_worldBoundingSphere.Radius), lookAt);
 
 	XMVECTOR up = DirectX::XMVectorSet(0.f, 1.f, 0.f, 0.f);
 
@@ -159,11 +159,11 @@ void ShadowMapInstance::buildLightMatrix(PS_DIR_BUFFER directionalLight, XMFLOAT
 	{
 		lookAt = DirectX::XMVectorAdd(lookAt, DirectX::XMVectorSet(0.f, 0.f, 1.f, 0.f));
 	}
-	lightMatrices.lightViewMatrix = DirectX::XMMatrixLookAtLH(lightPosition, lookAt, up);
+	lightMatrices.viewMatrix = DirectX::XMMatrixLookAtLH(lightPosition, lookAt, up);
 
 	// Transform World Bounding Sphere to Light Local View Space
 	XMFLOAT3 worldSphereCenterLightSpace;
-	XMStoreFloat3(&worldSphereCenterLightSpace, DirectX::XMVector3TransformCoord(lookAt, lightMatrices.lightViewMatrix));
+	XMStoreFloat3(&worldSphereCenterLightSpace, DirectX::XMVector3TransformCoord(lookAt, lightMatrices.viewMatrix));
 
 	// Construct Orthographic Frustum in Light View Space
 	float l = worldSphereCenterLightSpace.x - m_worldBoundingSphere.Radius;
@@ -176,7 +176,7 @@ void ShadowMapInstance::buildLightMatrix(PS_DIR_BUFFER directionalLight, XMFLOAT
 	float f = m_worldBoundingSphere.Radius * 6.f;
 
 	// Local Projection Matrix
-	lightMatrices.lightProjMatrix = DirectX::XMMatrixOrthographicOffCenterLH(l, r, b, t, n, f);
+	lightMatrices.projMatrix = DirectX::XMMatrixOrthographicOffCenterLH(l, r, b, t, n, f);
 
 	// Update data
 	m_lightMatrixCBuffer.upd(&lightMatrices);

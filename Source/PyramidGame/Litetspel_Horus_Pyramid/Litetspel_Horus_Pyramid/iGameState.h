@@ -12,7 +12,10 @@ enum class states
 	WON,
 	PAUSE,
 	POP,
-	RELOAD_SHADERS
+	RELOAD_SHADERS,
+	TOGGLE_DRAW_PHYSICS_PRIMITVES,
+	TOGGLE_DRAW_LIGHTS_DEBUG,
+	TOGGLE_GBUFFER_DEBUG
 };
 
 class iGameState
@@ -22,8 +25,8 @@ protected:
 	std::unordered_map<std::string, Model> m_models;
 	std::unordered_map<std::string, Model>* m_modelsPtr;
 	std::vector<GameObject*> m_gameObjects;
-	std::vector<ConstBuffer<VS_CONSTANT_BUFFER>> m_wvpCBuffers;
-	constantBufferData m_constantbufferData;
+	std::vector<ConstBuffer<VS_WVPW_CONSTANT_BUFFER>> m_wvpCBuffers;
+	PS_PER_FRAME_BUFFER m_perFrameData;
 	GameOptions m_gameOptions;
 	const std::string m_fileToRead = "HighScore.txt";
 
@@ -40,8 +43,8 @@ public:
 	virtual std::vector<GameObject*>* getGameObjectsPtr() = 0;
 	virtual std::vector<BoundingBox>* getActiveRoomBoundingBoxesPtr() = 0;
 	virtual std::vector<BoundingOrientedBox>* getActiveRoomOrientedBoundingBoxesPtr() = 0;
-	virtual constantBufferData* getConstantBufferData() = 0;
-	virtual std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* getWvpCBuffersPtr() = 0;
+	virtual PS_PER_FRAME_BUFFER* getPerFrameData() = 0;
+	virtual std::vector<ConstBuffer<VS_WVPW_CONSTANT_BUFFER>>* getWvpCBuffersPtr() = 0;
 	virtual DirectX::XMMATRIX* getViewMatrix() const = 0;
 	virtual DirectX::XMMATRIX* getProjectionMatrix() const = 0;
 	virtual void initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext, const GameOptions options, std::shared_ptr<DirectX::AudioEngine> audioEngine, volatile bool* doneLoadingModels) = 0;

@@ -98,42 +98,14 @@ std::vector<BoundingBox>* GameState::getActiveRoomTriggerBox()
 		return nullptr;
 }
 
-std::vector<ConstBuffer<VS_CONSTANT_BUFFER>>* GameState::getWvpCBuffersPtr()
+std::vector<ConstBuffer<VS_WVPW_CONSTANT_BUFFER>>* GameState::getWvpCBuffersPtr()
 {
 	return &m_wvpCBuffers;
 }
 
-constantBufferData* GameState::getConstantBufferData()
+PS_PER_FRAME_BUFFER* GameState::getPerFrameData()
 {
-	return &m_constantbufferData;
-}	
-
-PS_DIR_BUFFER GameState::getActiveRoomDirectionalLight()
-{
-	if (m_activeRoom != nullptr)
-	{
-		return m_activeRoom->getDirectionalLight();
-	}
-	else
-		return PS_DIR_BUFFER();
-}
-
-PS_FOG_BUFFER GameState::getActiveRoomFogData()
-{
-	if (m_activeRoom != nullptr)
-	{
-		return m_activeRoom->getFogData();
-	}
-	else
-		return PS_FOG_BUFFER();
-}
-
-PS_LIGHT_BUFFER GameState::getActiveRoomLightData()
-{
-	if (m_activeRoom != nullptr)
-		return m_activeRoom->getLightData();
-	else
-		return PS_LIGHT_BUFFER();
+	return &m_perFrameData;
 }
 
 void GameState::addGameObjectToWorld(bool dynamic, bool colide, float weight, Model* mdl, DirectX::XMVECTOR position, DirectX::XMVECTOR scale3D, DirectX::XMFLOAT3 boundingBoxSize = DirectX::XMFLOAT3(0, 0, 0), DirectX::XMFLOAT3 acceleration = DirectX::XMFLOAT3(1, 1, 1), DirectX::XMFLOAT3 deceleration = DirectX::XMFLOAT3(1, 1, 1))
@@ -476,9 +448,7 @@ void GameState::roomChangeInit()
 	}
 	m_player.updateHookHandBB(m_platformBB);
 	m_activeRoom->updatePlayerBB();
-	m_constantbufferData.dirBuffer = m_activeRoom->getDirectionalLight();
-	m_constantbufferData.fogBuffer = m_activeRoom->getFogData();
-	m_constantbufferData.lightBuffer = m_activeRoom->getLightData();
+	m_perFrameData = m_activeRoom->getPerFrameData();
 
 	for (size_t i = 0; i < m_activeRoom->getGameObjectsPtr()->size(); i++)
 	{
@@ -734,9 +704,9 @@ void GameState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 static void playerInit(bool* finished, ID3D11Device* device, ID3D11DeviceContext* dContext, std::unordered_map<std::string, Model>* modelList, Player* player, BoundingOrientedBox* pyramidOBB)
 {
 	//allocator<GameObject> allocGO;
-	//allocator<ConstBuffer<VS_CONSTANT_BUFFER>> allocCB;
+	//allocator<ConstBuffer<VS_WVPW_CONSTANT_BUFFER>> allocCB;
 	//std::vector<GameObject*> gameObjects(5, allocGO);
-	//std::vector<ConstBuffer<VS_CONSTANT_BUFFER>> matrixCBuffers(5, allocCB);
+	//std::vector<ConstBuffer<VS_WVPW_CONSTANT_BUFFER>> matrixCBuffers(5, allocCB);
 
 	//unsigned index = 0;
 	//GameObject* hookHand			= gameObjects[index++];
@@ -798,9 +768,7 @@ static void playerInit(bool* finished, ID3D11Device* device, ID3D11DeviceContext
 
 void GameState::update(float dt)
 {
-	m_constantbufferData.dirBuffer = m_activeRoom->getDirectionalLight();
-	m_constantbufferData.fogBuffer = m_activeRoom->getFogData();
-	m_constantbufferData.lightBuffer = m_activeRoom->getLightData();
+	m_perFrameData = m_activeRoom->getPerFrameData();
 	
 	// Player
 	m_player.update(dt);
@@ -826,7 +794,7 @@ void GameState::update(float dt)
 			m_gameObjects[i]->update(dt);
 
 		// World View Projection Matrix Contruction
-		VS_CONSTANT_BUFFER wvpData;
+		VS_WVPW_CONSTANT_BUFFER wvpData;
 		DirectX::XMMATRIX viewPMtrx = m_camera.getViewMatrix() * m_camera.getProjectionMatrix();
 		wvpData.wvp = m_gameObjects[i]->getWorldMatrix() * viewPMtrx;
 		wvpData.worldMatrix = m_gameObjects[i]->getWorldMatrix();
@@ -873,6 +841,12 @@ states GameState::handleInput(Keyboard* keyboard, Mouse* mousePtr, float dt)
 				changeStateTo = states::POP;
 			else if (keyboardEvent.getKey() == VK_OEM_PLUS) // '+' key
 				changeStateTo = states::RELOAD_SHADERS;
+			else if (keyboardEvent.getKey() == 'T')
+				changeStateTo = states::TOGGLE_DRAW_PHYSICS_PRIMITVES;
+			else if (keyboardEvent.getKey() == 'G')
+				changeStateTo = states::TOGGLE_DRAW_LIGHTS_DEBUG;
+			else if (keyboardEvent.getKey() == '0')
+				changeStateTo = states::TOGGLE_GBUFFER_DEBUG;
 		}
 	}
 

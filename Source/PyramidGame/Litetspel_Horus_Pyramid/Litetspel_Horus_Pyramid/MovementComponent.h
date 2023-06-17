@@ -55,11 +55,11 @@ public:
 		down = otherMoveComponent.down;
 
 		// View Matrix
-		if (viewMatrix)
-		{
+		if (viewMatrix) {
 			delete viewMatrix;
-			viewMatrix = nullptr;
 		}
+
+		viewMatrix = nullptr;
 		if (otherMoveComponent.viewMatrix != nullptr)
 			viewMatrix = new DirectX::XMMATRIX(*otherMoveComponent.viewMatrix);
 	}

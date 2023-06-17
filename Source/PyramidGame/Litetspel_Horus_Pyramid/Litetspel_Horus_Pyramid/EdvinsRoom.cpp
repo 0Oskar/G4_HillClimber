@@ -112,27 +112,27 @@ void EdvinsRoom::createSceneObjects()
 	// Brick 1
 	pos = DirectX::XMVectorSet(-6, 14, 15, 1); //world pos
 	addGameObjectToRoom(true, false, 1, &m_models->at("Brick_1.bff"), pos, scale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
-	bricks.emplace_back(m_gameObjects.back());
+	m_bricks.emplace_back(m_gameObjects.back());
 
 	// Brick 2
 	pos = DirectX::XMVectorSet(-6, 14, 8, 1); //world pos
 	addGameObjectToRoom(true, false, 1, &m_models->at("Brick_2.bff"), pos, scale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
-	bricks.emplace_back(m_gameObjects.back());
+	m_bricks.emplace_back(m_gameObjects.back());
 
 	// Brick 3
 	pos = DirectX::XMVectorSet(-6, 14, 1, 1); //world pos
 	addGameObjectToRoom(true, false, 1, &m_models->at("Brick_3.bff"), pos, scale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
-	bricks.emplace_back(m_gameObjects.back());
+	m_bricks.emplace_back(m_gameObjects.back());
 
 	// Brick 4
 	pos = DirectX::XMVectorSet(-6, 14, -6, 1); //world pos
 	addGameObjectToRoom(true, false, 1, &m_models->at("Brick_4.bff"), pos, scale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
-	bricks.emplace_back(m_gameObjects.back());
+	m_bricks.emplace_back(m_gameObjects.back());
 
 	// Brick 5
 	pos = DirectX::XMVectorSet(-6, 14, -13, 1); //world pos
 	addGameObjectToRoom(true, false, 1, &m_models->at("Brick_5.bff"), pos, scale, XMFLOAT3(1, 1, 1), XMFLOAT3(1.f, 1.f, 1.f), XMFLOAT3(2.f, 2.f, 2.f));
-	bricks.emplace_back(m_gameObjects.back());
+	m_bricks.emplace_back(m_gameObjects.back());
 
 	// Leaver Base
 	pos = DirectX::XMVectorSet(-45, 2, 0, 1); //world pos
@@ -157,8 +157,8 @@ void EdvinsRoom::onWin()
 	roomPortal->setPosition(XMVectorSet(-270, 0, 200, 1));
 
 	//Activate Portal Lights
-	getLight(1)->plRange = 50;
-	getLight(2)->plRange = 50;
+	getLight(1)->range = 4.f;
+	getLight(2)->range = 4.f;
 	
 	//Activate particalas
 
@@ -211,31 +211,25 @@ EdvinsRoom::EdvinsRoom()
 
 	//Green light from portal
 	PointLight light;
-	light.plPosition = { -268.5f, 4.f, 200.f };
-	light.plDiffuse = { 0.f, 1.f, 0.f, 1.f };
-	light.plAmbient = { 0.f, 0.f, 0.f, 1 };
-	light.plRange = 50.f;
-	light.att = { 1.f, 0.f, 0.05f };
+	light.position = { -269.f, 3.f, 200.f };
+	light.diffuse = { 0.f, 0.5f, 0.f };
+	light.range = 10.f;
 
 	int lightID = createLight(light); //0
 
 	// Right:
 	PointLight rightLight;
-	rightLight.plPosition = { -264.f, 4.f, 204.f };
-	rightLight.plDiffuse = { 1.f, 0.f, 0.f, 1.f };
-	rightLight.plAmbient = { 0.f, 0.f, 0.f, 1.f };
-	rightLight.plRange = 5.f;
-	rightLight.att = { 1.f, 0.f, 0.3f };
+	rightLight.position = { -264.f, 4.f, 205.f };
+	rightLight.diffuse = { 1.f, 0.f, 0.f };
+	rightLight.range = 0.f;
 
 	lightID = createLight(rightLight); //1
 
 	//Left:
 	PointLight leftLight;
-	leftLight.plPosition = { -264.f, 4.f, 196.f };
-	leftLight.plDiffuse = { 1.f, 0.f, 0.f, 1.f };
-	leftLight.plAmbient = { 0.f, 0.f, 0.f, 1.f };
-	leftLight.plRange = 5.f;
-	leftLight.att = { 1.f, 0.f, 0.2f };
+	leftLight.position = { -264.f, 4.f, 195.f };
+	leftLight.diffuse = { 1.f, 0.f, 0.f };
+	leftLight.range = 0.f;
 
 	lightID = createLight(leftLight); //2
 }
@@ -270,7 +264,7 @@ void EdvinsRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& activ
 
 					//Set texture
 					std::wstring path = L"Textures/Hyroglajf_" + std::to_wstring(number) + L".png";
-					bricks[i]->setTexturePath(path);
+					m_bricks[i]->setTexturePath(path);
 
 				}
 
