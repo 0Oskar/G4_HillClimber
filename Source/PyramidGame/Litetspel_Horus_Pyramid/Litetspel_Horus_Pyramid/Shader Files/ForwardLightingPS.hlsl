@@ -38,6 +38,7 @@ cbuffer PerFrameBuffer : register(b1)
 
 Texture2D diffuseTexture : TEXTURE : register(t0);
 Texture2D shadowMap : TEXTURE : register(t1);
+Texture2D ambientOcclusionMap : TEXTURE : register(t2);
 
 SamplerState samplerState : SAMPLER : register(s0);
 SamplerComparisonState shadowSampler : SAMPLER : register(s1);
@@ -103,6 +104,7 @@ float calculateShadowFactor(float4 shadowPosition)
 float4 main(PS_IN input) : SV_TARGET
 {
     float3 diffuse = diffuseM.rgb * diffuseTexture.Sample(samplerState, input.texcoord).rgb;
+    float ambientOcclusion = ambientOcclusionMap.Sample(samplerState, input.texcoord).r;
     
     // Global Ambient
     const float3 skyColor = float3(0.25, 0.55, 0.9);
@@ -123,15 +125,18 @@ float4 main(PS_IN input) : SV_TARGET
     float diffBright = saturate(dot(input.normal, skyLightDirection));
     float3 directionalLightDiffuse = ambientColor + ((skyLightColor * diffBright * skyLightIntensity) * calculateShadowFactor(input.positionShadow));
     
-    float4 fColor = float4((diffuse * directionalLightDiffuse) + skyAmbientColor, 1.0);
+    float3 fColor = (diffuse * directionalLightDiffuse) + skyAmbientColor;
     
+    // Points Lights
     float3 wPosToCamera = cameraPos - input.positionW;
     float distance = length(wPosToCamera);
     wPosToCamera = wPosToCamera / distance; //Normalize
     for (int i = 0; i < nrOfPointLights; i++)
     {
-        fColor = float4(saturate(fColor.rgb + pointLightCalculation(ambientM, diffuse, input.positionW, input.normal, pointLights[i])), 1.f);
+        fColor = saturate(fColor + pointLightCalculation(ambientM, diffuse, input.positionW, input.normal, pointLights[i]));
     }
+    // Ambient Occlusion
+    fColor *= ambientOcclusion;
     
     // Fog
     if (fogEnd != 0)

@@ -1,10 +1,18 @@
 #pragma once
+
+#include <stdlib.h>
+#include <ctime>
 #include <d3d11.h>
 #include <SimpleMath.h>
 
 namespace pMath
 {
     using namespace DirectX::SimpleMath;
+    static float frand(float low, float high)
+    {
+        return low + static_cast<float> (rand()) / (static_cast<float> (RAND_MAX / (high - low)));
+    }
+
 	static const float convertDegreesToRadians(float degree)
 	{
 		float radians;

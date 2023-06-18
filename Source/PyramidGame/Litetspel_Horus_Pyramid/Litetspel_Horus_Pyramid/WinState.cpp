@@ -118,14 +118,6 @@ states WinState::handleInput(Keyboard* keyboard, Mouse* mousePtr, float dt)
 				changeStateTo = states::POP;
 			else if (keyboardEvent.getKey() == VK_RETURN) // ENTER
 				changeStateTo = states::GAME;
-			else if (keyboardEvent.getKey() == VK_OEM_PLUS) // '+' key
-				changeStateTo = states::RELOAD_SHADERS;
-			else if (keyboardEvent.getKey() == 'T')
-				changeStateTo = states::TOGGLE_DRAW_PHYSICS_PRIMITVES;
-			else if (keyboardEvent.getKey() == 'G')
-				changeStateTo = states::TOGGLE_DRAW_LIGHTS_DEBUG;
-			else if (keyboardEvent.getKey() == '0')
-				changeStateTo = states::TOGGLE_GBUFFER_DEBUG;
 		}
 	}
 
@@ -188,22 +180,9 @@ std::vector<ConstBuffer<VS_WVPW_CONSTANT_BUFFER>>* WinState::getWvpCBuffersPtr()
 	return &m_wvpCBuffers;
 }
 
-DirectX::XMMATRIX* WinState::getViewMatrix() const
+Camera* WinState::getCamera()
 {
-	return m_camera.getViewMatrixPtr();
-}
-
-DirectX::XMMATRIX* WinState::getProjectionMatrix() const
-{
-	return m_camera.getProjectionMatrixPtr();
-}
-
-
-XMFLOAT3 WinState::getCameraPos() const
-{
-	XMFLOAT3 camPos;
-	XMStoreFloat3(&camPos, m_cameraMovementComponentPtr->position);
-	return  camPos;
+	return &m_camera;
 }
 
 void WinState::setGameTime(int time)

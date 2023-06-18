@@ -93,8 +93,8 @@ void finalRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& active
 			{
 				timesHit++;
 				m_player->respawn();
-				OutputDebugStringA(timesHitString.c_str());
-				OutputDebugStringA("\n");
+				//OutputDebugStringA(timesHitString.c_str());
+				//OutputDebugStringA("\n");
 			}
 		}
 

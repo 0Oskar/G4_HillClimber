@@ -59,8 +59,7 @@ public:
 	~GameState();
 
 	// Getters
-	DirectX::XMMATRIX* getViewMatrix() const;
-	DirectX::XMMATRIX* getProjectionMatrix() const;
+	Camera* getCamera();
 	std::unordered_map<std::string, Model>* getModelsPtr();
 	std::vector<GameObject*>* getGameObjectsPtr();
 	std::vector<GameObject*>* getActiveRoomGameObjectsPtr();
@@ -84,8 +83,6 @@ public:
 	void update(const float dt);
 	states handleInput(Keyboard* keyboard, Mouse* mouePointer, const float dt);
 	void highScoreCheck();
-	//void updateCustomViewLayerVariables(ViewLayer* viewLayer);
-	XMFLOAT3 getCameraPos() const;
 
 	void roomChangeInit();
 	Timer* getGameTimerPtr();

@@ -35,7 +35,8 @@ Texture2D diffuseRT                     : TEXTURE : register(t0);
 Texture2D normalShadowMaskRT            : TEXTURE : register(t1);
 Texture2D specularShininessRT           : TEXTURE : register(t2);
 Texture2D ambientGlobalAContributionRT  : TEXTURE : register(t3);
-Texture2D depthBuffer                   : TEXTURE : register(t4);
+Texture2D ambientOcclusionRT            : TEXTURE : register(t4);
+Texture2D depthBuffer                   : TEXTURE : register(t5);
 SamplerState samplerState               : SAMPLER : register(s0);
 
 float3 pointLightCalculation(float3 ambient, float3 diffuse, float3 position, float3 normal, PointLight light)
@@ -63,6 +64,7 @@ float4 main(PS_IN input) : SV_TARGET
     float4 normalShadowMask = normalShadowMaskRT.Sample(samplerState, input.texcoord);
     float4 specularShininess = specularShininessRT.Sample(samplerState, input.texcoord);
     float4 ambientGlobalAContribution = ambientGlobalAContributionRT.Sample(samplerState, input.texcoord);
+    float ambientOcclusion = ambientOcclusionRT.Sample(samplerState, input.texcoord).r;
     
     float3 normal = normalShadowMask.xyz;
     
@@ -96,6 +98,7 @@ float4 main(PS_IN input) : SV_TARGET
     
     float3 fColor = (diffuse * directionalLightDiffuse.xyz) + skyAmbientColor;
     
+    // Points Lights
     float3 wPosToCamera = cameraPos - worldPosition;
     float distance = length(wPosToCamera);
     wPosToCamera = wPosToCamera / distance; //Normalize
@@ -103,6 +106,8 @@ float4 main(PS_IN input) : SV_TARGET
     {
         fColor = saturate(fColor + pointLightCalculation(ambientGlobalAContribution.rgb, diffuse, worldPosition, normal, pointLights[i]));
     }
+    // Ambient Occlusion
+    fColor *= ambientOcclusion;
     
     // Fog
     if (fogEnd != 0)

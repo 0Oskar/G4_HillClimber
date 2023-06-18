@@ -162,7 +162,7 @@ void Bell::update(float dt)
 			isAnimating = false;
 			startPos = endPos;
 			setPosition(endPos);
-			OutputDebugString(L"Animation Ended\n");
+			//OutputDebugString(L"Animation Ended\n");
 		}
 	}
 }

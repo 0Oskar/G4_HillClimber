@@ -42,6 +42,16 @@ struct DIR_LIGHT_DATA
 	DirectX::XMFLOAT2 pad;
 };
 
+const int MAX_BLUR_RADIUS = 15;
+struct CS_BLUR_CBUFFER
+{
+	XMMATRIX projectionMatrix;
+	int radius;
+	BOOL direction;
+	XMFLOAT2 pad;
+	alignas(16) float weights[MAX_BLUR_RADIUS]; // BLUR_RADIUS + 1 * 4 bytes
+};
+
 template<class T>
 class ConstBuffer
 {
@@ -57,7 +67,7 @@ public:
 	}
 
 	ID3D11Buffer* Get(){ return buffer.Get(); }
-	ID3D11Buffer* const* GetAdressOf() const { return buffer.GetAddressOf(); }
+	ID3D11Buffer* const* GetAddressOf() const { return buffer.GetAddressOf(); }
 	HRESULT init(ID3D11Device* device, ID3D11DeviceContext* dContext)
 	{
 		dContextPtr = dContext;

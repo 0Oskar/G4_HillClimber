@@ -235,8 +235,7 @@ ViewLayer::ViewLayer()
 
 	resourceHandler = &ResourceHandler::get();
 	
-	m_viewMatrix = nullptr;
-	m_projectionMatrix = nullptr;
+	m_cameraPtr= nullptr;
 	m_fps = 0;
 }
 
@@ -255,16 +254,11 @@ ID3D11DeviceContext* ViewLayer::getContextDevice()
 	return m_deviceContext.Get();
 }
 
-
-
-void ViewLayer::setViewMatrix(DirectX::XMMATRIX* newViewMatrix)
+void ViewLayer::setCamera(Camera* camera)
 {
-	m_viewMatrix = newViewMatrix;
-}
-
-void ViewLayer::setProjectionMatrix(DirectX::XMMATRIX* newProjectionMatrix)
-{
-	m_projectionMatrix = newProjectionMatrix;
+	m_cameraPtr = camera;
+	m_SSAOInstance.updateProjMatrix(m_cameraPtr->getProjectionMatrix());
+	m_blurCData.projectionMatrix = m_cameraPtr->getProjectionMatrix();
 }
 
 void ViewLayer::setgameObjectsFromState(std::vector<GameObject*>* gameObjectsFromState)
@@ -336,6 +330,124 @@ void ViewLayer::initSky()
 	m_skyCube.loadModel(m_device.Get(), m_deviceContext.Get(), "cube2.obj", mat, L"");
 }
 
+void ViewLayer::initSSAOBlurPass()
+{
+	ShaderFiles shaderFiles;
+	shaderFiles.cs = L"Shader Files\\EdgePreservingBlurCS.hlsl";
+	m_edgePreservingBlurCS.initialize(m_device.Get(), m_deviceContext.Get(), shaderFiles, LayoutType::POS_TEX);
+	
+	m_blurCData.direction = 0;
+	float twoSigma2 = 2.0f * m_ssaoBlurSigma * m_ssaoBlurSigma;
+
+	// Estimate the blur radius based on sigma since sigma controls the "width" of the bell curve.
+	// For example, for sigma = 3, the width of the bell curve is 
+	int blurRadius = (int)ceil(2.f * m_ssaoBlurSigma);
+	m_blurCData.radius = blurRadius;
+
+	assert(blurRadius <= MAX_BLUR_RADIUS);
+
+	float weightSum = 0.0f;
+
+	for (int i = -blurRadius; i <= blurRadius; ++i)
+	{
+		float x = (float)i;
+
+		m_blurCData.weights[i + blurRadius] = expf(-x * x / twoSigma2);
+		weightSum += m_blurCData.weights[i + blurRadius];
+	}
+
+	// Divide by the sum so all the weights add up to 1.0.
+	float weightLength = 2.f * (float)blurRadius + 1.f;
+	for (int i = 0; i < weightLength; ++i)
+		m_blurCData.weights[i] /= weightSum;
+
+	m_blurCBuffer.init(m_device.Get(), m_deviceContext.Get());
+	m_blurCBuffer.m_data = m_blurCData;
+
+	// Texture
+	D3D11_TEXTURE2D_DESC textureDesc;
+	ZeroMemory(&textureDesc, sizeof(D3D11_TEXTURE2D_DESC));
+	textureDesc.Width = m_options->width;
+	textureDesc.Height = m_options->height;
+	textureDesc.MipLevels = 1;
+	textureDesc.ArraySize = 1;
+	textureDesc.Format = m_gBuffer[AMBIENT_OCCLUSION_GB].format;
+	textureDesc.SampleDesc.Count = 1;
+	textureDesc.Usage = D3D11_USAGE_DEFAULT;
+	textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
+	textureDesc.CPUAccessFlags = 0;
+	textureDesc.MiscFlags = 0;
+
+	ID3D11Texture2D* texture;
+	HRESULT hr = m_device->CreateTexture2D(&textureDesc, NULL, &texture);
+	assert(SUCCEEDED(hr) && "Error, blur pass ping pong texture could not be created!");
+
+	// SRV
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+	ZeroMemory(&srvDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
+	srvDesc.Format = m_gBuffer[AMBIENT_OCCLUSION_GB].format;
+	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Texture2D.MostDetailedMip = 0;
+	srvDesc.Texture2D.MipLevels = 1;
+
+	hr = m_device->CreateShaderResourceView(texture, &srvDesc, m_blurPingPongSRV.GetAddressOf());
+	assert(SUCCEEDED(hr) && "Error, blur pass ping pong shader resource view could not be created!");
+
+	// UAV
+	D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
+	uavDesc.Format = textureDesc.Format;
+	uavDesc.ViewDimension = D3D11_UAV_DIMENSION::D3D11_UAV_DIMENSION_TEXTURE2D;
+	uavDesc.Texture2D.MipSlice = 0;
+
+	hr = m_device->CreateUnorderedAccessView(texture, &uavDesc, m_blurPingPongUAV.GetAddressOf());
+	assert(SUCCEEDED(hr) && "Error, blur pass ping pong unordered access view could not be created!");
+
+	texture->Release();
+}
+
+void ViewLayer::blurSSAOPass()
+{
+	UINT cOffset = -1;
+
+	m_deviceContext->OMSetRenderTargets(1, &m_nullRTV, NULL);
+	m_deviceContext->CSSetUnorderedAccessViews(0, 1, &m_nullUAV, &cOffset);
+	m_deviceContext->PSSetShaderResources(0, 2, &m_nullSRV);
+
+	m_edgePreservingBlurCS.setShaders();
+
+	ID3D11ShaderResourceView* blurSRVs[] = { m_SSAOInstance.getAORenderTexture().srv, m_blurPingPongSRV.Get() };
+	ID3D11UnorderedAccessView* blurUAVs[] = { m_blurPingPongUAV.Get(), m_SSAOInstance.getAORenderTexture().uav };
+
+	for (UINT i = 0; i < 2; i++)
+	{
+		// Blur Constant Buffer
+		m_blurCData.direction = i;
+
+		m_blurCBuffer.m_data = m_blurCData;
+		m_blurCBuffer.upd();
+		m_deviceContext->CSSetConstantBuffers(0, 1, m_blurCBuffer.GetAddressOf());
+
+		// Set Rescources
+		m_deviceContext->CSSetShaderResources(0, 1, &blurSRVs[m_blurCData.direction]);
+		m_deviceContext->CSSetShaderResources(1, 1, &m_gBuffer[DEPTH_GB].srv);
+		m_deviceContext->CSSetShaderResources(2, 1, &m_gBuffer[NORMAL_SHADOWMASK_GB].srv);
+		m_deviceContext->CSSetUnorderedAccessViews(0, 1, &blurUAVs[m_blurCData.direction], &cOffset);
+
+		// Dispatch Shader
+		UINT clientWidth = (UINT)std::ceil((m_options->width / 16.f) + 0.5f);
+		UINT clientHeight = (UINT)std::ceil((m_options->height / 16.f) + 0.5f);
+		m_deviceContext->Dispatch(clientWidth, clientHeight, 1);
+
+		// Unbind Unordered Access View and Shader Resource View
+		m_deviceContext->CSSetShaderResources(0, 1, &m_nullSRV);
+		m_deviceContext->CSSetUnorderedAccessViews(0, 1, &m_nullUAV, &cOffset);
+	}
+
+	m_deviceContext->OMSetRenderTargets(1, &m_nullRTV, NULL);
+	m_deviceContext->CSSetUnorderedAccessViews(0, 1, &m_nullUAV, &cOffset);
+	m_deviceContext->CSSetShaderResources(0, 3, &m_nullSRV);
+}
+
 void ViewLayer::initSamplerState()
 {
 	D3D11_SAMPLER_DESC samplerDesc;
@@ -377,6 +489,12 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 	initRenderTarget(m_gBuffer[GBufferType::SPECULAR_SHININESS_GB], m_options->width, m_options->height, DXGI_FORMAT_R8G8B8A8_UNORM);
 	// - Ambient, Global Ambient Contribution
 	initRenderTarget(m_gBuffer[GBufferType::AMBIENT_GLOBALAMBIENTCONTR_GB], m_options->width, m_options->height, DXGI_FORMAT_R8G8B8A8_UNORM);
+
+	// SSAO
+	m_SSAOInstance.initialize(m_device.Get(), m_deviceContext.Get(), m_options->width, m_options->height);
+	m_gBuffer[GBufferType::AMBIENT_OCCLUSION_GB] = m_SSAOInstance.getAORenderTexture();
+
+	initSSAOBlurPass();
 
 	// Lights
 	PointLight pLight;
@@ -468,10 +586,11 @@ void ViewLayer::reloadShaders()
 	m_GBufferShaders.reloadShaders();
 	m_lightingShaders.reloadShaders();
 	m_forwardLightingShaders.reloadShaders();
+	m_SSAOInstance.updateShaders();
 	m_skyShaders.reloadShaders();
 }
 
-void ViewLayer::update(float dt, XMFLOAT3 cameraPos)
+void ViewLayer::update(float dt)
 {
 	// Transition
 	m_transition->update(dt);
@@ -485,7 +604,14 @@ void ViewLayer::update(float dt, XMFLOAT3 cameraPos)
 		m_fps = 0;
 	}
 
+	// SSAO
+	if (m_ssaoToggle)
+	{
+		m_SSAOInstance.updateViewMatrix(m_cameraPtr->getViewMatrix());
+	}
+
 	// Shadow matrix and per frame buffer
+	XMFLOAT3 cameraPos = m_cameraPtr->getPosition();
 	m_shadowInstance.buildLightMatrix(m_perFrameBuffer.m_data.skyLightDirection, cameraPos);
 	m_perFrameBuffer.m_data.cameraPos = cameraPos;
 
@@ -504,32 +630,42 @@ void ViewLayer::render(iGameState* gameState)
 		m_gBuffer[GBufferType::DIFFUSE_GB].rtv,
 		m_gBuffer[GBufferType::NORMAL_SHADOWMASK_GB].rtv,
 		m_gBuffer[GBufferType::SPECULAR_SHININESS_GB].rtv,
-		m_gBuffer[GBufferType::AMBIENT_GLOBALAMBIENTCONTR_GB].rtv
+		m_gBuffer[GBufferType::AMBIENT_GLOBALAMBIENTCONTR_GB].rtv,
+		m_gBuffer[GBufferType::AMBIENT_OCCLUSION_GB].rtv
 	};
 	m_deviceContext->ClearRenderTargetView(gBufferRTVs[DIFFUSE_GB], m_clearColorBlack);
 	m_deviceContext->ClearRenderTargetView(gBufferRTVs[NORMAL_SHADOWMASK_GB], m_clearColorWhite);
 	m_deviceContext->ClearRenderTargetView(gBufferRTVs[SPECULAR_SHININESS_GB], m_clearColorBlack);
 	m_deviceContext->ClearRenderTargetView(gBufferRTVs[AMBIENT_GLOBALAMBIENTCONTR_GB], m_clearColorBlack);
+	if (m_gBuffer[GBufferType::AMBIENT_OCCLUSION_GB].rtv)
+	{
+		m_deviceContext->ClearRenderTargetView(gBufferRTVs[AMBIENT_OCCLUSION_GB], m_clearColorWhite);
+	}
 
 	m_annotation->EndEvent();
+
+	DirectX::XMMATRIX viewMatrix = m_cameraPtr->getViewMatrix();
+	DirectX::XMMATRIX projMatrix = m_cameraPtr->getProjectionMatrix();
 
 	// Shadow Mapping
 	{
 		m_annotation->BeginEvent(L"ShadowMapping");
 		m_shadowInstance.bindViewsAndRenderTarget();
-		DirectX::XMMATRIX viewPMtrx = (*m_viewMatrix) * (*m_projectionMatrix);
+		DirectX::XMMATRIX viewPMtrx = viewMatrix * projMatrix;
 		for (size_t i = 0; i < m_gameObjectsFromState->size(); i++)
 		{
 			// Get indexes
 			GameObject* gObject = m_gameObjectsFromState->at(i);
 			if (gObject->visible())
 			{
+				// Get Model Mesh
 				Model* model = gObject->getModelPtr();
 				if (!model->is_loaded()) { continue; }
 
-				int wvpIndex = gObject->getWvpCBufferIndex();
 				// Set Constant buffer
-				m_deviceContext->VSSetConstantBuffers(0, 1, m_wvpCBufferFromState->at(wvpIndex).GetAdressOf());
+				int wvpIndex = gObject->getWvpCBufferIndex();
+				m_deviceContext->VSSetConstantBuffers(0, 1, m_wvpCBufferFromState->at(wvpIndex).GetAddressOf());
+
 				// Draw Model
 				model->draw();
 			}
@@ -543,12 +679,14 @@ void ViewLayer::render(iGameState* gameState)
 				GameObject* gObject = m_gameObjectsFromActiveRoom->at(i);
 				if (gObject->visible())
 				{
+					// Get Model Mesh
 					Model* model = gObject->getModelPtr();
 					if (!model->is_loaded()) { continue; }
 
-					int wvpIndex = gObject->getWvpCBufferIndex();
 					// Set Constant buffer
-					m_deviceContext->VSSetConstantBuffers(0, 1, m_wvpCBufferFromState->at(wvpIndex).GetAdressOf());
+					int wvpIndex = gObject->getWvpCBufferIndex();
+					m_deviceContext->VSSetConstantBuffers(0, 1, m_wvpCBufferFromState->at(wvpIndex).GetAddressOf());
+					
 					// Draw Model
 					model->draw();
 				}
@@ -575,9 +713,9 @@ void ViewLayer::render(iGameState* gameState)
 	m_deviceContext->PSSetSamplers(0, 1, m_samplerState.GetAddressOf());
 	m_deviceContext->PSSetShaderResources(1, 1, m_shadowInstance.getShadowMapSRVConstPtr());
 
-	// Draw
+	// G-Buffer Draw
 	std::vector<GameObject*> transparentObjects;
-	DirectX::XMMATRIX viewPMtrx = (*m_viewMatrix) * (*m_projectionMatrix);
+	DirectX::XMMATRIX viewPMtrx = viewMatrix * projMatrix;
 	for (size_t i = 0; i < m_gameObjectsFromState->size(); i++)
 	{
 		// Get indexes
@@ -595,7 +733,7 @@ void ViewLayer::render(iGameState* gameState)
 
 			int wvpIndex = gObject->getWvpCBufferIndex();
 			// Set Constant buffer
-			m_deviceContext->VSSetConstantBuffers(0, 1, m_wvpCBufferFromState->at(wvpIndex).GetAdressOf());
+			m_deviceContext->VSSetConstantBuffers(0, 1, m_wvpCBufferFromState->at(wvpIndex).GetAddressOf());
 			// Draw Model
 			model->m_material.setTexture(gObject->getTexturePath().c_str());
 			model->draw();
@@ -610,6 +748,7 @@ void ViewLayer::render(iGameState* gameState)
 			GameObject* gObject = m_gameObjectsFromActiveRoom->at(i);
 			if (gObject->visible())
 			{
+				// Get Model Mesh
 				Model* model = gObject->getModelPtr();
 				if (!model->is_loaded()) { continue; }
 
@@ -619,9 +758,10 @@ void ViewLayer::render(iGameState* gameState)
 					continue;
 				}
 
-				int wvpIndex = gObject->getWvpCBufferIndex();
 				// Set Constant buffer
-				m_deviceContext->VSSetConstantBuffers(0, 1, m_wvpCBufferFromState->at(wvpIndex).GetAdressOf());
+				int wvpIndex = gObject->getWvpCBufferIndex();
+				m_deviceContext->VSSetConstantBuffers(0, 1, m_wvpCBufferFromState->at(wvpIndex).GetAddressOf());
+
 				// Draw Model
 				model->m_material.setTexture(gObject->getTexturePath().c_str());
 				model->draw();
@@ -633,23 +773,40 @@ void ViewLayer::render(iGameState* gameState)
 	m_deviceContext->OMSetRenderTargets(GB_NUM - 1, m_nullRTVs, nullptr);
 	m_annotation->EndEvent();
 
+	// SSAO
+	if (m_ssaoToggle)
+	{
+		m_annotation->BeginEvent(L"SSAO");
+		m_deviceContext->OMSetRenderTargets(1, &m_nullRTV, nullptr);
+		m_deviceContext->OMSetDepthStencilState(m_states->DepthNone(), 0);
+		m_deviceContext->RSSetState(m_states->CullNone());
+		m_deviceContext->PSSetShaderResources(0, 1, &m_gBuffer[DEPTH_GB].srv);
+		m_deviceContext->PSSetShaderResources(1, 1, &m_gBuffer[NORMAL_SHADOWMASK_GB].srv);
+
+		m_SSAOInstance.render();
+		m_annotation->EndEvent();
+
+		// Blur
+		blurSSAOPass();
+	}
+
 	// Lighting
 	m_annotation->BeginEvent(L"Lighting");
 	m_lightingShaders.setShaders();
-	m_deviceContext->OMSetDepthStencilState(m_states->DepthNone(), 0);
 	m_deviceContext->OMSetRenderTargets(1, m_outputRTV.GetAddressOf(), nullptr);
+	m_deviceContext->OMSetDepthStencilState(m_states->DepthNone(), 0);
 	m_deviceContext->RSSetState(m_states->CullNone());
 
 	// Set Constant Buffer
 	m_perFrameBuffer.upd();
-	m_deviceContext->PSSetConstantBuffers(1, 1, m_perFrameBuffer.GetAdressOf());
+	m_deviceContext->PSSetConstantBuffers(1, 1, m_perFrameBuffer.GetAddressOf());
 
-	XMVECTOR det = XMMatrixDeterminant(*m_viewMatrix);
-	det = XMMatrixDeterminant(*m_projectionMatrix);
-	m_inverseMatricesBuffer.m_data.viewMatrix = XMMatrixTranspose(XMMatrixInverse(&det, *m_viewMatrix));
-	m_inverseMatricesBuffer.m_data.projMatrix = XMMatrixTranspose(XMMatrixInverse(&det, *m_projectionMatrix));
+	XMVECTOR det = XMMatrixDeterminant(m_cameraPtr->getViewMatrix());
+	det = XMMatrixDeterminant(m_cameraPtr->getProjectionMatrix());
+	m_inverseMatricesBuffer.m_data.viewMatrix = XMMatrixTranspose(XMMatrixInverse(&det, viewMatrix));
+	m_inverseMatricesBuffer.m_data.projMatrix = XMMatrixTranspose(XMMatrixInverse(&det, projMatrix));
 	m_inverseMatricesBuffer.upd();
-	m_deviceContext->PSSetConstantBuffers(2, 1, m_inverseMatricesBuffer.GetAdressOf());
+	m_deviceContext->PSSetConstantBuffers(2, 1, m_inverseMatricesBuffer.GetAddressOf());
 
 	// Textures
 	ID3D11ShaderResourceView* gBufferSRVs[] = {
@@ -657,6 +814,7 @@ void ViewLayer::render(iGameState* gameState)
 		m_gBuffer[GBufferType::NORMAL_SHADOWMASK_GB].srv,
 		m_gBuffer[GBufferType::SPECULAR_SHININESS_GB].srv,
 		m_gBuffer[GBufferType::AMBIENT_GLOBALAMBIENTCONTR_GB].srv,
+		m_gBuffer[GBufferType::AMBIENT_OCCLUSION_GB].srv,
 		m_gBuffer[GBufferType::DEPTH_GB].srv
 	};
 	m_deviceContext->PSSetShaderResources(0, GB_NUM, gBufferSRVs);
@@ -672,10 +830,10 @@ void ViewLayer::render(iGameState* gameState)
 	m_deviceContext->RSSetState(m_states->CullClockwise());
 	m_skyShaders.setShaders();
 	
-	m_skyboxCameraBuffer.m_data = XMMatrixScaling(-1.f, -1.f, -1.f) * (*m_viewMatrix) * (*m_projectionMatrix);
+	m_skyboxCameraBuffer.m_data = XMMatrixScaling(-1.f, -1.f, -1.f) * viewMatrix * projMatrix;
 	m_skyboxCameraBuffer.upd();
-	m_deviceContext->VSSetConstantBuffers(0, 1, m_skyboxCameraBuffer.GetAdressOf());
-	m_deviceContext->PSSetConstantBuffers(2, 1, m_skyboxSunLightBuffer.GetAdressOf());
+	m_deviceContext->VSSetConstantBuffers(0, 1, m_skyboxCameraBuffer.GetAddressOf());
+	m_deviceContext->PSSetConstantBuffers(2, 1, m_skyboxSunLightBuffer.GetAddressOf());
 
 	m_skyCube.draw();
 	m_annotation->EndEvent();
@@ -688,22 +846,26 @@ void ViewLayer::render(iGameState* gameState)
 
 	m_forwardLightingShaders.setShaders();
 	m_deviceContext->PSSetShaderResources(1, 1, m_shadowInstance.getShadowMapSRVConstPtr());
+	m_deviceContext->PSSetShaderResources(2, 1, &m_gBuffer[GBufferType::AMBIENT_OCCLUSION_GB].srv);
 
-	m_deviceContext->PSSetConstantBuffers(1, 1, m_perFrameBuffer.GetAdressOf());
+	m_deviceContext->PSSetConstantBuffers(1, 1, m_perFrameBuffer.GetAddressOf());
 
 	for (size_t i = 0; i < transparentObjects.size(); i++)
 	{
+		// Get Model Mesh
 		GameObject* gObject = transparentObjects[i];
 		Model* model = gObject->getModelPtr();
-		int wvpIndex = gObject->getWvpCBufferIndex();
 
 		// Set Constant buffer
-		m_deviceContext->VSSetConstantBuffers(0, 1, m_wvpCBufferFromState->at(wvpIndex).GetAdressOf());
+		int wvpIndex = gObject->getWvpCBufferIndex();
+		m_deviceContext->VSSetConstantBuffers(0, 1, m_wvpCBufferFromState->at(wvpIndex).GetAddressOf());
+
 		// Draw Model
 		model->m_material.setTexture(gObject->getTexturePath().c_str());
 		model->draw();
 	}
 	m_deviceContext->PSSetShaderResources(1, 1, &m_nullSRV);
+	m_deviceContext->PSSetShaderResources(2, 1, &m_nullSRV);
 	m_deviceContext->OMSetRenderTargets(1, m_outputRTV.GetAddressOf(), nullptr);
 	m_annotation->EndEvent();
 
@@ -725,8 +887,8 @@ void ViewLayer::render(iGameState* gameState)
 
 		m_batch->Begin();
 
-		m_effect->SetView(*(m_viewMatrix));
-		m_effect->SetProjection(*(m_projectionMatrix));
+		m_effect->SetView(viewMatrix);
+		m_effect->SetProjection(projMatrix);
 		// Apply Effect
 		m_effect->Apply(m_deviceContext.Get());
 
@@ -737,7 +899,6 @@ void ViewLayer::render(iGameState* gameState)
 			{
 				if (m_gameObjectsFromState->at(i)->getDrawBB())
 				{
-					// Draw Primitive
 					DX::Draw(m_batch.get(), *(m_gameObjectsFromState->at(i)->getAABBPtr()), DirectX::Colors::Blue);
 				}
 			}
@@ -747,7 +908,6 @@ void ViewLayer::render(iGameState* gameState)
 				{
 					if (m_gameObjectsFromActiveRoom->at(i)->collidable())
 					{
-						// Draw Primitive
 						DX::Draw(m_batch.get(), *(m_gameObjectsFromActiveRoom->at(i)->getAABBPtr()), DirectX::Colors::Blue);
 					}
 				}
@@ -804,11 +964,12 @@ void ViewLayer::render(iGameState* gameState)
 	if (m_drawShadowmapDebug)
 	{
 		m_annotation->BeginEvent(L"Shadowmap Debug");
+		long dimension = 500;
 		RECT shadowMapImg;
-		shadowMapImg.left = 0;
 		shadowMapImg.top = 0;
-		shadowMapImg.right = 500;
 		shadowMapImg.bottom = 500;
+		shadowMapImg.left = (long)m_options->width - dimension;
+		shadowMapImg.right = (long)m_options->width;
 		m_spriteBatch->Draw(m_shadowInstance.getShadowMapSRV(), shadowMapImg);
 		m_annotation->EndEvent();
 	}
@@ -843,34 +1004,4 @@ void ViewLayer::render(iGameState* gameState)
 
 	// Swap Frames
 	m_swapChain->Present(0, 0);
-}
-
-bool ViewLayer::getDrawPhysicsPrimitives() const
-{
-	return m_drawPhysicsPrimitives;
-}
-
-bool ViewLayer::getDrawLightsDebug() const
-{
-	return m_drawLightsDebug;
-}
-
-bool ViewLayer::getDrawGBufferDebug() const
-{
-	return m_drawGBufferDebug;
-}
-
-void ViewLayer::setDrawPhysicsPrimitives(bool enabled)
-{
-	m_drawPhysicsPrimitives = enabled;
-}
-
-void ViewLayer::setDrawLightsDebug(bool enabled)
-{
-	m_drawLightsDebug = enabled;
-}
-
-void ViewLayer::setDrawGBufferDebug(bool enabled)
-{
-	m_drawGBufferDebug = enabled;
 }

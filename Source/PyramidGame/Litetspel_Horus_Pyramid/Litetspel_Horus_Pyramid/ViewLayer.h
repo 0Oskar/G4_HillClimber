@@ -9,40 +9,22 @@
 #include "StatusTextHandler.h"
 #include "iGameState.h"
 #include "Transition.h"
+#include "ViewHelper.h"
+#include "SSAOInstance.h"
+
+enum ViewDebugCommands
+{
+	NONE_VDC,
+	TOGGLE_DRAW_PHYSICS_PRIMITVES_VDC,
+	TOGGLE_DRAW_LIGHTS_DEBUG_VDC,
+	TOGGLE_SSAO_VDC,
+	TOGGLE_SHADOWMAP_VDC,
+	TOGGLE_GBUFFER_DEBUG_VDC
+};
 
 class ViewLayer
 {
 private:
-	struct RenderTexture
-	{
-		ID3D11Texture2D* rtt;
-		ID3D11RenderTargetView* rtv;
-		ID3D11ShaderResourceView* srv;
-		ID3D11UnorderedAccessView* uav;
-		DXGI_FORMAT format;
-
-		RenderTexture()
-		{
-			rtt = nullptr;
-			rtv = nullptr;
-			srv = nullptr;
-			uav = nullptr;
-			format = DXGI_FORMAT_R8G8B8A8_UNORM;
-		}
-
-		~RenderTexture()
-		{
-			if (rtt)
-				rtt->Release();
-			if (rtv)
-				rtv->Release();
-			if (srv)
-				srv->Release();
-			if (uav)
-				uav->Release();
-		}
-	};
-
 	// Window
 	HWND m_window;
 	GameOptions* m_options;
@@ -59,7 +41,7 @@ private:
 	float m_clearColorBlack[4] = { 0.f, 0.f, 0.f, 1.f };
 	float m_clearColorWhite[4] = { 1.f, 1.f, 1.f, 1.f };
 
-	enum GBufferType { DIFFUSE_GB, NORMAL_SHADOWMASK_GB, SPECULAR_SHININESS_GB, AMBIENT_GLOBALAMBIENTCONTR_GB, DEPTH_GB, GB_NUM };
+	enum GBufferType { DIFFUSE_GB, NORMAL_SHADOWMASK_GB, SPECULAR_SHININESS_GB, AMBIENT_GLOBALAMBIENTCONTR_GB, AMBIENT_OCCLUSION_GB, DEPTH_GB, GB_NUM };
 	
 	RenderTexture m_gBuffer[GBufferType::GB_NUM];
 
@@ -75,6 +57,7 @@ private:
 	ID3D11ShaderResourceView* m_nullSRVs[GB_NUM] = { m_nullSRV, m_nullSRV, m_nullSRV, m_nullSRV, m_nullSRV };
 	ID3D11RenderTargetView* m_nullRTV = nullptr;
 	ID3D11RenderTargetView* m_nullRTVs[GB_NUM] = { m_nullRTV, m_nullRTV, m_nullRTV, m_nullRTV, m_nullRTV };
+	ID3D11UnorderedAccessView* m_nullUAV = nullptr;
 
 	// SamplerState
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> m_samplerState;
@@ -84,9 +67,6 @@ private:
 	Shaders m_lightingShaders;
 	Shaders m_forwardLightingShaders;
 	Shaders m_skyShaders;
-
-	// Constant Buffer
-	Microsoft::WRL::ComPtr< ID3D11Buffer > m_constantBuffer;
 
 	// Texture Handler
 	ResourceHandler* resourceHandler;
@@ -115,6 +95,7 @@ private:
 	std::unordered_map<std::string, Model>* m_modelsFromState;
 	DirectX::BoundingOrientedBox m_pyramidOBB;
 
+	// Constant Buffers
 	ConstBuffer<PS_PER_FRAME_BUFFER> m_perFrameBuffer;
 	PS_PER_FRAME_BUFFER* m_constantBufferDataFromStatePtr;
 
@@ -123,8 +104,18 @@ private:
 	ConstBuffer<DirectX::XMMATRIX> m_skyboxCameraBuffer;
 	ConstBuffer<DIR_LIGHT_DATA> m_skyboxSunLightBuffer;
 	
-	DirectX::XMMATRIX* m_viewMatrix;
-	DirectX::XMMATRIX* m_projectionMatrix;
+	Camera* m_cameraPtr;
+
+	// SSAO
+	SSAOInstance m_SSAOInstance;
+
+	// Blur
+	Shaders m_edgePreservingBlurCS;
+	Microsoft::WRL::ComPtr< ID3D11ShaderResourceView > m_blurPingPongSRV;
+	Microsoft::WRL::ComPtr< ID3D11UnorderedAccessView > m_blurPingPongUAV;
+	CS_BLUR_CBUFFER m_blurCData;
+	float m_ssaoBlurSigma = 3.f;
+	ConstBuffer< CS_BLUR_CBUFFER > m_blurCBuffer;
 
 	// Sky
 	Model m_skyCube;
@@ -140,12 +131,6 @@ private:
 	// Status Text
 	StatusTextHandler* m_statusTextHandler;
 
-	// Debug Drawing
-	bool m_drawPhysicsPrimitives = false;
-	bool m_drawLightsDebug = false;
-	bool m_drawShadowmapDebug = false;
-	bool m_drawGBufferDebug = false;
-
 	// Initialization Functions
 	void initDeviceAndSwapChain();
 	void initRenderTarget(RenderTexture& rtv, UINT width, UINT height, DXGI_FORMAT format, UINT mipLevels = 1);
@@ -156,6 +141,8 @@ private:
 	void initConstantBuffer();
 	void initSky();
 
+	void initSSAOBlurPass();
+	void blurSSAOPass();
 public:
 	ViewLayer();
 	~ViewLayer();
@@ -165,8 +152,7 @@ public:
 	ID3D11DeviceContext* getContextDevice();
 
 	// Setters
-	void setViewMatrix(DirectX::XMMATRIX* ViewMatrix);
-	void setProjectionMatrix(DirectX::XMMATRIX* newProjectionMatrix);
+	void setCamera(Camera* camera);
 
 	// Setters for State Pointers
 	void setgameObjectsFromState(std::vector<GameObject*>* gameObjectsFromState);
@@ -185,17 +171,17 @@ public:
 	void reloadShaders();
 
 	// Update
-	void update(float dt, XMFLOAT3 cameraPos);
+	void update(float dt);
 
 	// Render
 	void render(iGameState* gameState);
 
-	// Debug
-	bool getDrawPhysicsPrimitives() const;
-	bool getDrawLightsDebug() const;
-	bool getDrawGBufferDebug() const;
+	// Debug Drawing
+	bool m_drawPhysicsPrimitives = false;
+	bool m_drawLightsDebug = false;
+	bool m_drawShadowmapDebug = false;
+	bool m_drawGBufferDebug = false;
 
-	void setDrawPhysicsPrimitives(bool enabled);
-	void setDrawLightsDebug(bool enabled);
-	void setDrawGBufferDebug(bool enabled);
+	// Feature Toggles
+	bool m_ssaoToggle = true;
 };

@@ -89,6 +89,13 @@ DirectX::XMMATRIX Camera::getViewMatrix() const
 	return *m_movementComp->viewMatrix;
 }
 
+XMFLOAT3 Camera::getPosition() const
+{
+	XMFLOAT3 camPos;
+	XMStoreFloat3(&camPos, m_movementComp->position);
+	return  camPos;
+}
+
 void Camera::followMoveComp(MovementComponent* moveComp)
 {
 	m_movementComp = moveComp;

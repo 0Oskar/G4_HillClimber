@@ -26,8 +26,7 @@ Application::~Application()
 void Application::stateChange()
 {
 	iGameState* gameState = m_gameStateStack.top();
-	m_viewLayerPtr->setViewMatrix(gameState->getViewMatrix());
-	m_viewLayerPtr->setProjectionMatrix(gameState->getProjectionMatrix());
+	m_viewLayerPtr->setCamera(gameState->getCamera());
 	m_viewLayerPtr->setModelsFromState(gameState->getModelsPtr());
 	m_viewLayerPtr->setgameObjectsFromState(gameState->getGameObjectsPtr());
 	m_viewLayerPtr->setBoundingBoxesFromActiveRoom(gameState->getActiveRoomBoundingBoxesPtr());
@@ -73,6 +72,7 @@ bool Application::initApplication(HINSTANCE hInstance, LPWSTR lpCmdLine, HWND hW
 	m_gameStateStack.push(new MenuState());
 	m_gameStateStack.top()->initlialize(m_viewLayerPtr->getDevice(), m_viewLayerPtr->getContextDevice(), m_gameOptions, m_audioEngine, &m_doneLoadingModels);
 	stateChange();
+	m_viewLayerPtr->setCamera(m_gameStateStack.top()->getCamera());
 
 	
 	m_timer.start();
@@ -212,57 +212,95 @@ void Application::applicationLoop()
 
 			GameStateChecks();
 
-			// Update Layers
+			// Input
+			Keyboard* keyboard = m_input.getKeyboard();
+
+			// - View Layer debug input
+			ViewDebugCommands viewDebugCommand = ViewDebugCommands::NONE_VDC;
+			std::queue<KeyboardEvent> keyboardEventQueue = keyboard->getKeyBufferCopy();
+			while (!keyboardEventQueue.empty())
+			{
+				KeyboardEvent keyboardEvent = keyboardEventQueue.front();
+				keyboardEventQueue.pop();
+				if (keyboardEvent.getEvent() == Event::Pressed)
+				{
+					if (keyboardEvent.getKey() == VK_OEM_PLUS) // '+' key
+						m_viewLayerPtr->reloadShaders();
+					else if (keyboardEvent.getKey() == 'P')
+						viewDebugCommand = TOGGLE_DRAW_PHYSICS_PRIMITVES_VDC;
+					else if (keyboardEvent.getKey() == 'L')
+						viewDebugCommand = TOGGLE_DRAW_LIGHTS_DEBUG_VDC;
+					else if (keyboardEvent.getKey() == 'O')
+						viewDebugCommand = TOGGLE_SSAO_VDC;
+					else if (keyboardEvent.getKey() == '9')
+						viewDebugCommand = TOGGLE_SHADOWMAP_VDC;
+					else if (keyboardEvent.getKey() == '0')
+						viewDebugCommand = TOGGLE_GBUFFER_DEBUG_VDC;
+					else if (keyboardEvent.getKey() == VK_OEM_5) // § key on nordic keyboard, left of 1
+						StatusTextHandler::get().sendText("+ : Reload Shaders\nP : Draw Debug Colliders\nL : Draw Debug Lights\nO : SSAO Toggle\n9 : Draw Debug Shadowmap\n0 : Draw Debug GBuffer", 2.f);
+				}
+			}
 			static float _viewLayerDebugToggleTimer = 0.f;
 			_viewLayerDebugToggleTimer += m_deltaTime;
-			fetchedState = m_gameStateStack.top()->handleInput(m_input.getKeyboard(), m_input.getMouse(), m_deltaTime);
-			if (fetchedState == states::RELOAD_SHADERS)
-				m_viewLayerPtr->reloadShaders();
-			else if (fetchedState == states::TOGGLE_DRAW_PHYSICS_PRIMITVES)
+			if(_viewLayerDebugToggleTimer > 0.3f)
 			{
-				if (_viewLayerDebugToggleTimer > 0.3f)
+				if (viewDebugCommand == TOGGLE_DRAW_PHYSICS_PRIMITVES_VDC)
 				{
 					_viewLayerDebugToggleTimer = 0.f;
-					bool drawPrimitves = !m_viewLayerPtr->getDrawPhysicsPrimitives();
-					m_viewLayerPtr->setDrawPhysicsPrimitives(drawPrimitves);
-
-					if (drawPrimitves)
+					m_viewLayerPtr->m_drawPhysicsPrimitives = !m_viewLayerPtr->m_drawPhysicsPrimitives;
+					
+					if (m_viewLayerPtr->m_drawPhysicsPrimitives)
 						StatusTextHandler::get().sendText("Draw Physics Debug ON!", 0.5f);
 					else
 						StatusTextHandler::get().sendText("Draw Physics Debug OFF!", 0.5f);
 				}
-			}
-			else if (fetchedState == states::TOGGLE_DRAW_LIGHTS_DEBUG)
-			{
-				if (_viewLayerDebugToggleTimer > 0.3f)
+				else if (viewDebugCommand == TOGGLE_DRAW_LIGHTS_DEBUG_VDC)
 				{
 					_viewLayerDebugToggleTimer = 0.f;
-					bool drawLights = !m_viewLayerPtr->getDrawLightsDebug();
-					m_viewLayerPtr->setDrawLightsDebug(drawLights);
+					m_viewLayerPtr->m_drawLightsDebug = !m_viewLayerPtr->m_drawLightsDebug;
 
-					if (drawLights)
+					if (m_viewLayerPtr->m_drawLightsDebug)
 						StatusTextHandler::get().sendText("Draw Lights Debug ON!", 0.5f);
 					else
 						StatusTextHandler::get().sendText("Draw Lights Debug OFF!", 0.5f);
 				}
-			}
-			else if (fetchedState == states::TOGGLE_GBUFFER_DEBUG)
-			{
-				if (_viewLayerDebugToggleTimer > 0.3f)
+				else if (viewDebugCommand == TOGGLE_SHADOWMAP_VDC)
 				{
 					_viewLayerDebugToggleTimer = 0.f;
-					bool drawGBuffer = !m_viewLayerPtr->getDrawGBufferDebug();
-					m_viewLayerPtr->setDrawGBufferDebug(drawGBuffer);
+					m_viewLayerPtr->m_drawShadowmapDebug = !m_viewLayerPtr->m_drawShadowmapDebug;
+					
+					if (m_viewLayerPtr->m_drawShadowmapDebug)
+						StatusTextHandler::get().sendText("Draw Shadowmap Debug ON!", 0.5f);
+					else
+						StatusTextHandler::get().sendText("Draw Shadowmap Debug OFF!", 0.5f);
+				}
+				else if (viewDebugCommand == TOGGLE_SSAO_VDC)
+				{
+					_viewLayerDebugToggleTimer = 0.f;
+					m_viewLayerPtr->m_ssaoToggle = !m_viewLayerPtr->m_ssaoToggle;
 
-					if (drawGBuffer)
+					if (m_viewLayerPtr->m_ssaoToggle)
+						StatusTextHandler::get().sendText("Draw SSAO ON!", 0.5f);
+					else
+						StatusTextHandler::get().sendText("Draw SSAO OFF!", 0.5f);
+				}
+				else if (viewDebugCommand == TOGGLE_GBUFFER_DEBUG_VDC)
+				{
+					_viewLayerDebugToggleTimer = 0.f;
+					m_viewLayerPtr->m_drawGBufferDebug = !m_viewLayerPtr->m_drawGBufferDebug;
+					if (m_viewLayerPtr->m_drawGBufferDebug)
 						StatusTextHandler::get().sendText("Draw G-Buffer Debug ON!", 0.5f);
 					else
 						StatusTextHandler::get().sendText("Draw G-Buffer Debug OFF!", 0.5f);
 				}
 			}
-			else if (fetchedState != states::NONE)
+
+			// - Game Layer input
+			fetchedState = m_gameStateStack.top()->handleInput(keyboard, m_input.getMouse(), m_deltaTime);
+			if (fetchedState != states::NONE)
 				pushNewState(fetchedState);
 
+			// Update Layers
 			if (!m_shouldQuit)
 			{
 				m_gameStateStack.top()->update(m_deltaTime);
@@ -270,9 +308,9 @@ void Application::applicationLoop()
 				if (m_doneLoadingModels)
 				{
 					audioUpdate();
-
 				}
-				m_viewLayerPtr->update(m_deltaTime, m_gameStateStack.top()->getCameraPos());
+
+				m_viewLayerPtr->update(m_deltaTime);
 				m_viewLayerPtr->render(m_gameStateStack.top());
 			}
 		}

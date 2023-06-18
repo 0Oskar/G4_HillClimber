@@ -62,6 +62,10 @@ bool Keyboard::empty() const
 {
 	return m_keyBuffer.empty();
 }
+std::queue<KeyboardEvent> Keyboard::getKeyBufferCopy()
+{
+	return m_keyBuffer;
+}
 KeyboardEvent Keyboard::readKey()
 {
 	if (m_keyBuffer.empty())
@@ -70,8 +74,8 @@ KeyboardEvent Keyboard::readKey()
 	}
 	else
 	{
-		KeyboardEvent inputEvnt = m_keyBuffer.front();
+		KeyboardEvent inputEvent = m_keyBuffer.front();
 		m_keyBuffer.pop();
-		return inputEvnt;
+		return inputEvent;
 	}
 }

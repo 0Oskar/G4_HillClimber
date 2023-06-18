@@ -105,7 +105,7 @@ public:
 	void render()
 	{
 		m_fadeCBuffer.upd();
-		m_dContext->PSSetConstantBuffers(0, 1, m_fadeCBuffer.GetAdressOf());
+		m_dContext->PSSetConstantBuffers(0, 1, m_fadeCBuffer.GetAddressOf());
 
 		m_shaders.setShaders();
 

@@ -209,7 +209,7 @@ void ShadowMapInstance::bindViewsAndRenderTarget()
 	m_deviceContext->RSSetViewports(1, &m_viewport);
 
 	m_deviceContext->OMSetDepthStencilState(m_depthStencilState.Get(), 0);
-	m_deviceContext->VSSetConstantBuffers(1, 1, m_lightMatrixCBuffer.GetAdressOf()); // GetAddressOf XD
+	m_deviceContext->VSSetConstantBuffers(1, 1, m_lightMatrixCBuffer.GetAddressOf()); // GetAddressOf XD
 	m_deviceContext->PSSetSamplers(1, 1, m_comparisonSampler.GetAddressOf());
 
 	m_shader.setShaders();

@@ -46,15 +46,11 @@ GameState::~GameState()
 	m_gameObjects.clear();
 }
 
-DirectX::XMMATRIX* GameState::getViewMatrix() const
+Camera* GameState::getCamera()
 {
-	return m_camera.getViewMatrixPtr();
+	return &m_camera;
 }
 
-DirectX::XMMATRIX* GameState::getProjectionMatrix() const
-{
-	return m_camera.getProjectionMatrixPtr();
-}
 
 std::unordered_map<std::string, Model>* GameState::getModelsPtr()
 {
@@ -839,14 +835,6 @@ states GameState::handleInput(Keyboard* keyboard, Mouse* mousePtr, float dt)
 		{
 			if (keyboardEvent.getKey() == VK_ESCAPE)
 				changeStateTo = states::POP;
-			else if (keyboardEvent.getKey() == VK_OEM_PLUS) // '+' key
-				changeStateTo = states::RELOAD_SHADERS;
-			else if (keyboardEvent.getKey() == 'T')
-				changeStateTo = states::TOGGLE_DRAW_PHYSICS_PRIMITVES;
-			else if (keyboardEvent.getKey() == 'G')
-				changeStateTo = states::TOGGLE_DRAW_LIGHTS_DEBUG;
-			else if (keyboardEvent.getKey() == '0')
-				changeStateTo = states::TOGGLE_GBUFFER_DEBUG;
 		}
 	}
 
@@ -887,7 +875,7 @@ states GameState::handleInput(Keyboard* keyboard, Mouse* mousePtr, float dt)
 
 		static float _godModeToggleTimer = 0.f;
 		_godModeToggleTimer += dt;
-		if (_godModeToggleTimer > 0.3f && keyboard->isKeyPressed('P'))
+		if (_godModeToggleTimer > 0.3f && keyboard->isKeyPressed('G'))
 		{
 			_godModeToggleTimer = 0.f;
 			bool godModeToggle = !m_player.getGodMode();
@@ -1006,12 +994,4 @@ void submitHighScore(std::string fileToWriteTo, std::pair<std::string, int>* sco
 			}
 		}
 	}
-}
-
-XMFLOAT3 GameState::getCameraPos() const
-{
-	XMFLOAT3 temp;
-	XMStoreFloat3(&temp, m_player.getPosition());
-
-	return temp;
 }

@@ -32,4 +32,5 @@ public:
 	bool isKeyPressed(const unsigned char key) const;
 	bool empty() const;
 	KeyboardEvent readKey();
+	std::queue<KeyboardEvent> getKeyBufferCopy();
 };

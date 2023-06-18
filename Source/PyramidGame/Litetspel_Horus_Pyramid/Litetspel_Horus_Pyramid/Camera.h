@@ -25,6 +25,7 @@ public:
 	DirectX::XMMATRIX* getViewMatrixPtr() const;
 	DirectX::XMMATRIX getProjectionMatrix() const;
 	DirectX::XMMATRIX getViewMatrix() const;
+	XMFLOAT3 getPosition() const;
 
 	// Setters
 	void followMoveComp(MovementComponent* moveComp);

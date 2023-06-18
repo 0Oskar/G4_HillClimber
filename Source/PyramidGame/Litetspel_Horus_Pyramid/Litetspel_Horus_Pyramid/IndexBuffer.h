@@ -40,7 +40,7 @@ public:
 		return indexBufferPtr.Get();
 	}
 
-	ID3D11Buffer* const* GetAdressOf()
+	ID3D11Buffer* const* GetAddressOf()
 	{
 		return indexBufferPtr.GetAddressOf();
 	}

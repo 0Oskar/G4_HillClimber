@@ -49,9 +49,7 @@ public:
 	std::vector<BoundingOrientedBox>* getActiveRoomOrientedBoundingBoxesPtr(); // Empty
 	PS_PER_FRAME_BUFFER* getPerFrameData();
 	std::vector<ConstBuffer<VS_WVPW_CONSTANT_BUFFER>>* getWvpCBuffersPtr();
-	DirectX::XMMATRIX* getViewMatrix() const;
-	DirectX::XMMATRIX* getProjectionMatrix() const;
-	XMFLOAT3 getCameraPos() const;
+	Camera* getCamera();
 
 	void drawUI(DirectX::SpriteBatch* spriteBatchPtr, DirectX::SpriteFont* spriteFontPtr);
 	void onEntry();

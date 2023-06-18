@@ -28,6 +28,15 @@
     <FxCompile Include="Shader Files\TransitionPS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
+    <FxCompile Include="Shader Files\EdgePreservingBlurCS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shader Files\SsaoPS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shader Files\SsaoVS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -281,6 +290,12 @@
     </ClInclude>
     <ClInclude Include="Room.h">
       <Filter>Source\Game Logic\Rooms</Filter>
+    </ClInclude>
+    <ClInclude Include="SSAOInstance.h">
+      <Filter>Source\View</Filter>
+    </ClInclude>
+    <ClInclude Include="ViewHelper.h">
+      <Filter>Source\View</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

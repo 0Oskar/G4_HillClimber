@@ -11,11 +11,7 @@ enum class states
 	GAME,
 	WON,
 	PAUSE,
-	POP,
-	RELOAD_SHADERS,
-	TOGGLE_DRAW_PHYSICS_PRIMITVES,
-	TOGGLE_DRAW_LIGHTS_DEBUG,
-	TOGGLE_GBUFFER_DEBUG
+	POP
 };
 
 class iGameState
@@ -45,10 +41,8 @@ public:
 	virtual std::vector<BoundingOrientedBox>* getActiveRoomOrientedBoundingBoxesPtr() = 0;
 	virtual PS_PER_FRAME_BUFFER* getPerFrameData() = 0;
 	virtual std::vector<ConstBuffer<VS_WVPW_CONSTANT_BUFFER>>* getWvpCBuffersPtr() = 0;
-	virtual DirectX::XMMATRIX* getViewMatrix() const = 0;
-	virtual DirectX::XMMATRIX* getProjectionMatrix() const = 0;
+	virtual Camera* getCamera() = 0;
 	virtual void initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext, const GameOptions options, std::shared_ptr<DirectX::AudioEngine> audioEngine, volatile bool* doneLoadingModels) = 0;
-	virtual XMFLOAT3 getCameraPos() const = 0;
 	virtual void afterChange() = 0;
 	virtual void drawUI(DirectX::SpriteBatch* spriteBatchPtr, DirectX::SpriteFont* spriteFontPtr) = 0;
 	virtual void onEntry() {};
