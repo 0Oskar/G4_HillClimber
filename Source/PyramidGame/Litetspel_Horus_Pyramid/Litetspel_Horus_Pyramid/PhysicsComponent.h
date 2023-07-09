@@ -132,6 +132,9 @@ public:
 	void setVelocity(DirectX::XMFLOAT3 newVelocity)
 	{
 		m_velocity = newVelocity;
+		assert(!isnan(m_velocity.x));
+		assert(!isnan(m_velocity.y));
+		assert(!isnan(m_velocity.z));
 	}
 	void setAcceleration(DirectX::XMFLOAT3 newAcceleration)
 	{
@@ -149,6 +152,9 @@ public:
 	void addForce(DirectX::XMFLOAT3 force, float dt)
 	{
 		m_velocity = DirectX::XMFLOAT3(m_velocity.x + force.x, m_velocity.y + force.y, m_velocity.z + force.z);
+		assert(!isnan(m_velocity.x));
+		assert(!isnan(m_velocity.y));
+		assert(!isnan(m_velocity.z));
 	}
 	void addForceDir(Direction dir, float dt, float multiplier = 1.f)
 	{
@@ -183,6 +189,9 @@ public:
 		DirectX::XMStoreFloat3(&finalForceF3, finalForce);
 
 		m_velocity = DirectX::XMFLOAT3(m_velocity.x + finalForceF3.x, m_velocity.y + finalForceF3.y, m_velocity.z + finalForceF3.z);
+		assert(!isnan(m_velocity.x));
+		assert(!isnan(m_velocity.y));
+		assert(!isnan(m_velocity.z));
 	}
 	void addForceDir(DirectX::XMVECTOR dir, float dt, float multiplier = 1.f)
 	{
@@ -195,15 +204,24 @@ public:
 		DirectX::XMStoreFloat3(&finalForceF3, finalForce);
 
 		m_velocity = DirectX::XMFLOAT3(m_velocity.x + finalForceF3.x, m_velocity.y + finalForceF3.y, m_velocity.z + finalForceF3.z);
+		assert(!isnan(m_velocity.x));
+		assert(!isnan(m_velocity.y));
+		assert(!isnan(m_velocity.z));
 	}
 	void addGravity(float dt)
 	{
 		m_velocity.y += m_mass * -GRAVITY * dt;
+		assert(!isnan(m_velocity.x));
+		assert(!isnan(m_velocity.y));
+		assert(!isnan(m_velocity.z));
 	}
 
 	void addYDecel(float dt)
 	{
 		m_velocity.y *= m_deceleration.y * dt;
+		assert(!isnan(m_velocity.x));
+		assert(!isnan(m_velocity.y));
+		assert(!isnan(m_velocity.z));
 	}
 
 	void jump(float accelerationMultipler, float dt)
@@ -213,6 +231,7 @@ public:
 			m_isJumping = true;
 			m_isFalling = false;
 			m_velocity.y += m_acceleration.y * accelerationMultipler;
+			assert(!isnan(m_velocity.y));
 		}
 	}
 
@@ -287,6 +306,9 @@ public:
 				}
 			}
 		}
+		assert(!isnan(m_velocity.x));
+		assert(!isnan(m_velocity.y));
+		assert(!isnan(m_velocity.z));
 	}
 	
 	void updatePosition(float dt, bool isCamera = false)
@@ -298,6 +320,8 @@ public:
 				m_velocity.y * dt, 
 				m_velocity.z * dt, 1.f)
 		);
+		assert(!DirectX::XMVector3IsNaN(m_moveComp->position));
+
 		m_aabb->Center = m_moveComp->getPositionF3();
 
 		if (isCamera)
@@ -307,6 +331,9 @@ public:
 
 		m_velocity.x *= m_deceleration.x * dt;
 		m_velocity.z *= m_deceleration.z * dt;
+
+		assert(!isnan(m_velocity.y));
+		assert(!isnan(m_velocity.z));
 	}
 	void updatePositionNoDecel(float dt, bool isCamera = false)
 	{
@@ -317,6 +344,7 @@ public:
 				m_velocity.y * dt,
 				m_velocity.z * dt, 1.f)
 		);
+		assert(!DirectX::XMVector3IsNaN(m_moveComp->position));
 		m_aabb->Center = m_moveComp->getPositionF3();
 
 		if (isCamera)

@@ -4,12 +4,18 @@
 void Chain::simulateLinks(GameObject* link1, GameObject* link2, bool notFirst, float dt)
 {
 	XMVECTOR linkVector;
+	assert(!pMath::F3IsNaN(link1->getphysicsCompPtr()->getVelocity()));
+	assert(!pMath::F3IsNaN(link2->getphysicsCompPtr()->getVelocity()));
+	assert(!XMVector3IsNaN(link1->getPosition()));
+	assert(!XMVector3IsNaN(link2->getPosition()));
+
 	if (notFirst)
 		linkVector = link1->getPosition() - link2->getPosition();
 	else
 		linkVector = (link1->getPosition() + (link1->getMoveCompPtr()->forward / 2)) - link2->getPosition();
 
 	float linkLength = XMVectorGetX(XMVector3LengthEst(linkVector));
+	assert(!isinf(linkLength));
 
 	XMVECTOR finalForce = XMVectorZero();
 	if (linkLength != 0)
@@ -20,6 +26,7 @@ void Chain::simulateLinks(GameObject* link1, GameObject* link2, bool notFirst, f
 			finalForce = finalForce + (linkVectorNorm * ((linkLength - m_length) * -m_constant));
 		else
 			finalForce = finalForce + (linkVectorNorm * ((linkLength - m_length) * -(m_constant * 3)));
+		assert(!XMVector3IsNaN(finalForce));
 
 		// Apply friction
 		XMFLOAT3 velocty1 = link1->getphysicsCompPtr()->getVelocity();
@@ -33,6 +40,7 @@ void Chain::simulateLinks(GameObject* link1, GameObject* link2, bool notFirst, f
 		);
 		// friction force = -k * velocity
 		finalForce += -(velocityDifference)*m_friction;
+		assert(!XMVector3IsNaN(finalForce));
 
 		// Apply force
 		if (notFirst)
@@ -83,6 +91,8 @@ void Chain::initialize(GameObject* hookGObject, GameObject* gaunletGObject, std:
 	{
 		pos = XMVectorSet(hookPos.x, hookPos.y, hookPos.z - m_length - (float)i * m_length, 1.f);
 		m_chainGObjects->at(i)->setPosition(pos);
+		assert(!DirectX::XMVector3IsNaN(m_chainGObjects->at(i)->getMoveCompPtr()->position));
+		assert(!pMath::F3IsNaN(m_chainGObjects->at(i)->getphysicsCompPtr()->getVelocity()));
 		m_chainRetracted[i] = i > 0 ? true : false;
 	}
 	m_nrOfUnretractedLinks = 1;
@@ -169,10 +179,12 @@ void Chain::update(float dt)
 		if (m_chainRetracted[i])
 		{
 			m_chainGObjects->at(i)->setPosition(m_gaunletGObject->getPosition());
+			assert(!DirectX::XMVector3IsNaN(m_chainGObjects->at(i)->getMoveCompPtr()->position));
 			m_chainGObjects->at(i)->setRotation(m_gaunletGObject->getRotation());
 			m_chainGObjects->at(i)->getphysicsCompPtr()->setVelocity({ 0.f, 0.f, 0.f });
 		}
 		XMFLOAT3 velocity = m_chainGObjects->at(i)->getphysicsCompPtr()->getVelocity();
+		assert(!pMath::F3IsNaN(velocity));
 		m_chainGObjects->at(i)->getphysicsCompPtr()->updatePositionNoDecel(dt);
 	}
 }

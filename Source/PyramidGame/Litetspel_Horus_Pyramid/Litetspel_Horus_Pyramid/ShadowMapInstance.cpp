@@ -1,5 +1,8 @@
 #include "pch.h"
 #include "ShadowMapInstance.h"
+#include "Camera.h"
+
+using namespace SimpleMath;
 
 ShadowMapInstance::ShadowMapInstance()
 {
@@ -9,6 +12,32 @@ ShadowMapInstance::ShadowMapInstance()
 }
 
 ShadowMapInstance::~ShadowMapInstance() {}
+
+VS_VP_MATRICES_CBUFFER ShadowMapInstance::getLightMatrices() const
+{
+	return m_lightMatrices;
+}
+
+DirectX::BoundingOrientedBox ShadowMapInstance::getLightBoundingBox(float distanceMultipler) const
+{
+	BoundingOrientedBox obb;
+	obb.Center = m_worldBoundingSphere.Center;
+	float distance = m_worldBoundingSphere.Radius * distanceMultipler;
+	obb.Extents = XMFLOAT3(distance * 6.f, distance, distance);
+
+	XMFLOAT3 directionF3 = pMath::F3Multiply(m_lightDirection, m_worldBoundingSphere.Radius);
+	XMFLOAT3 lookAtF3 = pMath::F3Add(obb.Center, directionF3);
+	XMVECTOR lookAt = XMLoadFloat3(&lookAtF3);
+
+	XMFLOAT3 positionF3 = pMath::F3Subtract(obb.Center, directionF3);
+	XMVECTOR position = XMLoadFloat3(&positionF3);
+
+	XMVECTOR up = DirectX::XMVectorSet(0.f, 1.f, 0.f, 0.f);
+	XMMATRIX rotationMatrix = DirectX::XMMatrixLookAtLH(position, lookAt, up);
+	XMStoreFloat4(&obb.Orientation, DirectX::XMQuaternionRotationMatrix(rotationMatrix));
+
+	return obb;
+}
 
 void ShadowMapInstance::initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, UINT width, UINT height)
 {
@@ -146,8 +175,9 @@ void ShadowMapInstance::initialize(ID3D11Device* device, ID3D11DeviceContext* de
 void ShadowMapInstance::buildLightMatrix(XMFLOAT3 lightDirection, XMFLOAT3 position)
 {
 	// Light View Matrix
-	VS_VP_MATRICES_CBUFFER lightMatrices;
-	XMVECTOR lightDirectionVec = XMLoadFloat3(&lightDirection);
+	m_lightDirection = lightDirection;
+	m_worldBoundingSphere.Center = position;
+	XMVECTOR lightDirectionVec = XMLoadFloat3(&m_lightDirection);
 	XMVECTOR lookAt = XMLoadFloat3(&position);
 	lookAt = DirectX::XMVectorSetW(lookAt, 1.f);
 	XMVECTOR lightPosition = DirectX::XMVectorAdd(DirectX::XMVectorScale(lightDirectionVec, m_worldBoundingSphere.Radius), lookAt);
@@ -159,11 +189,11 @@ void ShadowMapInstance::buildLightMatrix(XMFLOAT3 lightDirection, XMFLOAT3 posit
 	{
 		lookAt = DirectX::XMVectorAdd(lookAt, DirectX::XMVectorSet(0.f, 0.f, 1.f, 0.f));
 	}
-	lightMatrices.viewMatrix = DirectX::XMMatrixLookAtLH(lightPosition, lookAt, up);
+	m_lightMatrices.viewMatrix = DirectX::XMMatrixLookAtLH(lightPosition, lookAt, up);
 
 	// Transform World Bounding Sphere to Light Local View Space
 	XMFLOAT3 worldSphereCenterLightSpace;
-	XMStoreFloat3(&worldSphereCenterLightSpace, DirectX::XMVector3TransformCoord(lookAt, lightMatrices.viewMatrix));
+	XMStoreFloat3(&worldSphereCenterLightSpace, DirectX::XMVector3TransformCoord(lookAt, m_lightMatrices.viewMatrix));
 
 	// Construct Orthographic Frustum in Light View Space
 	float l = worldSphereCenterLightSpace.x - m_worldBoundingSphere.Radius;
@@ -176,10 +206,38 @@ void ShadowMapInstance::buildLightMatrix(XMFLOAT3 lightDirection, XMFLOAT3 posit
 	float f = m_worldBoundingSphere.Radius * 6.f;
 
 	// Local Projection Matrix
-	lightMatrices.projMatrix = DirectX::XMMatrixOrthographicOffCenterLH(l, r, b, t, n, f);
-
+	m_lightMatrices.projMatrix = DirectX::XMMatrixOrthographicOffCenterLH(l, r, b, t, n, f);
+	
 	// Update data
-	m_lightMatrixCBuffer.upd(&lightMatrices);
+	m_lightMatrixCBuffer.upd(&m_lightMatrices);
+}
+
+void ShadowMapInstance::buildCascadeLightMatrix(XMFLOAT3 lightDirection, Camera* camera)
+{
+	Vector3 frustomCorners[8] =
+	{
+		Vector3(-1.f, 1.f, 0.f),
+		Vector3( 1.f, 1.f, 0.f),
+		Vector3( 1.f,-1.f, 0.f),
+		Vector3(-1.f,-1.f, 0.f),
+		Vector3(-1.f, 1.f, 1.f),
+		Vector3( 1.f, 1.f, 1.f),
+		Vector3( 1.f,-1.f, 1.f),
+		Vector3(-1.f,-1.f, 1.f)
+	};
+
+	XMMATRIX cameraViewProjMatrix = camera->getViewMatrix();
+	cameraViewProjMatrix *= camera->getProjectionMatrix();
+
+	XMMATRIX invViewProj = DirectX::XMMatrixInverse(nullptr, cameraViewProjMatrix);
+	Vector3 frustomCenter = Vector3::Zero;
+
+	for (uint32_t i = 0; i < 8; i++)
+	{
+		frustomCorners[i] = pMath::TransformTransposed(frustomCorners[i], invViewProj);
+		frustomCenter = frustomCenter + frustomCorners[i];
+	}
+	frustomCenter = frustomCenter * (1.f / 8.f);
 }
 
 void ShadowMapInstance::update()

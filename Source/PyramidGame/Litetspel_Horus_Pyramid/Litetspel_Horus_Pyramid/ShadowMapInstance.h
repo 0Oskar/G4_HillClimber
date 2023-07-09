@@ -3,6 +3,8 @@
 #include "ConstantBuffer.h"
 #include "Shaders.h"
 
+class Camera;
+
 class ShadowMapInstance
 {
 private:
@@ -17,8 +19,10 @@ private:
 	Microsoft::WRL::ComPtr< ID3D11ShaderResourceView > m_shadowMapSRV;
 	Microsoft::WRL::ComPtr< ID3D11DepthStencilView > m_shadowMapDSV;
 
-	// Constant Buffers
+	// Light Data
 	ConstBuffer<VS_VP_MATRICES_CBUFFER> m_lightMatrixCBuffer;
+	VS_VP_MATRICES_CBUFFER m_lightMatrices;
+	XMFLOAT3 m_lightDirection;
 
 	// Pipeline States
 	Microsoft::WRL::ComPtr< ID3D11DepthStencilState > m_depthStencilState;
@@ -41,11 +45,15 @@ public:
 	ShadowMapInstance();
 	~ShadowMapInstance();
 
+	VS_VP_MATRICES_CBUFFER getLightMatrices() const;
+	DirectX::BoundingOrientedBox getLightBoundingBox(float distanceMultipler = 1.1f) const;
+
 	// Initialize
 	void initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, UINT width, UINT height);
 
 	// Update
 	void buildLightMatrix(XMFLOAT3 lightDirection, XMFLOAT3 position = XMFLOAT3(0,0,0));
+	void buildCascadeLightMatrix(XMFLOAT3 lightDirection, Camera* camera);
 	void update();
 
 	// Render

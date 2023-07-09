@@ -1,9 +1,9 @@
 // Globals
-static float occlusionRadius = 0.4f;
-static float occlusionFadeStart = 0.2f;
-static float occlusionFadeEnd = 2.0f;
-static float surfaceEpsilon = 0.1f;
-static const int SAMPLE_COUNT = 14;
+#define OCCLUSION_RADIUS 0.3f
+#define OCCLUSION_FADE_START 0.5f
+#define OCCLUSION_FADE_END 1.5f
+#define SURFACE_EPSILON 0.1f
+#define SAMPLE_COUNT 14
 
 struct PS_IN
 {
@@ -40,10 +40,10 @@ float ndcDepthToViewDepth(float depth)
 float occlusionFunction(float distZ)
 {
     float occlusion = 0.f;
-    if (distZ > surfaceEpsilon)
+    if (distZ > SURFACE_EPSILON)
     {
-        float fadeLength = occlusionFadeEnd - occlusionFadeStart;
-        occlusion = saturate((occlusionFadeEnd - distZ) / fadeLength);
+        float fadeLength = OCCLUSION_FADE_END - OCCLUSION_FADE_START;
+        occlusion = saturate((OCCLUSION_FADE_END - distZ) / fadeLength);
     }
     return occlusion;
 }
@@ -70,7 +70,7 @@ float4 main(PS_IN input) : SV_TARGET
     
         float flip = sign(dot(offset, n));
         
-        float3 q = p + flip * occlusionRadius * offset;
+        float3 q = p + flip * OCCLUSION_RADIUS * offset;
         
         float4 projQ = mul(float4(q, 1.0f), viewToTexMatrix);
         projQ /= projQ.w;

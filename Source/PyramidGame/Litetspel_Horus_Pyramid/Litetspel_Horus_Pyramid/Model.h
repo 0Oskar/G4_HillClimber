@@ -49,6 +49,7 @@ public:
 	
 	void draw();
 
+	DirectX::BoundingBox m_aabb;
 	Material m_material;
 
 	std::wstring m_texturePath;

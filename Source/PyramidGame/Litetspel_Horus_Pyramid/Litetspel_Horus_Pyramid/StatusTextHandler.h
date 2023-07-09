@@ -10,6 +10,7 @@ private:
 	XMFLOAT2 m_windowDimensions;
 	XMVECTORF32 m_outlineColor;
 	XMVECTORF32 m_textColor;
+	float m_offsetY;
 	float m_transparency;
 	double m_timeToShow;
 	bool m_showtext;
@@ -20,6 +21,7 @@ private:
 		m_transparency = 0.f;
 		m_outlineColor = Colors::Black;
 		m_textColor = Colors::Red;
+		m_offsetY = 200.f;
 		m_timeToShow = 2.0;
 		m_showtext = false;
 	};
@@ -34,13 +36,14 @@ public:
 	void operator=(StatusTextHandler const&) = delete;
 	~StatusTextHandler() {}
 
-	void sendText(std::string text, double timeToShow = 2.0)
+	void sendText(std::string text, double timeToShow = 2.0, float offsetY = 200.f)
 	{
 		m_string = text;
 		m_timer.restart();
 		m_transparency = 1.f;
 		m_outlineColor = Colors::Black;
 		m_textColor = Colors::Red;
+		m_offsetY = offsetY;
 		m_timeToShow = timeToShow;
 		m_showtext = true;
 	}
@@ -76,7 +79,7 @@ public:
 			XMVECTOR fontDimensions = sf->MeasureString(m_string.c_str(), false);
 			XMFLOAT2 position = {
 				(m_windowDimensions.x / 2.f) - ((XMVectorGetX(fontDimensions) * scale) / 2.f),
-				(m_windowDimensions.y / 6.f) - ((XMVectorGetY(fontDimensions) * scale) / 2.f)
+				m_offsetY - ((XMVectorGetY(fontDimensions) * scale) / 2.f)
 			};
 
 			// Outline

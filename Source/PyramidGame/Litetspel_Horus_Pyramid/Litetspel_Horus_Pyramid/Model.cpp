@@ -1,6 +1,6 @@
-#include"pch.h"
-#include"Model.h"
-
+#include "pch.h"
+#include "Model.h"
+#include "PyramidMathTools.h"
 
 void Model::loadOBJModel(bool async)
 {	
@@ -20,6 +20,12 @@ void Model::loadOBJModel(bool async)
 
 	// Material
 	string materialFilePath = "";
+
+	// Bounding Box
+	XMFLOAT3 minExtends;
+	XMFLOAT3 maxExtends;
+	DirectX::XMStoreFloat3(&minExtends, g_XMFltMax);
+	DirectX::XMStoreFloat3(&maxExtends, g_XMFltMin);
 
 	// File Stream
 	stringstream sStream;
@@ -59,7 +65,10 @@ void Model::loadOBJModel(bool async)
 		{
 			sStream >> tempF3.x >> tempF3.y >> tempF3.z;
 			tempF3.z *= -1;
+			
 			vertexPositions.push_back(tempF3);
+			minExtends = pMath::F3Min(tempF3, minExtends);
+			maxExtends = pMath::F3Max(tempF3, maxExtends);
 		}
 		else if (prefix == "vt")
 		{
@@ -137,6 +146,10 @@ void Model::loadOBJModel(bool async)
 
 	m_vertexBuffer.initialize(m_devicePtr, m_vertices.data(), (int)m_vertices.size());
 	
+	// Setup Bounding Box
+	m_aabb.Extents = pMath::F3Multiply(pMath::F3Subtract(maxExtends, minExtends), 0.5f);
+	m_aabb.Center = pMath::F3Subtract(maxExtends, m_aabb.Extents);
+
 	string loadedMessage;
 	if (async)
 	{
@@ -154,6 +167,13 @@ void Model::loadBffModel(bool async)
 {
 	ModelBFF myModel;
 	string loadedMessage;
+
+	// Bounding Box
+	XMFLOAT3 minExtends;
+	XMFLOAT3 maxExtends;
+	DirectX::XMStoreFloat3(&minExtends, g_XMFltMax);
+	DirectX::XMStoreFloat3(&maxExtends, g_XMFltMin);
+
 	if (async)
 	{
 		loadedMessage = "	BFF Model loaded: " + m_modelPath + "\n";
@@ -174,9 +194,16 @@ void Model::loadBffModel(bool async)
 		m_vertices[i].position = XMFLOAT3(myModel.vertexArr[i].pos);
 		m_vertices[i].normal = XMFLOAT3(myModel.vertexArr[i].norm);
 		m_vertices[i].textureCoord = XMFLOAT2(myModel.vertexArr[i].uv);
+
+		minExtends = pMath::F3Min(m_vertices[i].position, minExtends);
+		maxExtends = pMath::F3Max(m_vertices[i].position, maxExtends);
 	}
 
 	m_vertexBuffer.initialize(m_devicePtr, m_vertices.data(), (int)m_vertices.size());
+
+	// Setup Bounding Box
+	m_aabb.Extents = pMath::F3Multiply(pMath::F3Subtract(maxExtends, minExtends), 0.5f);
+	m_aabb.Center = pMath::F3Subtract(maxExtends, m_aabb.Extents);
 
 	//printBffModel(myModel); //For testing
 	OutputDebugStringA(loadedMessage.c_str());

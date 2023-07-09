@@ -16,10 +16,13 @@ enum ViewDebugCommands
 {
 	NONE_VDC,
 	TOGGLE_DRAW_PHYSICS_PRIMITVES_VDC,
+	TOGGLE_DRAW_MODEL_BB_PRIMITVES_VDC,
+	TOGGLE_FRUSTOM_CULLING_VDC,
 	TOGGLE_DRAW_LIGHTS_DEBUG_VDC,
 	TOGGLE_SSAO_VDC,
 	TOGGLE_SHADOWMAP_VDC,
-	TOGGLE_GBUFFER_DEBUG_VDC
+	TOGGLE_GBUFFER_DEBUG_VDC,
+	TOGGLE_DRAW_CALL_STATS_VDC
 };
 
 class ViewLayer
@@ -114,7 +117,7 @@ private:
 	Microsoft::WRL::ComPtr< ID3D11ShaderResourceView > m_blurPingPongSRV;
 	Microsoft::WRL::ComPtr< ID3D11UnorderedAccessView > m_blurPingPongUAV;
 	CS_BLUR_CBUFFER m_blurCData;
-	float m_ssaoBlurSigma = 3.f;
+	float m_ssaoBlurSigma = 5.f;
 	ConstBuffer< CS_BLUR_CBUFFER > m_blurCBuffer;
 
 	// Sky
@@ -127,6 +130,11 @@ private:
 	Timer m_timer;
 	std::string m_fpsString;
 	int m_fps;
+
+	// Draw Call Counter
+	uint32_t m_shadowmapDrawCallCount;
+	uint32_t m_drawCallCount;
+	uint32_t m_postProcessDrawCallCount;
 
 	// Status Text
 	StatusTextHandler* m_statusTextHandler;
@@ -178,10 +186,13 @@ public:
 
 	// Debug Drawing
 	bool m_drawPhysicsPrimitives = false;
+	bool m_drawModelBoxPrimitives = false;
 	bool m_drawLightsDebug = false;
 	bool m_drawShadowmapDebug = false;
 	bool m_drawGBufferDebug = false;
+	bool m_drawDrawCallStatsDebug = false;
 
 	// Feature Toggles
 	bool m_ssaoToggle = true;
+	bool m_frustumCullingToggle = true;
 };

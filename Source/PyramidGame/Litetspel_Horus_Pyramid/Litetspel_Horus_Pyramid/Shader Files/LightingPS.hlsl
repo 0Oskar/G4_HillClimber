@@ -1,3 +1,4 @@
+#define LIGHT_COUNT 20
 struct PS_IN
 {
     float4 position : SV_POSITION;
@@ -14,7 +15,7 @@ struct PointLight
 
 cbuffer PerFrameBuffer : register(b1)
 {
-    PointLight pointLights[20];
+    PointLight pointLights[LIGHT_COUNT];
     int nrOfPointLights;
     float3 skyLightDirection;
     float3 skyLightColor;

@@ -228,6 +228,10 @@ void Application::applicationLoop()
 						m_viewLayerPtr->reloadShaders();
 					else if (keyboardEvent.getKey() == 'P')
 						viewDebugCommand = TOGGLE_DRAW_PHYSICS_PRIMITVES_VDC;
+					else if (keyboardEvent.getKey() == 'B')
+						viewDebugCommand = TOGGLE_DRAW_MODEL_BB_PRIMITVES_VDC;
+					else if (keyboardEvent.getKey() == 'N')
+						viewDebugCommand = TOGGLE_FRUSTOM_CULLING_VDC;
 					else if (keyboardEvent.getKey() == 'L')
 						viewDebugCommand = TOGGLE_DRAW_LIGHTS_DEBUG_VDC;
 					else if (keyboardEvent.getKey() == 'O')
@@ -236,13 +240,24 @@ void Application::applicationLoop()
 						viewDebugCommand = TOGGLE_SHADOWMAP_VDC;
 					else if (keyboardEvent.getKey() == '0')
 						viewDebugCommand = TOGGLE_GBUFFER_DEBUG_VDC;
+					else if (keyboardEvent.getKey() == 'V')
+						viewDebugCommand = TOGGLE_DRAW_CALL_STATS_VDC;
 					else if (keyboardEvent.getKey() == VK_OEM_5) // § key on nordic keyboard, left of 1
-						StatusTextHandler::get().sendText("+ : Reload Shaders\nP : Draw Debug Colliders\nL : Draw Debug Lights\nO : SSAO Toggle\n9 : Draw Debug Shadowmap\n0 : Draw Debug GBuffer", 2.f);
+						StatusTextHandler::get().sendText(std::string(
+															"+ : Reload Shaders\n") +
+															"P : Draw Debug Colliders\n" +
+															"B : Draw Model Bounding Boxes\n" +
+															"N : Frustum Culling Toggle\n" +
+															"L : Draw Debug Lights\n" +
+															"O : SSAO Toggle\n" +
+															"9 : Draw Debug Shadowmap\n" +
+															"0 : Draw Debug GBuffer"
+															, 2.f);
 				}
 			}
 			static float _viewLayerDebugToggleTimer = 0.f;
 			_viewLayerDebugToggleTimer += m_deltaTime;
-			if(_viewLayerDebugToggleTimer > 0.3f)
+			if(_viewLayerDebugToggleTimer > 0.2f)
 			{
 				if (viewDebugCommand == TOGGLE_DRAW_PHYSICS_PRIMITVES_VDC)
 				{
@@ -253,6 +268,26 @@ void Application::applicationLoop()
 						StatusTextHandler::get().sendText("Draw Physics Debug ON!", 0.5f);
 					else
 						StatusTextHandler::get().sendText("Draw Physics Debug OFF!", 0.5f);
+				}
+				else if (viewDebugCommand == TOGGLE_DRAW_MODEL_BB_PRIMITVES_VDC)
+				{
+					_viewLayerDebugToggleTimer = 0.f;
+					m_viewLayerPtr->m_drawModelBoxPrimitives = !m_viewLayerPtr->m_drawModelBoxPrimitives;
+
+					if (m_viewLayerPtr->m_drawModelBoxPrimitives)
+						StatusTextHandler::get().sendText("Draw Model Bounding Boxes Debug ON!", 0.5f);
+					else
+						StatusTextHandler::get().sendText("Draw Model Bounding Boxes Debug OFF!", 0.5f);
+				}
+				else if (viewDebugCommand == TOGGLE_FRUSTOM_CULLING_VDC)
+				{
+					_viewLayerDebugToggleTimer = 0.f;
+					m_viewLayerPtr->m_frustumCullingToggle = !m_viewLayerPtr->m_frustumCullingToggle;
+
+					if (m_viewLayerPtr->m_frustumCullingToggle)
+						StatusTextHandler::get().sendText("Frustum Culling ON!", 0.5f);
+					else
+						StatusTextHandler::get().sendText("Frustum Culling OFF!", 0.5f);
 				}
 				else if (viewDebugCommand == TOGGLE_DRAW_LIGHTS_DEBUG_VDC)
 				{
@@ -292,6 +327,15 @@ void Application::applicationLoop()
 						StatusTextHandler::get().sendText("Draw G-Buffer Debug ON!", 0.5f);
 					else
 						StatusTextHandler::get().sendText("Draw G-Buffer Debug OFF!", 0.5f);
+				}
+				else if (viewDebugCommand == TOGGLE_DRAW_CALL_STATS_VDC)
+				{
+					_viewLayerDebugToggleTimer = 0.f;
+					m_viewLayerPtr->m_drawDrawCallStatsDebug = !m_viewLayerPtr->m_drawDrawCallStatsDebug;
+					if (m_viewLayerPtr->m_drawDrawCallStatsDebug)
+						StatusTextHandler::get().sendText("Draw Call Stats ON!", 0.5f);
+					else
+						StatusTextHandler::get().sendText("Draw Call Stats OFF!", 0.5f);
 				}
 			}
 

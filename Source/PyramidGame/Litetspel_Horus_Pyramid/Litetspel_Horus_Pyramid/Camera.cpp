@@ -41,7 +41,6 @@ void Camera::update(MouseEvent mouseEvent, float dt)
 	// Rotate Camera
 	if (mouseEvent.getEvent() == Event::MouseRAW_MOVE)
 	{
-
 		DirectX::XMFLOAT2 mouseDelta = DirectX::XMFLOAT2((float)mouseEvent.getPosX(), (float)mouseEvent.getPosY());
 
 		// Set Pitch
@@ -94,6 +93,23 @@ XMFLOAT3 Camera::getPosition() const
 	XMFLOAT3 camPos;
 	XMStoreFloat3(&camPos, m_movementComp->position);
 	return  camPos;
+}
+
+XMVECTOR Camera::getPositionVector() const
+{
+	return m_movementComp->position;
+}
+
+XMFLOAT3 Camera::getRotation() const
+{
+	XMFLOAT3 camRotation;
+	XMStoreFloat3(&camRotation, m_movementComp->rotation);
+	return  camRotation;
+}
+
+XMVECTOR Camera::getRotationVector() const
+{
+	return m_movementComp->rotation;
 }
 
 void Camera::followMoveComp(MovementComponent* moveComp)

@@ -6,7 +6,7 @@ GameObject::GameObject()
 	m_visible = true;
 	m_collidable = false;
 	m_isStatic = false;
-	m_drawBB = false;
+	m_shouldDrawBB = false;
 	m_useDeceleration = true;
 	m_wvpCBufferIndex = -1;
 
@@ -21,7 +21,7 @@ GameObject::GameObject(const GameObject& otherGameObject)
 	m_visible = otherGameObject.m_visible;
 	m_collidable = otherGameObject.m_collidable;
 	m_isStatic = otherGameObject.m_isStatic;
-	m_drawBB = otherGameObject.m_drawBB;
+	m_shouldDrawBB = otherGameObject.m_shouldDrawBB;
 	m_useDeceleration = otherGameObject.m_useDeceleration;
 	m_wvpCBufferIndex = otherGameObject.m_wvpCBufferIndex;
 	m_modelPtr = otherGameObject.m_modelPtr;
@@ -67,7 +67,7 @@ GameObject& GameObject::operator=(const GameObject& otherGameObject)
 	m_visible = otherGameObject.m_visible;
 	m_collidable = otherGameObject.m_collidable;
 	m_isStatic = otherGameObject.m_isStatic;
-	m_drawBB = otherGameObject.m_drawBB;
+	m_shouldDrawBB = otherGameObject.m_shouldDrawBB;
 	m_useDeceleration = otherGameObject.m_useDeceleration;
 	m_wvpCBufferIndex = otherGameObject.m_wvpCBufferIndex;
 	m_modelPtr = otherGameObject.m_modelPtr;
@@ -97,7 +97,7 @@ void GameObject::initializeStatic(bool collidable, int wvpCBufferIndex, Model* m
 {
 	m_collidable = collidable;
 	m_isStatic = true;
-	m_drawBB = collidable;
+	m_shouldDrawBB = collidable;
 	m_useDeceleration = false;
 	m_wvpCBufferIndex = wvpCBufferIndex;
 
@@ -113,7 +113,7 @@ void GameObject::initializeDynamic(bool collidable, bool useDeceleration, int wv
 {
 	m_collidable = collidable;
 	m_isStatic = false;
-	m_drawBB = collidable;
+	m_shouldDrawBB = collidable;
 	m_useDeceleration = useDeceleration;
 	m_wvpCBufferIndex = wvpCBufferIndex;
 
@@ -143,9 +143,19 @@ bool GameObject::collidable() const
 	return m_collidable;
 }
 
-bool GameObject::getDrawBB() const
+bool GameObject::shouldDrawBB() const
 {
-	return m_drawBB;
+	return m_shouldDrawBB;
+}
+
+XMVECTOR GameObject::getScale() const
+{
+	return m_movementComp->scale;
+}
+
+XMVECTOR GameObject::getLocalRotation() const
+{
+	return m_movementComp->localRotation;
 }
 
 XMVECTOR GameObject::getRotation() const
@@ -239,7 +249,7 @@ void GameObject::setTexturePath(std::wstring texturePath)
 
 void GameObject::setDrawBB(bool drawable)
 {
-	m_drawBB = drawable;
+	m_shouldDrawBB = drawable;
 }
 
 void GameObject::setScale(DirectX::XMVECTOR newScale)

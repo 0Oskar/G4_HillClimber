@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "ViewLayer.h"
-
+#include "PyramidMathTools.h"
 
 void ViewLayer::initDeviceAndSwapChain()
 {
@@ -621,6 +621,10 @@ void ViewLayer::update(float dt)
 
 void ViewLayer::render(iGameState* gameState)
 {
+	m_shadowmapDrawCallCount = 0;
+	m_drawCallCount = 0;
+	m_postProcessDrawCallCount = 0;
+
 	// Clear Frame
 	m_annotation->BeginEvent(L"Clear");
 	m_deviceContext->ClearRenderTargetView(m_outputRTV.Get(), m_clearColor);
@@ -646,12 +650,15 @@ void ViewLayer::render(iGameState* gameState)
 
 	DirectX::XMMATRIX viewMatrix = m_cameraPtr->getViewMatrix();
 	DirectX::XMMATRIX projMatrix = m_cameraPtr->getProjectionMatrix();
+	DirectX::BoundingFrustum cameraFrustum;
+	cameraFrustum.CreateFromMatrix(cameraFrustum, projMatrix);
+	cameraFrustum.Transform(cameraFrustum, 1.f, DirectX::XMQuaternionRotationRollPitchYawFromVector(m_cameraPtr->getRotationVector()), m_cameraPtr->getPositionVector());
 
 	// Shadow Mapping
+	DirectX::BoundingOrientedBox shadowCameraBounds = m_shadowInstance.getLightBoundingBox();
 	{
 		m_annotation->BeginEvent(L"ShadowMapping");
 		m_shadowInstance.bindViewsAndRenderTarget();
-		DirectX::XMMATRIX viewPMtrx = viewMatrix * projMatrix;
 		for (size_t i = 0; i < m_gameObjectsFromState->size(); i++)
 		{
 			// Get indexes
@@ -662,12 +669,24 @@ void ViewLayer::render(iGameState* gameState)
 				Model* model = gObject->getModelPtr();
 				if (!model->is_loaded()) { continue; }
 
+				// Frustum Culling
+				if (m_frustumCullingToggle)
+				{
+					assert(!DirectX::XMVector3IsNaN(gObject->getMoveCompPtr()->position));
+
+					DirectX::BoundingOrientedBox obb;
+					DirectX::BoundingOrientedBox::CreateFromBoundingBox(obb, model->m_aabb);
+					obb.Transform(obb, gObject->getWorldMatrix());
+					if (!shadowCameraBounds.Intersects(obb)) { continue; }
+				}
+
 				// Set Constant buffer
 				int wvpIndex = gObject->getWvpCBufferIndex();
 				m_deviceContext->VSSetConstantBuffers(0, 1, m_wvpCBufferFromState->at(wvpIndex).GetAddressOf());
 
 				// Draw Model
 				model->draw();
+				m_shadowmapDrawCallCount++;
 			}
 		}
 		//Active room draw
@@ -689,6 +708,7 @@ void ViewLayer::render(iGameState* gameState)
 					
 					// Draw Model
 					model->draw();
+					m_shadowmapDrawCallCount++;
 				}
 			}
 		}
@@ -715,7 +735,6 @@ void ViewLayer::render(iGameState* gameState)
 
 	// G-Buffer Draw
 	std::vector<GameObject*> transparentObjects;
-	DirectX::XMMATRIX viewPMtrx = viewMatrix * projMatrix;
 	for (size_t i = 0; i < m_gameObjectsFromState->size(); i++)
 	{
 		// Get indexes
@@ -724,6 +743,15 @@ void ViewLayer::render(iGameState* gameState)
 		{
 			Model* model = gObject->getModelPtr();
 			if (!model->is_loaded()) { continue; }
+
+			// Frustum Culling
+			if (m_frustumCullingToggle)
+			{
+				DirectX::BoundingOrientedBox obb;
+				DirectX::BoundingOrientedBox::CreateFromBoundingBox(obb, model->m_aabb);
+				obb.Transform(obb, gObject->getWorldMatrix());
+				if (!cameraFrustum.Intersects(obb)) { continue; }
+			}
 
 			if (model->m_material.getMaterial()->diffuse.w < 1.f)
 			{
@@ -737,6 +765,7 @@ void ViewLayer::render(iGameState* gameState)
 			// Draw Model
 			model->m_material.setTexture(gObject->getTexturePath().c_str());
 			model->draw();
+			m_drawCallCount++;
 		}
 	}
 	//Active room draw
@@ -752,6 +781,15 @@ void ViewLayer::render(iGameState* gameState)
 				Model* model = gObject->getModelPtr();
 				if (!model->is_loaded()) { continue; }
 
+				// Frustum Culling
+				if (m_frustumCullingToggle)
+				{
+					DirectX::BoundingOrientedBox obb;
+					DirectX::BoundingOrientedBox::CreateFromBoundingBox(obb, model->m_aabb);
+					obb.Transform(obb, gObject->getWorldMatrix());
+					if (!cameraFrustum.Intersects(obb)) { continue; }
+				}
+
 				if (model->m_material.getMaterial()->diffuse.w < 1.f)
 				{
 					transparentObjects.push_back(gObject);
@@ -765,6 +803,7 @@ void ViewLayer::render(iGameState* gameState)
 				// Draw Model
 				model->m_material.setTexture(gObject->getTexturePath().c_str());
 				model->draw();
+				m_drawCallCount++;
 			}
 		}
 	}
@@ -784,6 +823,7 @@ void ViewLayer::render(iGameState* gameState)
 		m_deviceContext->PSSetShaderResources(1, 1, &m_gBuffer[NORMAL_SHADOWMASK_GB].srv);
 
 		m_SSAOInstance.render();
+		m_postProcessDrawCallCount++;
 		m_annotation->EndEvent();
 
 		// Blur
@@ -820,6 +860,7 @@ void ViewLayer::render(iGameState* gameState)
 	m_deviceContext->PSSetShaderResources(0, GB_NUM, gBufferSRVs);
 
 	m_deviceContext->Draw(4, 0);
+	m_postProcessDrawCallCount++;
 	m_deviceContext->PSSetShaderResources(0, GB_NUM, m_nullSRVs);
 	m_annotation->EndEvent();
 
@@ -836,6 +877,7 @@ void ViewLayer::render(iGameState* gameState)
 	m_deviceContext->PSSetConstantBuffers(2, 1, m_skyboxSunLightBuffer.GetAddressOf());
 
 	m_skyCube.draw();
+	m_drawCallCount++;
 	m_annotation->EndEvent();
 
 	// Transparent Meshes
@@ -863,6 +905,7 @@ void ViewLayer::render(iGameState* gameState)
 		// Draw Model
 		model->m_material.setTexture(gObject->getTexturePath().c_str());
 		model->draw();
+		m_drawCallCount++;
 	}
 	m_deviceContext->PSSetShaderResources(1, 1, &m_nullSRV);
 	m_deviceContext->PSSetShaderResources(2, 1, &m_nullSRV);
@@ -873,11 +916,12 @@ void ViewLayer::render(iGameState* gameState)
 	m_annotation->BeginEvent(L"Transition");
 	m_deviceContext->OMSetDepthStencilState(m_states->DepthNone(), 0);
 	m_transition->render();
+	m_postProcessDrawCallCount++;
 	m_deviceContext->OMSetDepthStencilState(m_states->DepthDefault(), 0);
 	m_annotation->EndEvent();
 
 	// Draw Primitives
-	if (m_drawPhysicsPrimitives || m_drawLightsDebug)
+	if (m_drawPhysicsPrimitives || m_drawLightsDebug || m_drawModelBoxPrimitives)
 	{
 		m_annotation->BeginEvent(L"Primitives");
 		m_deviceContext->OMSetBlendState(m_states->Opaque(), nullptr, 0xFFFFFFFF);
@@ -892,12 +936,13 @@ void ViewLayer::render(iGameState* gameState)
 		// Apply Effect
 		m_effect->Apply(m_deviceContext.Get());
 
+		// Physics
 		if (m_drawPhysicsPrimitives)
 		{
 			m_annotation->BeginEvent(L"Physics");
 			for (size_t i = 0; i < m_gameObjectsFromState->size(); i++)
 			{
-				if (m_gameObjectsFromState->at(i)->getDrawBB())
+				if (m_gameObjectsFromState->at(i)->shouldDrawBB())
 				{
 					DX::Draw(m_batch.get(), *(m_gameObjectsFromState->at(i)->getAABBPtr()), DirectX::Colors::Blue);
 				}
@@ -935,6 +980,56 @@ void ViewLayer::render(iGameState* gameState)
 			}
 			m_annotation->EndEvent();
 		}
+
+		// Model Bounding Boxes
+		if (m_drawModelBoxPrimitives)
+		{
+			for (size_t i = 0; i < m_gameObjectsFromState->size(); i++)
+			{
+				DX::Draw(m_batch.get(), shadowCameraBounds, DirectX::Colors::Firebrick);
+
+				// Get indexes
+				GameObject* gObject = m_gameObjectsFromState->at(i);
+				if (gObject->visible())
+				{
+					Model* model = gObject->getModelPtr();
+					if (!model->is_loaded()) { continue; }
+
+					// Oriented Bounding Box Setup
+					DirectX::BoundingOrientedBox obb;
+					DirectX::BoundingOrientedBox::CreateFromBoundingBox(obb, model->m_aabb);
+					obb.Transform(obb, gObject->getWorldMatrix());
+
+					DX::Draw(m_batch.get(), obb, DirectX::Colors::DodgerBlue);
+				}
+			}
+			// Active room draw
+			if (m_gameObjectsFromActiveRoom != nullptr)
+			{
+				for (size_t i = 0; i < m_gameObjectsFromActiveRoom->size(); i++)
+				{
+					// Get indexes
+					GameObject* gObject = m_gameObjectsFromActiveRoom->at(i);
+					if (gObject->visible())
+					{
+						// Get Model Mesh
+						Model* model = gObject->getModelPtr();
+						if (!model->is_loaded()) { continue; }
+
+						// Oriented Bounding Box Setup
+						DirectX::BoundingOrientedBox obb;
+						DirectX::BoundingOrientedBox::CreateFromBoundingBox(obb, model->m_aabb);
+						obb.Transform(obb, gObject->getWorldMatrix());
+
+						if (!shadowCameraBounds.Intersects(obb)) { continue; }
+
+						DX::Draw(m_batch.get(), obb, DirectX::Colors::DodgerBlue);
+					}
+				}
+			}
+		}
+
+		// Lights
 		if (m_drawLightsDebug)
 		{
 			// Point Lights
@@ -951,16 +1046,12 @@ void ViewLayer::render(iGameState* gameState)
 		m_annotation->EndEvent();
 	}
 
-	m_annotation->BeginEvent(L"Sprites");
 	// Draw Sprites
+	m_annotation->BeginEvent(L"Sprites");
 	m_deviceContext->RSSetState(m_spriteRasterizerState.Get());
-	
-	// - Sprite End
 	m_spriteBatch->Begin(SpriteSortMode_Deferred, m_states->AlphaBlend());
-	gameState->drawUI(m_spriteBatch.get(), m_spriteFont16.get());
 
-
-	// - Pass Textures Debug
+	// - Render Pass Textures Debug
 	if (m_drawShadowmapDebug)
 	{
 		m_annotation->BeginEvent(L"Shadowmap Debug");
@@ -995,10 +1086,30 @@ void ViewLayer::render(iGameState* gameState)
 		}
 		m_annotation->EndEvent();
 	}
+
+	// - Scene UI
+	gameState->drawUI(m_spriteBatch.get(), m_spriteFont16.get());
+
+	// - Render Debug Stats UI
+	if (m_drawDrawCallStatsDebug)
+	{
+		std::string drawCallCountStr = "Shadow Draws: " + std::to_string(m_shadowmapDrawCallCount);
+		m_spriteFont16->DrawString(m_spriteBatch.get(), drawCallCountStr.c_str(), DirectX::XMFLOAT2(10.f, 50.f), DirectX::Colors::White, 0.f, DirectX::XMFLOAT2(0.f, 0.f));
 	
-	// - Sprite End
+		drawCallCountStr = "Geometry Draws: " + std::to_string(m_drawCallCount);
+		m_spriteFont16->DrawString(m_spriteBatch.get(), drawCallCountStr.c_str(), DirectX::XMFLOAT2(10.f, 70.f), DirectX::Colors::White, 0.f, DirectX::XMFLOAT2(0.f, 0.f));
+	
+		drawCallCountStr = "Post Process Draws: " + std::to_string(m_postProcessDrawCallCount);
+		m_spriteFont16->DrawString(m_spriteBatch.get(), drawCallCountStr.c_str(), DirectX::XMFLOAT2(10.f, 90.f), DirectX::Colors::White, 0.f, DirectX::XMFLOAT2(0.f, 0.f));
+	}
+
+	// - FPS Counter UI
 	m_spriteFont16->DrawString(m_spriteBatch.get(), m_fpsString.c_str(), DirectX::XMFLOAT2((float)m_options->width - 110.f, 10.f), DirectX::Colors::White, 0.f, DirectX::XMFLOAT2(0.f, 0.f));
+	
+	// - Status Text UI
 	m_statusTextHandler->render(m_spriteFont32.get(), m_spriteBatch.get());
+	
+	// Draw Sprites End
 	m_spriteBatch->End();
 	m_annotation->EndEvent();
 

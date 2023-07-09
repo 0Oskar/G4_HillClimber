@@ -1,6 +1,7 @@
 #pragma once
 #include "pch.h"
 #include "framework.h"
+#include <DirectXCollision.h>
 
 class ModelBFF
 {

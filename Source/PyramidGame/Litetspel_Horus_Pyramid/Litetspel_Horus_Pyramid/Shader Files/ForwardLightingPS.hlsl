@@ -1,3 +1,5 @@
+#define LIGHT_COUNT 20
+
 struct PS_IN
 {
     float4 position : SV_POSITION;
@@ -19,13 +21,14 @@ cbuffer materialBuffer : register(b0)
 struct PointLight
 {
     float3 position;
-    float3 diffuse;
     float range;
+    float3 diffuse;
+    float pad;
 };
 
 cbuffer PerFrameBuffer : register(b1)
 {
-    PointLight pointLights[20];
+    PointLight pointLights[LIGHT_COUNT];
     int nrOfPointLights;
     float3 skyLightDirection;
     float3 skyLightColor;
@@ -45,39 +48,21 @@ SamplerComparisonState shadowSampler : SAMPLER : register(s1);
 
 float3 pointLightCalculation(float3 ambient, float3 diffuse, float3 position, float3 normal, PointLight light)
 {
-    float3 calcAmbient = float3(0, 0, 0);
-    float3 calcDiffuse = float3(0, 0, 0);
-    float diffuseValue = 0;
-    float3 lightVec = float3(0, 0, 0);
+    float3 lightVec = light.position - position;
+    float3 lightDirection = normalize(lightVec);
+    float diffuseValue = dot(lightDirection, normal);
     
-    lightVec = light.position - position;
-    float lightVecDist = length(lightVec);
+    float3 calcDiffuse = saturate(diffuseValue) * diffuse * light.diffuse;
     
-    if (lightVecDist <= light.range)
-    {
-        float lightDistSq = dot(lightVec, lightVec);
-        float invLightDist = rsqrt(lightDistSq);
+    float lightDistSq = dot(lightVec, lightVec);
+    float invLightDist = rsqrt(lightDistSq);
                     
-        float radiusSq = light.range * light.range;
-        float distanceFalloff = radiusSq * (invLightDist * invLightDist);
-        float attenuation = max(0, distanceFalloff - rsqrt(distanceFalloff));
-    
-        lightVec = lightVec / lightVecDist;
-        calcAmbient = ambient * light.diffuse;
-        diffuseValue = dot(lightVec, normal);
+    float radiusSq = light.range * light.range;
+    float distanceFalloff = radiusSq * (invLightDist * invLightDist);
+    float attenuation = max(0, distanceFalloff - rsqrt(distanceFalloff));
+    calcDiffuse *= attenuation;
         
-        if (diffuseValue > 0.0f)
-        {
-            calcDiffuse = diffuseValue * diffuse * light.diffuse;
-        }
-        
-        //float atten = 1.0f / dot(attenuation, float3(1.0, lightVecDist, lightVecDist * lightVecDist));
-        calcDiffuse *= attenuation;
-        
-        return saturate(calcAmbient + calcDiffuse);
-    }
-    
-    return float3(0, 0, 0);
+    return saturate(calcDiffuse);
 }
 
 float calculateShadowFactor(float4 shadowPosition)
