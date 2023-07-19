@@ -59,5 +59,7 @@ public:
 	// Render
 	ID3D11ShaderResourceView* getShadowMapSRV();
 	ID3D11ShaderResourceView* const* getShadowMapSRVConstPtr();
+	void clearShadowmap();
+	void setComparisonSampler();
 	void bindViewsAndRenderTarget();
 };

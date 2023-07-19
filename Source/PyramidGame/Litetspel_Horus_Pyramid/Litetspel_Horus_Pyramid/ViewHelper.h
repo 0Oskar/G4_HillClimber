@@ -8,6 +8,7 @@ struct RenderTexture
 	ID3D11ShaderResourceView* srv;
 	ID3D11UnorderedAccessView* uav;
 	DXGI_FORMAT format;
+	char name[256];
 
 	RenderTexture()
 	{

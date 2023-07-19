@@ -236,8 +236,10 @@ void Application::applicationLoop()
 						viewDebugCommand = TOGGLE_DRAW_LIGHTS_DEBUG_VDC;
 					else if (keyboardEvent.getKey() == 'O')
 						viewDebugCommand = TOGGLE_SSAO_VDC;
-					else if (keyboardEvent.getKey() == '9')
+					else if (keyboardEvent.getKey() == 'I')
 						viewDebugCommand = TOGGLE_SHADOWMAP_VDC;
+					else if (keyboardEvent.getKey() == '9')
+						viewDebugCommand = TOGGLE_SHADOWMAP_DEBUG_VDC;
 					else if (keyboardEvent.getKey() == '0')
 						viewDebugCommand = TOGGLE_GBUFFER_DEBUG_VDC;
 					else if (keyboardEvent.getKey() == 'V')
@@ -257,13 +259,13 @@ void Application::applicationLoop()
 			}
 			static float _viewLayerDebugToggleTimer = 0.f;
 			_viewLayerDebugToggleTimer += m_deltaTime;
-			if(_viewLayerDebugToggleTimer > 0.2f)
+			if (_viewLayerDebugToggleTimer > 0.2f)
 			{
 				if (viewDebugCommand == TOGGLE_DRAW_PHYSICS_PRIMITVES_VDC)
 				{
 					_viewLayerDebugToggleTimer = 0.f;
 					m_viewLayerPtr->m_drawPhysicsPrimitives = !m_viewLayerPtr->m_drawPhysicsPrimitives;
-					
+
 					if (m_viewLayerPtr->m_drawPhysicsPrimitives)
 						StatusTextHandler::get().sendText("Draw Physics Debug ON!", 0.5f);
 					else
@@ -299,7 +301,16 @@ void Application::applicationLoop()
 					else
 						StatusTextHandler::get().sendText("Draw Lights Debug OFF!", 0.5f);
 				}
-				else if (viewDebugCommand == TOGGLE_SHADOWMAP_VDC)
+				else if (viewDebugCommand == TOGGLE_SHADOWMAP_VDC) {
+					_viewLayerDebugToggleTimer = 0.f;
+					m_viewLayerPtr->m_shadowMappingToggle = !m_viewLayerPtr->m_shadowMappingToggle;
+
+					if (m_viewLayerPtr->m_shadowMappingToggle)
+						StatusTextHandler::get().sendText("Draw Shadowmapping ON!", 0.5f);
+					else
+						StatusTextHandler::get().sendText("Draw Shadowmapping OFF!", 0.5f);
+				}
+				else if (viewDebugCommand == TOGGLE_SHADOWMAP_DEBUG_VDC)
 				{
 					_viewLayerDebugToggleTimer = 0.f;
 					m_viewLayerPtr->m_drawShadowmapDebug = !m_viewLayerPtr->m_drawShadowmapDebug;

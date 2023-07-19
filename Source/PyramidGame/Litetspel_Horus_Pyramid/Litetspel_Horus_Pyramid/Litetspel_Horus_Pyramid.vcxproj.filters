@@ -299,9 +299,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
     <Filter Include="Shaders">
       <UniqueIdentifier>{6b834f70-b328-4500-abfc-54c30c12ccf4}</UniqueIdentifier>
     </Filter>
@@ -335,5 +332,8 @@
     <Filter Include="Source\Game Logic\Component">
       <UniqueIdentifier>{4fce57e3-555f-450d-8c3b-dce75d072a1a}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

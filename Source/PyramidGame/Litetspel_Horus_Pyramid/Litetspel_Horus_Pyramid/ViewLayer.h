@@ -21,6 +21,7 @@ enum ViewDebugCommands
 	TOGGLE_DRAW_LIGHTS_DEBUG_VDC,
 	TOGGLE_SSAO_VDC,
 	TOGGLE_SHADOWMAP_VDC,
+	TOGGLE_SHADOWMAP_DEBUG_VDC,
 	TOGGLE_GBUFFER_DEBUG_VDC,
 	TOGGLE_DRAW_CALL_STATS_VDC
 };
@@ -141,7 +142,7 @@ private:
 
 	// Initialization Functions
 	void initDeviceAndSwapChain();
-	void initRenderTarget(RenderTexture& rtv, UINT width, UINT height, DXGI_FORMAT format, UINT mipLevels = 1);
+	void initRenderTarget(RenderTexture& rtv, std::string name, UINT width, UINT height, DXGI_FORMAT format, UINT mipLevels = 1);
 	void initViewPort();
 	void initDepthStencilBuffer();
 	void initSamplerState();
@@ -194,5 +195,6 @@ public:
 
 	// Feature Toggles
 	bool m_ssaoToggle = true;
+	bool m_shadowMappingToggle = true;
 	bool m_frustumCullingToggle = true;
 };

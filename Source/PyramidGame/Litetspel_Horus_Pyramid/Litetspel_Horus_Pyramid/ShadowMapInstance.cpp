@@ -255,6 +255,16 @@ ID3D11ShaderResourceView* const* ShadowMapInstance::getShadowMapSRVConstPtr()
 	return m_shadowMapSRV.GetAddressOf();
 }
 
+void ShadowMapInstance::clearShadowmap()
+{
+	m_deviceContext->ClearDepthStencilView(m_shadowMapDSV.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+}
+
+void ShadowMapInstance::setComparisonSampler()
+{
+	m_deviceContext->PSSetSamplers(1, 1, m_comparisonSampler.GetAddressOf());
+}
+
 void ShadowMapInstance::bindViewsAndRenderTarget()
 {
 	ID3D11ShaderResourceView* shaderResourceNullptr = nullptr;
@@ -268,7 +278,6 @@ void ShadowMapInstance::bindViewsAndRenderTarget()
 
 	m_deviceContext->OMSetDepthStencilState(m_depthStencilState.Get(), 0);
 	m_deviceContext->VSSetConstantBuffers(1, 1, m_lightMatrixCBuffer.GetAddressOf()); // GetAddressOf XD
-	m_deviceContext->PSSetSamplers(1, 1, m_comparisonSampler.GetAddressOf());
 
 	m_shader.setShaders();
 }

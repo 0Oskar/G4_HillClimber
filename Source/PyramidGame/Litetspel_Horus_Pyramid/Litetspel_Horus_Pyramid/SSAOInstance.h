@@ -54,6 +54,9 @@ private:
     // Functions
     void initSSAOTexture(ID3D11Device* device, int width, int height)
     {
+        std::string name = "SSAO Map0";
+        strncpy_s(m_texture.name, name.c_str(), name.length());
+        m_texture.name[name.length()] = '\0';
         // Texture
         D3D11_TEXTURE2D_DESC textureDesc;
         ZeroMemory(&textureDesc, sizeof(D3D11_TEXTURE2D_DESC));
@@ -103,7 +106,7 @@ private:
     }
     void initRandomTexture(ID3D11Device* device)
     {
-        HRESULT hr;
+        //HRESULT hr;
 
         // Dither Texture
         int ditherWidth = 4;
@@ -184,8 +187,8 @@ private:
         subData.SysMemPitch = texDesc.Width * sizeof(XMVECTOR);
         subData.SysMemSlicePitch = subData.SysMemPitch * texDesc.Height;*/
 
-        hr = device->CreateTexture2D(&texDesc, &subData, m_ditherTexture.GetAddressOf());
-        assert(SUCCEEDED(hr) && "Error, failed to create dither texture!");
+        //hr = device->CreateTexture2D(&texDesc, &subData, m_ditherTexture.GetAddressOf());
+        //assert(SUCCEEDED(hr) && "Error, failed to create dither texture!");
 
         D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
         srvDesc.Format = texDesc.Format;
@@ -193,8 +196,8 @@ private:
         srvDesc.Texture2D.MostDetailedMip = 0;
         srvDesc.Texture2D.MipLevels = 1;
 
-        hr = device->CreateShaderResourceView(m_ditherTexture.Get(), &srvDesc, m_ditherTextureSRV.GetAddressOf());
-        assert(SUCCEEDED(hr) && "Error, failed to create dither texture shader resource view!");
+        //hr = device->CreateShaderResourceView(m_ditherTexture.Get(), &srvDesc, m_ditherTextureSRV.GetAddressOf());
+        //assert(SUCCEEDED(hr) && "Error, failed to create dither texture shader resource view!");
     }
     void initSamplerStates(ID3D11Device* device)
     {
@@ -260,7 +263,21 @@ private:
 
 public:
     SSAOInstance() {}
-    ~SSAOInstance() {}
+    ~SSAOInstance()
+    {
+        if (m_texture.rtt)
+            m_texture.rtt->Release();
+        m_texture.rtt = nullptr;
+        if (m_texture.rtv)
+            m_texture.rtv->Release();
+        m_texture.rtv = nullptr;
+        if (m_texture.srv)
+            m_texture.srv->Release();
+        m_texture.srv = nullptr;
+        if (m_texture.uav)
+            m_texture.uav->Release();
+        m_texture.uav = nullptr;
+    }
 
     void initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, int width, int height)
     {
@@ -346,7 +363,9 @@ public:
         m_deviceContext->PSSetConstantBuffers(1, 1, m_SSAOBuffer.GetAddressOf());
 
         // Dither Texture
-        m_deviceContext->PSSetShaderResources(2, 1, m_ditherTextureSRV.GetAddressOf());
+        //m_deviceContext->PSSetShaderResources(2, 1, m_ditherTextureSRV.GetAddressOf());
+        ID3D11ShaderResourceView* srv = nullptr;
+        m_deviceContext->PSSetShaderResources(2, 1, &srv);
 
         // Draw Fullscreen Quad
         m_deviceContext->Draw(4, 0);

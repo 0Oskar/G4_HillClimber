@@ -28,9 +28,9 @@ void ViewLayer::initDeviceAndSwapChain()
 	};
 
 	UINT flags = 0;
-//#if defined( DEBUG ) || defined( _DEBUG )
-//	flags |= D3D11_CREATE_DEVICE_DEBUG;
-//#endif
+#if defined( DEBUG ) || defined( _DEBUG )
+	flags |= D3D11_CREATE_DEVICE_DEBUG;
+#endif
 
 	HRESULT hr = D3D11CreateDeviceAndSwapChain(
 		NULL,
@@ -62,8 +62,11 @@ void ViewLayer::initDeviceAndSwapChain()
 	backBuffer->Release();
 }
 
-void ViewLayer::initRenderTarget(RenderTexture& rtv, UINT width, UINT height, DXGI_FORMAT format, UINT mipLevels)
+void ViewLayer::initRenderTarget(RenderTexture& rtv, std::string name, UINT width, UINT height, DXGI_FORMAT format, UINT mipLevels)
 {
+	size_t length = name.copy(rtv.name, name.length(), 0);
+	rtv.name[length] = '\0';
+	
 	// Texture
 	D3D11_TEXTURE2D_DESC textureDesc;
 	ZeroMemory(&textureDesc, sizeof(D3D11_TEXTURE2D_DESC));
@@ -241,7 +244,11 @@ ViewLayer::ViewLayer()
 
 ViewLayer::~ViewLayer()
 {
-	
+	// RT already released in ssao instance
+	m_gBuffer[GBufferType::AMBIENT_OCCLUSION_GB].rtt = nullptr;
+	m_gBuffer[GBufferType::AMBIENT_OCCLUSION_GB].rtv = nullptr;
+	m_gBuffer[GBufferType::AMBIENT_OCCLUSION_GB].srv = nullptr;
+	m_gBuffer[GBufferType::AMBIENT_OCCLUSION_GB].uav = nullptr;
 }
 
 ID3D11Device* ViewLayer::getDevice()
@@ -415,8 +422,12 @@ void ViewLayer::blurSSAOPass()
 
 	m_edgePreservingBlurCS.setShaders();
 
-	ID3D11ShaderResourceView* blurSRVs[] = { m_SSAOInstance.getAORenderTexture().srv, m_blurPingPongSRV.Get() };
-	ID3D11UnorderedAccessView* blurUAVs[] = { m_blurPingPongUAV.Get(), m_SSAOInstance.getAORenderTexture().uav };
+	static uint32_t AOiterator = 0;
+	AOiterator++;
+	RenderTexture& aoRT = m_SSAOInstance.getAORenderTexture();
+	aoRT.name[9] = std::to_string(AOiterator).c_str()[0];
+	ID3D11ShaderResourceView* blurSRVs[] = { aoRT.srv, m_blurPingPongSRV.Get() };
+	ID3D11UnorderedAccessView* blurUAVs[] = { m_blurPingPongUAV.Get(), aoRT.uav };
 
 	for (UINT i = 0; i < 2; i++)
 	{
@@ -482,13 +493,13 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 
 	// G-Buffer
 	// - Diffuse
-	initRenderTarget(m_gBuffer[GBufferType::DIFFUSE_GB], m_options->width, m_options->height, DXGI_FORMAT_R8G8B8A8_UNORM);
+	initRenderTarget(m_gBuffer[GBufferType::DIFFUSE_GB], "DIFFUSE_GB", m_options->width, m_options->height, DXGI_FORMAT_R8G8B8A8_UNORM);
 	// - Normal, Shadow Mask
-	initRenderTarget(m_gBuffer[GBufferType::NORMAL_SHADOWMASK_GB], m_options->width, m_options->height, DXGI_FORMAT_R32G32B32A32_FLOAT);
+	initRenderTarget(m_gBuffer[GBufferType::NORMAL_SHADOWMASK_GB], "NORMAL_SHADOWMASK_GB", m_options->width, m_options->height, DXGI_FORMAT_R32G32B32A32_FLOAT);
 	// - Specular, Shininess
-	initRenderTarget(m_gBuffer[GBufferType::SPECULAR_SHININESS_GB], m_options->width, m_options->height, DXGI_FORMAT_R8G8B8A8_UNORM);
+	initRenderTarget(m_gBuffer[GBufferType::SPECULAR_SHININESS_GB], "SPECULAR_SHININESS_GB", m_options->width, m_options->height, DXGI_FORMAT_R8G8B8A8_UNORM);
 	// - Ambient, Global Ambient Contribution
-	initRenderTarget(m_gBuffer[GBufferType::AMBIENT_GLOBALAMBIENTCONTR_GB], m_options->width, m_options->height, DXGI_FORMAT_R8G8B8A8_UNORM);
+	initRenderTarget(m_gBuffer[GBufferType::AMBIENT_GLOBALAMBIENTCONTR_GB], "AMBIENT_GLOBALAMBIENTCONTR_GB", m_options->width, m_options->height, DXGI_FORMAT_R8G8B8A8_UNORM);
 
 	// SSAO
 	m_SSAOInstance.initialize(m_device.Get(), m_deviceContext.Get(), m_options->width, m_options->height);
@@ -579,6 +590,10 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 
 	// Shadowe Mapping
 	m_shadowInstance.initialize(m_device.Get(), m_deviceContext.Get(), 4096, 4096);
+
+	// Set Samplers
+	m_deviceContext->PSSetSamplers(0, 1, m_samplerState.GetAddressOf());
+	m_shadowInstance.setComparisonSampler();
 }
 
 void ViewLayer::reloadShaders()
@@ -611,9 +626,11 @@ void ViewLayer::update(float dt)
 	}
 
 	// Shadow matrix and per frame buffer
-	XMFLOAT3 cameraPos = m_cameraPtr->getPosition();
-	m_shadowInstance.buildLightMatrix(m_perFrameBuffer.m_data.skyLightDirection, cameraPos);
-	m_perFrameBuffer.m_data.cameraPos = cameraPos;
+	if (m_shadowMappingToggle) {
+		XMFLOAT3 cameraPos = m_cameraPtr->getPosition();
+		m_shadowInstance.buildLightMatrix(m_perFrameBuffer.m_data.skyLightDirection, cameraPos);
+		m_perFrameBuffer.m_data.cameraPos = cameraPos;
+	}
 
 	// Status text
 	m_statusTextHandler->update(dt);
@@ -646,6 +663,11 @@ void ViewLayer::render(iGameState* gameState)
 		m_deviceContext->ClearRenderTargetView(gBufferRTVs[AMBIENT_OCCLUSION_GB], m_clearColorWhite);
 	}
 
+	if (!m_shadowMappingToggle) 
+	{
+		m_shadowInstance.clearShadowmap();
+	}
+
 	m_annotation->EndEvent();
 
 	DirectX::XMMATRIX viewMatrix = m_cameraPtr->getViewMatrix();
@@ -655,8 +677,9 @@ void ViewLayer::render(iGameState* gameState)
 	cameraFrustum.Transform(cameraFrustum, 1.f, DirectX::XMQuaternionRotationRollPitchYawFromVector(m_cameraPtr->getRotationVector()), m_cameraPtr->getPositionVector());
 
 	// Shadow Mapping
-	DirectX::BoundingOrientedBox shadowCameraBounds = m_shadowInstance.getLightBoundingBox();
-	{
+	DirectX::BoundingOrientedBox shadowCameraBounds;
+	if (m_shadowMappingToggle) {
+		shadowCameraBounds = m_shadowInstance.getLightBoundingBox();
 		m_annotation->BeginEvent(L"ShadowMapping");
 		m_shadowInstance.bindViewsAndRenderTarget();
 		for (size_t i = 0; i < m_gameObjectsFromState->size(); i++)
@@ -730,7 +753,6 @@ void ViewLayer::render(iGameState* gameState)
 	m_GBufferShaders.setShaders();
 
 	// Set Shadow Map
-	m_deviceContext->PSSetSamplers(0, 1, m_samplerState.GetAddressOf());
 	m_deviceContext->PSSetShaderResources(1, 1, m_shadowInstance.getShadowMapSRVConstPtr());
 
 	// G-Buffer Draw

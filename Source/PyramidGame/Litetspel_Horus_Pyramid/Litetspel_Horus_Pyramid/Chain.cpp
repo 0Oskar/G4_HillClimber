@@ -15,7 +15,10 @@ void Chain::simulateLinks(GameObject* link1, GameObject* link2, bool notFirst, f
 		linkVector = (link1->getPosition() + (link1->getMoveCompPtr()->forward / 2)) - link2->getPosition();
 
 	float linkLength = XMVectorGetX(XMVector3LengthEst(linkVector));
-	assert(!isinf(linkLength));
+	if (isinf(linkLength)) {
+		//return;
+		//assert(false);
+	}
 
 	XMVECTOR finalForce = XMVectorZero();
 	if (linkLength != 0)
@@ -42,10 +45,17 @@ void Chain::simulateLinks(GameObject* link1, GameObject* link2, bool notFirst, f
 		finalForce += -(velocityDifference)*m_friction;
 		assert(!XMVector3IsNaN(finalForce));
 
+		finalForce = DirectX::XMVectorMin(finalForce, DirectX::XMVectorSet(5.f, 5.f, 5.f, 1.f));
+		finalForce = DirectX::XMVectorMax(finalForce, DirectX::XMVectorSet(-5.f, -5.f, -5.f, 1.f));
+
 		// Apply force
 		if (notFirst)
 			link1->getphysicsCompPtr()->addForceDir(finalForce, dt);
 		link2->getphysicsCompPtr()->addForceDir(-finalForce, dt);
+
+		assert(XMVectorGetX(finalForce) < 100.f);
+		assert(XMVectorGetY(finalForce) < 100.f);
+		assert(XMVectorGetZ(finalForce) < 100.f);
 	}
 }
 
@@ -56,10 +66,25 @@ void Chain::linkRetractionUpdate()
 		nrOfLinks = NR_OF_CHAIN_LINKS;
 
 	for (uint32_t i = 0; i < nrOfLinks; i++)
+	{
+		if (!m_chainRetracted[i])
+		{
+			std::string str = "m_chainRetracted[" + std::to_string(m_chainRetracted[i]) + "] = false\n";
+			OutputDebugStringA(str.c_str());
+		}
 		m_chainRetracted[i] = false;
+	}
 
 	for (int i = nrOfLinks - 1; i < NR_OF_CHAIN_LINKS; i++)
+	{
+		if (m_chainRetracted[i])
+		{
+			std::string str = "m_chainRetracted[" + std::to_string(m_chainRetracted[i]) + "] = true\n";
+			OutputDebugStringA(str.c_str());
+		}
 		m_chainRetracted[i] = true;
+		m_chainGObjects->at(i)->setPosition(m_gaunletGObject->getPosition());
+	}
 }
 
 Chain::Chain()
@@ -185,6 +210,10 @@ void Chain::update(float dt)
 		}
 		XMFLOAT3 velocity = m_chainGObjects->at(i)->getphysicsCompPtr()->getVelocity();
 		assert(!pMath::F3IsNaN(velocity));
+
+		assert(velocity.x < 100.f);
+		assert(velocity.y < 100.f);
+		assert(velocity.z < 100.f);
 		m_chainGObjects->at(i)->getphysicsCompPtr()->updatePositionNoDecel(dt);
 	}
 }
