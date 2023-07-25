@@ -590,10 +590,6 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 
 	// Shadowe Mapping
 	m_shadowInstance.initialize(m_device.Get(), m_deviceContext.Get(), 4096, 4096);
-
-	// Set Samplers
-	m_deviceContext->PSSetSamplers(0, 1, m_samplerState.GetAddressOf());
-	m_shadowInstance.setComparisonSampler();
 }
 
 void ViewLayer::reloadShaders()
@@ -667,6 +663,10 @@ void ViewLayer::render(iGameState* gameState)
 	{
 		m_shadowInstance.clearShadowmap();
 	}
+
+	// Set Samplers
+	m_deviceContext->PSSetSamplers(0, 1, m_samplerState.GetAddressOf());
+	m_shadowInstance.setComparisonSampler();
 
 	m_annotation->EndEvent();
 

@@ -2,7 +2,7 @@
 
 #include "GameObject.h"
 
-const uint32_t NR_OF_CHAIN_LINKS = 100;
+#define NR_OF_CHAIN_LINKS 100
 
 class Chain
 {
@@ -12,17 +12,18 @@ private:
 	bool m_retracting;
 	Timer m_timer;
 	std::vector<GameObject*>* m_chainGObjects;
-	std::vector<bool> m_chainRetracted;
+	std::vector<bool> m_retractedLinks;
 	int m_nrOfUnretractedLinks;
 	GameObject* m_hookGObject;
 	GameObject* m_gaunletGObject;
 
 	float m_constant;
-	float m_length;
+	float m_linkLength;
 	float m_friction;
 
 	void simulateLinks(GameObject* link1, GameObject* link2, bool notFirst, float dt);
 	void linkRetractionUpdate();
+	XMVECTOR getGauntletLinkSpawnPosition();
 
 public:
 	Chain();

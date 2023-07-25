@@ -13,9 +13,171 @@ Application::Application()
 	m_gameOptions.mouseSensitivity = 0.1f;
 	m_gameOptions.name = "undefined";
 	m_deltaTime = 0.f;
+	m_dtMultiplier = 1.f;
+	m_framerateLimit = 0.f;
+	m_frametimeLimit = 1.f;
 	m_resetAudio = false;
 	m_shouldQuit = false;
 	m_doneLoadingModels = false;
+
+	m_options.push_back({
+		VK_F1,
+		"F1 : Unlock Framerate",
+		[](Application* app) {
+			app->m_framerateLimit = 0.f;
+			StatusTextHandler::get().sendText("Framerate Unlocked!", 0.5f);
+		}
+	});
+	m_options.push_back({
+		VK_F2,
+		"F2 : Limit Framerate To 60",
+		[](Application* app) {
+			app->m_framerateLimit = 60.f;
+			app->m_frametimeLimit = 1.f / app->m_framerateLimit;
+			StatusTextHandler::get().sendText("Limit Framerate Set To 60!", 0.5f);
+		}
+	});
+	m_options.push_back({
+		VK_F3,
+		"F3 : Limit Framerate To 30",
+		[](Application* app) {
+			app->m_framerateLimit = 30.f;
+			app->m_frametimeLimit = 1.f / app->m_framerateLimit;
+			StatusTextHandler::get().sendText("Limit Framerate Set To 30!", 0.5f);
+		}
+	});
+	m_options.push_back({
+		(char)VK_OEM_PLUS, // '+' key
+		"+ : Reload Shaders",
+		[](Application* app) {
+			app->m_viewLayerPtr->reloadShaders();
+			StatusTextHandler::get().sendText("Shaders Reloaded!", 0.5f);
+		}
+	});
+	m_options.push_back({
+		'M',
+		"M : Time Slowdown Toggle",
+		[](Application* app) {
+			if (app->m_dtMultiplier == 1.f)
+			{
+				app->m_dtMultiplier = 0.25f;
+				StatusTextHandler::get().sendText("Time Slowdown ON!", 0.5f);
+			}
+			else
+			{
+				app->m_dtMultiplier = 1.f;
+				StatusTextHandler::get().sendText("Time Slowdown OFF!", 0.5f);
+			}
+		}
+	});
+	m_options.push_back({
+		'P',
+		"P : Draw Debug Colliders",
+		[](Application* app) {
+			app->m_viewLayerPtr->m_drawPhysicsPrimitives = !app->m_viewLayerPtr->m_drawPhysicsPrimitives;
+
+			if (app->m_viewLayerPtr->m_drawPhysicsPrimitives)
+				StatusTextHandler::get().sendText("Draw Physics Debug ON!", 0.5f);
+			else
+				StatusTextHandler::get().sendText("Draw Physics Debug OFF!", 0.5f);
+		}
+	});
+	m_options.push_back({
+		'B',
+		"B : Draw Model Bounding Boxes",
+		[](Application* app) {
+			app->m_viewLayerPtr->m_drawModelBoxPrimitives = !app->m_viewLayerPtr->m_drawModelBoxPrimitives;
+
+			if (app->m_viewLayerPtr->m_drawModelBoxPrimitives)
+				StatusTextHandler::get().sendText("Draw Model Bounding Boxes Debug ON!", 0.5f);
+			else
+				StatusTextHandler::get().sendText("Draw Model Bounding Boxes Debug OFF!", 0.5f);
+		}
+	});
+	m_options.push_back({
+		'N',
+		"N : Frustum Culling Toggle",
+		[](Application* app) {
+			app->m_viewLayerPtr->m_drawModelBoxPrimitives = !app->m_viewLayerPtr->m_drawModelBoxPrimitives;
+
+			if (app->m_viewLayerPtr->m_drawModelBoxPrimitives)
+				StatusTextHandler::get().sendText("Draw Model Bounding Boxes Debug ON!", 0.5f);
+			else
+				StatusTextHandler::get().sendText("Draw Model Bounding Boxes Debug OFF!", 0.5f);
+		}
+	});
+	m_options.push_back({
+		'L',
+		"L : Draw Debug Lights",
+		[](Application* app) {
+			app->m_viewLayerPtr->m_drawLightsDebug = !app->m_viewLayerPtr->m_drawLightsDebug;
+
+			if (app->m_viewLayerPtr->m_drawLightsDebug)
+				StatusTextHandler::get().sendText("Draw Lights Debug ON!", 0.5f);
+			else
+				StatusTextHandler::get().sendText("Draw Lights Debug OFF!", 0.5f);
+		}
+	});
+	m_options.push_back({
+		'O',
+		"O : SSAO Toggle",
+		[](Application* app) {
+			app->m_viewLayerPtr->m_ssaoToggle = !app->m_viewLayerPtr->m_ssaoToggle;
+
+			if (app->m_viewLayerPtr->m_ssaoToggle)
+				StatusTextHandler::get().sendText("Draw SSAO ON!", 0.5f);
+			else
+				StatusTextHandler::get().sendText("Draw SSAO OFF!", 0.5f);
+		}
+	});
+	m_options.push_back({
+		'I',
+		"I : Shadow Mapping Toggle",
+		[](Application* app) {
+			app->m_viewLayerPtr->m_shadowMappingToggle = !app->m_viewLayerPtr->m_shadowMappingToggle;
+
+			if (app->m_viewLayerPtr->m_shadowMappingToggle)
+				StatusTextHandler::get().sendText("Draw Shadowmapping ON!", 0.5f);
+			else
+				StatusTextHandler::get().sendText("Draw Shadowmapping OFF!", 0.5f);
+		}
+	});
+	m_options.push_back({
+		'9',
+		"9 : Draw Debug Shadowmap",
+		[](Application* app) {
+			app->m_viewLayerPtr->m_drawShadowmapDebug = !app->m_viewLayerPtr->m_drawShadowmapDebug;
+
+			if (app->m_viewLayerPtr->m_drawShadowmapDebug)
+				StatusTextHandler::get().sendText("Draw Shadowmap Debug ON!", 0.5f);
+			else
+				StatusTextHandler::get().sendText("Draw Shadowmap Debug OFF!", 0.5f);
+		}
+	});
+	m_options.push_back({
+		'0',
+		"0 : Draw Debug GBuffer",
+		[](Application* app) {
+			app->m_viewLayerPtr->m_drawGBufferDebug = !app->m_viewLayerPtr->m_drawGBufferDebug;
+
+			if (app->m_viewLayerPtr->m_drawGBufferDebug)
+				StatusTextHandler::get().sendText("Draw G-Buffer Debug ON!", 0.5f);
+			else
+				StatusTextHandler::get().sendText("Draw G-Buffer Debug OFF!", 0.5f);
+		}
+	});
+	m_options.push_back({
+		'V',
+		"V : Draw Render Call Stats",
+		[](Application* app) {
+			app->m_viewLayerPtr->m_drawDrawCallStatsDebug = !app->m_viewLayerPtr->m_drawDrawCallStatsDebug;
+			
+			if (app->m_viewLayerPtr->m_drawDrawCallStatsDebug)
+				StatusTextHandler::get().sendText("Draw Render Call Stats ON!", 0.5f);
+			else
+				StatusTextHandler::get().sendText("Draw Render Call Stats OFF!", 0.5f);
+		}
+	});
 }
 
 Application::~Application()
@@ -217,148 +379,48 @@ void Application::applicationLoop()
 
 			// - View Layer debug input
 			ViewDebugCommands viewDebugCommand = ViewDebugCommands::NONE_VDC;
+			static std::vector<std::string_view> keybind_descriptions;
+
+			static float _viewLayerDebugToggleTimer = 0.f;
+			_viewLayerDebugToggleTimer += m_deltaTime;
+			
 			std::queue<KeyboardEvent> keyboardEventQueue = keyboard->getKeyBufferCopy();
 			while (!keyboardEventQueue.empty())
 			{
+				if (_viewLayerDebugToggleTimer < 0.2f) break;
+
 				KeyboardEvent keyboardEvent = keyboardEventQueue.front();
 				keyboardEventQueue.pop();
-				if (keyboardEvent.getEvent() == Event::Pressed)
+				if (keyboardEvent.getEvent() != Event::Pressed) continue;
+				
+				unsigned char key = keyboardEvent.getKey();
+				for (size_t i = 0; i < m_options.size(); i++)
 				{
-					if (keyboardEvent.getKey() == VK_OEM_PLUS) // '+' key
-						m_viewLayerPtr->reloadShaders();
-					else if (keyboardEvent.getKey() == 'P')
-						viewDebugCommand = TOGGLE_DRAW_PHYSICS_PRIMITVES_VDC;
-					else if (keyboardEvent.getKey() == 'B')
-						viewDebugCommand = TOGGLE_DRAW_MODEL_BB_PRIMITVES_VDC;
-					else if (keyboardEvent.getKey() == 'N')
-						viewDebugCommand = TOGGLE_FRUSTOM_CULLING_VDC;
-					else if (keyboardEvent.getKey() == 'L')
-						viewDebugCommand = TOGGLE_DRAW_LIGHTS_DEBUG_VDC;
-					else if (keyboardEvent.getKey() == 'O')
-						viewDebugCommand = TOGGLE_SSAO_VDC;
-					else if (keyboardEvent.getKey() == 'I')
-						viewDebugCommand = TOGGLE_SHADOWMAP_VDC;
-					else if (keyboardEvent.getKey() == '9')
-						viewDebugCommand = TOGGLE_SHADOWMAP_DEBUG_VDC;
-					else if (keyboardEvent.getKey() == '0')
-						viewDebugCommand = TOGGLE_GBUFFER_DEBUG_VDC;
-					else if (keyboardEvent.getKey() == 'V')
-						viewDebugCommand = TOGGLE_DRAW_CALL_STATS_VDC;
-					else if (keyboardEvent.getKey() == VK_OEM_5) // § key on nordic keyboard, left of 1
-						StatusTextHandler::get().sendText(std::string(
-															"+ : Reload Shaders\n") +
-															"P : Draw Debug Colliders\n" +
-															"B : Draw Model Bounding Boxes\n" +
-															"N : Frustum Culling Toggle\n" +
-															"L : Draw Debug Lights\n" +
-															"O : SSAO Toggle\n" +
-															"9 : Draw Debug Shadowmap\n" +
-															"0 : Draw Debug GBuffer"
-															, 2.f);
-				}
-			}
-			static float _viewLayerDebugToggleTimer = 0.f;
-			_viewLayerDebugToggleTimer += m_deltaTime;
-			if (_viewLayerDebugToggleTimer > 0.2f)
-			{
-				if (viewDebugCommand == TOGGLE_DRAW_PHYSICS_PRIMITVES_VDC)
-				{
+					if (key != m_options[i].key) continue;
 					_viewLayerDebugToggleTimer = 0.f;
-					m_viewLayerPtr->m_drawPhysicsPrimitives = !m_viewLayerPtr->m_drawPhysicsPrimitives;
+					m_options[i].trigger(this);
+				}
 
-					if (m_viewLayerPtr->m_drawPhysicsPrimitives)
-						StatusTextHandler::get().sendText("Draw Physics Debug ON!", 0.5f);
-					else
-						StatusTextHandler::get().sendText("Draw Physics Debug OFF!", 0.5f);
-				}
-				else if (viewDebugCommand == TOGGLE_DRAW_MODEL_BB_PRIMITVES_VDC)
-				{
-					_viewLayerDebugToggleTimer = 0.f;
-					m_viewLayerPtr->m_drawModelBoxPrimitives = !m_viewLayerPtr->m_drawModelBoxPrimitives;
+				if (key != VK_OEM_5)  continue;
 
-					if (m_viewLayerPtr->m_drawModelBoxPrimitives)
-						StatusTextHandler::get().sendText("Draw Model Bounding Boxes Debug ON!", 0.5f);
-					else
-						StatusTextHandler::get().sendText("Draw Model Bounding Boxes Debug OFF!", 0.5f);
-				}
-				else if (viewDebugCommand == TOGGLE_FRUSTOM_CULLING_VDC)
+				std::string optionDescriptions;
+				for (size_t i = 0; i < m_options.size(); i++)
 				{
-					_viewLayerDebugToggleTimer = 0.f;
-					m_viewLayerPtr->m_frustumCullingToggle = !m_viewLayerPtr->m_frustumCullingToggle;
-
-					if (m_viewLayerPtr->m_frustumCullingToggle)
-						StatusTextHandler::get().sendText("Frustum Culling ON!", 0.5f);
-					else
-						StatusTextHandler::get().sendText("Frustum Culling OFF!", 0.5f);
+					optionDescriptions += m_options[i].description;
+					optionDescriptions += "\n";
 				}
-				else if (viewDebugCommand == TOGGLE_DRAW_LIGHTS_DEBUG_VDC)
-				{
-					_viewLayerDebugToggleTimer = 0.f;
-					m_viewLayerPtr->m_drawLightsDebug = !m_viewLayerPtr->m_drawLightsDebug;
-
-					if (m_viewLayerPtr->m_drawLightsDebug)
-						StatusTextHandler::get().sendText("Draw Lights Debug ON!", 0.5f);
-					else
-						StatusTextHandler::get().sendText("Draw Lights Debug OFF!", 0.5f);
-				}
-				else if (viewDebugCommand == TOGGLE_SHADOWMAP_VDC) {
-					_viewLayerDebugToggleTimer = 0.f;
-					m_viewLayerPtr->m_shadowMappingToggle = !m_viewLayerPtr->m_shadowMappingToggle;
-
-					if (m_viewLayerPtr->m_shadowMappingToggle)
-						StatusTextHandler::get().sendText("Draw Shadowmapping ON!", 0.5f);
-					else
-						StatusTextHandler::get().sendText("Draw Shadowmapping OFF!", 0.5f);
-				}
-				else if (viewDebugCommand == TOGGLE_SHADOWMAP_DEBUG_VDC)
-				{
-					_viewLayerDebugToggleTimer = 0.f;
-					m_viewLayerPtr->m_drawShadowmapDebug = !m_viewLayerPtr->m_drawShadowmapDebug;
-					
-					if (m_viewLayerPtr->m_drawShadowmapDebug)
-						StatusTextHandler::get().sendText("Draw Shadowmap Debug ON!", 0.5f);
-					else
-						StatusTextHandler::get().sendText("Draw Shadowmap Debug OFF!", 0.5f);
-				}
-				else if (viewDebugCommand == TOGGLE_SSAO_VDC)
-				{
-					_viewLayerDebugToggleTimer = 0.f;
-					m_viewLayerPtr->m_ssaoToggle = !m_viewLayerPtr->m_ssaoToggle;
-
-					if (m_viewLayerPtr->m_ssaoToggle)
-						StatusTextHandler::get().sendText("Draw SSAO ON!", 0.5f);
-					else
-						StatusTextHandler::get().sendText("Draw SSAO OFF!", 0.5f);
-				}
-				else if (viewDebugCommand == TOGGLE_GBUFFER_DEBUG_VDC)
-				{
-					_viewLayerDebugToggleTimer = 0.f;
-					m_viewLayerPtr->m_drawGBufferDebug = !m_viewLayerPtr->m_drawGBufferDebug;
-					if (m_viewLayerPtr->m_drawGBufferDebug)
-						StatusTextHandler::get().sendText("Draw G-Buffer Debug ON!", 0.5f);
-					else
-						StatusTextHandler::get().sendText("Draw G-Buffer Debug OFF!", 0.5f);
-				}
-				else if (viewDebugCommand == TOGGLE_DRAW_CALL_STATS_VDC)
-				{
-					_viewLayerDebugToggleTimer = 0.f;
-					m_viewLayerPtr->m_drawDrawCallStatsDebug = !m_viewLayerPtr->m_drawDrawCallStatsDebug;
-					if (m_viewLayerPtr->m_drawDrawCallStatsDebug)
-						StatusTextHandler::get().sendText("Draw Call Stats ON!", 0.5f);
-					else
-						StatusTextHandler::get().sendText("Draw Call Stats OFF!", 0.5f);
-				}
+				StatusTextHandler::get().sendText(optionDescriptions, 2.f, 400.f);
 			}
 
 			// - Game Layer input
-			fetchedState = m_gameStateStack.top()->handleInput(keyboard, m_input.getMouse(), m_deltaTime);
+			fetchedState = m_gameStateStack.top()->handleInput(keyboard, m_input.getMouse(), m_deltaTime * m_dtMultiplier);
 			if (fetchedState != states::NONE)
 				pushNewState(fetchedState);
 
 			// Update Layers
 			if (!m_shouldQuit)
 			{
-				m_gameStateStack.top()->update(m_deltaTime);
+				m_gameStateStack.top()->update(m_deltaTime * m_dtMultiplier);
 				m_viewLayerPtr->setPerFrameDataFromState(m_gameStateStack.top()->getPerFrameData());
 				if (m_doneLoadingModels)
 				{
@@ -368,6 +430,10 @@ void Application::applicationLoop()
 				m_viewLayerPtr->update(m_deltaTime);
 				m_viewLayerPtr->render(m_gameStateStack.top());
 			}
+
+			// Framerate Limiter
+			if (m_framerateLimit)
+				while (m_frametimeLimit > (float)m_timer.timeElapsed()) { Sleep(0); }
 		}
 	}
 }

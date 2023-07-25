@@ -46,8 +46,8 @@ private:
 	const std::wstring m_chainExtendingSound = L"Sounds/HookChainAudio.wav";
 	bool m_shouldPlayChainSound = false;
 
-	float hookSpeedForward = 40.0f;
-	float hookSpeedRetract = 40.0f;
+	float m_hookSpeedForward = 40.0f;
+	float m_hookSpeedRetract = 40.0f;
 	AudioComponent* m_audioComponent;
 
 	hookState m_hookState;

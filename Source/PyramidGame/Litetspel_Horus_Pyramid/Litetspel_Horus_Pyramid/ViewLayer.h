@@ -12,7 +12,7 @@
 #include "ViewHelper.h"
 #include "SSAOInstance.h"
 
-enum ViewDebugCommands
+enum class ViewDebugCommands
 {
 	NONE_VDC,
 	TOGGLE_DRAW_PHYSICS_PRIMITVES_VDC,

@@ -129,6 +129,12 @@ public:
 		m_aabb->Center = center;
 		m_aabb->Extents = extends;
 	}
+	void setPosition(DirectX::XMFLOAT3 position)
+	{
+		m_moveComp->position = XMLoadFloat3(&position);
+		m_aabb->Center = position;
+	}
+
 	void setVelocity(DirectX::XMFLOAT3 newVelocity)
 	{
 		m_velocity = newVelocity;
@@ -310,7 +316,7 @@ public:
 		assert(!isnan(m_velocity.y));
 		assert(!isnan(m_velocity.z));
 	}
-	
+
 	void updatePosition(float dt, bool isCamera = false)
 	{
 		m_moveComp->position = DirectX::XMVectorAdd(

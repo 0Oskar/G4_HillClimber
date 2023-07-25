@@ -83,8 +83,8 @@ void HookHand::retract()
 
 void HookHand::reset()
 {
-	float hookSpeedForward = 100.f;
-	hookSpeedRetract = 100.f;
+	m_hookSpeedForward = 40.f;
+	m_hookSpeedRetract = 40.f;
 	m_hookState = hookState::idle;
 	m_hookGameObject->getMoveCompPtr()->rotation = m_playerMovement->rotation + hookRotOffsetConst;
 	m_hookGameObject->getMoveCompPtr()->position = DirectX::XMVectorAdd(m_gunGameObject->getMoveCompPtr()->position, hookPosOffset);
@@ -231,7 +231,7 @@ void HookHand::update(const float dt)
 		}
 		else
 		{
-			m_hookGameObject->getMoveCompPtr()->move(DirectX::XMVectorScale(DirectX::XMVector3Normalize(m_origin), dt * hookSpeedRetract));
+			m_hookGameObject->getMoveCompPtr()->move(DirectX::XMVectorScale(DirectX::XMVector3Normalize(m_origin), dt * m_hookSpeedRetract));
 		}
 	}
 	else if (m_hookState == hookState::hit)
@@ -271,8 +271,8 @@ void HookHand::update(const float dt)
 		// Wing rotation
 		m_wingsOpen = false;
 		// Reset speed for when reset() is used
-		hookSpeedForward = 40.f;
-		hookSpeedRetract = 40.f;
+		m_hookSpeedForward = 40.f;
+		m_hookSpeedRetract = 40.f;
 	}
 
 	m_chain.update(dt);

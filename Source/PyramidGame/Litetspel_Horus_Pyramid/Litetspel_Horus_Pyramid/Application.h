@@ -15,6 +15,7 @@ private:
 	Application();
 	Timer m_timer;
 	float m_deltaTime;
+	float m_dtMultiplier;
 
 	//DirectX Audio
 	HDEVNOTIFY m_hNewAudio;
@@ -52,6 +53,17 @@ public:
 	HWND m_window;
 	GameOptions m_gameOptions;
 	std::unique_ptr< ViewLayer > m_viewLayerPtr;
+	float m_framerateLimit;
+	float m_frametimeLimit;
+
+	typedef void(*OptionFn)(Application*);
+	struct OptionKeybind
+	{
+		char key;
+		char description[128];
+		OptionFn trigger;
+	};
+	std::vector<OptionKeybind> m_options;
 };
 
 #endif // !_APPLICATION_H_
