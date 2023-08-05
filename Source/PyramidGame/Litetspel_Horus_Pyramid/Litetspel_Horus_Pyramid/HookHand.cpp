@@ -233,6 +233,29 @@ void HookHand::update(const float dt)
 		{
 			m_hookGameObject->getMoveCompPtr()->move(DirectX::XMVectorScale(DirectX::XMVector3Normalize(m_origin), dt * m_hookSpeedRetract));
 		}
+
+		// Handle rotation
+		//XMVECTOR link1Position = m_chain.getLinkPosition(0);
+		//XMVECTOR link2Position = m_hookGameObject->getPosition();
+		//XMVECTOR toLink = link1Position - link2Position;
+		////XMVECTOR toLink = m_origin;
+
+		//if (!XMVector3Equal(toLink, XMVectorZero()))
+		//{
+		//	XMVECTOR upDirection = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+		//	XMVECTOR forwardDirection = XMVector3Normalize(toLink);
+		//	/*float dot = XMVectorGetX(XMVector3Dot(forwardDirection, XMVectorSet(0.f, 0.f, 1.f, 0.f)));
+		//	if (dot < 0.f)
+		//		XMVectorSetY(forwardDirection, -XMVectorGetY(forwardDirection));*/
+
+
+		//	/*float dot = XMVectorGetX(XMVector3Dot(forwardDirection, XMVectorSet(0.f, 0.f, 1.f, 0.f)));
+		//	if (dot < 0.f)
+		//		XMVectorSetY(newRotation, -XMVectorGetY(newRotation));*/
+
+		//	XMMATRIX orientation = XMMatrixLookToLH(link1Position, forwardDirection, upDirection);
+		//	m_hookGameObject->getMoveCompPtr()->rotation = pMath::rotationMatrixToEulerAngles(orientation);
+		//}
 	}
 	else if (m_hookState == hookState::hit)
 	{

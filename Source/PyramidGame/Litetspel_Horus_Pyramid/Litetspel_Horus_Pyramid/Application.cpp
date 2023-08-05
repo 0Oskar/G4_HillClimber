@@ -60,7 +60,7 @@ Application::Application()
 		[](Application* app) {
 			if (app->m_dtMultiplier == 1.f)
 			{
-				app->m_dtMultiplier = 0.25f;
+				app->m_dtMultiplier = 0.1f;
 				StatusTextHandler::get().sendText("Time Slowdown ON!", 0.5f);
 			}
 			else
@@ -98,12 +98,12 @@ Application::Application()
 		'N',
 		"N : Frustum Culling Toggle",
 		[](Application* app) {
-			app->m_viewLayerPtr->m_drawModelBoxPrimitives = !app->m_viewLayerPtr->m_drawModelBoxPrimitives;
+			app->m_viewLayerPtr->m_frustumCullingToggle = !app->m_viewLayerPtr->m_frustumCullingToggle;
 
-			if (app->m_viewLayerPtr->m_drawModelBoxPrimitives)
-				StatusTextHandler::get().sendText("Draw Model Bounding Boxes Debug ON!", 0.5f);
+			if (app->m_viewLayerPtr->m_frustumCullingToggle)
+				StatusTextHandler::get().sendText("Frustum Culling ON!", 0.5f);
 			else
-				StatusTextHandler::get().sendText("Draw Model Bounding Boxes Debug OFF!", 0.5f);
+				StatusTextHandler::get().sendText("Frustum Culling OFF!", 0.5f);
 		}
 	});
 	m_options.push_back({
@@ -309,7 +309,7 @@ void Application::createWin32Window(HINSTANCE hInstance, const wchar_t* windowTi
 		CLASS_NAME,                 // Window class
 		windowTitle,				// Window text
 		WS_OVERLAPPEDWINDOW,        // Window style
-		CW_USEDEFAULT,				// Position, X
+		200,						// Position, X
 		0,							// Position, Y
 		m_gameOptions.width,		// Width
 		m_gameOptions.height,		// Height

@@ -173,6 +173,12 @@ states MenuState::handleInput(Keyboard* keyboard, Mouse* mousePtr, float dt)
 		}
 	}
 
+	// I put this here just to empty the mouse event list
+	while (!mousePtr->empty())
+	{
+		MouseEvent mEvent = mousePtr->readEvent();
+	}
+
 	return changeStateTo;
 }
 void MenuState::afterChange()

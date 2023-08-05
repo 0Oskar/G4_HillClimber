@@ -110,4 +110,31 @@ namespace pMath
 	{
 		return XMFLOAT3(vec.x * multiply.x, vec.y * multiply.y, vec.z * multiply.z);
 	}
+
+	// From: https://learnopencv.com/rotation-matrix-to-euler-angles/
+	// Calculates rotation matrix to euler angles
+	// The result is the same as MATLAB except the order
+	// of the euler angles ( x and z are swapped ).
+	static XMVECTOR rotationMatrixToEulerAngles(XMMATRIX& r)
+	{
+		float sy = sqrt(XMVectorGetByIndex(r.r[0], 0) * XMVectorGetByIndex(r.r[0], 0) + XMVectorGetByIndex(r.r[1], 0) * XMVectorGetByIndex(r.r[1], 0));
+
+		bool singular = sy < 1e-6;
+
+		float x, y, z;
+		if (!singular)
+		{
+			x = atan2f(XMVectorGetByIndex(r.r[2], 1), XMVectorGetByIndex(r.r[2], 2));
+			y = atan2f(-XMVectorGetByIndex(r.r[2], 0), sy);
+			z = atan2f(XMVectorGetByIndex(r.r[1], 0), XMVectorGetByIndex(r.r[0], 0));
+		}
+		else
+		{
+			x = atan2f(-XMVectorGetByIndex(r.r[1], 2), XMVectorGetByIndex(r.r[1], 1));
+			y = atan2f(-XMVectorGetByIndex(r.r[2], 0), sy);
+			z = 0;
+		}
+		return XMVectorSet(x, y, z, 0.f);
+
+	}
 };

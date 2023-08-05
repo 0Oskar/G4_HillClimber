@@ -2,7 +2,7 @@
 
 #include "GameObject.h"
 
-#define NR_OF_CHAIN_LINKS 100
+#define NR_OF_CHAIN_LINKS 128
 
 class Chain
 {
@@ -16,6 +16,7 @@ private:
 	int m_nrOfUnretractedLinks;
 	GameObject* m_hookGObject;
 	GameObject* m_gaunletGObject;
+	XMVECTOR m_gauntletSpawnPosition;
 
 	float m_constant;
 	float m_linkLength;
@@ -23,7 +24,7 @@ private:
 
 	void simulateLinks(GameObject* link1, GameObject* link2, bool notFirst, float dt);
 	void linkRetractionUpdate();
-	XMVECTOR getGauntletLinkSpawnPosition();
+	void calculateGauntletLinkSpawnPosition();
 
 public:
 	Chain();
@@ -32,6 +33,8 @@ public:
 	void initialize(GameObject* hookGObject, GameObject* gaunletGObject, std::vector<GameObject*>* chainGObjects);
 
 	bool isVisible() const;
+
+	XMVECTOR getLinkPosition(uint32_t index);
 
 	void setVisibility(bool visible);
 	void setShooting(bool shooting);
