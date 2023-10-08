@@ -133,9 +133,6 @@
     <ClCompile Include="Application.cpp">
       <Filter>Source\Application</Filter>
     </ClCompile>
-    <ClCompile Include="pch.cpp">
-      <Filter>Header</Filter>
-    </ClCompile>
     <ClCompile Include="circleAroundObject.cpp">
       <Filter>Header\Utilites</Filter>
     </ClCompile>
@@ -147,6 +144,9 @@
     </ClCompile>
     <ClCompile Include="Room.cpp">
       <Filter>Source\Game Logic\Rooms</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Shaders</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

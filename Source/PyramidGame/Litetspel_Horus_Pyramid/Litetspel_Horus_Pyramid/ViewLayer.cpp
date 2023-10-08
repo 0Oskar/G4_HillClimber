@@ -238,7 +238,7 @@ ViewLayer::ViewLayer()
 
 	resourceHandler = &ResourceHandler::get();
 	
-	m_cameraPtr= nullptr;
+	m_cameraPtr = nullptr;
 	m_fps = 0;
 }
 
@@ -266,6 +266,16 @@ void ViewLayer::setCamera(Camera* camera)
 	m_cameraPtr = camera;
 	m_SSAOInstance.updateProjMatrix(m_cameraPtr->getProjectionMatrix());
 	m_blurCData.projectionMatrix = m_cameraPtr->getProjectionMatrix();
+}
+
+bool* ViewLayer::usingCascadingShadowmaps()
+{
+	return &m_shadowInstance.cascadedShadowMapsToggle;
+}
+
+int* ViewLayer::usingShadowmapDebug()
+{
+	return &m_shadowPerFrameBuffer.m_data.shadowDebug;
 }
 
 void ViewLayer::setgameObjectsFromState(std::vector<GameObject*>* gameObjectsFromState)
@@ -314,6 +324,7 @@ void ViewLayer::setWvpCBufferFromState(std::vector< ConstBuffer<VS_WVPW_CONSTANT
 
 void ViewLayer::initConstantBuffer()
 {
+	m_shadowPerFrameBuffer.init(m_device.Get(), m_deviceContext.Get());
 	m_perFrameBuffer.init(m_device.Get(), m_deviceContext.Get());
 	m_skyboxCameraBuffer.init(m_device.Get(), m_deviceContext.Get());
 	m_inverseMatricesBuffer.init(m_device.Get(), m_deviceContext.Get());
@@ -414,6 +425,7 @@ void ViewLayer::initSSAOBlurPass()
 
 void ViewLayer::blurSSAOPass()
 {
+	m_annotation->BeginEvent(L"SSAO Blur");
 	UINT cOffset = -1;
 
 	m_deviceContext->OMSetRenderTargets(1, &m_nullRTV, NULL);
@@ -457,6 +469,7 @@ void ViewLayer::blurSSAOPass()
 	m_deviceContext->OMSetRenderTargets(1, &m_nullRTV, NULL);
 	m_deviceContext->CSSetUnorderedAccessViews(0, 1, &m_nullUAV, &cOffset);
 	m_deviceContext->CSSetShaderResources(0, 3, &m_nullSRV);
+	m_annotation->EndEvent();
 }
 
 void ViewLayer::initSamplerState()
@@ -589,11 +602,18 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 	m_statusTextHandler->setWindowDimensions(m_options->width, m_options->height);
 
 	// Shadowe Mapping
-	m_shadowInstance.initialize(m_device.Get(), m_deviceContext.Get(), 4096, 4096);
+	ShadowDesc cascadingMapDesc[SHADOW_CASCADE_COUNT] = {
+		{2048, 0.4f},
+		{2048, 2.f},
+		{2048, 10.f}
+	};
+	m_shadowPerFrameBuffer.m_data.shadowDebug = false;
+	m_shadowInstance.initialize(m_device.Get(), m_deviceContext.Get(), 4096, cascadingMapDesc);
 }
 
 void ViewLayer::reloadShaders()
 {
+	m_shadowInstance.reloadShaders();
 	m_GBufferShaders.reloadShaders();
 	m_lightingShaders.reloadShaders();
 	m_forwardLightingShaders.reloadShaders();
@@ -621,11 +641,34 @@ void ViewLayer::update(float dt)
 		m_SSAOInstance.updateViewMatrix(m_cameraPtr->getViewMatrix());
 	}
 
+	// Per Frame Camera Position
+	XMFLOAT3 cameraPos = m_cameraPtr->getPosition();
+	m_perFrameBuffer.m_data.cameraPos = cameraPos;
+
 	// Shadow matrix and per frame buffer
 	if (m_shadowMappingToggle) {
-		XMFLOAT3 cameraPos = m_cameraPtr->getPosition();
-		m_shadowInstance.buildLightMatrix(m_perFrameBuffer.m_data.skyLightDirection, cameraPos);
-		m_perFrameBuffer.m_data.cameraPos = cameraPos;
+		if (m_shadowInstance.cascadedShadowMapsToggle)
+		{
+			//for (uint32_t i = 0; i < SHADOW_CASCADE_COUNT; i++)
+			m_shadowInstance.buildCascadeLightMatrix(0, m_perFrameBuffer.m_data.skyLightDirection, m_cameraPtr);
+			
+			m_shadowPerFrameBuffer.m_data.cascadingShadowMapsToggle = true;
+			m_shadowPerFrameBuffer.m_data.cameraPos = cameraPos;
+			m_shadowPerFrameBuffer.m_data.frustumCoverage0 = m_shadowInstance.getShadowData(0)->frustumCoverage;
+			m_shadowPerFrameBuffer.m_data.frustumCoverage1 = m_shadowInstance.getShadowData(1)->frustumCoverage;
+			m_shadowPerFrameBuffer.m_data.frustumCoverage2 = m_shadowInstance.getShadowData(2)->frustumCoverage;
+
+			m_shadowPerFrameBuffer.upd();
+		}
+		else
+		{
+			m_shadowInstance.buildLightMatrix(m_perFrameBuffer.m_data.skyLightDirection, cameraPos);
+			if (m_shadowPerFrameBuffer.m_data.cascadingShadowMapsToggle)
+			{
+				m_shadowPerFrameBuffer.m_data.cascadingShadowMapsToggle = false;
+				m_shadowPerFrameBuffer.upd();
+			}
+		}
 	}
 
 	// Status text
@@ -654,13 +697,11 @@ void ViewLayer::render(iGameState* gameState)
 	m_deviceContext->ClearRenderTargetView(gBufferRTVs[NORMAL_SHADOWMASK_GB], m_clearColorWhite);
 	m_deviceContext->ClearRenderTargetView(gBufferRTVs[SPECULAR_SHININESS_GB], m_clearColorBlack);
 	m_deviceContext->ClearRenderTargetView(gBufferRTVs[AMBIENT_GLOBALAMBIENTCONTR_GB], m_clearColorBlack);
-	if (m_gBuffer[GBufferType::AMBIENT_OCCLUSION_GB].rtv)
-	{
+	if (m_gBuffer[GBufferType::AMBIENT_OCCLUSION_GB].rtv) {
 		m_deviceContext->ClearRenderTargetView(gBufferRTVs[AMBIENT_OCCLUSION_GB], m_clearColorWhite);
 	}
 
-	if (!m_shadowMappingToggle) 
-	{
+	if (m_shadowMappingToggle) {
 		m_shadowInstance.clearShadowmap();
 	}
 
@@ -678,62 +719,94 @@ void ViewLayer::render(iGameState* gameState)
 
 	// Shadow Mapping
 	DirectX::BoundingOrientedBox shadowCameraBounds;
-	if (m_shadowMappingToggle) {
+	const uint32_t lightMatricBufferIndexOffset = 1;
+	uint32_t shadowmapCount = 1;
+	if (m_shadowMappingToggle)
+	{
 		shadowCameraBounds = m_shadowInstance.getLightBoundingBox();
-		m_annotation->BeginEvent(L"ShadowMapping");
-		m_shadowInstance.bindViewsAndRenderTarget();
-		for (size_t i = 0; i < m_gameObjectsFromState->size(); i++)
+
+		uint32_t indexOffset = UINT_MAX;
+		if (m_shadowInstance.cascadedShadowMapsToggle)
 		{
-			// Get indexes
-			GameObject* gObject = m_gameObjectsFromState->at(i);
-			if (gObject->visible())
-			{
-				// Get Model Mesh
-				Model* model = gObject->getModelPtr();
-				if (!model->is_loaded()) { continue; }
-
-				// Frustum Culling
-				if (m_frustumCullingToggle)
-				{
-					assert(!DirectX::XMVector3IsNaN(gObject->getMoveCompPtr()->position));
-
-					DirectX::BoundingOrientedBox obb;
-					DirectX::BoundingOrientedBox::CreateFromBoundingBox(obb, model->m_aabb);
-					obb.Transform(obb, gObject->getWorldMatrix());
-					if (!shadowCameraBounds.Intersects(obb)) { continue; }
-				}
-
-				// Set Constant buffer
-				int wvpIndex = gObject->getWvpCBufferIndex();
-				m_deviceContext->VSSetConstantBuffers(0, 1, m_wvpCBufferFromState->at(wvpIndex).GetAddressOf());
-
-				// Draw Model
-				model->draw();
-				m_shadowmapDrawCallCount++;
-			}
+			m_annotation->BeginEvent(L"ShadowMapping - Cascading");
+			shadowmapCount = SHADOW_CASCADE_COUNT;
+			indexOffset = 0;
 		}
-		//Active room draw
-		if (m_gameObjectsFromActiveRoom != nullptr)
+		else
 		{
-			for (size_t i = 0; i < m_gameObjectsFromActiveRoom->size(); i++)
+			m_annotation->BeginEvent(L"ShadowMapping");
+		}
+		m_deviceContext->PSSetShaderResources(3, 1, &m_nullSRV);
+		m_shadowInstance.bindStatesAndShader();
+
+
+		for (uint32_t shadowIndex = 0; shadowIndex < shadowmapCount; shadowIndex++)
+		{
+			if (m_shadowInstance.cascadedShadowMapsToggle) {
+				m_annotation->BeginEvent((L"Cascade: " + std::to_wstring(shadowIndex)).c_str());
+			}
+
+			uint32_t index = shadowIndex + indexOffset;
+			m_shadowInstance.bindLightMatrixBufferVS(index, lightMatricBufferIndexOffset);
+			
+			m_shadowInstance.bindViewport(index);
+			m_deviceContext->OMSetRenderTargets(1, m_nullRTVs, m_shadowInstance.getShadowMapDSV(index));
+
+			for (size_t i = 0; i < m_gameObjectsFromState->size(); i++)
 			{
 				// Get indexes
-				GameObject* gObject = m_gameObjectsFromActiveRoom->at(i);
+				GameObject* gObject = m_gameObjectsFromState->at(i);
 				if (gObject->visible())
 				{
 					// Get Model Mesh
 					Model* model = gObject->getModelPtr();
 					if (!model->is_loaded()) { continue; }
 
+					// Frustum Culling
+					if (m_frustumCullingToggle)
+					{
+						assert(!DirectX::XMVector3IsNaN(gObject->getMoveCompPtr()->position));
+
+						DirectX::BoundingOrientedBox obb;
+						DirectX::BoundingOrientedBox::CreateFromBoundingBox(obb, model->m_aabb);
+						obb.Transform(obb, gObject->getWorldMatrix());
+						if (!shadowCameraBounds.Intersects(obb)) { continue; }
+					}
+
 					// Set Constant buffer
 					int wvpIndex = gObject->getWvpCBufferIndex();
 					m_deviceContext->VSSetConstantBuffers(0, 1, m_wvpCBufferFromState->at(wvpIndex).GetAddressOf());
-					
+
 					// Draw Model
 					model->draw();
 					m_shadowmapDrawCallCount++;
 				}
 			}
+			//Active room draw
+			if (m_gameObjectsFromActiveRoom != nullptr)
+			{
+				for (size_t i = 0; i < m_gameObjectsFromActiveRoom->size(); i++)
+				{
+					// Get indexes
+					GameObject* gObject = m_gameObjectsFromActiveRoom->at(i);
+					if (gObject->visible())
+					{
+						// Get Model Mesh
+						Model* model = gObject->getModelPtr();
+						if (!model->is_loaded()) { continue; }
+
+						// Set Constant buffer
+						int wvpIndex = gObject->getWvpCBufferIndex();
+						m_deviceContext->VSSetConstantBuffers(0, 1, m_wvpCBufferFromState->at(wvpIndex).GetAddressOf());
+					
+						// Draw Model
+						model->draw();
+						m_shadowmapDrawCallCount++;
+					}
+				}
+			}
+			if (m_shadowInstance.cascadedShadowMapsToggle)
+				m_annotation->EndEvent();
 		}
 		m_annotation->EndEvent();
 	}
@@ -753,7 +826,33 @@ void ViewLayer::render(iGameState* gameState)
 	m_GBufferShaders.setShaders();
 
 	// Set Shadow Map
-	m_deviceContext->PSSetShaderResources(1, 1, m_shadowInstance.getShadowMapSRVConstPtr());
+	ID3D11ShaderResourceView* shadowTextures[SHADOW_CASCADE_COUNT];
+	if (m_shadowInstance.cascadedShadowMapsToggle)
+	{
+		for (uint32_t i = 0; i < SHADOW_CASCADE_COUNT; i++)
+		{
+			shadowTextures[i] = m_shadowInstance.getShadowMapSRV(i);
+		}
+	}
+	else
+	{
+		shadowTextures[0] = m_shadowInstance.getShadowMapSRV();
+		shadowTextures[1] = nullptr;
+		shadowTextures[2] = nullptr;
+	}
+	m_deviceContext->PSSetShaderResources(1, 3, shadowTextures);
+
+	// Constant Buffer
+	m_deviceContext->PSSetConstantBuffers(1, 1, m_shadowPerFrameBuffer.GetAddressOf());
+	if (m_shadowInstance.cascadedShadowMapsToggle)
+	{
+		for (uint32_t i = 0; i < SHADOW_CASCADE_COUNT; i++)
+			m_shadowInstance.bindLightMatrixBufferVS(i, lightMatricBufferIndexOffset + i);
+	}
+	else
+	{
+		m_shadowInstance.bindLightMatrixBufferVS(UINT_MAX, lightMatricBufferIndexOffset);
+	}
 
 	// G-Buffer Draw
 	std::vector<GameObject*> transparentObjects;
@@ -853,94 +952,110 @@ void ViewLayer::render(iGameState* gameState)
 	}
 
 	// Lighting
-	m_annotation->BeginEvent(L"Lighting");
-	m_lightingShaders.setShaders();
-	m_deviceContext->OMSetRenderTargets(1, m_outputRTV.GetAddressOf(), nullptr);
-	m_deviceContext->OMSetDepthStencilState(m_states->DepthNone(), 0);
-	m_deviceContext->RSSetState(m_states->CullNone());
+	{
 
-	// Set Constant Buffer
-	m_perFrameBuffer.upd();
-	m_deviceContext->PSSetConstantBuffers(1, 1, m_perFrameBuffer.GetAddressOf());
+		m_annotation->BeginEvent(L"Lighting");
+		m_lightingShaders.setShaders();
+		m_deviceContext->OMSetRenderTargets(1, m_outputRTV.GetAddressOf(), nullptr);
+		m_deviceContext->OMSetDepthStencilState(m_states->DepthNone(), 0);
+		m_deviceContext->RSSetState(m_states->CullNone());
 
-	XMVECTOR det = XMMatrixDeterminant(m_cameraPtr->getViewMatrix());
-	det = XMMatrixDeterminant(m_cameraPtr->getProjectionMatrix());
-	m_inverseMatricesBuffer.m_data.viewMatrix = XMMatrixTranspose(XMMatrixInverse(&det, viewMatrix));
-	m_inverseMatricesBuffer.m_data.projMatrix = XMMatrixTranspose(XMMatrixInverse(&det, projMatrix));
-	m_inverseMatricesBuffer.upd();
-	m_deviceContext->PSSetConstantBuffers(2, 1, m_inverseMatricesBuffer.GetAddressOf());
+		// Set Constant Buffer
+		m_perFrameBuffer.upd();
+		m_deviceContext->PSSetConstantBuffers(1, 1, m_perFrameBuffer.GetAddressOf());
 
-	// Textures
-	ID3D11ShaderResourceView* gBufferSRVs[] = {
-		m_gBuffer[GBufferType::DIFFUSE_GB].srv,
-		m_gBuffer[GBufferType::NORMAL_SHADOWMASK_GB].srv,
-		m_gBuffer[GBufferType::SPECULAR_SHININESS_GB].srv,
-		m_gBuffer[GBufferType::AMBIENT_GLOBALAMBIENTCONTR_GB].srv,
-		m_gBuffer[GBufferType::AMBIENT_OCCLUSION_GB].srv,
-		m_gBuffer[GBufferType::DEPTH_GB].srv
-	};
-	m_deviceContext->PSSetShaderResources(0, GB_NUM, gBufferSRVs);
+		XMVECTOR det = XMMatrixDeterminant(m_cameraPtr->getViewMatrix());
+		det = XMMatrixDeterminant(m_cameraPtr->getProjectionMatrix());
+		m_inverseMatricesBuffer.m_data.viewMatrix = XMMatrixTranspose(XMMatrixInverse(&det, viewMatrix));
+		m_inverseMatricesBuffer.m_data.projMatrix = XMMatrixTranspose(XMMatrixInverse(&det, projMatrix));
+		m_inverseMatricesBuffer.upd();
+		m_deviceContext->PSSetConstantBuffers(2, 1, m_inverseMatricesBuffer.GetAddressOf());
 
-	m_deviceContext->Draw(4, 0);
-	m_postProcessDrawCallCount++;
-	m_deviceContext->PSSetShaderResources(0, GB_NUM, m_nullSRVs);
-	m_annotation->EndEvent();
+		// Textures
+		ID3D11ShaderResourceView* gBufferSRVs[] = {
+			m_gBuffer[GBufferType::DIFFUSE_GB].srv,
+			m_gBuffer[GBufferType::NORMAL_SHADOWMASK_GB].srv,
+			m_gBuffer[GBufferType::SPECULAR_SHININESS_GB].srv,
+			m_gBuffer[GBufferType::AMBIENT_GLOBALAMBIENTCONTR_GB].srv,
+			m_gBuffer[GBufferType::AMBIENT_OCCLUSION_GB].srv,
+			m_gBuffer[GBufferType::DEPTH_GB].srv
+		};
+		m_deviceContext->PSSetShaderResources(0, GB_NUM, gBufferSRVs);
+
+		m_deviceContext->Draw(4, 0);
+		m_postProcessDrawCallCount++;
+		m_deviceContext->PSSetShaderResources(0, GB_NUM, m_nullSRVs);
+		m_annotation->EndEvent();
+	}
 
 	// Sky
-	m_annotation->BeginEvent(L"Sky");
-	m_deviceContext->OMSetRenderTargets(1, m_outputRTV.GetAddressOf(), m_depthStencilView.Get());
-	m_deviceContext->OMSetDepthStencilState(m_states->DepthDefault(), 0);
-	m_deviceContext->RSSetState(m_states->CullClockwise());
-	m_skyShaders.setShaders();
-	
-	m_skyboxCameraBuffer.m_data = XMMatrixScaling(-1.f, -1.f, -1.f) * viewMatrix * projMatrix;
-	m_skyboxCameraBuffer.upd();
-	m_deviceContext->VSSetConstantBuffers(0, 1, m_skyboxCameraBuffer.GetAddressOf());
-	m_deviceContext->PSSetConstantBuffers(2, 1, m_skyboxSunLightBuffer.GetAddressOf());
+	{
+		m_annotation->BeginEvent(L"Sky");
+		m_deviceContext->OMSetRenderTargets(1, m_outputRTV.GetAddressOf(), m_depthStencilView.Get());
+		m_deviceContext->OMSetDepthStencilState(m_states->DepthDefault(), 0);
+		m_deviceContext->RSSetState(m_states->CullClockwise());
+		m_skyShaders.setShaders();
 
-	m_skyCube.draw();
-	m_drawCallCount++;
-	m_annotation->EndEvent();
+		m_skyboxCameraBuffer.m_data = XMMatrixScaling(-1.f, -1.f, -1.f) * viewMatrix * projMatrix;
+		m_skyboxCameraBuffer.upd();
+		m_deviceContext->VSSetConstantBuffers(0, 1, m_skyboxCameraBuffer.GetAddressOf());
+		m_deviceContext->PSSetConstantBuffers(2, 1, m_skyboxSunLightBuffer.GetAddressOf());
+
+		m_skyCube.draw();
+		m_drawCallCount++;
+		m_annotation->EndEvent();
+	}
 
 	// Transparent Meshes
-	m_annotation->BeginEvent(L"Transparent Meshes");
-	m_deviceContext->OMSetBlendState(m_states->AlphaBlend(), nullptr, 0xFFFFFFFF);
-	m_deviceContext->OMSetDepthStencilState(m_states->DepthDefault(), 0);
-	m_deviceContext->RSSetViewports(1, &m_viewport);
-
-	m_forwardLightingShaders.setShaders();
-	m_deviceContext->PSSetShaderResources(1, 1, m_shadowInstance.getShadowMapSRVConstPtr());
-	m_deviceContext->PSSetShaderResources(2, 1, &m_gBuffer[GBufferType::AMBIENT_OCCLUSION_GB].srv);
-
-	m_deviceContext->PSSetConstantBuffers(1, 1, m_perFrameBuffer.GetAddressOf());
-
-	for (size_t i = 0; i < transparentObjects.size(); i++)
 	{
-		// Get Model Mesh
-		GameObject* gObject = transparentObjects[i];
-		Model* model = gObject->getModelPtr();
+		m_annotation->BeginEvent(L"Transparent Meshes");
+		m_deviceContext->OMSetBlendState(m_states->AlphaBlend(), nullptr, 0xFFFFFFFF);
+		m_deviceContext->OMSetDepthStencilState(m_states->DepthDefault(), 0);
+		m_deviceContext->RSSetViewports(1, &m_viewport);
 
-		// Set Constant buffer
-		int wvpIndex = gObject->getWvpCBufferIndex();
-		m_deviceContext->VSSetConstantBuffers(0, 1, m_wvpCBufferFromState->at(wvpIndex).GetAddressOf());
+		m_forwardLightingShaders.setShaders();
+		m_deviceContext->PSSetShaderResources(2, 1, &m_gBuffer[GBufferType::AMBIENT_OCCLUSION_GB].srv);
+	
+		// Set Shadow Map
+		m_deviceContext->PSSetShaderResources(1, 3, shadowTextures);
 
-		// Draw Model
-		model->m_material.setTexture(gObject->getTexturePath().c_str());
-		model->draw();
-		m_drawCallCount++;
+		// Constant Buffers
+		for (uint32_t i = 0; i < SHADOW_CASCADE_COUNT; i++) {
+			m_shadowInstance.bindLightMatrixBufferVS(i, lightMatricBufferIndexOffset + i);
+		}
+		m_deviceContext->PSSetConstantBuffers(1, 1, m_perFrameBuffer.GetAddressOf());
+		m_deviceContext->PSSetConstantBuffers(2, 1, m_shadowPerFrameBuffer.GetAddressOf());
+
+		for (size_t i = 0; i < transparentObjects.size(); i++)
+		{
+			// Get Model Mesh
+			GameObject* gObject = transparentObjects[i];
+			Model* model = gObject->getModelPtr();
+
+			// Set Constant buffer
+			int wvpIndex = gObject->getWvpCBufferIndex();
+			m_deviceContext->VSSetConstantBuffers(0, 1, m_wvpCBufferFromState->at(wvpIndex).GetAddressOf());
+
+			// Draw Model
+			model->m_material.setTexture(gObject->getTexturePath().c_str());
+			model->draw();
+			m_drawCallCount++;
+		}
+		m_deviceContext->PSSetShaderResources(1, 1, &m_nullSRV);
+		m_deviceContext->PSSetShaderResources(2, 1, &m_nullSRV);
+		m_deviceContext->OMSetRenderTargets(1, m_outputRTV.GetAddressOf(), nullptr);
+		m_annotation->EndEvent();
 	}
-	m_deviceContext->PSSetShaderResources(1, 1, &m_nullSRV);
-	m_deviceContext->PSSetShaderResources(2, 1, &m_nullSRV);
-	m_deviceContext->OMSetRenderTargets(1, m_outputRTV.GetAddressOf(), nullptr);
-	m_annotation->EndEvent();
 
 	// Draw Transition Quad
-	m_annotation->BeginEvent(L"Transition");
-	m_deviceContext->OMSetDepthStencilState(m_states->DepthNone(), 0);
-	m_transition->render();
-	m_postProcessDrawCallCount++;
-	m_deviceContext->OMSetDepthStencilState(m_states->DepthDefault(), 0);
-	m_annotation->EndEvent();
+	{
+		m_annotation->BeginEvent(L"Transition");
+		m_deviceContext->OMSetDepthStencilState(m_states->DepthNone(), 0);
+		m_transition->render();
+		m_postProcessDrawCallCount++;
+		m_deviceContext->OMSetDepthStencilState(m_states->DepthDefault(), 0);
+		m_annotation->EndEvent();
+	}
 
 	// Draw Primitives
 	if (m_drawPhysicsPrimitives || m_drawLightsDebug || m_drawModelBoxPrimitives)
@@ -1006,10 +1121,24 @@ void ViewLayer::render(iGameState* gameState)
 		// Model Bounding Boxes
 		if (m_drawModelBoxPrimitives)
 		{
+			for (uint32_t i = 0; i < SHADOW_CASCADE_COUNT; i++) {
+				BoundingOrientedBox shadowBox = m_shadowInstance.getLightBoundingBox(i);
+				BoundingBox posBox(shadowBox.Center, XMFLOAT3(0.5f, 0.5f, 0.5f));
+
+				XMVECTOR origin = XMLoadFloat3(&shadowBox.Center);
+				XMVECTOR direction = XMLoadFloat3(&m_perFrameBuffer.m_data.skyLightDirection);
+				
+				DX::Draw(m_batch.get(), shadowBox, DirectX::Colors::Green + (XMVectorSet(0.1f, 0.1f, 0.1f, 0.f) * (float)i));
+				DX::Draw(m_batch.get(), posBox, DirectX::Colors::Green);
+				DX::DrawRay(m_batch.get(), origin, direction, true, DirectX::Colors::LawnGreen);
+			}
+			if (!m_shadowInstance.cascadedShadowMapsToggle)
+			{
+				DX::Draw(m_batch.get(), m_shadowInstance.getLightBoundingBox(), DirectX::Colors::Firebrick);
+			}
+
 			for (size_t i = 0; i < m_gameObjectsFromState->size(); i++)
 			{
-				DX::Draw(m_batch.get(), shadowCameraBounds, DirectX::Colors::Firebrick);
-
 				// Get indexes
 				GameObject* gObject = m_gameObjectsFromState->at(i);
 				if (gObject->visible())
@@ -1077,13 +1206,29 @@ void ViewLayer::render(iGameState* gameState)
 	if (m_drawShadowmapDebug)
 	{
 		m_annotation->BeginEvent(L"Shadowmap Debug");
-		long dimension = 500;
 		RECT shadowMapImg;
-		shadowMapImg.top = 0;
-		shadowMapImg.bottom = 500;
-		shadowMapImg.left = (long)m_options->width - dimension;
+		long spacing = 10;
 		shadowMapImg.right = (long)m_options->width;
-		m_spriteBatch->Draw(m_shadowInstance.getShadowMapSRV(), shadowMapImg);
+		if (!m_shadowInstance.cascadedShadowMapsToggle)
+		{
+			long dimension = 500;
+			shadowMapImg.top = 0;
+			shadowMapImg.bottom = dimension;
+			shadowMapImg.left = (long)m_options->width - dimension;
+			m_spriteBatch->Draw(m_shadowInstance.getShadowMapSRV(), shadowMapImg);
+		}
+		else {
+			long dimension = 250;
+			long spacingAccumilation = 0;
+			for (uint32_t i = 0; i < SHADOW_CASCADE_COUNT; i++)
+			{
+				shadowMapImg.top = i * dimension + spacingAccumilation;
+				shadowMapImg.bottom = shadowMapImg.top + dimension;
+				shadowMapImg.left = (long)m_options->width - dimension;
+				m_spriteBatch->Draw(m_shadowInstance.getShadowMapSRV(i), shadowMapImg);
+				spacingAccumilation += spacing;
+			}
+		}
 		m_annotation->EndEvent();
 	}
 

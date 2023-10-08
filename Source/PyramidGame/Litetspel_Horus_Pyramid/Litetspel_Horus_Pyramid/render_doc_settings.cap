@@ -1,0 +1,28 @@
+{
+    "rdocCaptureSettings": 1,
+    "settings": {
+        "autoStart": false,
+        "commandLine": "",
+        "environment": [
+        ],
+        "executable": "G:\\Skola\\Litet spelprojekt för Spelprogrammering DV1572\\Projekt\\Source\\PyramidGame\\Litetspel_Horus_Pyramid\\x64\\Debug\\Litetspel_Horus_Pyramid.exe",
+        "inject": false,
+        "numQueuedFrames": 0,
+        "options": {
+            "allowFullscreen": true,
+            "allowVSync": true,
+            "apiValidation": true,
+            "captureAllCmdLists": true,
+            "captureCallstacks": true,
+            "captureCallstacksOnlyDraws": false,
+            "debugOutputMute": true,
+            "delayForDebugger": 0,
+            "hookIntoChildren": true,
+            "refAllResources": false,
+            "softMemoryLimit": 0,
+            "verifyBufferAccess": true
+        },
+        "queuedFrameCap": 0,
+        "workingDir": "G:\\Skola\\Litet spelprojekt för Spelprogrammering DV1572\\Projekt\\Source\\PyramidGame\\Litetspel_Horus_Pyramid\\Litetspel_Horus_Pyramid"
+    }
+}

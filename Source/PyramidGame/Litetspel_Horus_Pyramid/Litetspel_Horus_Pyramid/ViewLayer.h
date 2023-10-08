@@ -100,6 +100,7 @@ private:
 	DirectX::BoundingOrientedBox m_pyramidOBB;
 
 	// Constant Buffers
+	ConstBuffer<SHADOW_PER_FRAME_BUFFER> m_shadowPerFrameBuffer;
 	ConstBuffer<PS_PER_FRAME_BUFFER> m_perFrameBuffer;
 	PS_PER_FRAME_BUFFER* m_constantBufferDataFromStatePtr;
 
@@ -162,6 +163,8 @@ public:
 
 	// Setters
 	void setCamera(Camera* camera);
+	bool* usingCascadingShadowmaps();
+	int* usingShadowmapDebug();
 
 	// Setters for State Pointers
 	void setgameObjectsFromState(std::vector<GameObject*>* gameObjectsFromState);
@@ -191,10 +194,10 @@ public:
 	bool m_drawLightsDebug = false;
 	bool m_drawShadowmapDebug = false;
 	bool m_drawGBufferDebug = false;
-	bool m_drawDrawCallStatsDebug = false;
+	bool m_drawDrawCallStatsDebug = true;
 
 	// Feature Toggles
 	bool m_ssaoToggle = true;
 	bool m_shadowMappingToggle = true;
-	bool m_frustumCullingToggle = true;
+	bool m_frustumCullingToggle = false;
 };

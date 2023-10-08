@@ -47,7 +47,7 @@ Application::Application()
 		}
 	});
 	m_options.push_back({
-		(char)VK_OEM_PLUS, // '+' key
+		(unsigned char)VK_OEM_PLUS, // '+' key
 		"+ : Reload Shaders",
 		[](Application* app) {
 			app->m_viewLayerPtr->reloadShaders();
@@ -140,6 +140,36 @@ Application::Application()
 				StatusTextHandler::get().sendText("Draw Shadowmapping ON!", 0.5f);
 			else
 				StatusTextHandler::get().sendText("Draw Shadowmapping OFF!", 0.5f);
+		}
+	});
+	m_options.push_back({
+		'U',
+		"U : Cascading Shadow Maps Toggle",
+		[](Application* app) {
+			bool* cascadingShadowsToggle = app->m_viewLayerPtr->usingCascadingShadowmaps();
+			*cascadingShadowsToggle = !(*cascadingShadowsToggle);
+
+			if (!(*cascadingShadowsToggle))
+				StatusTextHandler::get().sendText("Draw Shadowmapping ON!", 0.5f);
+			else
+				StatusTextHandler::get().sendText("Draw Shadowmapping OFF!", 0.5f);
+		}
+	});
+	m_options.push_back({
+		'Y',
+		"Y : Cascading ShadowMap Debug Toggle",
+		[](Application* app) {
+			int* shadowmapDebugToggle = app->m_viewLayerPtr->usingShadowmapDebug();
+			if (*shadowmapDebugToggle == 0)
+			{
+				*shadowmapDebugToggle = 1;
+				StatusTextHandler::get().sendText("Draw Cascading Shadowmap Debug ON!", 0.5f);
+			}
+			else
+			{
+				*shadowmapDebugToggle = 0;
+				StatusTextHandler::get().sendText("Draw Cascading Shadowmap Debug OFF!", 0.5f);
+			}
 		}
 	});
 	m_options.push_back({

@@ -9,6 +9,10 @@ private:
 	// View and Projection
 	DirectX::XMMATRIX* m_projectionMatrix;
 	float m_mouseSense;
+	float m_fov;
+	float m_aspectRatio;
+	float m_nearZ;
+	float m_farZ;
 
 	// Comonents
 	MovementComponent* m_movementComp;
@@ -25,6 +29,10 @@ public:
 	DirectX::XMMATRIX* getViewMatrixPtr() const;
 	DirectX::XMMATRIX getProjectionMatrix() const;
 	DirectX::XMMATRIX getViewMatrix() const;
+	float getFov() const;
+	float getAspectRatio() const;
+	float getNearZ() const;
+	float getFarZ() const;
 	XMFLOAT3 getPosition() const;
 	XMVECTOR getPositionVector() const;
 	XMFLOAT3 getRotation() const;

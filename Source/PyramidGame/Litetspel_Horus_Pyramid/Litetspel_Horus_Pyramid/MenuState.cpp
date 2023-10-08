@@ -324,7 +324,9 @@ void MenuState::loadModels()
 	 
 	//28. finalRoom
 	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+	mat.globalAmbientContribution = 0.4f;
 	addNewModelInitAsync("endRoom.obj", mat, L"ColorTexture.png");
+	mat.globalAmbientContribution = 1.f;
 
 	//29. swingingAxe
 	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
@@ -362,7 +364,9 @@ void MenuState::loadModels()
 	{
 		//36
 		mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+		mat.globalAmbientContribution = 0.4f;
 		addNewModelInitAsync("vRoom_New2.bff", mat, L"ColorTexture.png");
+		mat.globalAmbientContribution = 1.f;
 
 		//37
 		mat.diffuse = { 1.f, 1.f, 1.f, 1.f };

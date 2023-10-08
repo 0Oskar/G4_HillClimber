@@ -3,8 +3,11 @@
 
 void Camera::setProjectionMatrix(float fovAngle, float aspectRatio, float nearZ, float farZ)
 {
-	float fov = (fovAngle / 360.f) * DirectX::XM_2PI;
-	*m_projectionMatrix = DirectX::XMMatrixPerspectiveFovLH(fov, aspectRatio, nearZ, farZ);
+	m_fov = (fovAngle / 360.f) * DirectX::XM_2PI;
+	m_aspectRatio = aspectRatio;
+	m_nearZ = nearZ;
+	m_farZ = farZ;
+	*m_projectionMatrix = XMMatrixPerspectiveFovLH(m_fov, m_aspectRatio, m_nearZ, m_farZ);
 }
 
 Camera::Camera()
@@ -86,6 +89,26 @@ DirectX::XMMATRIX Camera::getProjectionMatrix() const
 DirectX::XMMATRIX Camera::getViewMatrix() const
 {
 	return *m_movementComp->viewMatrix;
+}
+
+float Camera::getFov() const
+{
+	return m_fov;
+}
+
+float Camera::getAspectRatio() const
+{
+	return m_aspectRatio;
+}
+
+float Camera::getNearZ() const
+{
+	return m_nearZ;
+}
+
+float Camera::getFarZ() const
+{
+	return m_farZ;
 }
 
 XMFLOAT3 Camera::getPosition() const

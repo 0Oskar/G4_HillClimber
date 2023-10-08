@@ -22,6 +22,18 @@ struct VS_VP_MATRICES_CBUFFER
 	XMMATRIX projMatrix;
 };
 
+struct SHADOW_PER_FRAME_BUFFER
+{
+	BOOL cascadingShadowMapsToggle;
+	DirectX::XMFLOAT3 cameraPos;
+
+	float frustumCoverage0;
+	float frustumCoverage1;
+	float frustumCoverage2;
+
+	BOOL shadowDebug;
+};
+
 struct PS_PER_FRAME_BUFFER
 {
 	PointLight pointLights[MAX_POINT_LIGHTS];

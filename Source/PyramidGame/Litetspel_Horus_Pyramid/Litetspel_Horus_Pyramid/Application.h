@@ -59,7 +59,7 @@ public:
 	typedef void(*OptionFn)(Application*);
 	struct OptionKeybind
 	{
-		char key;
+		unsigned char key;
 		char description[128];
 		OptionFn trigger;
 	};

@@ -3,8 +3,10 @@ struct PS_IN
     float4 position : SV_POSITION;
     float3 normal : NORMAL;
     float2 texcoord : TEXCOORD;
-    float3 positionW : POSITION;
-    float4 positionShadow : POSITION1;
+    float3 positionW : POSITIONT;
+    float4 positionShadow0 : POSITION0;
+    float4 positionShadow1 : POSITION1;
+    float4 positionShadow2 : POSITION2;
 };
 
 struct PS_OUT
@@ -24,13 +26,27 @@ cbuffer materialBuffer : register(b0)
     float shininessM;
 };
 
+cbuffer PerFrameBuffer : register(b1)
+{
+    bool cascadingShadowMapsToggle;
+    float3 cameraPos;
+    
+    float frustumCoverage0;
+    float frustumCoverage1;
+    float frustumCoverage2;
+    
+    bool shadowDebug;
+};
+
 Texture2D diffuseTexture : TEXTURE : register(t0);
-Texture2D shadowMap : TEXTURE : register(t1);
+Texture2D shadowMap0 : TEXTURE : register(t1);
+Texture2D shadowMap1 : TEXTURE : register(t2);
+Texture2D shadowMap2 : TEXTURE : register(t3);
 
 SamplerState samplerState : SAMPLER : register(s0);
 SamplerComparisonState shadowSampler : SAMPLER : register(s1);
 
-float calculateShadowFactor(float4 shadowPosition)
+float calculateShadowFactor(Texture2D shadowMap, float4 shadowPosition)
 {
     float2 shadowUV = shadowPosition.xy / shadowPosition.w * 0.5f + 0.5f;
     shadowUV.y = 1.0f - shadowUV.y;
@@ -51,6 +67,11 @@ float calculateShadowFactor(float4 shadowPosition)
     return shadowFactor;
 }
 
+float invLerp(float a, float b, float v)
+{
+    return (v - a) / (b - a);
+}
+
 PS_OUT main(PS_IN input)
 {
     PS_OUT output = (PS_OUT)0;
@@ -59,7 +80,34 @@ PS_OUT main(PS_IN input)
     float4 diffuse = diffuseM * diffuseTexture.Sample(samplerState, input.texcoord);
     
     // Shadow Mask
-    float shadowFactor = calculateShadowFactor(input.positionShadow);
+    float shadowFactor = 1.f;
+    if (cascadingShadowMapsToggle)
+    {
+        float shadowDistance = distance(cameraPos, input.positionW);
+        
+        if (shadowDistance < frustumCoverage0)
+        {
+            shadowFactor = calculateShadowFactor(shadowMap0, input.positionShadow0);
+            if (shadowDebug)
+                diffuse.xyz = float3(1.f, 0.f, 0.f) * saturate(invLerp(0.f, frustumCoverage0, shadowDistance) + 0.1f);
+        }
+        else if (shadowDistance >= frustumCoverage0 && shadowDistance < frustumCoverage1)
+        {
+            shadowFactor = calculateShadowFactor(shadowMap1, input.positionShadow1);
+            if (shadowDebug)
+                diffuse.xyz = float3(0.f, 1.f, 0.f) * saturate(invLerp(frustumCoverage0, frustumCoverage1, shadowDistance) + 0.1f);
+        }
+        else if (shadowDistance >= frustumCoverage1 && shadowDistance < frustumCoverage2)
+        {
+            shadowFactor = calculateShadowFactor(shadowMap2, input.positionShadow2);
+            if (shadowDebug)
+                diffuse.xyz = float3(0.f, 0.f, 1.f) * saturate(invLerp(frustumCoverage1, frustumCoverage2, shadowDistance) + 0.1f);
+        }
+    }
+    else
+    {
+        shadowFactor = calculateShadowFactor(shadowMap0, input.positionShadow0);
+    }
     
     // Diffuse, Alpha
     output.diffuseAlphaRT = diffuse;

@@ -5,8 +5,10 @@ struct PS_IN
     float4 position : SV_POSITION;
     float3 normal : NORMAL;
     float2 texcoord : TEXCOORD;
-    float3 positionW : POSITION;
-    float4 positionShadow : POSITION1;
+    float3 positionW : POSITIONT;
+    float4 positionShadow0 : POSITION0;
+    float4 positionShadow1 : POSITION1;
+    float4 positionShadow2 : POSITION2;
 };
 
 cbuffer materialBuffer : register(b0)
@@ -39,9 +41,21 @@ cbuffer PerFrameBuffer : register(b1)
     float3 ambientColor;
 };
 
+cbuffer PerFrameShadowBuffer : register(b2)
+{
+    bool cascadingShadowMapsToggle;
+    float3 cameraPos1;
+    
+    float frustumCoverage0;
+    float frustumCoverage1;
+    float frustumCoverage2;
+};
+
 Texture2D diffuseTexture : TEXTURE : register(t0);
-Texture2D shadowMap : TEXTURE : register(t1);
-Texture2D ambientOcclusionMap : TEXTURE : register(t2);
+Texture2D shadowMap0 : TEXTURE : register(t1);
+Texture2D shadowMap1 : TEXTURE : register(t2);
+Texture2D shadowMap2 : TEXTURE : register(t3);
+Texture2D ambientOcclusionMap : TEXTURE : register(t4);
 
 SamplerState samplerState : SAMPLER : register(s0);
 SamplerComparisonState shadowSampler : SAMPLER : register(s1);
@@ -65,7 +79,7 @@ float3 pointLightCalculation(float3 ambient, float3 diffuse, float3 position, fl
     return saturate(calcDiffuse);
 }
 
-float calculateShadowFactor(float4 shadowPosition)
+float calculateShadowFactor(Texture2D shadowMap, float4 shadowPosition)
 {
     float2 shadowUV = shadowPosition.xy / shadowPosition.w * 0.5f + 0.5f;
     shadowUV.y = 1.0f - shadowUV.y;
@@ -108,7 +122,29 @@ float4 main(PS_IN input) : SV_TARGET
     
     // Directional Light
     float diffBright = saturate(dot(input.normal, skyLightDirection));
-    float3 directionalLightDiffuse = ambientColor + ((skyLightColor * diffBright * skyLightIntensity) * calculateShadowFactor(input.positionShadow));
+    float shadowFactor = 1.f;
+    if (cascadingShadowMapsToggle)
+    {
+        float shadowDistance = distance(cameraPos, input.positionW);
+        
+        if (shadowDistance < frustumCoverage0)
+        {
+            shadowFactor = calculateShadowFactor(shadowMap0, input.positionShadow0);
+        }
+        else if (shadowDistance >= frustumCoverage0 && shadowDistance < frustumCoverage1)
+        {
+            shadowFactor = calculateShadowFactor(shadowMap1, input.positionShadow1);
+        }
+        else if (shadowDistance >= frustumCoverage1 && shadowDistance < frustumCoverage2)
+        {
+            shadowFactor = calculateShadowFactor(shadowMap2, input.positionShadow2);
+        }
+    }
+    else
+    {
+        shadowFactor = calculateShadowFactor(shadowMap0, input.positionShadow0);
+    }
+    float3 directionalLightDiffuse = ambientColor + ((skyLightColor * diffBright * skyLightIntensity) * shadowFactor);
     
     float3 fColor = (diffuse * directionalLightDiffuse) + skyAmbientColor;
     
