@@ -104,7 +104,7 @@ void MenuState::initlialize(ID3D11Device* device, ID3D11DeviceContext* dContext,
 void MenuState::update(float dt)
 {
 	bool allLoadingThreadsDone = true;
-	for (uint32_t i = 0; i < THREAD_COUNT; i++)
+	for (uint32_t i = 0; i < MODEL_IMPORT_THREAD_COUNT; i++)
 	{
 		future_status status = m_asyncModelsFuture[i].wait_for(0ms);
 		if (m_asyncModelsFuture[i].wait_for(0ms) != future_status::ready)
@@ -135,6 +135,7 @@ void MenuState::update(float dt)
 		if (m_gameObjects[i]->m_removeMe)
 		{
 			m_gameObjects[i]->setVisibility(false);
+			m_gameObjects[i]->setIfCollidable(false);
 			m_gameObjects[i]->setIfCollidable(false);
 		}
 	}
@@ -190,7 +191,7 @@ void MenuState::loadModels()
 {
 	// Material
 	MaterialData mat;
-	mat.ambient = { 0.2f, 0.2f, 0.2f};
+	mat.ambient = { 0.2f, 0.2f, 0.2f };
 	mat.globalAmbientContribution = 1.f;
 
 	//-1 Error Model
@@ -204,16 +205,17 @@ void MenuState::loadModels()
 
 	//1 Pyramid
 	mat.diffuse = { 0.9f, 0.7f, 0.3f, 1.f };
-	mat.ambient = { 0.9f * 0.2f, 0.7f * 0.2f, 0.3f * 0.2f};
+	mat.ambient = { 0.9f * 0.2f, 0.7f * 0.2f, 0.3f * 0.2f };
 	mat.globalAmbientContribution = 0.f;
 	addNewModelInit("BasePyramidNew.bff", mat, L"pyramidTexture.png");
 
 	//2 HookHead model
 	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
-	mat.ambient = { 0.2f, 0.2f, 0.2f};
+	mat.ambient = { 0.2f, 0.2f, 0.2f };
 	mat.globalAmbientContribution = 1.f;
 	addNewModelInitAsync("Hook_Bird.bff", mat, L"ColorTexture.png");
 
+	//3 platform model
 	//3 platform model
 	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
 	mat.globalAmbientContribution = 0.3f;
@@ -278,9 +280,9 @@ void MenuState::loadModels()
 	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
 	addNewModelInitAsync("Pedistal.bff", mat, L"ColorTexture.png");
 
-	//18. Cover (Edvin)
-	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
-	addNewModelInitAsync("Cover.bff", mat, L"ColorTexture.png");
+	////18. Cover (Edvin)
+	//mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+	//addNewModelInitAsync("Cover.bff", mat, L"ColorTexture.png");
 
 	//19. checkpoint
 	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
@@ -321,17 +323,17 @@ void MenuState::loadModels()
 	//27. Lever Grip (Tristan)
 	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
 	addNewModelInitAsync("TristansLeverGrip.bff", mat, L"ColorTexture.png");
-	 
-	//28. finalRoom
-	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
-	mat.globalAmbientContribution = 0.4f;
-	addNewModelInitAsync("endRoom.obj", mat, L"ColorTexture.png");
-	mat.globalAmbientContribution = 1.f;
+
+	////28. finalRoom
+	//mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+	//mat.globalAmbientContribution = 0.4f;
+	//addNewModelInitAsync("endRoom.obj", mat, L"ColorTexture.png");
+	//mat.globalAmbientContribution = 1.f;
 
 	//29. swingingAxe
 	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
 	addNewModelInitAsync("swingingAxe.obj", mat, L"ColorTexture.png");
-	
+
 	//30. Left Wing
 	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
 	addNewModelInitAsync("Gauntlet_LeftWing.bff", mat, L"ColorTexture.png");
@@ -404,7 +406,7 @@ void MenuState::loadModels()
 		mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
 		addNewModelInitAsync("vRamp_New.bff", mat, L"ColorTexture.png");
 	}
-	
+
 	//46. Cactus
 	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
 	addNewModelInit("cactus2.obj", mat, L"ColorTexture.png");
@@ -415,25 +417,65 @@ void MenuState::loadModels()
 	addNewModelInit("Entrence.obj", mat, L"ColorTexture.png");
 
 	//48. Clouds
-	mat.diffuse = { 1.f, 1.f, 1.f, 0.6f };
-	mat.globalAmbientContribution = 0.f;
+	mat.diffuse = { 0.8f, 0.8f, 0.8f, 0.6f };
+	mat.globalAmbientContribution = 0.2f;
 	addNewModelInit("Clouds.obj", mat, L"ColorTexture.png");
-	
-	//49. Clouds
+
+	//49. ddh
 	mat.diffuse = { 0.5f, 0.5f, 0.5f, 1.f };
 	mat.globalAmbientContribution = 1.f;
 	addNewModelInit("ddh.obj", mat, L"DefaultWhite.jpg");
 
+	//18. Cover (Edvin)
+	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+	addNewModelInitAsync("Cover.bff", mat, L"ColorTexture.png");
+
+	//28. finalRoom
+	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
+	mat.globalAmbientContribution = 0.4f;
+	addNewModelInitAsync("endRoom.obj", mat, L"ColorTexture.png");
+	mat.globalAmbientContribution = 1.f;
+
 	// Start async loading threads
-	OutputDebugStringA("Threaded model loading begin\n");
+	OutputDebugStringA("Threaded model loading begin\n\n");
+
+	string loadedMessage = "	|";
+	for (uint32_t i = 0; i < MODEL_IMPORT_THREAD_COUNT - 1; i++)
+	{
+		std::string content = "Thread " + std::to_string(i);
+		uint32_t contentGapCount = (uint32_t)(INDENT_CHAR_LENGTH - content.length());
+		uint32_t halfContentGapCount = contentGapCount / 2;
+
+		loadedMessage += std::string(halfContentGapCount, ' ');
+		loadedMessage += content;
+		loadedMessage += std::string(contentGapCount - halfContentGapCount, ' ') + "|";
+	}
+	loadedMessage += "\n";
+
+	OutputDebugStringA(loadedMessage.c_str());
+
 	uint32_t startIndex = 0;
-	uint32_t perThreadCount = (uint32_t)m_asyncModelNames.size() / THREAD_COUNT;
-	for (uint32_t i = 0; i < THREAD_COUNT; i++)
+	uint32_t perThreadCount = (uint32_t)m_asyncModelNames.size() / MODEL_IMPORT_THREAD_COUNT;
+	for (uint32_t i = 0; i < MODEL_IMPORT_THREAD_COUNT; i++)
 	{
 		uint32_t endIndex = startIndex + perThreadCount;
 		m_asyncModelsFuture[i] = async(launch::async, MenuState::loadModelsThreadSafe, i, &m_models, &m_asyncModelNames, startIndex, endIndex);
 		startIndex = endIndex + 1;
 	}
+	/*bool allLoadingThreadsDone = false;
+
+	while (!allLoadingThreadsDone)
+	{
+		allLoadingThreadsDone = true;
+		for (uint32_t i = 0; i < MODEL_IMPORT_THREAD_COUNT; i++)
+		{
+			future_status status = m_asyncModelsFuture[i].wait_for(0ms);
+			if (m_asyncModelsFuture[i].wait_for(0ms) != future_status::ready)
+			{
+				allLoadingThreadsDone = false;
+			}
+		}
+	}*/
 }
 
 
@@ -471,15 +513,36 @@ void MenuState::addNewModelInit(const char* modelFilePath, const MaterialData ma
 
 void MenuState::loadModelsThreadSafe(uint32_t threadIndex, std::unordered_map<std::string, Model>* modelsListPtr, std::vector<const char*>* modelNameList, uint32_t from, uint32_t to)
 {
-	std::string message = "Thread " + to_string(threadIndex) + " Start!\n";
+	std::string columnsbefore = "	|";
+	std::string columnsAfter = "";
+	for (uint32_t i = 0; i < threadIndex; i++)
+		columnsbefore += INDENT_CHAR + "|";
+
+	for (uint32_t i = threadIndex; i < MODEL_IMPORT_THREAD_COUNT - 1; i++)
+		columnsAfter += INDENT_CHAR + "|";
+
+	std::string message = columnsbefore;
+
+	std::string content = " START!";
+	message += content;
+	message += std::string(INDENT_CHAR_LENGTH - content.length(), ' ') + "|";
+
+	message += columnsAfter + "\n";
 	OutputDebugStringA(message.c_str());
 
 	std::unordered_map<std::string, Model>& modelMap = *modelsListPtr;
-	for (uint32_t i = from; i <= to; i++)
+	for (uint32_t i = from; i < to; i++)
 	{
-		modelMap[modelNameList->at(i)].loadModelAsync();
+		modelMap[modelNameList->at(i)].loadModelAsync(threadIndex);
 	}
-	message = "Thread " + to_string(threadIndex) + " Done!\n";
+
+	message = columnsbefore;
+	
+	content = " --THREAD " + to_string(threadIndex) + " DONE!--";
+	message += content;
+	message += std::string(INDENT_CHAR_LENGTH - content.length(), ' ') + "|";
+
+	message += columnsAfter + "\n";
 	OutputDebugStringA(message.c_str());
 }
 

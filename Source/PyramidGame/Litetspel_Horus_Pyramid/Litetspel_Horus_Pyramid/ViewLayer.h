@@ -44,8 +44,9 @@ private:
 	float m_clearColor[4] = { 0.5f, 0.5f, 0.5f, 1.f };
 	float m_clearColorBlack[4] = { 0.f, 0.f, 0.f, 1.f };
 	float m_clearColorWhite[4] = { 1.f, 1.f, 1.f, 1.f };
+	float m_clearColorNormal[4] = { 1.f, 0.5f, 0.5f, 1.f };
 
-	enum GBufferType { DIFFUSE_GB, NORMAL_SHADOWMASK_GB, SPECULAR_SHININESS_GB, AMBIENT_GLOBALAMBIENTCONTR_GB, AMBIENT_OCCLUSION_GB, DEPTH_GB, GB_NUM };
+	enum GBufferType { DIFFUSE_GB, NORMAL_GB, SPECULAR_SHININESS_GB, AMBIENT_GLOBALAMBIENTCONTR_GB, SHADOW_GB, AMBIENT_OCCLUSION_GB, DEPTH_GB, GB_NUM };
 	
 	RenderTexture m_gBuffer[GBufferType::GB_NUM];
 
@@ -71,12 +72,18 @@ private:
 	Shaders m_lightingShaders;
 	Shaders m_forwardLightingShaders;
 	Shaders m_skyShaders;
+	Shaders m_blurShader;
 
 	// Texture Handler
 	ResourceHandler* resourceHandler;
 
 	// Shadow Mapping
 	ShadowMapInstance m_shadowInstance;
+	ShadowMapInstance m_translucentShadowInstance;
+
+	RenderTexture m_translucentShadowsBluredRT;
+	RenderTexture m_translucentShadowsBlurPingPongRT;
+	CS_BLUR_CBUFFER m_translucentShadowblurCData;
 	
 	// SpriteBatch
 	std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
@@ -153,6 +160,9 @@ private:
 
 	void initSSAOBlurPass();
 	void blurSSAOPass();
+
+	void initblurTranslucentShadowsPass(uint32_t translucentTextureSize);
+	void blurTranslucentShadowsPass();
 public:
 	ViewLayer();
 	~ViewLayer();

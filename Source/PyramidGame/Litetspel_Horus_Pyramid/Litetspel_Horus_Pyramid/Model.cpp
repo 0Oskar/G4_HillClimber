@@ -2,7 +2,7 @@
 #include "Model.h"
 #include "PyramidMathTools.h"
 
-void Model::loadOBJModel(bool async)
+void Model::loadOBJModel(uint32_t asyncThreadIndex)
 {	
 	// Values Contained
 	bool hasNormals = false;
@@ -151,19 +151,36 @@ void Model::loadOBJModel(bool async)
 	m_aabb.Center = pMath::F3Subtract(maxExtends, m_aabb.Extents);
 
 	string loadedMessage;
-	if (async)
+	if (asyncThreadIndex != UINT_MAX)
 	{
-		loadedMessage = "	";
+		loadedMessage = "	|";
+		for (uint32_t i = 0; i < asyncThreadIndex; i++)
+			loadedMessage += INDENT_CHAR + "|";
+		std::string content = "";
+		if (fileFound)
+			content += " D:" + m_modelPath;
+		else
+			content += " F:" + m_modelPath;
+
+		loadedMessage += content;
+		loadedMessage += std::string(INDENT_CHAR_LENGTH - content.length(), ' ') + "|";
+
+		for (uint32_t i = asyncThreadIndex; i < MODEL_IMPORT_THREAD_COUNT - 1; i++)
+			loadedMessage += INDENT_CHAR + "|";
+		loadedMessage += "\n";
 	}
-	if (fileFound)
-		loadedMessage += "OBJ model loaded: " + m_modelPath + "\n";
 	else
-		loadedMessage += "OBJ model could not be loaded: " + m_modelPath + "\n";
+	{
+		if (fileFound)
+			loadedMessage += "OBJ model loaded: " + m_modelPath + "\n";
+		else
+			loadedMessage += "OBJ model could not be loaded: " + m_modelPath + "\n";
+	}
 	
 	OutputDebugStringA(loadedMessage.c_str());
 }
 
-void Model::loadBffModel(bool async)
+void Model::loadBffModel(uint32_t asyncThreadIndex)
 {
 	ModelBFF myModel;
 	string loadedMessage;
@@ -174,10 +191,21 @@ void Model::loadBffModel(bool async)
 	DirectX::XMStoreFloat3(&minExtends, g_XMFltMax);
 	DirectX::XMStoreFloat3(&maxExtends, g_XMFltMin);
 
-	if (async)
+	if (asyncThreadIndex != UINT_MAX)
 	{
-		loadedMessage = "	BFF Model loaded: " + m_modelPath + "\n";
+		loadedMessage = "	|";
+		for (uint32_t i = 0; i < asyncThreadIndex; i++)
+			loadedMessage += INDENT_CHAR + "|";
+		
+		std::string content = " D: " + m_modelPath;
+		loadedMessage += content;
+		loadedMessage += std::string(INDENT_CHAR_LENGTH - content.length(), ' ') + "|";
+
 		myModel = m_myManager->LoadModelAsync(m_modelPath.c_str());
+
+		for (uint32_t i = asyncThreadIndex; i < MODEL_IMPORT_THREAD_COUNT - 1; i++)
+			loadedMessage += INDENT_CHAR + "|";
+		loadedMessage += "\n";
 	}
 	else {
 		loadedMessage = "BFF Model loaded: " + m_modelPath + "\n";
@@ -250,14 +278,25 @@ void Model::initForAsyncLoad(ID3D11Device* device, ID3D11DeviceContext* dContext
 	}
 }
 
-void Model::loadModelAsync()
+void Model::loadModelAsync(uint32_t asyncThreadIndex)
 {
-	string loadedMessage = "	Async Model load started: " + m_modelPath + "\n";
+	string loadedMessage = "	|";
+	for (uint32_t i = 0; i < asyncThreadIndex; i++)
+		loadedMessage += INDENT_CHAR + "|";
+
+	std::string content = " S: " + m_modelPath;
+	loadedMessage += content;
+	loadedMessage += std::string(INDENT_CHAR_LENGTH - content.length(), ' ') + "|";
+
+	for (uint32_t i = asyncThreadIndex; i < MODEL_IMPORT_THREAD_COUNT - 1; i++)
+		loadedMessage += INDENT_CHAR + "|";
+	loadedMessage += "\n";
+
 	OutputDebugStringA(loadedMessage.c_str());
 	switch (m_format)
 	{
-		case ModelFormat::ModelFormat_obj: loadOBJModel(true); break;
-		case ModelFormat::ModelFormat_bff: loadBffModel(true); break;
+		case ModelFormat::ModelFormat_obj: loadOBJModel(asyncThreadIndex); break;
+		case ModelFormat::ModelFormat_bff: loadBffModel(asyncThreadIndex); break;
 	}
 
 	m_loaded = true;

@@ -1,7 +1,5 @@
 #pragma once
 
-#include "pch.h"
-
 struct Vertex
 {
 	XMFLOAT3 position;

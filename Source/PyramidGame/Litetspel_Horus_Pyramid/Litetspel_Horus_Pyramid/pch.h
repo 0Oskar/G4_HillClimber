@@ -32,6 +32,10 @@
 #include <iterator>
 #include <utility>
 
+#define MODEL_IMPORT_THREAD_COUNT 4
+#define INDENT_CHAR std::string("                                ")
+static size_t INDENT_CHAR_LENGTH = INDENT_CHAR.length();
+
 // Utilities
 #include "pugixml.hpp"
 #include "../Importer/ImporterBFF.h"

@@ -55,7 +55,8 @@ Texture2D diffuseTexture : TEXTURE : register(t0);
 Texture2D shadowMap0 : TEXTURE : register(t1);
 Texture2D shadowMap1 : TEXTURE : register(t2);
 Texture2D shadowMap2 : TEXTURE : register(t3);
-Texture2D ambientOcclusionMap : TEXTURE : register(t4);
+Texture2D translucentShadowMap : TEXTURE : register(t4);
+Texture2D ambientOcclusionMap : TEXTURE : register(t5);
 
 SamplerState samplerState : SAMPLER : register(s0);
 SamplerComparisonState shadowSampler : SAMPLER : register(s1);
@@ -100,6 +101,30 @@ float calculateShadowFactor(Texture2D shadowMap, float4 shadowPosition)
     return shadowFactor;
 }
 
+float3 calculateTranslucentShadowFactor(Texture2D shadowMap, float4 shadowPosition)
+{
+    float2 shadowUV = shadowPosition.xy / shadowPosition.w * 0.5f + 0.5f;
+    shadowUV.y = 1.0f - shadowUV.y;
+    float shadowDepth = shadowPosition.z / shadowPosition.w;
+
+    float3 shadowFactor = (float3) 0;
+    float4 shadowSample = (float4) 0;
+    const int sampleRange = 1;
+    [unroll]
+    for (int x = -sampleRange; x <= sampleRange; x++)
+    {
+        [unroll]
+        for (int y = -sampleRange; y <= sampleRange; y++)
+        {
+            shadowSample = shadowMap.Sample(samplerState, shadowUV, int2(x, y));
+            if (shadowDepth < shadowSample.a)
+                shadowFactor += shadowSample.rgb;
+        }
+    }
+    shadowFactor /= ((sampleRange * 2 + 1) * (sampleRange * 2 + 1));
+    return shadowFactor;
+}
+
 float4 main(PS_IN input) : SV_TARGET
 {
     float3 diffuse = diffuseM.rgb * diffuseTexture.Sample(samplerState, input.texcoord).rgb;
@@ -122,7 +147,10 @@ float4 main(PS_IN input) : SV_TARGET
     
     // Directional Light
     float diffBright = saturate(dot(input.normal, skyLightDirection));
+    
     float shadowFactor = 1.f;
+    float3 shadowColor = (float3) 1.f;
+    float3 translucentshadowcolor = (float3) 0;
     if (cascadingShadowMapsToggle)
     {
         float shadowDistance = distance(cameraPos, input.positionW);
@@ -139,10 +167,14 @@ float4 main(PS_IN input) : SV_TARGET
         {
             shadowFactor = calculateShadowFactor(shadowMap2, input.positionShadow2);
         }
+        
+        translucentshadowcolor = calculateTranslucentShadowFactor(translucentShadowMap, input.positionShadow2);
+        shadowColor = float3(shadowFactor, shadowFactor, shadowFactor) + translucentshadowcolor;
     }
     else
     {
         shadowFactor = calculateShadowFactor(shadowMap0, input.positionShadow0);
+        shadowColor = float3(shadowFactor, shadowFactor, shadowFactor);
     }
     float3 directionalLightDiffuse = ambientColor + ((skyLightColor * diffBright * skyLightIntensity) * shadowFactor);
     
@@ -157,7 +189,7 @@ float4 main(PS_IN input) : SV_TARGET
         fColor = saturate(fColor + pointLightCalculation(ambientM, diffuse, input.positionW, input.normal, pointLights[i]));
     }
     // Ambient Occlusion
-    fColor *= ambientOcclusion;
+    //fColor *= ambientOcclusion;
     
     // Fog
     if (fogEnd != 0)

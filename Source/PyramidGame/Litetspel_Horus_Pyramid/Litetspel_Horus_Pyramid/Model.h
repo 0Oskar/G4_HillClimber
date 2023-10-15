@@ -31,14 +31,14 @@ private:
 	bool m_drawWithIndex;
 	bool m_loaded;
 
-	void loadOBJModel(bool async = false);
-	void loadBffModel(bool async = false);
+	void loadOBJModel(uint32_t asyncThreadIndex = UINT_MAX);
+	void loadBffModel(uint32_t asyncThreadIndex = UINT_MAX);
 
 public:
 	Model();
 
 	void initForAsyncLoad(ID3D11Device* device, ID3D11DeviceContext* dContext, const char* modelFilePath, const MaterialData material, const wchar_t* texturePath = L"");
-	void loadModelAsync();
+	void loadModelAsync(uint32_t asyncThreadIndex = UINT_MAX);
 	void loadModel(ID3D11Device* device, ID3D11DeviceContext* dContext, const char* modelFilePath, const MaterialData material, const wchar_t* texturePath = L"");
 
 	void initQuadModel(ID3D11Device* device, ID3D11DeviceContext* dContext, const MaterialData material, const std::wstring texturePath = L"", bool flipped = false);

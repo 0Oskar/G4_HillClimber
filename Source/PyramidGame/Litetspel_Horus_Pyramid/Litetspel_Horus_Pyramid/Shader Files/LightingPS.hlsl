@@ -33,11 +33,12 @@ cbuffer ViewProjMatrices : register(b2)
 };
 
 Texture2D diffuseRT                     : TEXTURE : register(t0);
-Texture2D normalShadowMaskRT            : TEXTURE : register(t1);
+Texture2D normalRT                      : TEXTURE : register(t1);
 Texture2D specularShininessRT           : TEXTURE : register(t2);
 Texture2D ambientGlobalAContributionRT  : TEXTURE : register(t3);
-Texture2D ambientOcclusionRT            : TEXTURE : register(t4);
-Texture2D depthBuffer                   : TEXTURE : register(t5);
+Texture2D shadowRT                      : TEXTURE : register(t4);
+Texture2D ambientOcclusionRT            : TEXTURE : register(t5);
+Texture2D depthBuffer                   : TEXTURE : register(t6);
 SamplerState samplerState               : SAMPLER : register(s0);
 
 float3 pointLightCalculation(float3 ambient, float3 diffuse, float3 position, float3 normal, PointLight light)
@@ -62,12 +63,11 @@ float3 pointLightCalculation(float3 ambient, float3 diffuse, float3 position, fl
 float4 main(PS_IN input) : SV_TARGET
 {
     float3 diffuse = diffuseRT.Sample(samplerState, input.texcoord).rgb;
-    float4 normalShadowMask = normalShadowMaskRT.Sample(samplerState, input.texcoord);
+    float3 normal = normalRT.Sample(samplerState, input.texcoord).xyz;
     float4 specularShininess = specularShininessRT.Sample(samplerState, input.texcoord);
     float4 ambientGlobalAContribution = ambientGlobalAContributionRT.Sample(samplerState, input.texcoord);
+    float3 shadow = shadowRT.Sample(samplerState, input.texcoord).rgb;
     float ambientOcclusion = ambientOcclusionRT.Sample(samplerState, input.texcoord).r;
-    
-    float3 normal = normalShadowMask.xyz;
     
     // Get World position from Depth
     float z = depthBuffer.Sample(samplerState, input.texcoord).r;
@@ -95,7 +95,7 @@ float4 main(PS_IN input) : SV_TARGET
     
     // Directional Light
     float diffBright = saturate(dot(normal, skyLightDirection));
-    float3 directionalLightDiffuse = ambientColor + (skyLightColor * diffBright * skyLightIntensity * normalShadowMask.a);
+    float3 directionalLightDiffuse = ambientColor + (skyLightColor * diffBright * skyLightIntensity * shadow);
     
     float3 fColor = (diffuse * directionalLightDiffuse.xyz) + skyAmbientColor;
     

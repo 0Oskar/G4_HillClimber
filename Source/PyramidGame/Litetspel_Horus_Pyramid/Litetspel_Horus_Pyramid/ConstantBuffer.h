@@ -1,7 +1,5 @@
 #pragma once
 
-#include "pch.h"
-
 #define MAX_POINT_LIGHTS 20
 
 struct PointLight

@@ -5,7 +5,7 @@
 using namespace DirectX;
 using namespace SimpleMath;
 
-void ShadowMapInstance::initializeTexture(ID3D11Device* device, ShadowData& data)
+void ShadowMapInstance::initializeDepthTexture(ID3D11Device* device, ShadowData& data)
 {
 	// Texture 2D
 	D3D11_TEXTURE2D_DESC textureDesc;
@@ -13,7 +13,7 @@ void ShadowMapInstance::initializeTexture(ID3D11Device* device, ShadowData& data
 	textureDesc.Height = data.textureSize;
 	textureDesc.MipLevels = 1;
 	textureDesc.ArraySize = 1;
-	textureDesc.Format = DXGI_FORMAT_R24G8_TYPELESS;
+	textureDesc.Format = DXGI_FORMAT_R32_TYPELESS;
 	textureDesc.SampleDesc.Count = 1;
 	textureDesc.SampleDesc.Quality = 0;
 	textureDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -29,7 +29,7 @@ void ShadowMapInstance::initializeTexture(ID3D11Device* device, ShadowData& data
 	// Depth Stencil View
 	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
 	depthStencilViewDesc.Flags = 0;
-	depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthStencilViewDesc.Format = DXGI_FORMAT_D32_FLOAT;
 	depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	depthStencilViewDesc.Texture2D.MipSlice = 0;
 	hr = device->CreateDepthStencilView(depthMap, &depthStencilViewDesc, data.depthStencilView.GetAddressOf());
@@ -37,7 +37,7 @@ void ShadowMapInstance::initializeTexture(ID3D11Device* device, ShadowData& data
 
 	// Shader Resource View
 	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
-	shaderResourceViewDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+	shaderResourceViewDesc.Format = DXGI_FORMAT_R32_FLOAT;
 	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	shaderResourceViewDesc.Texture2D.MipLevels = textureDesc.MipLevels;
 	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
@@ -47,9 +47,54 @@ void ShadowMapInstance::initializeTexture(ID3D11Device* device, ShadowData& data
 	depthMap->Release();
 }
 
+void ShadowMapInstance::initializeRendertargetTexture(ID3D11Device* device, ShadowData& data)
+{
+	// Texture 2D
+	D3D11_TEXTURE2D_DESC textureDesc;
+	textureDesc.Width = data.textureSize;
+	textureDesc.Height = data.textureSize;
+	textureDesc.MipLevels = 1;
+	textureDesc.ArraySize = 1;
+	textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	textureDesc.SampleDesc.Count = 1;
+	textureDesc.SampleDesc.Quality = 0;
+	textureDesc.Usage = D3D11_USAGE_DEFAULT;
+	textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+	textureDesc.CPUAccessFlags = 0;
+	textureDesc.MiscFlags = 0;
+
+	ID3D11Texture2D* translucentShadowMap;
+	ZeroMemory(&translucentShadowMap, sizeof(translucentShadowMap));
+	HRESULT hr = device->CreateTexture2D(&textureDesc, 0, &translucentShadowMap);
+	assert(SUCCEEDED(hr) && "Error, failed to create translucent shadow map texture!");
+
+	// Render Target View
+	D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
+	ZeroMemory(&renderTargetViewDesc, sizeof(D3D11_RENDER_TARGET_VIEW_DESC));
+	renderTargetViewDesc.Format = textureDesc.Format;
+	renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+	renderTargetViewDesc.Texture2D.MipSlice = 0;
+	hr = device->CreateRenderTargetView(translucentShadowMap, &renderTargetViewDesc, &data.renderTargetView);
+	assert(SUCCEEDED(hr) && "Error, failed to create translucent shadow map render target view!");
+
+	// Shader Resource View
+	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
+	shaderResourceViewDesc.Format = textureDesc.Format;
+	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	shaderResourceViewDesc.Texture2D.MipLevels = textureDesc.MipLevels;
+	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
+	hr = device->CreateShaderResourceView(translucentShadowMap, &shaderResourceViewDesc, data.shaderResourceView.GetAddressOf());
+	assert(SUCCEEDED(hr) && "Error, failed to create translucent shadow map shader resource view!");
+
+	translucentShadowMap->Release();
+}
+
 ShadowMapInstance::ShadowMapInstance()
 {
 	m_deviceContext = nullptr;
+	m_lightMatrices = VS_VP_MATRICES_CBUFFER();
+	m_lightDirection = Vector3::Zero;
+	m_viewport = D3D11_VIEWPORT();
 }
 
 ShadowMapInstance::~ShadowMapInstance() {}
@@ -63,50 +108,29 @@ BoundingOrientedBox ShadowMapInstance::getLightBoundingBox(uint32_t index) const
 	return m_cascadeMapsData[index].obb;
 }
 
-std::vector<XMVECTOR> getFrustumCornersWorldSpace(const XMMATRIX& proj, const XMMATRIX& view)
-{
-	const XMMATRIX inv = XMMatrixInverse(nullptr, proj * view);
-
-	std::vector<XMVECTOR> frustumCorners;
-	frustumCorners.reserve(2 * 2 * 2);
-
-	for (uint32_t x = 0; x < 2; ++x)
-	{
-		for (uint32_t y = 0; y < 2; ++y)
-		{
-			for (uint32_t z = 0; z < 2; ++z)
-			{
-				const XMVECTOR pt =
-					XMVector4Transform(
-						XMVectorSet(
-							2.f * x - 1.f,
-							2.f * y - 1.f,
-							2.f * z - 1.f,
-							1.f),
-						inv);
-				
-				frustumCorners.push_back(pt / XMVectorGetW(pt));
-			}
-		}
-	}
-
-	return frustumCorners;
-}
-
-void ShadowMapInstance::initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, uint32_t singleMapSize, ShadowDesc cascadingMapDesc[SHADOW_CASCADE_COUNT])
+void ShadowMapInstance::initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, SingleShadowDesc singleMapDesc, CascadingShadowDesc cascadingMapDesc[SHADOW_CASCADE_COUNT], bool translucent)
 {
 	// Device
 	m_deviceContext = deviceContext;
 
 	// Shadow Data
-	m_singleMapData.textureSize = singleMapSize;
-	initializeTexture(device, m_singleMapData);
+	m_singleMapData.textureSize = singleMapDesc.textureSize;
+	m_worldBoundingSphere.Radius = singleMapDesc.radius;
+	translucentShadowMapsToggle = translucent;
+	if (translucentShadowMapsToggle)
+		initializeRendertargetTexture(device, m_singleMapData);
+	else
+		initializeDepthTexture(device, m_singleMapData);
 
 	for (uint32_t i = 0; i < SHADOW_CASCADE_COUNT; i++)
 	{
 		m_cascadeMapsData[i].textureSize = cascadingMapDesc[i].textureSize;
 		m_cascadeMapsData[i].frustumCoveragePercentage = cascadingMapDesc[i].frustumCoveragePercentage;
-		initializeTexture(device, m_cascadeMapsData[i]);
+
+		if (translucentShadowMapsToggle)
+			initializeRendertargetTexture(device, m_cascadeMapsData[i]);
+		else
+			initializeDepthTexture(device, m_cascadeMapsData[i]);
 	}
 
 	// Viewport
@@ -121,11 +145,11 @@ void ShadowMapInstance::initialize(ID3D11Device* device, ID3D11DeviceContext* de
 	D3D11_DEPTH_STENCIL_DESC dsDesc;
 	ZeroMemory(&dsDesc, sizeof(D3D11_DEPTH_STENCIL_DESC));
 	dsDesc.DepthEnable = true;
-	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK::D3D11_DEPTH_WRITE_MASK_ALL;
+	dsDesc.DepthWriteMask = translucentShadowMapsToggle ? D3D11_DEPTH_WRITE_MASK::D3D11_DEPTH_WRITE_MASK_ZERO : D3D11_DEPTH_WRITE_MASK::D3D11_DEPTH_WRITE_MASK_ALL;
 	dsDesc.DepthFunc = D3D11_COMPARISON_FUNC::D3D11_COMPARISON_LESS_EQUAL;
 
 	// Stencil test parameters
-	dsDesc.StencilEnable = true;
+	dsDesc.StencilEnable = false;
 	dsDesc.StencilReadMask = 0xFF;
 	dsDesc.StencilWriteMask = 0xFF;
 
@@ -151,7 +175,7 @@ void ShadowMapInstance::initialize(ID3D11Device* device, ID3D11DeviceContext* de
 	rasterizerDesc.DepthBiasClamp = 0.f;
 	rasterizerDesc.SlopeScaledDepthBias = 0.f;
 	rasterizerDesc.FillMode = D3D11_FILL_SOLID;
-	rasterizerDesc.CullMode = D3D11_CULL_BACK;
+	rasterizerDesc.CullMode = translucentShadowMapsToggle ? D3D11_CULL_NONE : D3D11_CULL_BACK;
 	rasterizerDesc.FrontCounterClockwise = false;
 	rasterizerDesc.DepthClipEnable = true;
 
@@ -185,6 +209,9 @@ void ShadowMapInstance::initialize(ID3D11Device* device, ID3D11DeviceContext* de
 	// Shader
 	ShaderFiles shaderFiles;
 	shaderFiles.vs = L"Shader Files\\ShadowVS.hlsl";
+	if (translucentShadowMapsToggle)
+		shaderFiles.ps = L"Shader Files\\TranslucentShadowPS.hlsl";
+	
 	m_shader.initialize(device, deviceContext, shaderFiles);
 
 	// Constant Buffer
@@ -192,6 +219,15 @@ void ShadowMapInstance::initialize(ID3D11Device* device, ID3D11DeviceContext* de
 	{
 		m_lightMatrixCBuffer[i].init(device, deviceContext);
 	}
+}
+
+ShadowData* ShadowMapInstance::getShadowData(uint32_t index)
+{
+	if (index == UINT_MAX)
+		return &m_singleMapData;
+
+	assert(index < SHADOW_CASCADE_COUNT && "Error, index out of reach!");
+	return &m_cascadeMapsData[index];
 }
 
 //--------------------------------------------------------------------------------------
@@ -279,20 +315,14 @@ void ShadowMapInstance::buildLightMatrix(XMFLOAT3 lightDirection, XMFLOAT3 posit
 	XMFLOAT3 lookAtF3 = pMath::F3Add(m_singleMapData.obb.Center, directionF3);
 	lookAt = XMLoadFloat3(&lookAtF3);
 
+	if (DirectX::XMVector3Equal(lookAt, (XMVECTOR)g_XMZero))
+		lookAt = XMVectorAdd(lookAt, XMVectorSet(0.f, 0.f, 1.f, 0.f));
+
 	XMFLOAT3 OBBpositionF3 = pMath::F3Subtract(m_singleMapData.obb.Center, directionF3);
 	XMVECTOR OBBposition = XMLoadFloat3(&OBBpositionF3);
 
 	XMMATRIX rotationMatrix = XMMatrixLookAtLH(OBBposition, lookAt, up);
 	XMStoreFloat4(&m_singleMapData.obb.Orientation, XMQuaternionRotationMatrix(rotationMatrix));
-}
-
-ShadowData* ShadowMapInstance::getShadowData(uint32_t index)
-{
-	if (index == UINT_MAX)
-		return &m_singleMapData;
-
-	assert(index < SHADOW_CASCADE_COUNT && "Error, index out of reach!");
-	return &m_cascadeMapsData[index];
 }
 
 void ShadowMapInstance::buildCascadeLightMatrix(uint32_t index, XMFLOAT3 lightDirection, Camera* camera)
@@ -303,6 +333,9 @@ void ShadowMapInstance::buildCascadeLightMatrix(uint32_t index, XMFLOAT3 lightDi
 	XMMATRIX cameraViewMatrix = camera->getViewMatrix();
 
 	XMVECTOR lightPosition = (XMLoadFloat3(&lightDirection)) * 1000.f;
+	if (DirectX::XMVector3Equal(lightPosition, (XMVECTOR)g_XMZero))
+		lightPosition = DirectX::XMVectorSet(0.f, 1000.f, 0.f, 1.f);
+	
 	XMMATRIX lightViewMatrix = XMMatrixLookAtLH(lightPosition, g_XMZero, g_XMIdentityR1);
 
 	XMMATRIX inverseViewCameraMatrix = XMMatrixInverse(nullptr, cameraViewMatrix);
@@ -450,20 +483,16 @@ void ShadowMapInstance::buildCascadeLightMatrix(uint32_t index, XMFLOAT3 lightDi
 		//}
 		float fLightCameraOrthographicMinZ = XMVectorGetZ(lightCameraOrthographicMin);
 
+		// We snape the camera to 1 pixel increments so that moving the camera does not cause the shadows to jitter.
+		// This is a matter of integer dividing by the world space size of a texel
+		lightCameraOrthographicMin /= worldUnitsPerTexel;
+		lightCameraOrthographicMin = XMVectorFloor(lightCameraOrthographicMin);
+		lightCameraOrthographicMin *= worldUnitsPerTexel;
 
-		/*if (m_bMoveLightTexelSize)
-		{*/
-			// We snape the camera to 1 pixel increments so that moving the camera does not cause the shadows to jitter.
-			// This is a matter of integer dividing by the world space size of a texel
-			lightCameraOrthographicMin /= worldUnitsPerTexel;
-			lightCameraOrthographicMin = XMVectorFloor(lightCameraOrthographicMin);
-			lightCameraOrthographicMin *= worldUnitsPerTexel;
-
-			lightCameraOrthographicMax /= worldUnitsPerTexel;
-			lightCameraOrthographicMax = XMVectorFloor(lightCameraOrthographicMax);
-			lightCameraOrthographicMax *= worldUnitsPerTexel;
-		//}
-
+		lightCameraOrthographicMax /= worldUnitsPerTexel;
+		lightCameraOrthographicMax = XMVectorFloor(lightCameraOrthographicMax);
+		lightCameraOrthographicMax *= worldUnitsPerTexel;
+		
 		//These are the unconfigured near and far plane values.  They are purposly awful to show 
 		// how important calculating accurate near and far planes is.
 		FLOAT fNearPlane = 0.0f;
@@ -507,65 +536,6 @@ void ShadowMapInstance::buildCascadeLightMatrix(uint32_t index, XMFLOAT3 lightDi
 
 		m_cascadeMapsData[i].frustumCoverage = frustumIntervalEnd;
 	}
-
-	/*
-	const XMMATRIX proj = XMMatrixPerspectiveFovLH(camera->getFov(), camera->getAspectRatio(), m_cascadeMapsData[index].nearZ, m_cascadeMapsData[index].farZ);
-
-	Vector3 frustomCorners[8] =
-	{
-		Vector3(-1.f, 1.f, 0.f),
-		Vector3( 1.f, 1.f, 0.f),
-		Vector3( 1.f,-1.f, 0.f),
-		Vector3(-1.f,-1.f, 0.f),
-		Vector3(-1.f, 1.f, 1.f),
-		Vector3( 1.f, 1.f, 1.f),
-		Vector3( 1.f,-1.f, 1.f),
-		Vector3(-1.f,-1.f, 1.f)
-	};
-	
-	XMMATRIX cameraViewProjMatrix = camera->getViewMatrix() * proj;
-
-	XMMATRIX invViewProj = XMMatrixInverse(nullptr, cameraViewProjMatrix);
-	Vector3 frustumCenter = Vector3::Zero;
-
-	for (uint32_t i = 0; i < 8; i++)
-	{
-		frustomCorners[i] = pMath::Transform(frustomCorners[i], invViewProj);
-		frustumCenter += frustomCorners[i];
-	}
-	frustumCenter *= (1.f / 8.f);
-
-	float radius = (frustomCorners[0] - frustomCorners[6]).Length() / 2.f;
-	float texelSize = (float)m_cascadeMapsData[index].textureSize / (radius * 2.f);
-	XMMATRIX scalar = XMMatrixScaling(texelSize, texelSize, texelSize);
-	
-	XMVECTOR upDirection = XMVectorSet(0.f, 1.f, 0.f, 0.f);
-	XMVECTOR baseLookAt = XMVectorNegate(XMLoadFloat3(&lightDirection));
-
-	XMMATRIX lookAt = XMMatrixLookAtLH(Vector3::Zero, baseLookAt, upDirection) * scalar;
-	XMMATRIX lookAtInv = XMMatrixInverse(nullptr, lookAt);
-
-	frustumCenter = XMVector3Transform(frustumCenter, lookAt);
-	frustumCenter.x = floor(frustumCenter.x);
-	frustumCenter.y = floor(frustumCenter.y);
-	frustumCenter = XMVector3Transform(frustumCenter, lookAtInv);
-
-	XMFLOAT3 extends = XMFLOAT3(radius * SHADOW_DEPTH_EXTENSION, radius, radius);
-	m_cascadeMapsData[index].obb.Center = frustumCenter;
-	m_cascadeMapsData[index].obb.Extents = extends;
-
-	Vector3 eye = frustumCenter - (lightDirection * radius * 2.f);
-	m_cascadeMapsData[index].matrices.viewMatrix = XMMatrixLookAtLH(eye, frustumCenter, upDirection);
-	m_cascadeMapsData[index].matrices.projMatrix = XMMatrixOrthographicOffCenterLH(-extends.x, extends.x, -extends.y, extends.y, -extends.z, extends.z);
-
-	XMMATRIX rotationMatrix = m_cascadeMapsData[index].matrices.viewMatrix;
-	XMStoreFloat4(&m_cascadeMapsData[index].obb.Orientation, XMQuaternionRotationMatrix(rotationMatrix));
-	*/
-}
-
-void ShadowMapInstance::update()
-{
-
 }
 
 void ShadowMapInstance::reloadShaders() {
@@ -592,6 +562,8 @@ ID3D11ShaderResourceView* const* ShadowMapInstance::getShadowMapSRVConstPtr(uint
 
 ID3D11DepthStencilView* ShadowMapInstance::getShadowMapDSV(uint32_t index)
 {
+	assert(!translucentShadowMapsToggle && "Error, getShadowMapDSV() used on translucent shadows!");
+	
 	if (index == UINT_MAX)
 		return m_singleMapData.depthStencilView.Get();
 
@@ -599,17 +571,40 @@ ID3D11DepthStencilView* ShadowMapInstance::getShadowMapDSV(uint32_t index)
 	return m_cascadeMapsData[index].depthStencilView.Get();
 }
 
+ID3D11RenderTargetView* const* ShadowMapInstance::getShadowMapRTVConstPtr(uint32_t index)
+{
+	assert(translucentShadowMapsToggle && "Error, getShadowMapRTV() used on non translucent shadows!");
+
+	if (index == UINT_MAX)
+		return m_singleMapData.renderTargetView.GetAddressOf();
+
+	assert(index < SHADOW_CASCADE_COUNT && "Error, index out of reach!");
+	return m_cascadeMapsData[index].renderTargetView.GetAddressOf();
+}
+
 void ShadowMapInstance::clearShadowmap()
 {
+	float clearColor[] = { 0.f, 0.f, 0.f, 1.f };
 	if (cascadedShadowMapsToggle)
 	{
-		for (uint32_t i = 0; i < SHADOW_CASCADE_COUNT; i++)
+		if (translucentShadowMapsToggle)
 		{
-			m_deviceContext->ClearDepthStencilView(m_cascadeMapsData[i].depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+			for (uint32_t i = 0; i < SHADOW_CASCADE_COUNT; i++)
+				m_deviceContext->ClearRenderTargetView(m_cascadeMapsData[i].renderTargetView.Get(), clearColor);
+		}
+		else
+		{
+			for (uint32_t i = 0; i < SHADOW_CASCADE_COUNT; i++)
+				m_deviceContext->ClearDepthStencilView(m_cascadeMapsData[i].depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 		}
 	}
 	else
-		m_deviceContext->ClearDepthStencilView(m_singleMapData.depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	{
+		if (translucentShadowMapsToggle)
+			m_deviceContext->ClearRenderTargetView(m_singleMapData.renderTargetView.Get(), clearColor);
+		else
+			m_deviceContext->ClearDepthStencilView(m_singleMapData.depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	}
 }
 
 void ShadowMapInstance::setComparisonSampler()

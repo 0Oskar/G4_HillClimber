@@ -3,7 +3,6 @@
 #include"PyramidRoom.h"
 
 #define MODEL_COUNT 50
-#define THREAD_COUNT 4
 
 class MenuState : public iGameState
 {
@@ -31,7 +30,7 @@ private:
 	// Model Loading
 	volatile bool* m_doneLoadingModelsPtr;
 	std::vector<const char*> m_asyncModelNames;
-	std::future<void> m_asyncModelsFuture[THREAD_COUNT];
+	std::future<void> m_asyncModelsFuture[MODEL_IMPORT_THREAD_COUNT];
 	void loadModels();
 	
 public:

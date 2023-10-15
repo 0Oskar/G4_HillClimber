@@ -8,7 +8,12 @@ class Camera;
 #define SHADOW_CASCADE_COUNT 3
 #define SHADOW_DEPTH_EXTENSION 6.f
 
-struct ShadowDesc
+struct SingleShadowDesc
+{
+	uint32_t textureSize;
+	float radius;
+};
+struct CascadingShadowDesc
 {
 	uint32_t textureSize;
 	float frustumCoveragePercentage;
@@ -21,6 +26,7 @@ struct ShadowData
 	BoundingOrientedBox obb;
 	VS_VP_MATRICES_CBUFFER matrices;
 	Microsoft::WRL::ComPtr< ID3D11DepthStencilView > depthStencilView;
+	Microsoft::WRL::ComPtr< ID3D11RenderTargetView > renderTargetView;
 	Microsoft::WRL::ComPtr< ID3D11ShaderResourceView > shaderResourceView;
 };
 
@@ -53,29 +59,31 @@ private:
 	// Shader
 	Shaders m_shader;
 
-	void initializeTexture(ID3D11Device* device, ShadowData& data);
+	void initializeDepthTexture(ID3D11Device* device, ShadowData& data);
+	void initializeRendertargetTexture(ID3D11Device* device, ShadowData& data);
 
 public:
 	ShadowMapInstance();
 	~ShadowMapInstance();
 
 	bool cascadedShadowMapsToggle = true;
+	bool translucentShadowMapsToggle = false;
 	DirectX::BoundingOrientedBox getLightBoundingBox(uint32_t index = UINT_MAX) const;
 
 	// Initialize
-	void initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, uint32_t singleMapSize, ShadowDesc cascadingMapDesc[SHADOW_CASCADE_COUNT]);
+	void initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, SingleShadowDesc singleMapDesc, CascadingShadowDesc cascadingMapDesc[SHADOW_CASCADE_COUNT], bool translucent = false);
 	
 	// Update
-	ShadowData* getShadowData(uint32_t index);
+	ShadowData* getShadowData(uint32_t index = UINT_MAX);
 	void buildLightMatrix(XMFLOAT3 lightDirection, XMFLOAT3 position = XMFLOAT3(0,0,0));
 	void buildCascadeLightMatrix(uint32_t index, XMFLOAT3 lightDirection, Camera* camera);
-	void update();
 	void reloadShaders();
 
 	// Render
 	ID3D11ShaderResourceView* getShadowMapSRV(uint32_t index = UINT_MAX);
 	ID3D11ShaderResourceView* const* getShadowMapSRVConstPtr(uint32_t index = UINT_MAX);
 	ID3D11DepthStencilView* getShadowMapDSV(uint32_t index = UINT_MAX);
+	ID3D11RenderTargetView* const* getShadowMapRTVConstPtr(uint32_t index = UINT_MAX);
 	void clearShadowmap();
 	void setComparisonSampler();
 	void bindLightMatrixBufferVS(uint32_t index, uint32_t slot);
