@@ -14,10 +14,36 @@ struct VS_WVPW_CONSTANT_BUFFER
 	XMMATRIX wvp;
 	XMMATRIX worldMatrix;
 };
-struct VS_VP_MATRICES_CBUFFER
+struct VP_MATRICES_CBUFFER
 {
 	XMMATRIX viewMatrix;
 	XMMATRIX projMatrix;
+};
+struct SHADOW_MATRICES_CBUFFER
+{
+	XMMATRIX viewMatrix;
+	XMMATRIX projMatrix;
+	XMFLOAT2 textureOffset;
+	float pad[2];
+};
+
+struct CAMERA_BUFFER
+{
+	XMMATRIX invViewMatrix;
+	XMMATRIX invProjMatrix;
+	DirectX::XMFLOAT3 cameraPosition;
+	float pad;
+};
+
+#define CASCADING_LIGHT_COUNT 3
+
+struct CASCADING_LIGHT_CAMERA_BUFFER
+{
+	XMMATRIX invViewMatrix[CASCADING_LIGHT_COUNT];
+	XMMATRIX invProjMatrix[CASCADING_LIGHT_COUNT];
+	uint32_t textureSize[CASCADING_LIGHT_COUNT];
+	float frustumCoverage[CASCADING_LIGHT_COUNT];
+	float pad[2];
 };
 
 struct SHADOW_PER_FRAME_BUFFER
@@ -48,8 +74,19 @@ struct PS_PER_FRAME_BUFFER
 struct DIR_LIGHT_DATA
 {
 	DirectX::XMFLOAT3 lightDirection;
+	uint32_t use_custom_horizon_color;
 	DirectX::XMFLOAT3 lightColor;
-	DirectX::XMFLOAT2 pad;
+	float pad;
+};
+
+struct VOLUMETRIC_LIGHT_DATA
+{
+	DirectX::XMFLOAT3 skyLightDirection;
+	float skyLightIntensity;
+	DirectX::XMFLOAT3 skyLightColor;
+	float pad;
+	DirectX::XMFLOAT2 textureStep;
+	float pad2[2];
 };
 
 const int MAX_BLUR_RADIUS = 15;

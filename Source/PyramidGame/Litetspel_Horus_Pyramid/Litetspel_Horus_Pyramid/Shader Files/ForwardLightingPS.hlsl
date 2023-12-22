@@ -1,4 +1,5 @@
 #define LIGHT_COUNT 20
+#define CASCADING_LIGHT_COUNT 3
 
 struct PS_IN
 {
@@ -52,9 +53,7 @@ cbuffer PerFrameShadowBuffer : register(b2)
 };
 
 Texture2D diffuseTexture : TEXTURE : register(t0);
-Texture2D shadowMap0 : TEXTURE : register(t1);
-Texture2D shadowMap1 : TEXTURE : register(t2);
-Texture2D shadowMap2 : TEXTURE : register(t3);
+Texture2D shadowMap : TEXTURE : register(t1);
 Texture2D translucentShadowMap : TEXTURE : register(t4);
 Texture2D ambientOcclusionMap : TEXTURE : register(t5);
 
@@ -80,10 +79,11 @@ float3 pointLightCalculation(float3 ambient, float3 diffuse, float3 position, fl
     return saturate(calcDiffuse);
 }
 
-float calculateShadowFactor(Texture2D shadowMap, float4 shadowPosition)
+float calculateShadowFactor(float2 textureOffset, float4 shadowPosition)
 {
     float2 shadowUV = shadowPosition.xy / shadowPosition.w * 0.5f + 0.5f;
     shadowUV.y = 1.0f - shadowUV.y;
+    shadowUV += textureOffset;
     float shadowDepth = shadowPosition.z / shadowPosition.w;
 
     float shadowFactor = 0;
@@ -151,29 +151,36 @@ float4 main(PS_IN input) : SV_TARGET
     float shadowFactor = 1.f;
     float3 shadowColor = (float3) 1.f;
     float3 translucentshadowcolor = (float3) 0;
+    float2 textureOffset = (float2) 0;
+    
     if (cascadingShadowMapsToggle)
     {
+        float4 shadowPosition = (float4) 0;
         float shadowDistance = distance(cameraPos, input.positionW);
         
         if (shadowDistance < frustumCoverage0)
         {
-            shadowFactor = calculateShadowFactor(shadowMap0, input.positionShadow0);
+            shadowPosition = input.positionShadow0;
+            textureOffset = float2(-(1.f / CASCADING_LIGHT_COUNT), 0.f);
         }
         else if (shadowDistance >= frustumCoverage0 && shadowDistance < frustumCoverage1)
         {
-            shadowFactor = calculateShadowFactor(shadowMap1, input.positionShadow1);
+            shadowPosition = input.positionShadow1;
+            textureOffset = float2(0.f, 0.f);
         }
         else if (shadowDistance >= frustumCoverage1 && shadowDistance < frustumCoverage2)
         {
-            shadowFactor = calculateShadowFactor(shadowMap2, input.positionShadow2);
+            shadowPosition = input.positionShadow2;
+            textureOffset = float2(1.f / CASCADING_LIGHT_COUNT, 0.f);
         }
+        shadowFactor = calculateShadowFactor(textureOffset, shadowPosition);
         
         translucentshadowcolor = calculateTranslucentShadowFactor(translucentShadowMap, input.positionShadow2);
         shadowColor = float3(shadowFactor, shadowFactor, shadowFactor) + translucentshadowcolor;
     }
     else
     {
-        shadowFactor = calculateShadowFactor(shadowMap0, input.positionShadow0);
+        shadowFactor = calculateShadowFactor(textureOffset, input.positionShadow0);
         shadowColor = float3(shadowFactor, shadowFactor, shadowFactor);
     }
     float3 directionalLightDiffuse = ambientColor + ((skyLightColor * diffBright * skyLightIntensity) * shadowFactor);

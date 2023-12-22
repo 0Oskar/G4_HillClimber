@@ -498,12 +498,14 @@ bool Model::is_loaded() const
 	return m_loaded;
 }
 
-void Model::draw()
+void Model::draw(bool bindMaterial)
 {
 	if (!m_loaded)
 		return;
 
-	m_material.upd(m_deviceContextPtr);
+	if (bindMaterial) {
+		m_material.upd(m_deviceContextPtr);
+	}
 
 	UINT vertexOffset = 0;
 	m_deviceContextPtr->IASetVertexBuffers(0, 1, m_vertexBuffer.GetAddressOf(), m_vertexBuffer.getStridePointer(), &vertexOffset);

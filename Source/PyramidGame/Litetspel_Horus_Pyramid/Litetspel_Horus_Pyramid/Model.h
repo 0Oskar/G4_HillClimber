@@ -47,7 +47,7 @@ public:
 	
 	bool is_loaded() const;
 	
-	void draw();
+	void draw(bool bindMaterial = true);
 
 	DirectX::BoundingBox m_aabb;
 	Material m_material;

@@ -47,7 +47,6 @@ private:
 	float m_clearColorNormal[4] = { 1.f, 0.5f, 0.5f, 1.f };
 
 	enum GBufferType { DIFFUSE_GB, NORMAL_GB, SPECULAR_SHININESS_GB, AMBIENT_GLOBALAMBIENTCONTR_GB, SHADOW_GB, AMBIENT_OCCLUSION_GB, DEPTH_GB, GB_NUM };
-	
 	RenderTexture m_gBuffer[GBufferType::GB_NUM];
 
 	// Depth Buffer
@@ -59,13 +58,15 @@ private:
 
 	// NUll Views
 	ID3D11ShaderResourceView* m_nullSRV = nullptr;
-	ID3D11ShaderResourceView* m_nullSRVs[GB_NUM] = { m_nullSRV, m_nullSRV, m_nullSRV, m_nullSRV, m_nullSRV };
+	ID3D11ShaderResourceView* m_nullSRVs[GB_NUM] = { m_nullSRV, m_nullSRV, m_nullSRV, m_nullSRV, m_nullSRV, m_nullSRV, m_nullSRV };
 	ID3D11RenderTargetView* m_nullRTV = nullptr;
-	ID3D11RenderTargetView* m_nullRTVs[GB_NUM] = { m_nullRTV, m_nullRTV, m_nullRTV, m_nullRTV, m_nullRTV };
+	ID3D11RenderTargetView* m_nullRTVs[GB_NUM] = { m_nullRTV, m_nullRTV, m_nullRTV, m_nullRTV, m_nullRTV, m_nullRTV, m_nullRTV };
 	ID3D11UnorderedAccessView* m_nullUAV = nullptr;
+	ID3D11UnorderedAccessView* m_nullUAVs[GB_NUM] = { m_nullUAV, m_nullUAV, m_nullUAV, m_nullUAV, m_nullUAV, m_nullUAV, m_nullUAV };
 
 	// SamplerState
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> m_samplerState;
+	Microsoft::WRL::ComPtr<ID3D11SamplerState> m_samplerShadowState;
 
 	// Shaders
 	Shaders m_GBufferShaders;
@@ -73,6 +74,7 @@ private:
 	Shaders m_forwardLightingShaders;
 	Shaders m_skyShaders;
 	Shaders m_blurShader;
+	Shaders m_volumetricLightShader;
 
 	// Texture Handler
 	ResourceHandler* resourceHandler;
@@ -112,9 +114,12 @@ private:
 	PS_PER_FRAME_BUFFER* m_constantBufferDataFromStatePtr;
 
 	std::vector< ConstBuffer<VS_WVPW_CONSTANT_BUFFER> >* m_wvpCBufferFromState;
-	ConstBuffer<VS_VP_MATRICES_CBUFFER> m_inverseMatricesBuffer;
+	ConstBuffer<VP_MATRICES_CBUFFER> m_inverseMatricesBuffer;
 	ConstBuffer<DirectX::XMMATRIX> m_skyboxCameraBuffer;
 	ConstBuffer<DIR_LIGHT_DATA> m_skyboxSunLightBuffer;
+	ConstBuffer<VOLUMETRIC_LIGHT_DATA> m_volumetricLightBuffer;
+	ConstBuffer<CAMERA_BUFFER> m_cameraBuffer;
+	ConstBuffer<CASCADING_LIGHT_CAMERA_BUFFER> m_lightCameraBuffer;
 	
 	Camera* m_cameraPtr;
 
@@ -128,6 +133,9 @@ private:
 	CS_BLUR_CBUFFER m_blurCData;
 	float m_ssaoBlurSigma = 5.f;
 	ConstBuffer< CS_BLUR_CBUFFER > m_blurCBuffer;
+
+	// Volumetric Lighting
+	RenderTexture m_volumetricLightRT;
 
 	// Sky
 	Model m_skyCube;
@@ -161,8 +169,12 @@ private:
 	void initSSAOBlurPass();
 	void blurSSAOPass();
 
-	void initblurTranslucentShadowsPass(uint32_t translucentTextureSize);
+	void initBlurTranslucentShadowsPass(uint32_t translucentTextureSize);
 	void blurTranslucentShadowsPass();
+
+	void initVolumetricLightPass();
+	void volumetricLightPass();
+
 public:
 	ViewLayer();
 	~ViewLayer();
@@ -173,7 +185,6 @@ public:
 
 	// Setters
 	void setCamera(Camera* camera);
-	bool* usingCascadingShadowmaps();
 	int* usingShadowmapDebug();
 
 	// Setters for State Pointers
@@ -202,12 +213,13 @@ public:
 	bool m_drawPhysicsPrimitives = false;
 	bool m_drawModelBoxPrimitives = false;
 	bool m_drawLightsDebug = false;
-	bool m_drawShadowmapDebug = false;
+	bool m_drawShadowmapDebug = true;
 	bool m_drawGBufferDebug = false;
 	bool m_drawDrawCallStatsDebug = true;
 
 	// Feature Toggles
 	bool m_ssaoToggle = true;
 	bool m_shadowMappingToggle = true;
+	bool m_volumetricLightToggle = false;
 	bool m_frustumCullingToggle = false;
 };

@@ -200,23 +200,26 @@ void ViewLayer::initDepthStencilBuffer()
 
 void ViewLayer::initShaders()
 {
-	ShaderFiles shaders;
-	shaders.vs = L"Shader Files\\GeneralVS.hlsl";
-	shaders.ps = L"Shader Files\\GBufferPS.hlsl";
-	m_GBufferShaders.initialize(m_device.Get(), m_deviceContext.Get(), shaders);
+	ShaderFiles sf;
+	sf.vs = L"Shader Files\\GeneralVS.hlsl";
+	sf.ps = L"Shader Files\\GBufferPS.hlsl";
+	m_GBufferShaders.initialize(m_device.Get(), m_deviceContext.Get(), sf);
 
-	shaders.vs = L"Shader Files\\FullscreenQuadVS.hlsl";
-	shaders.ps = L"Shader Files\\LightingPS.hlsl";
-	m_lightingShaders.initialize(m_device.Get(), m_deviceContext.Get(), shaders);
+	sf.vs = L"Shader Files\\FullscreenQuadVS.hlsl";
+	sf.ps = L"Shader Files\\LightingPS.hlsl";
+	m_lightingShaders.initialize(m_device.Get(), m_deviceContext.Get(), sf);
 
-	shaders.vs = L"Shader Files\\GeneralVS.hlsl";
-	shaders.ps = L"Shader Files\\ForwardLightingPS.hlsl";
-	m_forwardLightingShaders.initialize(m_device.Get(), m_deviceContext.Get(), shaders);
+	sf.vs = L"Shader Files\\GeneralVS.hlsl";
+	sf.ps = L"Shader Files\\ForwardLightingPS.hlsl";
+	m_forwardLightingShaders.initialize(m_device.Get(), m_deviceContext.Get(), sf);
 
-	shaders.vs = L"";
-	shaders.ps = L"";
-	shaders.cs = L"Shader Files\\BlurCS.hlsl";
-	m_blurShader.initialize(m_device.Get(), m_deviceContext.Get(), shaders, LayoutType::POS_TEX);
+	sf.vs = L"";
+	sf.ps = L"";
+	sf.cs = L"Shader Files\\BlurCS.hlsl";
+	m_blurShader.initialize(m_device.Get(), m_deviceContext.Get(), sf, LayoutType::POS_TEX);
+
+	sf.cs = L"Shader Files\\VolumetricLightCS.hlsl";
+	m_volumetricLightShader.initialize(m_device.Get(), m_deviceContext.Get(), sf, LayoutType::POS_TEX);
 
 	CD3D11_RASTERIZER_DESC rastDesc(
 		D3D11_FILL_SOLID, 
@@ -273,11 +276,6 @@ void ViewLayer::setCamera(Camera* camera)
 	m_blurCData.projectionMatrix = m_cameraPtr->getProjectionMatrix();
 }
 
-bool* ViewLayer::usingCascadingShadowmaps()
-{
-	return &m_shadowInstance.cascadedShadowMapsToggle;
-}
-
 int* ViewLayer::usingShadowmapDebug()
 {
 	return &m_shadowPerFrameBuffer.m_data.shadowDebug;
@@ -320,19 +318,21 @@ void ViewLayer::setPerFrameDataFromState(PS_PER_FRAME_BUFFER* perFrameDataFromSt
 	m_perFrameBuffer.upd();
 }
 
-
 void ViewLayer::setWvpCBufferFromState(std::vector< ConstBuffer<VS_WVPW_CONSTANT_BUFFER> >* buffers)
 {
 	m_wvpCBufferFromState = buffers;
 }
-
 
 void ViewLayer::initConstantBuffer()
 {
 	m_shadowPerFrameBuffer.init(m_device.Get(), m_deviceContext.Get());
 	m_perFrameBuffer.init(m_device.Get(), m_deviceContext.Get());
 	m_skyboxCameraBuffer.init(m_device.Get(), m_deviceContext.Get());
+	m_skyboxSunLightBuffer.init(m_device.Get(), m_deviceContext.Get());
 	m_inverseMatricesBuffer.init(m_device.Get(), m_deviceContext.Get());
+	m_volumetricLightBuffer.init(m_device.Get(), m_deviceContext.Get());
+	m_cameraBuffer.init(m_device.Get(), m_deviceContext.Get());
+	m_lightCameraBuffer.init(m_device.Get(), m_deviceContext.Get());
 }
 
 void ViewLayer::initSky()
@@ -435,7 +435,7 @@ void ViewLayer::blurSSAOPass()
 
 	m_deviceContext->OMSetRenderTargets(1, &m_nullRTV, NULL);
 	m_deviceContext->CSSetUnorderedAccessViews(0, 1, &m_nullUAV, &cOffset);
-	m_deviceContext->PSSetShaderResources(0, 2, &m_nullSRV);
+	m_deviceContext->PSSetShaderResources(0, GB_NUM, &m_nullSRV);
 
 	m_edgePreservingBlurCS.setShaders();
 
@@ -477,7 +477,7 @@ void ViewLayer::blurSSAOPass()
 	m_annotation->EndEvent();
 }
 
-void ViewLayer::initblurTranslucentShadowsPass(uint32_t translucentTextureSize)
+void ViewLayer::initBlurTranslucentShadowsPass(uint32_t translucentTextureSize)
 {
 	// Translucent Shadows Blured RT
 	std::string name = "Translucent Shadows Blured RT";
@@ -545,7 +545,7 @@ void ViewLayer::blurTranslucentShadowsPass()
 	ID3D11ShaderResourceView* blurSRVs[] = { m_translucentShadowInstance.getShadowMapSRV(), m_translucentShadowsBlurPingPongRT.srv};
 	ID3D11UnorderedAccessView* blurUAVs[] = { m_translucentShadowsBlurPingPongRT.uav, m_translucentShadowsBluredRT.uav };
 
-	uint32_t textureSize = m_translucentShadowInstance.getShadowData()->textureSize;
+	XMFLOAT2 textureSize = m_translucentShadowInstance.getShadowTextureSize();
 
 	for (UINT i = 0; i < 2; i++)
 	{
@@ -561,8 +561,8 @@ void ViewLayer::blurTranslucentShadowsPass()
 		m_deviceContext->CSSetUnorderedAccessViews(0, 1, &blurUAVs[m_translucentShadowblurCData.direction], &cOffset);
 
 		// Dispatch Shader
-		UINT textureWidth = (UINT)std::ceil((textureSize / 16.f) + 0.5f);
-		UINT textureHeight = (UINT)std::ceil((textureSize / 16.f) + 0.5f);
+		UINT textureWidth = (UINT)std::ceil((textureSize.x / 16.f) + 0.5f);
+		UINT textureHeight = (UINT)std::ceil((textureSize.y / 16.f) + 0.5f);
 		m_deviceContext->Dispatch(textureWidth, textureHeight, 1);
 
 		// Unbind Unordered Access View and Shader Resource View
@@ -573,6 +573,106 @@ void ViewLayer::blurTranslucentShadowsPass()
 	m_deviceContext->OMSetRenderTargets(1, &m_nullRTV, NULL);
 	m_deviceContext->CSSetUnorderedAccessViews(0, 1, &m_nullUAV, &cOffset);
 	m_deviceContext->CSSetShaderResources(0, 3, &m_nullSRV);
+	m_annotation->EndEvent();
+}
+
+void ViewLayer::initVolumetricLightPass()
+{
+	// Rendertarget
+	std::string name = "Volumetric Light RT";
+	size_t length = name.copy(m_volumetricLightRT.name, name.length(), 0);
+	m_volumetricLightRT.name[length] = '\0';
+
+	// Texture
+	D3D11_TEXTURE2D_DESC textureDesc;
+	ZeroMemory(&textureDesc, sizeof(D3D11_TEXTURE2D_DESC));
+	textureDesc.Width = m_options->width;
+	textureDesc.Height = m_options->height;
+	textureDesc.MipLevels = 1;
+	textureDesc.ArraySize = 1;
+	textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	textureDesc.SampleDesc.Count = 1;
+	textureDesc.Usage = D3D11_USAGE_DEFAULT;
+	textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
+	textureDesc.CPUAccessFlags = 0;
+	textureDesc.MiscFlags = 0;
+
+	HRESULT hr = m_device->CreateTexture2D(&textureDesc, NULL, &m_volumetricLightRT.rtt);
+	assert(SUCCEEDED(hr) && "Error, volumetric light render target texture could not be created!");
+
+	// Shader Resource View
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+	ZeroMemory(&srvDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
+	srvDesc.Format = textureDesc.Format;
+	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Texture2D.MostDetailedMip = 0;
+	srvDesc.Texture2D.MipLevels = textureDesc.MipLevels;
+
+	hr = m_device->CreateShaderResourceView(m_volumetricLightRT.rtt, &srvDesc, &m_volumetricLightRT.srv);
+	assert(SUCCEEDED(hr) && "Error, volumetric light shader resource view could not be created!");
+
+	// Unordered Access View
+	D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
+	uavDesc.Format = textureDesc.Format;
+	uavDesc.ViewDimension = D3D11_UAV_DIMENSION::D3D11_UAV_DIMENSION_TEXTURE2D;
+	uavDesc.Texture2D.MipSlice = 0;
+
+	hr = m_device->CreateUnorderedAccessView(m_volumetricLightRT.rtt, &uavDesc, &m_volumetricLightRT.uav);
+	assert(SUCCEEDED(hr) && "Error, volumetric light unordered access view could not be created!");
+}
+
+void ViewLayer::volumetricLightPass()
+{
+	m_annotation->BeginEvent(L"Volumetric Lighting");
+	// Reset
+	uint32_t cOffset = 0;
+	m_deviceContext->CSSetShaderResources(0, GB_NUM, m_nullSRVs);
+	m_deviceContext->CSSetUnorderedAccessViews(0, GB_NUM, m_nullUAVs, &cOffset);
+
+	// Shader
+	m_volumetricLightShader.setShaders();
+
+	// Constant Buffer
+	m_deviceContext->CSSetConstantBuffers(0, 1, m_cameraBuffer.GetAddressOf());
+
+	// - Light Camera Data
+	uint32_t textureSize = (uint32_t)m_shadowInstance.getShadowTextureSize().y;
+	for (uint32_t i = 0; i < SHADOW_CASCADE_COUNT; i++)
+	{
+		ShadowFrustumData* shadowData = m_shadowInstance.getShadowData(i);
+		m_lightCameraBuffer.m_data.invViewMatrix[i] = XMMatrixTranspose(shadowData->matrixData.viewMatrix);
+		m_lightCameraBuffer.m_data.invProjMatrix[i] = XMMatrixTranspose(shadowData->matrixData.projMatrix);
+		m_lightCameraBuffer.m_data.textureSize[i] = textureSize;
+	}
+	m_lightCameraBuffer.upd();
+	m_deviceContext->CSSetConstantBuffers(1, 1, m_lightCameraBuffer.GetAddressOf());
+
+	// - Sky Light Data
+	m_volumetricLightBuffer.m_data.skyLightDirection = m_perFrameBuffer.m_data.skyLightDirection;
+	m_volumetricLightBuffer.m_data.skyLightIntensity = m_perFrameBuffer.m_data.skyLightIntensity;
+	m_volumetricLightBuffer.m_data.skyLightColor = m_perFrameBuffer.m_data.skyLightColor;
+	m_volumetricLightBuffer.m_data.textureStep = { 1.f / m_options->width, 1.f / m_options->height };
+	m_volumetricLightBuffer.upd();
+	m_deviceContext->CSSetConstantBuffers(2, 1, m_volumetricLightBuffer.GetAddressOf());
+	
+	// Textures
+	// - Accumulation Render Target
+	m_deviceContext->CSSetUnorderedAccessViews(0, 1, &m_volumetricLightRT.uav, &cOffset);
+	// - Depth Texture
+	m_deviceContext->CSSetShaderResources(0, 1, &m_gBuffer[GBufferType::DEPTH_GB].srv);
+	// - Shadow Map
+	m_deviceContext->CSSetShaderResources(1, 1, m_shadowInstance.getShadowMapSRVConstPtr());
+
+	// Dispatch Shader
+	UINT textureWidth = (UINT)std::ceil((m_options->width / 16.f) + 0.5f);
+	UINT textureHeight = (UINT)std::ceil((m_options->height / 16.f) + 0.5f);
+	m_deviceContext->Dispatch(textureWidth, textureHeight, 1);
+
+	// Reset
+	m_deviceContext->CSSetShaderResources(0, GB_NUM, m_nullSRVs);
+	m_deviceContext->CSSetUnorderedAccessViews(0, GB_NUM, &m_nullUAV, &cOffset);
+
+	m_postProcessDrawCallCount++;
 	m_annotation->EndEvent();
 }
 
@@ -590,6 +690,16 @@ void ViewLayer::initSamplerState()
 	samplerDesc.MinLOD = 0;
 
 	HRESULT hr = m_device->CreateSamplerState(&samplerDesc, m_samplerState.GetAddressOf());
+	assert(SUCCEEDED(hr) && "Error when creating sampler state!");
+
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
+	samplerDesc.BorderColor[0] = 1.f;
+	samplerDesc.BorderColor[1] = 1.f;
+	samplerDesc.BorderColor[2] = 1.f;
+	samplerDesc.BorderColor[3] = 1.f;
+	hr = m_device->CreateSamplerState(&samplerDesc, m_samplerShadowState.GetAddressOf());
 	assert(SUCCEEDED(hr) && "Error when creating sampler state!");
 }
 
@@ -627,14 +737,8 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 	initSSAOBlurPass();
 
 	// Lights
-	PointLight pLight;
-	pLight.position = { 0, 10, 0 };
-	pLight.diffuse = { 0, 0, 0};
-	pLight.range = 100;
 	// - Ambient Light buffer
 	PS_PER_FRAME_BUFFER perFrameData;
-	perFrameData.nrOfPointLights = 1;
-	perFrameData.pointLights[0] = pLight;
 	// - Directional Light buffer
 	perFrameData.skyLightColor = DirectX::XMFLOAT3(0.f, 0.f, 0.f);
 	perFrameData.skyLightIntensity = 1.f;
@@ -708,22 +812,21 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 	m_statusTextHandler->setWindowDimensions(m_options->width, m_options->height);
 
 	// Shadow Mapping
-	CascadingShadowDesc cascadingMapDesc[SHADOW_CASCADE_COUNT] = {
-		{2048, 0.3f},
-		{2048, 2.f},
-		{2048, 10.f}
+	CascadingShadowDesc cascadingMapDesc = {
+		2048,
+		{ 0.3f, 2.f, 10.f }
 	};
-	SingleShadowDesc singleMapDesc = { 4096, 100.f };
-	m_shadowInstance.initialize(m_device.Get(), m_deviceContext.Get(), singleMapDesc, cascadingMapDesc);
+	SingleShadowDesc singleMapDesc = { 0, 0.f };
+	m_shadowInstance.initialize(m_device.Get(), m_deviceContext.Get(), singleMapDesc, cascadingMapDesc, true, false);
 	
 	singleMapDesc.textureSize = 2048;
 	singleMapDesc.radius = 1000.f;
-	m_translucentShadowInstance.initialize(m_device.Get(), m_deviceContext.Get(), singleMapDesc, cascadingMapDesc, true);
-	m_translucentShadowInstance.cascadedShadowMapsToggle = false;
+	m_translucentShadowInstance.initialize(m_device.Get(), m_deviceContext.Get(), singleMapDesc, cascadingMapDesc, false, true);
 
 	m_shadowPerFrameBuffer.m_data.shadowDebug = false;
 
-	initblurTranslucentShadowsPass(cascadingMapDesc[2].textureSize);
+	initBlurTranslucentShadowsPass(cascadingMapDesc.textureSize);
+	initVolumetricLightPass();
 }
 
 void ViewLayer::reloadShaders()
@@ -736,6 +839,7 @@ void ViewLayer::reloadShaders()
 	m_forwardLightingShaders.reloadShaders();
 	m_SSAOInstance.updateShaders();
 	m_skyShaders.reloadShaders();
+	m_volumetricLightShader.reloadShaders();
 }
 
 void ViewLayer::update(float dt)
@@ -764,30 +868,15 @@ void ViewLayer::update(float dt)
 
 	// Shadow matrix and per frame buffer
 	if (m_shadowMappingToggle) {
-		if (m_shadowInstance.cascadedShadowMapsToggle)
-		{
-			m_shadowInstance.buildCascadeLightMatrix(0, m_perFrameBuffer.m_data.skyLightDirection, m_cameraPtr);
+		m_shadowInstance.buildCascadeLightMatrix(0, m_perFrameBuffer.m_data.skyLightDirection, m_cameraPtr);
 			
-			m_shadowPerFrameBuffer.m_data.cascadingShadowMapsToggle = true;
-			m_shadowPerFrameBuffer.m_data.cameraPos = cameraPos;
-			m_shadowPerFrameBuffer.m_data.frustumCoverage0 = m_shadowInstance.getShadowData(0)->frustumCoverage;
-			m_shadowPerFrameBuffer.m_data.frustumCoverage1 = m_shadowInstance.getShadowData(1)->frustumCoverage;
-			m_shadowPerFrameBuffer.m_data.frustumCoverage2 = m_shadowInstance.getShadowData(2)->frustumCoverage;
+		m_shadowPerFrameBuffer.m_data.cascadingShadowMapsToggle = true;
+		m_shadowPerFrameBuffer.m_data.cameraPos = cameraPos;
+		m_shadowPerFrameBuffer.m_data.frustumCoverage0 = m_shadowInstance.getShadowData(0)->frustumCoverage;
+		m_shadowPerFrameBuffer.m_data.frustumCoverage1 = m_shadowInstance.getShadowData(1)->frustumCoverage;
+		m_shadowPerFrameBuffer.m_data.frustumCoverage2 = m_shadowInstance.getShadowData(2)->frustumCoverage;
 
-			m_shadowPerFrameBuffer.upd();
-
-			m_translucentShadowInstance.buildLightMatrix(m_perFrameBuffer.m_data.skyLightDirection, cameraPos);
-			m_translucentShadowblurCData.projectionMatrix = m_translucentShadowInstance.getShadowData()->matrices.projMatrix;
-		}
-		else
-		{
-			m_shadowInstance.buildLightMatrix(m_perFrameBuffer.m_data.skyLightDirection, cameraPos);
-			if (m_shadowPerFrameBuffer.m_data.cascadingShadowMapsToggle)
-			{
-				m_shadowPerFrameBuffer.m_data.cascadingShadowMapsToggle = false;
-				m_shadowPerFrameBuffer.upd();
-			}
-		}
+		m_shadowPerFrameBuffer.upd();
 	}
 
 	// Status text
@@ -826,6 +915,7 @@ void ViewLayer::render(iGameState* gameState)
 		m_shadowInstance.clearShadowmap();
 		m_translucentShadowInstance.clearShadowmap();
 	}
+	m_deviceContext->ClearUnorderedAccessViewFloat(m_volumetricLightRT.uav, m_clearColorBlack);
 
 	// Set Samplers
 	m_deviceContext->PSSetSamplers(0, 1, m_samplerState.GetAddressOf());
@@ -835,6 +925,11 @@ void ViewLayer::render(iGameState* gameState)
 
 	DirectX::XMMATRIX viewMatrix = m_cameraPtr->getViewMatrix();
 	DirectX::XMMATRIX projMatrix = m_cameraPtr->getProjectionMatrix();
+	m_cameraBuffer.m_data.invViewMatrix = XMMatrixTranspose(XMMatrixInverse(nullptr, viewMatrix));
+	m_cameraBuffer.m_data.invProjMatrix = XMMatrixTranspose(XMMatrixInverse(nullptr, projMatrix));
+	m_cameraBuffer.m_data.cameraPosition = m_cameraPtr->getPosition();
+	m_cameraBuffer.upd();
+
 	DirectX::BoundingFrustum cameraFrustum;
 	cameraFrustum.CreateFromMatrix(cameraFrustum, projMatrix);
 	cameraFrustum.Transform(cameraFrustum, 1.f, DirectX::XMQuaternionRotationRollPitchYawFromVector(m_cameraPtr->getRotationVector()), m_cameraPtr->getPositionVector());
@@ -843,38 +938,20 @@ void ViewLayer::render(iGameState* gameState)
 	// Shadow Mapping
 	DirectX::BoundingOrientedBox shadowCameraBounds;
 	const uint32_t lightMatricBufferIndexOffset = 1;
-	uint32_t shadowmapCount = 1;
 	if (m_shadowMappingToggle)
 	{
 		shadowCameraBounds = m_shadowInstance.getLightBoundingBox();
+		m_annotation->BeginEvent(L"ShadowMapping - Cascading");
 
-		uint32_t indexOffset = UINT_MAX;
-		if (m_shadowInstance.cascadedShadowMapsToggle)
-		{
-			m_annotation->BeginEvent(L"ShadowMapping - Cascading");
-			shadowmapCount = SHADOW_CASCADE_COUNT;
-			indexOffset = 0;
-		}
-		else
-		{
-			m_annotation->BeginEvent(L"ShadowMapping");
-		}
 		m_deviceContext->PSSetShaderResources(3, 1, &m_nullSRV);
 		m_shadowInstance.bindStatesAndShader();
+		m_deviceContext->OMSetRenderTargets(1, m_nullRTVs, m_shadowInstance.getShadowMapDSV());
 
-
-		for (uint32_t shadowIndex = 0; shadowIndex < shadowmapCount; shadowIndex++)
+		for (uint32_t shadowIndex = 0; shadowIndex < 1; shadowIndex++)
 		{
-			if (m_shadowInstance.cascadedShadowMapsToggle) {
-				m_annotation->BeginEvent((L"Cascade: " + std::to_wstring(shadowIndex)).c_str());
-			}
-
-			uint32_t index = shadowIndex + indexOffset;
-			m_shadowInstance.bindLightMatrixBufferVS(index, lightMatricBufferIndexOffset);
+			m_annotation->BeginEvent((L"Cascade: " + std::to_wstring(shadowIndex)).c_str());
+			m_shadowInstance.bindLightMatrixBufferVS(shadowIndex, lightMatricBufferIndexOffset);
 			
-			m_shadowInstance.bindViewport(index);
-			m_deviceContext->OMSetRenderTargets(1, m_nullRTVs, m_shadowInstance.getShadowMapDSV(index));
-
 			for (size_t i = 0; i < m_gameObjectsFromState->size(); i++)
 			{
 				// Get indexes
@@ -918,7 +995,7 @@ void ViewLayer::render(iGameState* gameState)
 					m_deviceContext->VSSetConstantBuffers(0, 1, m_wvpCBufferFromState->at(wvpIndex).GetAddressOf());
 
 					// Draw Model
-					model->draw();
+					model->draw(false);
 					m_shadowmapDrawCallCount++;
 				}
 			}
@@ -958,50 +1035,48 @@ void ViewLayer::render(iGameState* gameState)
 						m_deviceContext->VSSetConstantBuffers(0, 1, m_wvpCBufferFromState->at(wvpIndex).GetAddressOf());
 					
 						// Draw Model
-						model->draw();
+						model->draw(false);
 						m_shadowmapDrawCallCount++;
 					}
 				}
 			}
-			if (m_shadowInstance.cascadedShadowMapsToggle)
-				m_annotation->EndEvent();
+
+			m_annotation->EndEvent();
 		}
+		m_deviceContext->OMSetRenderTargets(1, m_nullRTVs, nullptr);
 		m_annotation->EndEvent();
 
 		// Translucent Shadows
-		if (m_shadowInstance.cascadedShadowMapsToggle)
+		m_annotation->BeginEvent(L"Translucent Shadow Mapping");
+		shadowCameraBounds = m_translucentShadowInstance.getLightBoundingBox();
+
+		m_deviceContext->PSSetShaderResources(3, 1, &m_nullSRV);
+		m_deviceContext->PSSetShaderResources(0, 1, m_shadowInstance.getShadowMapSRVConstPtr());
+		m_translucentShadowInstance.bindStatesAndShader();
+		m_translucentShadowInstance.setComparisonSampler();
+
+		m_shadowInstance.bindLightMatrixBufferVS(SHADOW_CASCADE_COUNT - 1, lightMatricBufferIndexOffset);
+
+		m_deviceContext->OMSetRenderTargets(1, m_translucentShadowInstance.getShadowMapRTVConstPtr(), nullptr);
+
+		for (size_t i = 0; i < transparentObjects.size(); i++)
 		{
-			m_annotation->BeginEvent(L"Translucent Shadow Mapping");
-			shadowCameraBounds = m_translucentShadowInstance.getLightBoundingBox();
+			// Get Model Mesh
+			GameObject* gObject = transparentObjects[i];
+			Model* model = gObject->getModelPtr();
 
-			m_deviceContext->PSSetShaderResources(3, 1, &m_nullSRV);
-			m_translucentShadowInstance.bindStatesAndShader();
+			// Set Constant buffer
+			int wvpIndex = gObject->getWvpCBufferIndex();
+			m_deviceContext->VSSetConstantBuffers(0, 1, m_wvpCBufferFromState->at(wvpIndex).GetAddressOf());
 
-			m_shadowInstance.bindLightMatrixBufferVS(SHADOW_CASCADE_COUNT - 1, lightMatricBufferIndexOffset);
-
-			m_translucentShadowInstance.bindViewport(UINT_MAX);
-
-			ID3D11DepthStencilView* shadowMapDSV = m_shadowInstance.getShadowMapDSV(SHADOW_CASCADE_COUNT - 1);
-			m_deviceContext->OMSetRenderTargets(1, m_translucentShadowInstance.getShadowMapRTVConstPtr(UINT_MAX), shadowMapDSV);
-
-			for (size_t i = 0; i < transparentObjects.size(); i++)
-			{
-				// Get Model Mesh
-				GameObject* gObject = transparentObjects[i];
-				Model* model = gObject->getModelPtr();
-
-				// Set Constant buffer
-				int wvpIndex = gObject->getWvpCBufferIndex();
-				m_deviceContext->VSSetConstantBuffers(0, 1, m_wvpCBufferFromState->at(wvpIndex).GetAddressOf());
-
-				// Draw Model
-				model->draw();
-				m_shadowmapDrawCallCount++;
-			}
-			m_annotation->EndEvent();
-
-			blurTranslucentShadowsPass();
+			// Draw Model
+			model->draw(false);
+			m_shadowmapDrawCallCount++;
 		}
+		m_annotation->EndEvent();
+
+		blurTranslucentShadowsPass();
+		m_deviceContext->PSSetShaderResources(0, 1, &m_nullSRV);
 	}
 
 	// G-Buffer
@@ -1020,34 +1095,18 @@ void ViewLayer::render(iGameState* gameState)
 	m_GBufferShaders.setShaders();
 
 	// Set Shadow Map
-	const uint32_t shadowTextureCount = SHADOW_CASCADE_COUNT + 1;
-	ID3D11ShaderResourceView* shadowTextures[shadowTextureCount];
-	if (m_shadowInstance.cascadedShadowMapsToggle)
-	{
-		for (uint32_t i = 0; i < SHADOW_CASCADE_COUNT; i++)
-			shadowTextures[i] = m_shadowInstance.getShadowMapSRV(i);
+	const uint32_t SHADOW_COUNT = 2;
+	ID3D11ShaderResourceView* shadowTextures[SHADOW_COUNT] = {
+		m_shadowInstance.getShadowMapSRV(),
+		m_translucentShadowsBluredRT.srv
+	};
 
-		shadowTextures[SHADOW_CASCADE_COUNT] = m_translucentShadowsBluredRT.srv;
-	}
-	else
-	{
-		shadowTextures[0] = m_shadowInstance.getShadowMapSRV();
-		for (uint32_t i = 1; i < shadowTextureCount; i++)
-			shadowTextures[i] = nullptr;
-	}
-	m_deviceContext->PSSetShaderResources(1, 4, shadowTextures);
+	m_deviceContext->PSSetShaderResources(1, SHADOW_COUNT, shadowTextures);
 
 	// Constant Buffer
 	m_deviceContext->PSSetConstantBuffers(1, 1, m_shadowPerFrameBuffer.GetAddressOf());
-	if (m_shadowInstance.cascadedShadowMapsToggle)
-	{
-		for (uint32_t i = 0; i < SHADOW_CASCADE_COUNT; i++)
-			m_shadowInstance.bindLightMatrixBufferVS(i, lightMatricBufferIndexOffset + i);
-	}
-	else
-	{
-		m_shadowInstance.bindLightMatrixBufferVS(UINT_MAX, lightMatricBufferIndexOffset);
-	}
+	for (uint32_t i = 0; i < SHADOW_CASCADE_COUNT; i++)
+		m_shadowInstance.bindLightMatrixBufferVS(i, lightMatricBufferIndexOffset + i);
 
 	// G-Buffer Draw
 	for (size_t i = 0; i < m_gameObjectsFromState->size(); i++)
@@ -1148,13 +1207,16 @@ void ViewLayer::render(iGameState* gameState)
 		m_deviceContext->RSSetState(m_states->CullNone());
 
 		// Set Constant Buffer
+		float fogEnd = m_perFrameBuffer.m_data.fogEnd;
+		if (m_volumetricLightToggle)
+			m_perFrameBuffer.m_data.fogEnd = 0.f;
+		
 		m_perFrameBuffer.upd();
 		m_deviceContext->PSSetConstantBuffers(1, 1, m_perFrameBuffer.GetAddressOf());
+		m_perFrameBuffer.m_data.fogEnd = fogEnd;
 
-		XMVECTOR det = XMMatrixDeterminant(m_cameraPtr->getViewMatrix());
-		det = XMMatrixDeterminant(m_cameraPtr->getProjectionMatrix());
-		m_inverseMatricesBuffer.m_data.viewMatrix = XMMatrixTranspose(XMMatrixInverse(&det, viewMatrix));
-		m_inverseMatricesBuffer.m_data.projMatrix = XMMatrixTranspose(XMMatrixInverse(&det, projMatrix));
+		m_inverseMatricesBuffer.m_data.viewMatrix = m_cameraBuffer.m_data.invViewMatrix;
+		m_inverseMatricesBuffer.m_data.projMatrix = m_cameraBuffer.m_data.invProjMatrix;
 		m_inverseMatricesBuffer.upd();
 		m_deviceContext->PSSetConstantBuffers(2, 1, m_inverseMatricesBuffer.GetAddressOf());
 
@@ -1187,16 +1249,30 @@ void ViewLayer::render(iGameState* gameState)
 		m_skyboxCameraBuffer.m_data = XMMatrixScaling(-1.f, -1.f, -1.f) * viewMatrix * projMatrix;
 		m_skyboxCameraBuffer.upd();
 		m_deviceContext->VSSetConstantBuffers(0, 1, m_skyboxCameraBuffer.GetAddressOf());
+
+		m_skyboxSunLightBuffer.m_data.lightColor = m_perFrameBuffer.m_data.skyLightColor;
+		m_skyboxSunLightBuffer.m_data.use_custom_horizon_color = m_volumetricLightToggle ? 1 : 0;
+		m_skyboxSunLightBuffer.m_data.lightDirection = m_perFrameBuffer.m_data.skyLightDirection;
+		m_skyboxSunLightBuffer.upd();
 		m_deviceContext->PSSetConstantBuffers(2, 1, m_skyboxSunLightBuffer.GetAddressOf());
 
 		m_skyCube.draw();
 		m_drawCallCount++;
+
+		m_deviceContext->OMSetRenderTargets(1, &m_nullRTV, nullptr);
 		m_annotation->EndEvent();
+	}
+
+	// Volumetric Lighting
+	if (m_volumetricLightToggle)
+	{
+		volumetricLightPass();
 	}
 
 	// Transparent Meshes
 	{
 		m_annotation->BeginEvent(L"Transparent Meshes");
+		m_deviceContext->OMSetRenderTargets(1, m_outputRTV.GetAddressOf(), m_depthStencilView.Get());
 		m_deviceContext->OMSetBlendState(m_states->AlphaBlend(), nullptr, 0xFFFFFFFF);
 		m_deviceContext->OMSetDepthStencilState(m_states->DepthDefault(), 0);
 		m_deviceContext->RSSetViewports(1, &m_viewport);
@@ -1205,9 +1281,9 @@ void ViewLayer::render(iGameState* gameState)
 		m_forwardLightingShaders.setShaders();
 	
 		// Set Shadow Map
-		m_deviceContext->PSSetShaderResources(1, shadowTextureCount, shadowTextures);
+		m_deviceContext->PSSetShaderResources(1, SHADOW_COUNT, shadowTextures);
 		// Set SSAO map
-		m_deviceContext->PSSetShaderResources(shadowTextureCount + 1, 1, &m_gBuffer[GBufferType::AMBIENT_OCCLUSION_GB].srv);
+		m_deviceContext->PSSetShaderResources(SHADOW_COUNT + 1, 1, &m_gBuffer[GBufferType::AMBIENT_OCCLUSION_GB].srv);
 
 		// Constant Buffers
 		for (uint32_t i = 0; i < SHADOW_CASCADE_COUNT; i++) {
@@ -1239,10 +1315,15 @@ void ViewLayer::render(iGameState* gameState)
 	// Draw Transition Quad
 	{
 		m_annotation->BeginEvent(L"Transition");
+		m_deviceContext->OMSetBlendState(m_states->Additive(), nullptr, 0xFFFFFFFF);
 		m_deviceContext->OMSetDepthStencilState(m_states->DepthNone(), 0);
+
+		m_deviceContext->PSSetShaderResources(0, 1, &m_volumetricLightRT.srv);
+
 		m_transition->render();
 		m_postProcessDrawCallCount++;
 		m_deviceContext->OMSetDepthStencilState(m_states->DepthDefault(), 0);
+		m_deviceContext->PSSetShaderResources(0, 1, m_nullSRVs);
 		m_annotation->EndEvent();
 	}
 
@@ -1321,7 +1402,7 @@ void ViewLayer::render(iGameState* gameState)
 				DX::Draw(m_batch.get(), posBox, DirectX::Colors::Green);
 				DX::DrawRay(m_batch.get(), origin, direction, true, DirectX::Colors::LawnGreen);
 			}
-			if (!m_shadowInstance.cascadedShadowMapsToggle)
+			if (false)
 			{
 				DX::Draw(m_batch.get(), m_shadowInstance.getLightBoundingBox(), DirectX::Colors::Firebrick);
 			}
@@ -1398,7 +1479,7 @@ void ViewLayer::render(iGameState* gameState)
 		RECT shadowMapImg;
 		long spacing = 10;
 		shadowMapImg.right = (long)m_options->width;
-		if (!m_shadowInstance.cascadedShadowMapsToggle)
+		if (false)
 		{
 			long dimension = 500;
 			shadowMapImg.top = 0;
@@ -1408,20 +1489,14 @@ void ViewLayer::render(iGameState* gameState)
 		}
 		else {
 			long dimension = (long)(m_options->height - ((SHADOW_CASCADE_COUNT - 1) * spacing)) / 3;
-			long spacingAccumilation = 0;
-			for (uint32_t i = 0; i < SHADOW_CASCADE_COUNT; i++)
-			{
-				shadowMapImg.top = i * dimension + spacingAccumilation;
-				shadowMapImg.bottom = shadowMapImg.top + dimension;
-				shadowMapImg.left = (long)m_options->width - dimension;
-				m_spriteBatch->Draw(m_shadowInstance.getShadowMapSRV(i), shadowMapImg);
-				spacingAccumilation += spacing;
-			}
+			shadowMapImg.top = 0;
+			shadowMapImg.bottom = shadowMapImg.top + dimension;
+			shadowMapImg.left = (long)m_options->width - (dimension * SHADOW_CASCADE_COUNT);
+			m_spriteBatch->Draw(m_shadowInstance.getShadowMapSRV(), shadowMapImg);
 
-			shadowMapImg.right -= dimension;
-			shadowMapImg.left -= dimension;
 			shadowMapImg.bottom = (long)m_options->height;
 			shadowMapImg.top = shadowMapImg.bottom - dimension;
+			shadowMapImg.left = shadowMapImg.right - dimension;
 			m_spriteBatch->Draw(m_translucentShadowsBluredRT.srv, shadowMapImg);
 		}
 		m_annotation->EndEvent();
@@ -1446,6 +1521,21 @@ void ViewLayer::render(iGameState* gameState)
 			img.top = img.bottom;
 			img.bottom = img.bottom + height;
 		}
+		m_annotation->EndEvent();
+	}
+
+	if (m_volumetricLightToggle) {
+		m_annotation->BeginEvent(L"Volumetric Light Debug");
+		uint32_t width = m_options->width / 4;
+		uint32_t height = m_options->height / 4;
+
+		RECT img;
+		img.top = 0;
+		img.left = m_options->width / gBufferDebugtextureCount;
+		img.right = img.left + width;
+		img.bottom = height;
+		m_spriteBatch->Draw(m_volumetricLightRT.srv, img);
+
 		m_annotation->EndEvent();
 	}
 

@@ -8,6 +8,7 @@ struct PS_IN
 cbuffer directionalLight : register(b2)
 {
     float3 dirLightDirection;
+    bool use_custom_horizon_color;
     float3 dirLightColor;
 };
 
@@ -23,7 +24,7 @@ float4 main(PS_IN input) : SV_TARGET
     
     // Sky
     const float3 skyColor = float3(0.25, 0.55, 0.9);
-    const float3 horizonColor = float3(0.89, 0.824, 0.651);
+    const float3 horizonColor = use_custom_horizon_color ? skyColor : float3(0.89, 0.824, 0.651);
     const float3 groundColor = float3(1.0, 0.871, 0.55);
     const float skyStrength = 0.8;
     const float blendStrength = 1.0;

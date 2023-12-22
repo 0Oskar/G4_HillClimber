@@ -5,12 +5,12 @@
 using namespace DirectX;
 using namespace SimpleMath;
 
-void ShadowMapInstance::initializeDepthTexture(ID3D11Device* device, ShadowData& data)
+void ShadowMapInstance::initializeDepthTexture(ID3D11Device* device, ShadowTextureData& data)
 {
 	// Texture 2D
 	D3D11_TEXTURE2D_DESC textureDesc;
-	textureDesc.Width = data.textureSize;
-	textureDesc.Height = data.textureSize;
+	textureDesc.Width = (UINT)data.textureDimensions.x;
+	textureDesc.Height = (UINT)data.textureDimensions.y;
 	textureDesc.MipLevels = 1;
 	textureDesc.ArraySize = 1;
 	textureDesc.Format = DXGI_FORMAT_R32_TYPELESS;
@@ -47,12 +47,12 @@ void ShadowMapInstance::initializeDepthTexture(ID3D11Device* device, ShadowData&
 	depthMap->Release();
 }
 
-void ShadowMapInstance::initializeRendertargetTexture(ID3D11Device* device, ShadowData& data)
+void ShadowMapInstance::initializeRendertargetTexture(ID3D11Device* device, ShadowTextureData& data)
 {
 	// Texture 2D
 	D3D11_TEXTURE2D_DESC textureDesc;
-	textureDesc.Width = data.textureSize;
-	textureDesc.Height = data.textureSize;
+	textureDesc.Width = (UINT)data.textureDimensions.x;
+	textureDesc.Height = (UINT)data.textureDimensions.y;
 	textureDesc.MipLevels = 1;
 	textureDesc.ArraySize = 1;
 	textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -92,8 +92,6 @@ void ShadowMapInstance::initializeRendertargetTexture(ID3D11Device* device, Shad
 ShadowMapInstance::ShadowMapInstance()
 {
 	m_deviceContext = nullptr;
-	m_lightMatrices = VS_VP_MATRICES_CBUFFER();
-	m_lightDirection = Vector3::Zero;
 	m_viewport = D3D11_VIEWPORT();
 }
 
@@ -108,29 +106,37 @@ BoundingOrientedBox ShadowMapInstance::getLightBoundingBox(uint32_t index) const
 	return m_cascadeMapsData[index].obb;
 }
 
-void ShadowMapInstance::initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, SingleShadowDesc singleMapDesc, CascadingShadowDesc cascadingMapDesc[SHADOW_CASCADE_COUNT], bool translucent)
+void ShadowMapInstance::initialize(ID3D11Device* device, ID3D11DeviceContext* deviceContext, SingleShadowDesc singleMapDesc, CascadingShadowDesc cascadingMapDesc, bool cascadedShadowMapsEnabled, bool translucent)
 {
 	// Device
 	m_deviceContext = deviceContext;
 
 	// Shadow Data
-	m_singleMapData.textureSize = singleMapDesc.textureSize;
-	m_worldBoundingSphere.Radius = singleMapDesc.radius;
 	translucentShadowMapsToggle = translucent;
-	if (translucentShadowMapsToggle)
-		initializeRendertargetTexture(device, m_singleMapData);
-	else
-		initializeDepthTexture(device, m_singleMapData);
 
-	for (uint32_t i = 0; i < SHADOW_CASCADE_COUNT; i++)
+	m_cascadedShadowMapsEnabled = cascadedShadowMapsEnabled;
+	if (!m_cascadedShadowMapsEnabled)
 	{
-		m_cascadeMapsData[i].textureSize = cascadingMapDesc[i].textureSize;
-		m_cascadeMapsData[i].frustumCoveragePercentage = cascadingMapDesc[i].frustumCoveragePercentage;
+		// World Bounding Sphere
+		m_worldBoundingSphere.Center = { 0.f, 0.f, 0.f };
+		m_worldBoundingSphere.Radius = singleMapDesc.radius;
+
+		m_singleMapTextureData.textureDimensions = XMFLOAT2((float)singleMapDesc.textureSize, (float)singleMapDesc.textureSize);
+		if (translucentShadowMapsToggle)
+			initializeRendertargetTexture(device, m_singleMapTextureData);
+		else
+			initializeDepthTexture(device, m_singleMapTextureData);
+	}
+	else
+	{
+		m_cascadeMapsTextureData.textureDimensions = XMFLOAT2((float)cascadingMapDesc.textureSize * SHADOW_CASCADE_COUNT, (float)cascadingMapDesc.textureSize);
+		for (uint32_t i = 0; i < SHADOW_CASCADE_COUNT; i++)
+			m_cascadeMapsData[i].frustumCoveragePercentage = cascadingMapDesc.frustumCoveragePercentage[i];
 
 		if (translucentShadowMapsToggle)
-			initializeRendertargetTexture(device, m_cascadeMapsData[i]);
+			initializeRendertargetTexture(device, m_cascadeMapsTextureData);
 		else
-			initializeDepthTexture(device, m_cascadeMapsData[i]);
+			initializeDepthTexture(device, m_cascadeMapsTextureData);
 	}
 
 	// Viewport
@@ -171,8 +177,8 @@ void ShadowMapInstance::initialize(ID3D11Device* device, ID3D11DeviceContext* de
 	// Rasterizer
 	D3D11_RASTERIZER_DESC rasterizerDesc;
 	ZeroMemory(&rasterizerDesc, sizeof(rasterizerDesc));
-	rasterizerDesc.DepthBias = 1000;
-	rasterizerDesc.DepthBiasClamp = 0.f;
+	rasterizerDesc.DepthBias = 0;
+	rasterizerDesc.DepthBiasClamp = 4.f;
 	rasterizerDesc.SlopeScaledDepthBias = 0.f;
 	rasterizerDesc.FillMode = D3D11_FILL_SOLID;
 	rasterizerDesc.CullMode = translucentShadowMapsToggle ? D3D11_CULL_NONE : D3D11_CULL_BACK;
@@ -202,10 +208,6 @@ void ShadowMapInstance::initialize(ID3D11Device* device, ID3D11DeviceContext* de
 	hr = device->CreateSamplerState(&comparisonSamplerDesc, m_comparisonSampler.GetAddressOf());
 	assert(SUCCEEDED(hr) && "Error when creating shadow map sampler state!");
 
-	// World Bounding Sphere
-	m_worldBoundingSphere.Center = { 0.f, 0.f, 0.f };
-	m_worldBoundingSphere.Radius = 100.f;
-
 	// Shader
 	ShaderFiles shaderFiles;
 	shaderFiles.vs = L"Shader Files\\ShadowVS.hlsl";
@@ -221,13 +223,20 @@ void ShadowMapInstance::initialize(ID3D11Device* device, ID3D11DeviceContext* de
 	}
 }
 
-ShadowData* ShadowMapInstance::getShadowData(uint32_t index)
+ShadowFrustumData* ShadowMapInstance::getShadowData(uint32_t index)
 {
 	if (index == UINT_MAX)
 		return &m_singleMapData;
 
 	assert(index < SHADOW_CASCADE_COUNT && "Error, index out of reach!");
 	return &m_cascadeMapsData[index];
+}
+XMFLOAT2 ShadowMapInstance::getShadowTextureSize()
+{
+	if (m_cascadedShadowMapsEnabled)
+		return m_cascadeMapsTextureData.textureDimensions;
+	else
+		return m_singleMapTextureData.textureDimensions;
 }
 
 //--------------------------------------------------------------------------------------
@@ -272,9 +281,8 @@ void CreateFrustumPointsFromCascadeInterval(float fCascadeIntervalBegin,
 void ShadowMapInstance::buildLightMatrix(XMFLOAT3 lightDirection, XMFLOAT3 position)
 {
 	// Light View Matrix
-	m_lightDirection = lightDirection;
 	m_worldBoundingSphere.Center = position;
-	XMVECTOR lightDirectionVec = XMLoadFloat3(&m_lightDirection);
+	XMVECTOR lightDirectionVec = XMLoadFloat3(&lightDirection);
 	XMVECTOR lookAt = XMLoadFloat3(&position);
 	lookAt = XMVectorSetW(lookAt, 1.f);
 	XMVECTOR lightPosition = XMVectorAdd(XMVectorScale(lightDirectionVec, m_worldBoundingSphere.Radius), lookAt);
@@ -286,11 +294,11 @@ void ShadowMapInstance::buildLightMatrix(XMFLOAT3 lightDirection, XMFLOAT3 posit
 	{
 		lookAt = XMVectorAdd(lookAt, XMVectorSet(0.f, 0.f, 1.f, 0.f));
 	}
-	m_singleMapData.matrices.viewMatrix = XMMatrixLookAtLH(lightPosition, lookAt, up);
+	m_singleMapData.matrixData.viewMatrix = XMMatrixLookAtLH(lightPosition, lookAt, up);
 
 	// Transform World Bounding Sphere to Light Local View Space
 	XMFLOAT3 worldSphereCenterLightSpace;
-	XMStoreFloat3(&worldSphereCenterLightSpace, XMVector3TransformCoord(lookAt, m_singleMapData.matrices.viewMatrix));
+	XMStoreFloat3(&worldSphereCenterLightSpace, XMVector3TransformCoord(lookAt, m_singleMapData.matrixData.viewMatrix));
 
 	// Construct Orthographic Frustum in Light View Space
 	float l = worldSphereCenterLightSpace.x - m_worldBoundingSphere.Radius;
@@ -303,7 +311,7 @@ void ShadowMapInstance::buildLightMatrix(XMFLOAT3 lightDirection, XMFLOAT3 posit
 	float f = m_worldBoundingSphere.Radius * SHADOW_DEPTH_EXTENSION;
 
 	// Local Projection Matrix
-	m_singleMapData.matrices.projMatrix = XMMatrixOrthographicOffCenterLH(l, r, b, t, n, f);
+	m_singleMapData.matrixData.projMatrix = XMMatrixOrthographicOffCenterLH(l, r, b, t, n, f);
 
 	// Bounding Box
 	float distanceMultiplier = 1.1f;
@@ -311,7 +319,7 @@ void ShadowMapInstance::buildLightMatrix(XMFLOAT3 lightDirection, XMFLOAT3 posit
 	float distance = m_worldBoundingSphere.Radius * distanceMultiplier;
 	m_singleMapData.obb.Extents = XMFLOAT3(distance * SHADOW_DEPTH_EXTENSION, distance, distance);
 
-	XMFLOAT3 directionF3 = pMath::F3Multiply(m_lightDirection, m_worldBoundingSphere.Radius);
+	XMFLOAT3 directionF3 = pMath::F3Multiply(lightDirection, m_worldBoundingSphere.Radius);
 	XMFLOAT3 lookAtF3 = pMath::F3Add(m_singleMapData.obb.Center, directionF3);
 	lookAt = XMLoadFloat3(&lookAtF3);
 
@@ -365,26 +373,14 @@ void ShadowMapInstance::buildCascadeLightMatrix(uint32_t index, XMFLOAT3 lightDi
 
 	XMVECTOR worldUnitsPerTexel = g_XMZero;
 
+	float textureOffsetX = -SHADOW_CASCADE_OFFSET;
+
 	// We loop over the cascades to calculate the orthographic projection for each cascade.
 	for (uint32_t i = 0; i < SHADOW_CASCADE_COUNT; ++i)
 	{
-		// Calculate the interval of the View Frustum that this cascade covers. We measure the interval 
-		// the cascade covers as a Min and Max distance along the Z Axis.
-		/*if (m_eSelectedCascadesFit == FIT_TO_CASCADES)
-		{*/
-			// Because we want to fit the orthogrpahic projection tightly around the Cascade, we set the Mimiumum cascade 
-			// value to the previous Frustum end Interval
-			/*if (i == 0)
-				frustumIntervalBegin = 0.0f;
-			else
-				frustumIntervalBegin = m_cascadeMapsData[i - 1].frustumCoveragePercentage;*/
-		//}
-		//else
-		//{
-			// In the FIT_TO_SCENE technique the Cascades overlap eachother.  In other words, interval 1 is coverd by
-			// cascades 1 to 8, interval 2 is covered by cascades 2 to 8 and so forth.
-			frustumIntervalBegin = 0.0f;
-		//}
+		// In the FIT_TO_SCENE technique the Cascades overlap eachother.  In other words, interval 1 is coverd by
+		// cascades 1 to 8, interval 2 is covered by cascades 2 to 8 and so forth.
+		frustumIntervalBegin = 0.0f;
 
 		// Scale the intervals between 0 and 1. They are now percentages that we can scale with.
 		frustumIntervalEnd = m_cascadeMapsData[i].frustumCoveragePercentage;
@@ -418,69 +414,34 @@ void ShadowMapInstance::buildCascadeLightMatrix(uint32_t index, XMFLOAT3 lightDi
 			lightCameraOrthographicMax = XMVectorMax(vTempTranslatedCornerPoint, lightCameraOrthographicMax);
 		}
 
-		// This code removes the shimmering effect along the edges of shadows due to
-		// the light changing to fit the camera.
-		//if (m_eSelectedCascadesFit == FIT_TO_SCENE)
-		//{
-			// Fit the ortho projection to the cascades far plane and a near plane of zero. 
-			// Pad the projection to be the size of the diagonal of the Frustum partition. 
-			// 
-			// To do this, we pad the ortho transform so that it is always big enough to cover 
-			// the entire camera view frustum.
-			XMVECTOR vDiagonal = vFrustumPoints[0] - vFrustumPoints[6];
-			vDiagonal = XMVector3Length(vDiagonal);
+		// Fit the ortho projection to the cascades far plane and a near plane of zero. 
+		// Pad the projection to be the size of the diagonal of the Frustum partition. 
+		// 
+		// To do this, we pad the ortho transform so that it is always big enough to cover 
+		// the entire camera view frustum.
+		XMVECTOR vDiagonal = vFrustumPoints[0] - vFrustumPoints[6];
+		vDiagonal = XMVector3Length(vDiagonal);
 
-			// The bound is the length of the diagonal of the frustum interval.
-			FLOAT fCascadeBound = XMVectorGetX(vDiagonal);
+		// The bound is the length of the diagonal of the frustum interval.
+		FLOAT fCascadeBound = XMVectorGetX(vDiagonal);
 
-			// The offset calculated will pad the ortho projection so that it is always the same size 
-			// and big enough to cover the entire cascade interval.
-			XMVECTOR halfVector = { 0.5f, 0.5f, 0.5f, 0.5f };
-			XMVECTOR multiplySetZWToZero = { 1.0f, 1.0f, 0.0f, 0.0f };
-			XMVECTOR vBoarderOffset = (vDiagonal - (lightCameraOrthographicMax - lightCameraOrthographicMin)) * halfVector;
-			// Set the Z and W components to zero.
-			vBoarderOffset *= multiplySetZWToZero;
+		// The offset calculated will pad the ortho projection so that it is always the same size 
+		// and big enough to cover the entire cascade interval.
+		XMVECTOR halfVector = { 0.5f, 0.5f, 0.5f, 0.5f };
+		XMVECTOR multiplySetZWToZero = { 1.0f, 1.0f, 0.0f, 0.0f };
+		XMVECTOR vBoarderOffset = (vDiagonal - (lightCameraOrthographicMax - lightCameraOrthographicMin)) * halfVector;
+		// Set the Z and W components to zero.
+		vBoarderOffset *= multiplySetZWToZero;
 
-			// Add the offsets to the projection.
-			lightCameraOrthographicMax += vBoarderOffset;
-			lightCameraOrthographicMin -= vBoarderOffset;
+		// Add the offsets to the projection.
+		lightCameraOrthographicMax += vBoarderOffset;
+		lightCameraOrthographicMin -= vBoarderOffset;
 
-			// The world units per texel are used to snap the shadow the orthographic projection
-			// to texel sized increments.  This keeps the edges of the shadows from shimmering.
-			FLOAT fWorldUnitsPerTexel = fCascadeBound / (float)m_cascadeMapsData[i].textureSize;
-			worldUnitsPerTexel = XMVectorSet(fWorldUnitsPerTexel, fWorldUnitsPerTexel, 0.0f, 0.0f);
+		// The world units per texel are used to snap the shadow the orthographic projection
+		// to texel sized increments.  This keeps the edges of the shadows from shimmering.
+		FLOAT fWorldUnitsPerTexel = fCascadeBound / (float)m_cascadeMapsTextureData.textureDimensions.y;
+		worldUnitsPerTexel = XMVectorSet(fWorldUnitsPerTexel, fWorldUnitsPerTexel, 0.0f, 0.0f);
 
-
-		//}
-		//else if (m_eSelectedCascadesFit == FIT_TO_CASCADES)
-		//{
-
-			//// We calculate a looser bound based on the size of the PCF blur.  This ensures us that we're 
-			//// sampling within the correct map.
-			//float m_iPCFBlurSize = 1.f;
-			//float fScaleDuetoBlureAMT = ((m_iPCFBlurSize * 2 + 1)
-			//	/ m_cascadeMapsData[i].textureSize);
-			//XMVECTORF32 vScaleDuetoBlureAMT = { fScaleDuetoBlureAMT, fScaleDuetoBlureAMT, 0.0f, 0.0f };
-
-
-			//float fNormalizeByBufferSize = (1.0f / m_cascadeMapsData[i].textureSize);
-			//XMVECTOR vNormalizeByBufferSize = XMVectorSet(fNormalizeByBufferSize, fNormalizeByBufferSize, 0.0f, 0.0f);
-			//
-			//// We calculate the offsets as a percentage of the bound.
-			//XMVECTOR vBoarderOffset = lightCameraOrthographicMax - lightCameraOrthographicMin;
-			//vBoarderOffset *= { 0.5f, 0.5f, 0.5f, 0.5f };
-			//vBoarderOffset *= vScaleDuetoBlureAMT;
-			//lightCameraOrthographicMax += vBoarderOffset;
-			//lightCameraOrthographicMin -= vBoarderOffset;
-
-			//// The world units per texel are used to snap  the orthographic projection
-			//// to texel sized increments.  
-			//// Because we're fitting tighly to the cascades, the shimmering shadow edges will still be present when the 
-			//// camera rotates.  However, when zooming in or strafing the shadow edge will not shimmer.
-			//worldUnitsPerTexel = lightCameraOrthographicMax - lightCameraOrthographicMin;
-			//worldUnitsPerTexel *= vNormalizeByBufferSize;
-
-		//}
 		float fLightCameraOrthographicMinZ = XMVectorGetZ(lightCameraOrthographicMin);
 
 		// We snape the camera to 1 pixel increments so that moving the camera does not cause the shadows to jitter.
@@ -498,42 +459,30 @@ void ShadowMapInstance::buildCascadeLightMatrix(uint32_t index, XMFLOAT3 lightDi
 		FLOAT fNearPlane = 0.0f;
 		FLOAT fFarPlane = 10000.0f;
 
-		/*if (m_eSelectedNearFarFit == FIT_NEARFAR_AABB)
-		{*/
-			XMVECTOR lightSpaceSceneAABBminValue = fltMaxVector;  // world space scene aabb 
-			XMVECTOR lightSpaceSceneAABBmaxValue = fltMinVector;
-			// We calculate the min and max vectors of the scene in light space. The min and max "Z" values of the  
-			// light space AABB can be used for the near and far plane. This is easier than intersecting the scene with the AABB
-			// and in some cases provides similar results.
-			for (int i = 0; i < 8; ++i)
-			{
-				lightSpaceSceneAABBminValue = XMVectorMin(sceneAABBPointsLightSpace[i], lightSpaceSceneAABBminValue);
-				lightSpaceSceneAABBmaxValue = XMVectorMax(sceneAABBPointsLightSpace[i], lightSpaceSceneAABBmaxValue);
-			}
+		XMVECTOR lightSpaceSceneAABBminValue = fltMaxVector;  // world space scene aabb 
+		XMVECTOR lightSpaceSceneAABBmaxValue = fltMinVector;
+		// We calculate the min and max vectors of the scene in light space. The min and max "Z" values of the  
+		// light space AABB can be used for the near and far plane. This is easier than intersecting the scene with the AABB
+		// and in some cases provides similar results.
+		for (int i = 0; i < 8; ++i)
+		{
+			lightSpaceSceneAABBminValue = XMVectorMin(sceneAABBPointsLightSpace[i], lightSpaceSceneAABBminValue);
+			lightSpaceSceneAABBmaxValue = XMVectorMax(sceneAABBPointsLightSpace[i], lightSpaceSceneAABBmaxValue);
+		}
 
-			// The min and max z values are the near and far planes.
-			fNearPlane = XMVectorGetZ(lightSpaceSceneAABBminValue);
-			fFarPlane = XMVectorGetZ(lightSpaceSceneAABBmaxValue);
-		//}
-		//else if (m_eSelectedNearFarFit == FIT_NEARFAR_SCENE_AABB || m_eSelectedNearFarFit == FIT_NEARFAR_PANCAKING)
-		//{
-		//	// By intersecting the light frustum with the scene AABB we can get a tighter bound on the near and far plane.
-		//	ComputeNearAndFar(fNearPlane, fFarPlane, lightCameraOrthographicMin, lightCameraOrthographicMax, sceneAABBPointsLightSpace);
-		//	if (m_eSelectedNearFarFit == FIT_NEARFAR_PANCAKING)
-		//	{
-		//		if (fLightCameraOrthographicMinZ > fNearPlane)
-		//		{
-		//			fNearPlane = fLightCameraOrthographicMinZ;
-		//		}
-		//	}
-		//}
+		// The min and max z values are the near and far planes.
+		fNearPlane = XMVectorGetZ(lightSpaceSceneAABBminValue);
+		fFarPlane = XMVectorGetZ(lightSpaceSceneAABBmaxValue);
+		
 		// Create the orthographic projection for this cascade.
-		m_cascadeMapsData[i].matrices.projMatrix = XMMatrixOrthographicOffCenterLH(
+		m_cascadeMapsData[i].matrixData.projMatrix = XMMatrixOrthographicOffCenterLH(
 			XMVectorGetX(lightCameraOrthographicMin), XMVectorGetX(lightCameraOrthographicMax),
 			XMVectorGetY(lightCameraOrthographicMin), XMVectorGetY(lightCameraOrthographicMax),
 			fNearPlane, fFarPlane);
-		m_cascadeMapsData[i].matrices.viewMatrix = lightViewMatrix;
 
+		m_cascadeMapsData[i].matrixData.viewMatrix = lightViewMatrix;
+		m_cascadeMapsData[i].matrixData.textureOffset = XMFLOAT2(textureOffsetX, 0.f);
+		textureOffsetX += SHADOW_CASCADE_OFFSET;
 		m_cascadeMapsData[i].frustumCoverage = frustumIntervalEnd;
 	}
 }
@@ -542,68 +491,55 @@ void ShadowMapInstance::reloadShaders() {
 	m_shader.reloadShaders();
 }
 
-ID3D11ShaderResourceView* ShadowMapInstance::getShadowMapSRV(uint32_t index)
+ID3D11ShaderResourceView* ShadowMapInstance::getShadowMapSRV()
 {
-	if (index == UINT_MAX)
-		return m_singleMapData.shaderResourceView.Get();
-		
-	assert(index < SHADOW_CASCADE_COUNT && "Error, index out of reach!");
-	return m_cascadeMapsData[index].shaderResourceView.Get();
+	if (m_cascadedShadowMapsEnabled)
+		return m_cascadeMapsTextureData.shaderResourceView.Get();
+	else
+		return m_singleMapTextureData.shaderResourceView.Get();
 }
 
-ID3D11ShaderResourceView* const* ShadowMapInstance::getShadowMapSRVConstPtr(uint32_t index)
+ID3D11ShaderResourceView* const* ShadowMapInstance::getShadowMapSRVConstPtr()
 {
-	if (index == UINT_MAX)
-		return m_singleMapData.shaderResourceView.GetAddressOf();
-	
-	assert(index < SHADOW_CASCADE_COUNT && "Error, index out of reach!");
-	return m_cascadeMapsData[index].shaderResourceView.GetAddressOf();
+	if (m_cascadedShadowMapsEnabled)
+		return m_cascadeMapsTextureData.shaderResourceView.GetAddressOf();
+	else
+		return m_singleMapTextureData.shaderResourceView.GetAddressOf();
 }
 
-ID3D11DepthStencilView* ShadowMapInstance::getShadowMapDSV(uint32_t index)
+ID3D11DepthStencilView* ShadowMapInstance::getShadowMapDSV()
 {
-	assert(!translucentShadowMapsToggle && "Error, getShadowMapDSV() used on translucent shadows!");
-	
-	if (index == UINT_MAX)
-		return m_singleMapData.depthStencilView.Get();
+	if (m_cascadedShadowMapsEnabled)
+		return m_cascadeMapsTextureData.depthStencilView.Get();
+	else
+		return m_singleMapTextureData.depthStencilView.Get();
 
-	assert(index < SHADOW_CASCADE_COUNT && "Error, index out of reach!");
-	return m_cascadeMapsData[index].depthStencilView.Get();
 }
 
-ID3D11RenderTargetView* const* ShadowMapInstance::getShadowMapRTVConstPtr(uint32_t index)
+ID3D11RenderTargetView* const* ShadowMapInstance::getShadowMapRTVConstPtr()
 {
-	assert(translucentShadowMapsToggle && "Error, getShadowMapRTV() used on non translucent shadows!");
-
-	if (index == UINT_MAX)
-		return m_singleMapData.renderTargetView.GetAddressOf();
-
-	assert(index < SHADOW_CASCADE_COUNT && "Error, index out of reach!");
-	return m_cascadeMapsData[index].renderTargetView.GetAddressOf();
+	if (m_cascadedShadowMapsEnabled)
+		return m_cascadeMapsTextureData.renderTargetView.GetAddressOf();
+	else
+		return m_singleMapTextureData.renderTargetView.GetAddressOf();
 }
 
 void ShadowMapInstance::clearShadowmap()
 {
 	float clearColor[] = { 0.f, 0.f, 0.f, 1.f };
-	if (cascadedShadowMapsToggle)
+	if (m_cascadedShadowMapsEnabled)
 	{
 		if (translucentShadowMapsToggle)
-		{
-			for (uint32_t i = 0; i < SHADOW_CASCADE_COUNT; i++)
-				m_deviceContext->ClearRenderTargetView(m_cascadeMapsData[i].renderTargetView.Get(), clearColor);
-		}
+			m_deviceContext->ClearRenderTargetView(m_cascadeMapsTextureData.renderTargetView.Get(), clearColor);
 		else
-		{
-			for (uint32_t i = 0; i < SHADOW_CASCADE_COUNT; i++)
-				m_deviceContext->ClearDepthStencilView(m_cascadeMapsData[i].depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-		}
+			m_deviceContext->ClearDepthStencilView(m_cascadeMapsTextureData.depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	}
 	else
 	{
 		if (translucentShadowMapsToggle)
-			m_deviceContext->ClearRenderTargetView(m_singleMapData.renderTargetView.Get(), clearColor);
+			m_deviceContext->ClearRenderTargetView(m_singleMapTextureData.renderTargetView.Get(), clearColor);
 		else
-			m_deviceContext->ClearDepthStencilView(m_singleMapData.depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+			m_deviceContext->ClearDepthStencilView(m_singleMapTextureData.depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	}
 }
 
@@ -616,35 +552,31 @@ void ShadowMapInstance::bindLightMatrixBufferVS(uint32_t index, uint32_t slot)
 {
 	if (index == UINT_MAX)
 	{
-		m_lightMatrixCBuffer[0].upd(&m_singleMapData.matrices);
+		m_lightMatrixCBuffer[0].upd(&m_singleMapData.matrixData);
 		m_deviceContext->VSSetConstantBuffers(slot, 1, m_lightMatrixCBuffer[0].GetAddressOf());
 	}
 	else
 	{
 		assert(index < SHADOW_CASCADE_COUNT && "Error, index out of reach!");
-		m_lightMatrixCBuffer[index].upd(&m_cascadeMapsData[index].matrices);
+		m_lightMatrixCBuffer[index].upd(&m_cascadeMapsData[index].matrixData);
 		m_deviceContext->VSSetConstantBuffers(slot, 1, m_lightMatrixCBuffer[index].GetAddressOf());
 	}
 }
 
-void ShadowMapInstance::bindViewport(uint32_t index)
+void ShadowMapInstance::bindStatesAndShader()
 {
-	if (index == UINT_MAX)
+	if (m_cascadedShadowMapsEnabled)
 	{
-		m_viewport.Width = (float)m_singleMapData.textureSize;
-		m_viewport.Height = (float)m_singleMapData.textureSize;
+		m_viewport.Width = m_cascadeMapsTextureData.textureDimensions.x;
+		m_viewport.Height = m_cascadeMapsTextureData.textureDimensions.y;
 	}
 	else
 	{
-		assert(index < SHADOW_CASCADE_COUNT && "Error, index out of reach!");
-		m_viewport.Width = (float)m_cascadeMapsData[index].textureSize;
-		m_viewport.Height = (float)m_cascadeMapsData[index].textureSize;
+		m_viewport.Width = m_singleMapTextureData.textureDimensions.x;
+		m_viewport.Height = m_singleMapTextureData.textureDimensions.y;
 	}
 	m_deviceContext->RSSetViewports(1, &m_viewport);
-}
 
-void ShadowMapInstance::bindStatesAndShader()
-{
 	m_shader.setShaders();
 	m_deviceContext->RSSetState(m_rasterizerState.Get());
 	m_deviceContext->OMSetDepthStencilState(m_depthStencilState.Get(), 0);

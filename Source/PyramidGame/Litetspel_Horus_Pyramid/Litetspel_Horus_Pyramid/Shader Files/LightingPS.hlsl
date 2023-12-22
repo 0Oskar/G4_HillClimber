@@ -39,6 +39,7 @@ Texture2D ambientGlobalAContributionRT  : TEXTURE : register(t3);
 Texture2D shadowRT                      : TEXTURE : register(t4);
 Texture2D ambientOcclusionRT            : TEXTURE : register(t5);
 Texture2D depthBuffer                   : TEXTURE : register(t6);
+Texture2D volumetricLightingTexture     : TEXTURE : register(t7);
 SamplerState samplerState               : SAMPLER : register(s0);
 
 float3 pointLightCalculation(float3 ambient, float3 diffuse, float3 position, float3 normal, PointLight light)
@@ -126,5 +127,8 @@ float4 main(PS_IN input) : SV_TARGET
         float fogLerp = saturate((distance - fogStart) / fogEnd);
         fColor = lerp(fColor, skyFogColor, fogLerp);
     }
+    // Volumetric Lighting
+    fColor.rgb += volumetricLightingTexture.Sample(samplerState, input.texcoord).rgb;
+    
     return float4(fColor, 1.f);
 }
