@@ -52,6 +52,7 @@ float calculateShadowFactor(float2 textureOffset, float4 shadowPosition)
 {
     float2 shadowUV = shadowPosition.xy / shadowPosition.w * 0.5f + 0.5f;
     shadowUV.y = 1.0f - shadowUV.y;
+    shadowUV.x /= CASCADING_LIGHT_COUNT;
     shadowUV += textureOffset;
     float shadowDepth = shadowPosition.z / shadowPosition.w;
 
@@ -120,21 +121,20 @@ PS_OUT main(PS_IN input)
         if (shadowDistance < frustumCoverage0)
         {
             shadowPosition = input.positionShadow0;
-            textureOffset = float2(-(1.f / CASCADING_LIGHT_COUNT), 0.f);
             if (shadowDebug)
                 diffuse.xyz = float3(1.f, 0.f, 0.f) * saturate(invLerp(0.f, frustumCoverage0, shadowDistance) + 0.1f);
         }
         else if (shadowDistance >= frustumCoverage0 && shadowDistance < frustumCoverage1)
         {
             shadowPosition = input.positionShadow1;
-            textureOffset = float2(0.f, 0.f);
+            textureOffset = float2((1.f / CASCADING_LIGHT_COUNT), 0.f);
             if (shadowDebug)
                 diffuse.xyz = float3(0.f, 1.f, 0.f) * saturate(invLerp(frustumCoverage0, frustumCoverage1, shadowDistance) + 0.1f);
         }
         else if (shadowDistance >= frustumCoverage1 && shadowDistance < frustumCoverage2)
         {
             shadowPosition = input.positionShadow2;
-            textureOffset = float2(1.f / CASCADING_LIGHT_COUNT, 0.f);
+            textureOffset = float2(1.f - (1.f / CASCADING_LIGHT_COUNT), 0.f);
             if (shadowDebug)
                 diffuse.xyz = float3(0.f, 0.f, 1.f) * saturate(invLerp(frustumCoverage1, frustumCoverage2, shadowDistance) + 0.1f);
         }

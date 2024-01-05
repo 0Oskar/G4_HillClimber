@@ -944,12 +944,12 @@ void ViewLayer::render(iGameState* gameState)
 		m_annotation->BeginEvent(L"ShadowMapping - Cascading");
 
 		m_deviceContext->PSSetShaderResources(3, 1, &m_nullSRV);
-		m_shadowInstance.bindStatesAndShader();
 		m_deviceContext->OMSetRenderTargets(1, m_nullRTVs, m_shadowInstance.getShadowMapDSV());
 
-		for (uint32_t shadowIndex = 0; shadowIndex < 1; shadowIndex++)
+		for (uint32_t shadowIndex = 0; shadowIndex < SHADOW_CASCADE_COUNT; shadowIndex++)
 		{
 			m_annotation->BeginEvent((L"Cascade: " + std::to_wstring(shadowIndex)).c_str());
+			m_shadowInstance.bindStatesAndShader(shadowIndex);
 			m_shadowInstance.bindLightMatrixBufferVS(shadowIndex, lightMatricBufferIndexOffset);
 			
 			for (size_t i = 0; i < m_gameObjectsFromState->size(); i++)

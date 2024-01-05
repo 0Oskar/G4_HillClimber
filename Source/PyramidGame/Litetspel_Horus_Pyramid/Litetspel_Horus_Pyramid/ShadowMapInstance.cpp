@@ -92,7 +92,11 @@ void ShadowMapInstance::initializeRendertargetTexture(ID3D11Device* device, Shad
 ShadowMapInstance::ShadowMapInstance()
 {
 	m_deviceContext = nullptr;
-	m_viewport = D3D11_VIEWPORT();
+
+	for (uint32_t i = 0; i < SHADOW_CASCADE_COUNT; i++)
+	{
+		m_viewport[i] = D3D11_VIEWPORT();
+	}
 }
 
 ShadowMapInstance::~ShadowMapInstance() {}
@@ -115,35 +119,55 @@ void ShadowMapInstance::initialize(ID3D11Device* device, ID3D11DeviceContext* de
 	translucentShadowMapsToggle = translucent;
 
 	m_cascadedShadowMapsEnabled = cascadedShadowMapsEnabled;
+
+	ShadowTextureData* shadowTextureData = nullptr;
+
 	if (!m_cascadedShadowMapsEnabled)
 	{
+		// Texture
+		m_singleMapTextureData.textureDimensions = XMFLOAT2((float)singleMapDesc.textureSize, (float)singleMapDesc.textureSize);
+		shadowTextureData = &m_singleMapTextureData;
+		
 		// World Bounding Sphere
 		m_worldBoundingSphere.Center = { 0.f, 0.f, 0.f };
 		m_worldBoundingSphere.Radius = singleMapDesc.radius;
 
-		m_singleMapTextureData.textureDimensions = XMFLOAT2((float)singleMapDesc.textureSize, (float)singleMapDesc.textureSize);
-		if (translucentShadowMapsToggle)
-			initializeRendertargetTexture(device, m_singleMapTextureData);
-		else
-			initializeDepthTexture(device, m_singleMapTextureData);
+		// Viewport
+		m_viewport[0].TopLeftX = 0.f;
+		m_viewport[0].TopLeftY = 0.f;
+		m_viewport[0].Width = m_singleMapTextureData.textureDimensions.x;
+		m_viewport[0].Height = m_singleMapTextureData.textureDimensions.y;
+		m_viewport[0].MinDepth = 0.f;
+		m_viewport[0].MaxDepth = 1.f;
 	}
 	else
 	{
+		// Texture
 		m_cascadeMapsTextureData.textureDimensions = XMFLOAT2((float)cascadingMapDesc.textureSize * SHADOW_CASCADE_COUNT, (float)cascadingMapDesc.textureSize);
+		shadowTextureData = &m_cascadeMapsTextureData;
+
+		float textureWidth = m_cascadeMapsTextureData.textureDimensions.x;
+		float cascadeWidth = textureWidth / SHADOW_CASCADE_COUNT;
 		for (uint32_t i = 0; i < SHADOW_CASCADE_COUNT; i++)
+		{
+			// Frustum Coverage
 			m_cascadeMapsData[i].frustumCoveragePercentage = cascadingMapDesc.frustumCoveragePercentage[i];
 
-		if (translucentShadowMapsToggle)
-			initializeRendertargetTexture(device, m_cascadeMapsTextureData);
-		else
-			initializeDepthTexture(device, m_cascadeMapsTextureData);
+			// Viewport
+			m_viewport[i].TopLeftX = i * cascadeWidth;
+			m_viewport[i].TopLeftY = 0.f;
+			m_viewport[i].Width = cascadeWidth;
+			m_viewport[i].Height = m_cascadeMapsTextureData.textureDimensions.y;
+			m_viewport[i].MinDepth = 0.f;
+			m_viewport[i].MaxDepth = 1.f;
+		}
 	}
 
-	// Viewport
-	m_viewport.TopLeftX = 0.f;
-	m_viewport.TopLeftY = 0.f;
-	m_viewport.MinDepth = 0.f;
-	m_viewport.MaxDepth = 1.f;
+	if (translucentShadowMapsToggle)
+		initializeRendertargetTexture(device, *shadowTextureData);
+	else
+		initializeDepthTexture(device, *shadowTextureData);
+
 
 	// Pipeline States
 	
@@ -563,19 +587,13 @@ void ShadowMapInstance::bindLightMatrixBufferVS(uint32_t index, uint32_t slot)
 	}
 }
 
-void ShadowMapInstance::bindStatesAndShader()
+void ShadowMapInstance::bindStatesAndShader(uint32_t index)
 {
-	if (m_cascadedShadowMapsEnabled)
-	{
-		m_viewport.Width = m_cascadeMapsTextureData.textureDimensions.x;
-		m_viewport.Height = m_cascadeMapsTextureData.textureDimensions.y;
-	}
-	else
-	{
-		m_viewport.Width = m_singleMapTextureData.textureDimensions.x;
-		m_viewport.Height = m_singleMapTextureData.textureDimensions.y;
-	}
-	m_deviceContext->RSSetViewports(1, &m_viewport);
+	uint32_t shadowIndex = index;
+	// Set to 0 if Cascaded Shadow Maps is not enabled
+	shadowIndex *= (uint32_t)m_cascadedShadowMapsEnabled;
+
+	m_deviceContext->RSSetViewports(1, &m_viewport[shadowIndex]);
 
 	m_shader.setShaders();
 	m_deviceContext->RSSetState(m_rasterizerState.Get());

@@ -59,7 +59,7 @@ private:
 	Microsoft::WRL::ComPtr< ID3D11SamplerState > m_comparisonSampler;
 
 	// Viewport
-	D3D11_VIEWPORT m_viewport;
+	D3D11_VIEWPORT m_viewport[SHADOW_CASCADE_COUNT];
 
 	// World Bounding Sphere
 	BoundingSphere m_worldBoundingSphere;
@@ -95,5 +95,5 @@ public:
 	void clearShadowmap();
 	void setComparisonSampler();
 	void bindLightMatrixBufferVS(uint32_t index, uint32_t slot);
-	void bindStatesAndShader();
+	void bindStatesAndShader(uint32_t index = 0);
 };
