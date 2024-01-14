@@ -82,7 +82,7 @@ float4 main(PS_IN input) : SV_TARGET
     // Global Ambient
     const float3 skyColor = float3(0.25, 0.55, 0.9);
     const float3 horizonColor = float3(0.89, 0.824, 0.651);
-    const float3 groundColor = float3(1.0, 0.871, 0.55);
+    const float3 groundColor = float3(1.0, 0.86, 0.4);
     const float skyStrength = 0.8;
     const float blendStrength = 1.0;
     

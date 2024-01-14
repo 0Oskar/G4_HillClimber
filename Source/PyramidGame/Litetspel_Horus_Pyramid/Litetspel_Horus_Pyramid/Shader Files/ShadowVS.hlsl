@@ -29,11 +29,6 @@ VS_OUT main(VS_IN input)
 {
     VS_OUT output;
     
-    // Transform the vertex position into projected space.
-    //matrix lightWVPMatrix = worldMatrix * lightViewMatrix * lightProjectionMatrix;
-    //output.position = mul(lightWVPMatrix, float4(input.position, 1.0f));
-    //output.position = mul(wvpMatrix, float4(input.position, 1.f));
-    
     output.position = mul(worldMatrix, float4(input.position, 1.f));
     output.position = mul(lightViewMatrix, output.position);
     output.position = mul(lightProjectionMatrix, output.position);

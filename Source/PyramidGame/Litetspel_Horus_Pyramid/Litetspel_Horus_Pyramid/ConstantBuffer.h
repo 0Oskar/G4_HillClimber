@@ -89,14 +89,14 @@ struct VOLUMETRIC_LIGHT_DATA
 	float pad2[2];
 };
 
-const int MAX_BLUR_RADIUS = 15;
+const int MAX_BLUR_RADIUS = 10;
 struct CS_BLUR_CBUFFER
 {
 	XMMATRIX projectionMatrix;
 	int radius;
 	BOOL direction;
 	XMFLOAT2 pad;
-	alignas(16) float weights[MAX_BLUR_RADIUS]; // BLUR_RADIUS + 1 * 4 bytes
+	alignas(16) float weights[(MAX_BLUR_RADIUS * 2) + 1]; // BLUR_RADIUS + 1 * 4 bytes
 };
 
 template<class T>

@@ -41,7 +41,8 @@ cbuffer PerFrameBuffer : register(b1)
 
 Texture2D diffuseTexture : TEXTURE : register(t0);
 Texture2D shadowMap : TEXTURE : register(t1);
-Texture2D translucentShadowMap : TEXTURE : register(t4);
+Texture2D translucentShadowMap : TEXTURE : register(t2);
+Texture2D translucentShadowColor : TEXTURE : register(t3);
 
 SamplerState samplerState : SAMPLER : register(s0);
 SamplerComparisonState shadowSampler : SAMPLER : register(s1);
@@ -71,27 +72,21 @@ float calculateShadowFactor(float2 textureOffset, float4 shadowPosition)
     return shadowFactor;
 }
 
-float3 calculateTranslucentShadowFactor(Texture2D shadowMap, float4 shadowPosition)
+float3 calculateTranslucentShadowFactor(float4 shadowPosition)
 {
     float2 shadowUV = shadowPosition.xy / shadowPosition.w * 0.5f + 0.5f;
     shadowUV.y = 1.0f - shadowUV.y;
     float shadowDepth = shadowPosition.z / shadowPosition.w;
 
     float3 shadowFactor = (float3)0;
-    float4 shadowSample = (float4)0;
-    const int sampleRange = 1;
-    [unroll]
-    for (int x = -sampleRange; x <= sampleRange; x++)
+    float shadowSampledDepth = translucentShadowMap.Sample(samplerState, shadowUV);
+    
+    if (shadowDepth > shadowSampledDepth)
     {
-        [unroll]
-        for (int y = -sampleRange; y <= sampleRange; y++)
-        {
-            shadowSample = shadowMap.Sample(samplerState, shadowUV, int2(x, y));
-            if (shadowDepth < shadowSample.a)
-                shadowFactor += shadowSample.rgb;
-        }
+        shadowFactor += translucentShadowColor.Sample(samplerState, shadowUV);
     }
-    shadowFactor /= ((sampleRange * 2 + 1) * (sampleRange * 2 + 1));
+    //shadowFactor += 1 - float3(shadowSampledDepth, shadowSampledDepth, shadowSampledDepth);
+    
     return shadowFactor;
 }
 
@@ -140,7 +135,7 @@ PS_OUT main(PS_IN input)
         }
         shadowFactor = calculateShadowFactor(textureOffset, shadowPosition);
         
-        translucentshadowcolor = calculateTranslucentShadowFactor(translucentShadowMap, input.positionShadow2);
+        translucentshadowcolor = calculateTranslucentShadowFactor(input.positionShadow2);
         shadowColor = float3(shadowFactor, shadowFactor, shadowFactor) - translucentshadowcolor;
     }
     else

@@ -1,7 +1,9 @@
 static const int MAX_BLUR_RADIUS = 15;
 
-Texture2D<float4> InputTex : register(t0);
-RWTexture2D<float4> outputTex : register(u0);
+Texture2D<float> InputShadowTex : register(s0);
+Texture2D<float4> InputColorTex : register(s1);
+RWTexture2D<float> OutputShadowTex : register(u0);
+RWTexture2D<float4> OutputColorTex : register(u1);
 
 cbuffer blurBuffer : register(b0)
 {
@@ -20,12 +22,13 @@ void main(uint3 gruoupId : SV_GroupID, uint3 groupThredId : SV_GroupThreadID, ui
     {
         weights[0].x, weights[0].y, weights[0].z, weights[0].w,
         weights[1].x, weights[1].y, weights[1].z, weights[1].w,
-        weights[2].x, weights[2].y, weights[2].z, weights[2].w,
+        weights[2].x, weights[2].y, weights[2].z, weights[2].w
     };
     // Positive and Negative directions
     int2 direction2 = int2(1 - direction, direction);
     
-    float4 result = blurWeights[radius] * InputTex[pixelIndex];
+    float depthResult = InputShadowTex[pixelIndex];
+    float3 colorResult = blurWeights[radius] * InputColorTex[pixelIndex].rgb;
     float totalWeight = blurWeights[radius];
     
     float weight = 0;
@@ -36,9 +39,11 @@ void main(uint3 gruoupId : SV_GroupID, uint3 groupThredId : SV_GroupThreadID, ui
             continue;
         
         weight = blurWeights[i + radius];
-        result += weight * InputTex[mad(i, direction2, pixelIndex)];
+        colorResult += weight * InputColorTex[mad(i, direction2, pixelIndex)].rgb;
+        depthResult = min(depthResult, InputShadowTex[mad(i, direction2, pixelIndex)]);
         totalWeight += weight;
     }
     
-    outputTex[pixelIndex] = result / totalWeight;
+    OutputColorTex[pixelIndex] = float4(colorResult / totalWeight, 1);
+    OutputShadowTex[pixelIndex] = depthResult;
 }

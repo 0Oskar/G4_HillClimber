@@ -17,6 +17,16 @@ Camera::Camera()
 	m_movementComp = nullptr;
 }
 
+Camera::Camera(Camera& camera)
+{
+	m_mouseSense = camera.m_mouseSense;
+	m_projectionMatrix = new DirectX::XMMATRIX(DirectX::XMMatrixIdentity());
+	setProjectionMatrix(camera.m_fov, camera.m_aspectRatio, camera.m_nearZ, camera.m_farZ);
+
+	m_movementComp = new MovementComponent(*camera.m_movementComp);
+	m_movementComp->updateViewMatrix();
+}
+
 Camera::~Camera()
 {
 	delete m_projectionMatrix;
@@ -27,11 +37,12 @@ void Camera::initialize(float mouseSense, float fovAngle, float aspectRatio, flo
 	m_mouseSense = mouseSense / 10.f;
 
 	setProjectionMatrix(fovAngle, aspectRatio, nearZ, farZ);
-	m_movementComp->updateViewMatrix();
-
 	// Components
 	if (!m_movementComp)
 		m_movementComp = new MovementComponent();
+
+	m_movementComp->updateViewMatrix();
+
 }
 
 void Camera::updateView()

@@ -116,9 +116,8 @@ void ShadowMapInstance::initialize(ID3D11Device* device, ID3D11DeviceContext* de
 	m_deviceContext = deviceContext;
 
 	// Shadow Data
-	translucentShadowMapsToggle = translucent;
-
 	m_cascadedShadowMapsEnabled = cascadedShadowMapsEnabled;
+	m_translucentShadowMapsToggle = translucent;
 
 	ShadowTextureData* shadowTextureData = nullptr;
 
@@ -163,11 +162,13 @@ void ShadowMapInstance::initialize(ID3D11Device* device, ID3D11DeviceContext* de
 		}
 	}
 
-	if (translucentShadowMapsToggle)
-		initializeRendertargetTexture(device, *shadowTextureData);
-	else
-		initializeDepthTexture(device, *shadowTextureData);
-
+	if (m_translucentShadowMapsToggle) {
+		m_translucentTextureData.textureDimensions = shadowTextureData->textureDimensions;
+		initializeRendertargetTexture(device, m_translucentTextureData);
+	}
+	
+	initializeDepthTexture(device, *shadowTextureData);
+	
 
 	// Pipeline States
 	
@@ -175,7 +176,7 @@ void ShadowMapInstance::initialize(ID3D11Device* device, ID3D11DeviceContext* de
 	D3D11_DEPTH_STENCIL_DESC dsDesc;
 	ZeroMemory(&dsDesc, sizeof(D3D11_DEPTH_STENCIL_DESC));
 	dsDesc.DepthEnable = true;
-	dsDesc.DepthWriteMask = translucentShadowMapsToggle ? D3D11_DEPTH_WRITE_MASK::D3D11_DEPTH_WRITE_MASK_ZERO : D3D11_DEPTH_WRITE_MASK::D3D11_DEPTH_WRITE_MASK_ALL;
+	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK::D3D11_DEPTH_WRITE_MASK_ALL;
 	dsDesc.DepthFunc = D3D11_COMPARISON_FUNC::D3D11_COMPARISON_LESS_EQUAL;
 
 	// Stencil test parameters
@@ -205,7 +206,7 @@ void ShadowMapInstance::initialize(ID3D11Device* device, ID3D11DeviceContext* de
 	rasterizerDesc.DepthBiasClamp = 4.f;
 	rasterizerDesc.SlopeScaledDepthBias = 0.f;
 	rasterizerDesc.FillMode = D3D11_FILL_SOLID;
-	rasterizerDesc.CullMode = translucentShadowMapsToggle ? D3D11_CULL_NONE : D3D11_CULL_BACK;
+	rasterizerDesc.CullMode = m_translucentShadowMapsToggle ? D3D11_CULL_NONE : D3D11_CULL_BACK;
 	rasterizerDesc.FrontCounterClockwise = false;
 	rasterizerDesc.DepthClipEnable = true;
 
@@ -235,7 +236,7 @@ void ShadowMapInstance::initialize(ID3D11Device* device, ID3D11DeviceContext* de
 	// Shader
 	ShaderFiles shaderFiles;
 	shaderFiles.vs = L"Shader Files\\ShadowVS.hlsl";
-	if (translucentShadowMapsToggle)
+	if (m_translucentShadowMapsToggle)
 		shaderFiles.ps = L"Shader Files\\TranslucentShadowPS.hlsl";
 	
 	m_shader.initialize(device, deviceContext, shaderFiles);
@@ -523,12 +524,26 @@ ID3D11ShaderResourceView* ShadowMapInstance::getShadowMapSRV()
 		return m_singleMapTextureData.shaderResourceView.Get();
 }
 
+ID3D11ShaderResourceView* ShadowMapInstance::getTranslucentShadowMapSRV()
+{
+	if (m_translucentShadowMapsToggle)
+		return m_translucentTextureData.shaderResourceView.Get();
+	return nullptr;
+}
+
 ID3D11ShaderResourceView* const* ShadowMapInstance::getShadowMapSRVConstPtr()
 {
 	if (m_cascadedShadowMapsEnabled)
 		return m_cascadeMapsTextureData.shaderResourceView.GetAddressOf();
 	else
 		return m_singleMapTextureData.shaderResourceView.GetAddressOf();
+}
+
+ID3D11ShaderResourceView* const* ShadowMapInstance::getTranslucentShadowMapSRVConstPtr()
+{
+	if (m_translucentShadowMapsToggle)
+		return m_translucentTextureData.shaderResourceView.GetAddressOf();
+	return nullptr;
 }
 
 ID3D11DepthStencilView* ShadowMapInstance::getShadowMapDSV()
@@ -540,12 +555,11 @@ ID3D11DepthStencilView* ShadowMapInstance::getShadowMapDSV()
 
 }
 
-ID3D11RenderTargetView* const* ShadowMapInstance::getShadowMapRTVConstPtr()
+ID3D11RenderTargetView* const* ShadowMapInstance::getTranslucentShadowMapRTVConstPtr()
 {
-	if (m_cascadedShadowMapsEnabled)
-		return m_cascadeMapsTextureData.renderTargetView.GetAddressOf();
-	else
-		return m_singleMapTextureData.renderTargetView.GetAddressOf();
+	if (m_translucentShadowMapsToggle)
+		return m_translucentTextureData.renderTargetView.GetAddressOf();
+	return nullptr;
 }
 
 void ShadowMapInstance::clearShadowmap()
@@ -553,17 +567,17 @@ void ShadowMapInstance::clearShadowmap()
 	float clearColor[] = { 0.f, 0.f, 0.f, 1.f };
 	if (m_cascadedShadowMapsEnabled)
 	{
-		if (translucentShadowMapsToggle)
-			m_deviceContext->ClearRenderTargetView(m_cascadeMapsTextureData.renderTargetView.Get(), clearColor);
-		else
-			m_deviceContext->ClearDepthStencilView(m_cascadeMapsTextureData.depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+		if (m_translucentShadowMapsToggle)
+			m_deviceContext->ClearRenderTargetView(m_translucentTextureData.renderTargetView.Get(), clearColor);
+		
+		m_deviceContext->ClearDepthStencilView(m_cascadeMapsTextureData.depthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 	}
 	else
 	{
-		if (translucentShadowMapsToggle)
-			m_deviceContext->ClearRenderTargetView(m_singleMapTextureData.renderTargetView.Get(), clearColor);
-		else
-			m_deviceContext->ClearDepthStencilView(m_singleMapTextureData.depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+		if (m_translucentShadowMapsToggle)
+			m_deviceContext->ClearRenderTargetView(m_translucentTextureData.renderTargetView.Get(), clearColor);
+		
+		m_deviceContext->ClearDepthStencilView(m_singleMapTextureData.depthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 	}
 }
 

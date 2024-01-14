@@ -55,7 +55,8 @@ cbuffer PerFrameShadowBuffer : register(b2)
 Texture2D diffuseTexture : TEXTURE : register(t0);
 Texture2D shadowMap : TEXTURE : register(t1);
 Texture2D translucentShadowMap : TEXTURE : register(t4);
-Texture2D ambientOcclusionMap : TEXTURE : register(t5);
+Texture2D translucentShadowColor : TEXTURE : register(t5);
+Texture2D ambientOcclusionMap : TEXTURE : register(t6);
 
 SamplerState samplerState : SAMPLER : register(s0);
 SamplerComparisonState shadowSampler : SAMPLER : register(s1);
@@ -83,6 +84,7 @@ float calculateShadowFactor(float2 textureOffset, float4 shadowPosition)
 {
     float2 shadowUV = shadowPosition.xy / shadowPosition.w * 0.5f + 0.5f;
     shadowUV.y = 1.0f - shadowUV.y;
+    shadowUV.x /= CASCADING_LIGHT_COUNT;
     shadowUV += textureOffset;
     float shadowDepth = shadowPosition.z / shadowPosition.w;
 
@@ -101,27 +103,19 @@ float calculateShadowFactor(float2 textureOffset, float4 shadowPosition)
     return shadowFactor;
 }
 
-float3 calculateTranslucentShadowFactor(Texture2D shadowMap, float4 shadowPosition)
+float3 calculateTranslucentShadowFactor(float4 shadowPosition)
 {
     float2 shadowUV = shadowPosition.xy / shadowPosition.w * 0.5f + 0.5f;
     shadowUV.y = 1.0f - shadowUV.y;
     float shadowDepth = shadowPosition.z / shadowPosition.w;
-
+    
     float3 shadowFactor = (float3) 0;
-    float4 shadowSample = (float4) 0;
-    const int sampleRange = 1;
-    [unroll]
-    for (int x = -sampleRange; x <= sampleRange; x++)
+    float shadowSampledDepth = translucentShadowMap.Sample(samplerState, shadowUV);
+    
+    if (shadowDepth < shadowSampledDepth)
     {
-        [unroll]
-        for (int y = -sampleRange; y <= sampleRange; y++)
-        {
-            shadowSample = shadowMap.Sample(samplerState, shadowUV, int2(x, y));
-            if (shadowDepth < shadowSample.a)
-                shadowFactor += shadowSample.rgb;
-        }
+        shadowFactor += translucentShadowColor.Sample(samplerState, shadowUV);
     }
-    shadowFactor /= ((sampleRange * 2 + 1) * (sampleRange * 2 + 1));
     return shadowFactor;
 }
 
@@ -133,7 +127,7 @@ float4 main(PS_IN input) : SV_TARGET
     // Global Ambient
     const float3 skyColor = float3(0.25, 0.55, 0.9);
     const float3 horizonColor = float3(0.89, 0.824, 0.651);
-    const float3 groundColor = float3(1.0, 0.871, 0.55);
+    const float3 groundColor = float3(1.0, 0.86, 0.4);
     const float skyStrength = 0.8;
     const float blendStrength = 1.0;
     
@@ -161,29 +155,28 @@ float4 main(PS_IN input) : SV_TARGET
         if (shadowDistance < frustumCoverage0)
         {
             shadowPosition = input.positionShadow0;
-            textureOffset = float2(-(1.f / CASCADING_LIGHT_COUNT), 0.f);
         }
         else if (shadowDistance >= frustumCoverage0 && shadowDistance < frustumCoverage1)
         {
             shadowPosition = input.positionShadow1;
-            textureOffset = float2(0.f, 0.f);
+            textureOffset = float2(1.f / CASCADING_LIGHT_COUNT, 0.f);
         }
         else if (shadowDistance >= frustumCoverage1 && shadowDistance < frustumCoverage2)
         {
             shadowPosition = input.positionShadow2;
-            textureOffset = float2(1.f / CASCADING_LIGHT_COUNT, 0.f);
+            textureOffset = float2(1.f - (1.f / CASCADING_LIGHT_COUNT), 0.f);
         }
         shadowFactor = calculateShadowFactor(textureOffset, shadowPosition);
         
-        translucentshadowcolor = calculateTranslucentShadowFactor(translucentShadowMap, input.positionShadow2);
-        shadowColor = float3(shadowFactor, shadowFactor, shadowFactor) + translucentshadowcolor;
+        translucentshadowcolor = calculateTranslucentShadowFactor(input.positionShadow2);
+        shadowColor = float3(shadowFactor, shadowFactor, shadowFactor) - translucentshadowcolor;
     }
     else
     {
         shadowFactor = calculateShadowFactor(textureOffset, input.positionShadow0);
         shadowColor = float3(shadowFactor, shadowFactor, shadowFactor);
     }
-    float3 directionalLightDiffuse = ambientColor + ((skyLightColor * diffBright * skyLightIntensity) * shadowFactor);
+    float3 directionalLightDiffuse = ambientColor + ((skyLightColor * diffBright * skyLightIntensity) * shadowColor);
     
     float3 fColor = (diffuse * directionalLightDiffuse) + skyAmbientColor;
     

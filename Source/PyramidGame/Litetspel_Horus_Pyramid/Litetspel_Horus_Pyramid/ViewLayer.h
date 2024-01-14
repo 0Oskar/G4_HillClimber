@@ -73,7 +73,7 @@ private:
 	Shaders m_lightingShaders;
 	Shaders m_forwardLightingShaders;
 	Shaders m_skyShaders;
-	Shaders m_blurShader;
+	Shaders m_translucentShadowBlurShader;
 	Shaders m_volumetricLightShader;
 
 	// Texture Handler
@@ -83,8 +83,12 @@ private:
 	ShadowMapInstance m_shadowInstance;
 	ShadowMapInstance m_translucentShadowInstance;
 
-	RenderTexture m_translucentShadowsBluredRT;
 	RenderTexture m_translucentShadowsBlurPingPongRT;
+	RenderTexture m_translucentColorBlurPingPongRT;
+
+	RenderTexture m_translucentShadowsBluredRT;
+	RenderTexture m_translucentColorBluredRT;
+
 	CS_BLUR_CBUFFER m_translucentShadowblurCData;
 	
 	// SpriteBatch
@@ -222,4 +226,7 @@ public:
 	bool m_shadowMappingToggle = true;
 	bool m_volumetricLightToggle = false;
 	bool m_frustumCullingToggle = false;
+	bool m_ignorePositionShadowToggle = false;
+	float m_ignorePositionShadowTimer = 0;
+	const float IGNORE_POSITION_SHADOW_TIME = 0.3f;
 };

@@ -215,8 +215,8 @@ void ViewLayer::initShaders()
 
 	sf.vs = L"";
 	sf.ps = L"";
-	sf.cs = L"Shader Files\\BlurCS.hlsl";
-	m_blurShader.initialize(m_device.Get(), m_deviceContext.Get(), sf, LayoutType::POS_TEX);
+	sf.cs = L"Shader Files\\TranslucentShadowBlurCS.hlsl";
+	m_translucentShadowBlurShader.initialize(m_device.Get(), m_deviceContext.Get(), sf, LayoutType::POS_TEX);
 
 	sf.cs = L"Shader Files\\VolumetricLightCS.hlsl";
 	m_volumetricLightShader.initialize(m_device.Get(), m_deviceContext.Get(), sf, LayoutType::POS_TEX);
@@ -353,19 +353,13 @@ void ViewLayer::initSky()
 	m_skyCube.loadModel(m_device.Get(), m_deviceContext.Get(), "cube2.obj", mat, L"");
 }
 
-void ViewLayer::initSSAOBlurPass()
+void initGaussianBlurCB(CS_BLUR_CBUFFER* buffer, float sigma)
 {
-	ShaderFiles shaderFiles;
-	shaderFiles.cs = L"Shader Files\\EdgePreservingBlurCS.hlsl";
-	m_edgePreservingBlurCS.initialize(m_device.Get(), m_deviceContext.Get(), shaderFiles, LayoutType::POS_TEX);
-	
-	m_blurCData.direction = 0;
-	float twoSigma2 = 2.0f * m_ssaoBlurSigma * m_ssaoBlurSigma;
+	buffer->direction = 0;
+	float twoSigma2 = 2.0f * sigma * sigma;
 
-	// Estimate the blur radius based on sigma since sigma controls the "width" of the bell curve.
-	// For example, for sigma = 3, the width of the bell curve is 
-	int blurRadius = (int)ceil(2.f * m_ssaoBlurSigma);
-	m_blurCData.radius = blurRadius;
+	int blurRadius = (int)ceil(2.f * sigma);
+	buffer->radius = blurRadius;
 
 	assert(blurRadius <= MAX_BLUR_RADIUS);
 
@@ -375,14 +369,23 @@ void ViewLayer::initSSAOBlurPass()
 	{
 		float x = (float)i;
 
-		m_blurCData.weights[i + blurRadius] = expf(-x * x / twoSigma2);
-		weightSum += m_blurCData.weights[i + blurRadius];
+		buffer->weights[i + blurRadius] = expf(-x * x / twoSigma2);
+		weightSum += buffer->weights[i + blurRadius];
 	}
 
 	// Divide by the sum so all the weights add up to 1.0.
 	float weightLength = 2.f * (float)blurRadius + 1.f;
 	for (int i = 0; i < weightLength; ++i)
-		m_blurCData.weights[i] /= weightSum;
+		buffer->weights[i] /= weightSum;
+}
+
+void ViewLayer::initSSAOBlurPass()
+{
+	ShaderFiles shaderFiles;
+	shaderFiles.cs = L"Shader Files\\EdgePreservingBlurCS.hlsl";
+	m_edgePreservingBlurCS.initialize(m_device.Get(), m_deviceContext.Get(), shaderFiles, LayoutType::POS_TEX);
+	
+	initGaussianBlurCB(&m_blurCData, m_ssaoBlurSigma);
 
 	m_blurCBuffer.init(m_device.Get(), m_deviceContext.Get());
 	m_blurCBuffer.m_data = m_blurCData;
@@ -480,9 +483,22 @@ void ViewLayer::blurSSAOPass()
 void ViewLayer::initBlurTranslucentShadowsPass(uint32_t translucentTextureSize)
 {
 	// Translucent Shadows Blured RT
-	std::string name = "Translucent Shadows Blured RT";
-	size_t length = name.copy(m_translucentShadowsBluredRT.name, name.length(), 0);
+
+	std::string name = "Translucent Shadows Ping Pong RT";
+	size_t length = name.copy(m_translucentShadowsBlurPingPongRT.name, name.length(), 0);
+	m_translucentShadowsBlurPingPongRT.name[length] = '\0';
+
+	name = "Translucent Color Ping Pong RT";
+	length = name.copy(m_translucentColorBlurPingPongRT.name, name.length(), 0);
+	m_translucentColorBlurPingPongRT.name[length] = '\0';
+
+	name = "Translucent Shadow Blured RT";
+	length = name.copy(m_translucentShadowsBluredRT.name, name.length(), 0);
 	m_translucentShadowsBluredRT.name[length] = '\0';
+
+	name = "Translucent Color Blured RT";
+	length = name.copy(m_translucentColorBluredRT.name, name.length(), 0);
+	m_translucentColorBluredRT.name[length] = '\0';
 
 	// Texture
 	D3D11_TEXTURE2D_DESC textureDesc;
@@ -491,44 +507,72 @@ void ViewLayer::initBlurTranslucentShadowsPass(uint32_t translucentTextureSize)
 	textureDesc.Height = translucentTextureSize;
 	textureDesc.MipLevels = 1;
 	textureDesc.ArraySize = 1;
-	textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	textureDesc.Format = DXGI_FORMAT_R32_FLOAT;
 	textureDesc.SampleDesc.Count = 1;
 	textureDesc.Usage = D3D11_USAGE_DEFAULT;
 	textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
 	textureDesc.CPUAccessFlags = 0;
 	textureDesc.MiscFlags = 0;
 
-	HRESULT hr = m_device->CreateTexture2D(&textureDesc, NULL, &m_translucentShadowsBluredRT.rtt);
-	assert(SUCCEEDED(hr) && "Error, render target texture could not be created!");
-	hr = m_device->CreateTexture2D(&textureDesc, NULL, &m_translucentShadowsBlurPingPongRT.rtt);
-	assert(SUCCEEDED(hr) && "Error, blur pass ping pong texture could not be created!");
+	// Shadow Depth
+	HRESULT hr = m_device->CreateTexture2D(&textureDesc, NULL, &m_translucentShadowsBlurPingPongRT.rtt);
+	assert(SUCCEEDED(hr) && "Error, translucent shadow blur ping pong texture could not be created!");
+	hr = m_device->CreateTexture2D(&textureDesc, NULL, &m_translucentShadowsBluredRT.rtt);
+	assert(SUCCEEDED(hr) && "Error, translucent shadow blured texture could not be created!");
 
+	// Color
+	textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	hr = m_device->CreateTexture2D(&textureDesc, NULL, &m_translucentColorBluredRT.rtt);
+	assert(SUCCEEDED(hr) && "Error, translucent color blured texture could not be created!");
+	hr = m_device->CreateTexture2D(&textureDesc, NULL, &m_translucentColorBlurPingPongRT.rtt);
+	assert(SUCCEEDED(hr) && "Error, translucent color blur ping pong texture could not be created!");
+	
 	// Shader Resource View
-	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
-	ZeroMemory(&srvDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
-	srvDesc.Format = textureDesc.Format;
-	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-	srvDesc.Texture2D.MostDetailedMip = 0;
-	srvDesc.Texture2D.MipLevels = textureDesc.MipLevels;
+	{
+		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+		ZeroMemory(&srvDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
+		srvDesc.Format = DXGI_FORMAT_R32_FLOAT;
+		srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+		srvDesc.Texture2D.MostDetailedMip = 0;
+		srvDesc.Texture2D.MipLevels = textureDesc.MipLevels;
 
-	hr = m_device->CreateShaderResourceView(m_translucentShadowsBluredRT.rtt, &srvDesc, &m_translucentShadowsBluredRT.srv);
-	assert(SUCCEEDED(hr) && "Error, shader resource view could not be created!");
-	hr = m_device->CreateShaderResourceView(m_translucentShadowsBlurPingPongRT.rtt, &srvDesc, &m_translucentShadowsBlurPingPongRT.srv);
-	assert(SUCCEEDED(hr) && "Error, blur pass ping pong shader resource view could not be created!");
+		// Shadow Depth
+		hr = m_device->CreateShaderResourceView(m_translucentShadowsBlurPingPongRT.rtt, &srvDesc, &m_translucentShadowsBlurPingPongRT.srv);
+		assert(SUCCEEDED(hr) && "Error, translucent shadow blur ping pong shader resource view could not be created!");
+		hr = m_device->CreateShaderResourceView(m_translucentShadowsBluredRT.rtt, &srvDesc, &m_translucentShadowsBluredRT.srv);
+		assert(SUCCEEDED(hr) && "Error, translucent shadow shader resource view could not be created!");
+
+		// Color
+		srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		hr = m_device->CreateShaderResourceView(m_translucentColorBlurPingPongRT.rtt, &srvDesc, &m_translucentColorBlurPingPongRT.srv);
+		assert(SUCCEEDED(hr) && "Error, translucent color blur ping pong shader resource view could not be created!");
+		hr = m_device->CreateShaderResourceView(m_translucentColorBluredRT.rtt, &srvDesc, &m_translucentColorBluredRT.srv);
+		assert(SUCCEEDED(hr) && "Error, translucent color shader resource view could not be created!");
+	}
 
 	// Unordered Access View
-	D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
-	uavDesc.Format = textureDesc.Format;
-	uavDesc.ViewDimension = D3D11_UAV_DIMENSION::D3D11_UAV_DIMENSION_TEXTURE2D;
-	uavDesc.Texture2D.MipSlice = 0;
+	{
+		D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
+		uavDesc.Format = DXGI_FORMAT_R32_FLOAT;
+		uavDesc.ViewDimension = D3D11_UAV_DIMENSION::D3D11_UAV_DIMENSION_TEXTURE2D;
+		uavDesc.Texture2D.MipSlice = 0;
 
-	hr = m_device->CreateUnorderedAccessView(m_translucentShadowsBluredRT.rtt, &uavDesc, &m_translucentShadowsBluredRT.uav);
-	assert(SUCCEEDED(hr) && "Error, unordered access view could not be created!");
-	hr = m_device->CreateUnorderedAccessView(m_translucentShadowsBlurPingPongRT.rtt, &uavDesc, &m_translucentShadowsBlurPingPongRT.uav);
-	assert(SUCCEEDED(hr) && "Error, blur pass ping pong unordered access view could not be created!");
+		// Shadow Depth
+		hr = m_device->CreateUnorderedAccessView(m_translucentShadowsBlurPingPongRT.rtt, &uavDesc, &m_translucentShadowsBlurPingPongRT.uav);
+		assert(SUCCEEDED(hr) && "Error, translucent shadow blur pass ping pong unordered access view could not be created!");
+		hr = m_device->CreateUnorderedAccessView(m_translucentShadowsBluredRT.rtt, &uavDesc, &m_translucentShadowsBluredRT.uav);
+		assert(SUCCEEDED(hr) && "Error, translucent shadow unordered access view could not be created!");
+
+		// Color
+		uavDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		hr = m_device->CreateUnorderedAccessView(m_translucentColorBlurPingPongRT.rtt, &uavDesc, &m_translucentColorBlurPingPongRT.uav);
+		assert(SUCCEEDED(hr) && "Error, translucent color blur pass ping pong unordered access view could not be created!");
+		hr = m_device->CreateUnorderedAccessView(m_translucentColorBluredRT.rtt, &uavDesc, &m_translucentColorBluredRT.uav);
+		assert(SUCCEEDED(hr) && "Error, translucent color unordered access view could not be created!");
+	}
 
 	// Blur Data
-	m_translucentShadowblurCData = m_blurCData;
+	initGaussianBlurCB(&m_translucentShadowblurCData, 2);
 }
 
 void ViewLayer::blurTranslucentShadowsPass()
@@ -537,13 +581,26 @@ void ViewLayer::blurTranslucentShadowsPass()
 	UINT cOffset = -1;
 
 	m_deviceContext->OMSetRenderTargets(1, &m_nullRTV, NULL);
-	m_deviceContext->CSSetUnorderedAccessViews(0, 1, &m_nullUAV, &cOffset);
-	m_deviceContext->PSSetShaderResources(0, 2, &m_nullSRV);
+	m_deviceContext->CSSetUnorderedAccessViews(0, 2, m_nullUAVs, &cOffset);
+	m_deviceContext->PSSetShaderResources(0, 2, m_nullSRVs);
 
-	m_blurShader.setShaders();
+	m_translucentShadowBlurShader.setShaders();
 
-	ID3D11ShaderResourceView* blurSRVs[] = { m_translucentShadowInstance.getShadowMapSRV(), m_translucentShadowsBlurPingPongRT.srv};
-	ID3D11UnorderedAccessView* blurUAVs[] = { m_translucentShadowsBlurPingPongRT.uav, m_translucentShadowsBluredRT.uav };
+	ID3D11ShaderResourceView* blurSRVs[] = 
+	{ 
+		m_translucentShadowInstance.getShadowMapSRV(),
+		m_translucentShadowInstance.getTranslucentShadowMapSRV(),
+		m_translucentShadowsBlurPingPongRT.srv,
+		m_translucentColorBlurPingPongRT.srv
+	};
+
+	ID3D11UnorderedAccessView* blurUAVs[] = 
+	{
+		m_translucentShadowsBlurPingPongRT.uav,
+		m_translucentColorBlurPingPongRT.uav,
+		m_translucentShadowsBluredRT.uav,
+		m_translucentColorBluredRT.uav
+	};
 
 	XMFLOAT2 textureSize = m_translucentShadowInstance.getShadowTextureSize();
 
@@ -557,22 +614,18 @@ void ViewLayer::blurTranslucentShadowsPass()
 		m_deviceContext->CSSetConstantBuffers(0, 1, m_blurCBuffer.GetAddressOf());
 
 		// Set Rescources
-		m_deviceContext->CSSetShaderResources(0, 1, &blurSRVs[m_translucentShadowblurCData.direction]);
-		m_deviceContext->CSSetUnorderedAccessViews(0, 1, &blurUAVs[m_translucentShadowblurCData.direction], &cOffset);
+		m_deviceContext->CSSetShaderResources(0, 2, &blurSRVs[m_translucentShadowblurCData.direction * 2]);
+		m_deviceContext->CSSetUnorderedAccessViews(0, 2, &blurUAVs[m_translucentShadowblurCData.direction * 2], &cOffset);
 
 		// Dispatch Shader
-		UINT textureWidth = (UINT)std::ceil((textureSize.x / 16.f) + 0.5f);
-		UINT textureHeight = (UINT)std::ceil((textureSize.y / 16.f) + 0.5f);
+		UINT textureWidth = (UINT)textureSize.x / 16;
+		UINT textureHeight = (UINT)textureSize.y / 16;
 		m_deviceContext->Dispatch(textureWidth, textureHeight, 1);
 
 		// Unbind Unordered Access View and Shader Resource View
-		m_deviceContext->CSSetShaderResources(0, 1, &m_nullSRV);
-		m_deviceContext->CSSetUnorderedAccessViews(0, 1, &m_nullUAV, &cOffset);
+		m_deviceContext->CSSetShaderResources(0, 2, m_nullSRVs);
+		m_deviceContext->CSSetUnorderedAccessViews(0, 2, m_nullUAVs, &cOffset);
 	}
-
-	m_deviceContext->OMSetRenderTargets(1, &m_nullRTV, NULL);
-	m_deviceContext->CSSetUnorderedAccessViews(0, 1, &m_nullUAV, &cOffset);
-	m_deviceContext->CSSetShaderResources(0, 3, &m_nullSRV);
 	m_annotation->EndEvent();
 }
 
@@ -833,7 +886,7 @@ void ViewLayer::reloadShaders()
 {
 	m_shadowInstance.reloadShaders();
 	m_translucentShadowInstance.reloadShaders();
-	m_blurShader.reloadShaders();
+	m_translucentShadowBlurShader.reloadShaders();
 	m_GBufferShaders.reloadShaders();
 	m_lightingShaders.reloadShaders();
 	m_forwardLightingShaders.reloadShaders();
@@ -863,21 +916,44 @@ void ViewLayer::update(float dt)
 	}
 
 	// Per Frame Camera Position
-	XMFLOAT3 cameraPos = m_cameraPtr->getPosition();
-	m_perFrameBuffer.m_data.cameraPos = cameraPos;
+	XMVECTOR oldCameraPos = m_cameraPtr->getPositionVector();
+	//Camera cam = *m_cameraPtr;
+
+	//if (m_ignorePositionShadowTimer > IGNORE_POSITION_SHADOW_TIME)
+	//{
+	//	// Fetch tab key state.
+	//	SHORT tabKeyState = GetAsyncKeyState(VK_TAB);
+
+	//	// Test high bit - if set, key was down when GetAsyncKeyState was called.
+	//	if ((1 << 15) & tabKeyState)
+	//	{
+	//		m_ignorePositionShadowToggle = !m_ignorePositionShadowToggle;
+	//		m_ignorePositionShadowTimer = 0.f;
+	//	}
+	//}
+
+	if (m_ignorePositionShadowToggle)
+		m_cameraPtr->setPosition(XMVectorZero());
+
+	XMFLOAT3 newCameraPos = m_cameraPtr->getPosition();
+
+	m_ignorePositionShadowTimer += dt;
+
+	m_perFrameBuffer.m_data.cameraPos = newCameraPos;
 
 	// Shadow matrix and per frame buffer
 	if (m_shadowMappingToggle) {
 		m_shadowInstance.buildCascadeLightMatrix(0, m_perFrameBuffer.m_data.skyLightDirection, m_cameraPtr);
 			
 		m_shadowPerFrameBuffer.m_data.cascadingShadowMapsToggle = true;
-		m_shadowPerFrameBuffer.m_data.cameraPos = cameraPos;
+		m_shadowPerFrameBuffer.m_data.cameraPos = newCameraPos;
 		m_shadowPerFrameBuffer.m_data.frustumCoverage0 = m_shadowInstance.getShadowData(0)->frustumCoverage;
 		m_shadowPerFrameBuffer.m_data.frustumCoverage1 = m_shadowInstance.getShadowData(1)->frustumCoverage;
 		m_shadowPerFrameBuffer.m_data.frustumCoverage2 = m_shadowInstance.getShadowData(2)->frustumCoverage;
 
 		m_shadowPerFrameBuffer.upd();
 	}
+	m_cameraPtr->setPosition(oldCameraPos);
 
 	// Status text
 	m_statusTextHandler->update(dt);
@@ -937,7 +1013,7 @@ void ViewLayer::render(iGameState* gameState)
 
 	// Shadow Mapping
 	DirectX::BoundingOrientedBox shadowCameraBounds;
-	const uint32_t lightMatricBufferIndexOffset = 1;
+	const uint32_t lightMatrixBufferIndexOffset = 1;
 	if (m_shadowMappingToggle)
 	{
 		shadowCameraBounds = m_shadowInstance.getLightBoundingBox();
@@ -950,7 +1026,7 @@ void ViewLayer::render(iGameState* gameState)
 		{
 			m_annotation->BeginEvent((L"Cascade: " + std::to_wstring(shadowIndex)).c_str());
 			m_shadowInstance.bindStatesAndShader(shadowIndex);
-			m_shadowInstance.bindLightMatrixBufferVS(shadowIndex, lightMatricBufferIndexOffset);
+			m_shadowInstance.bindLightMatrixBufferVS(shadowIndex, lightMatrixBufferIndexOffset);
 			
 			for (size_t i = 0; i < m_gameObjectsFromState->size(); i++)
 			{
@@ -1050,14 +1126,14 @@ void ViewLayer::render(iGameState* gameState)
 		m_annotation->BeginEvent(L"Translucent Shadow Mapping");
 		shadowCameraBounds = m_translucentShadowInstance.getLightBoundingBox();
 
-		m_deviceContext->PSSetShaderResources(3, 1, &m_nullSRV);
-		m_deviceContext->PSSetShaderResources(0, 1, m_shadowInstance.getShadowMapSRVConstPtr());
+		m_deviceContext->PSSetShaderResources(0, GB_NUM, m_nullSRVs);
+		m_deviceContext->PSSetShaderResources(1, 1, m_shadowInstance.getShadowMapSRVConstPtr());
 		m_translucentShadowInstance.bindStatesAndShader();
 		m_translucentShadowInstance.setComparisonSampler();
 
-		m_shadowInstance.bindLightMatrixBufferVS(SHADOW_CASCADE_COUNT - 1, lightMatricBufferIndexOffset);
+		m_shadowInstance.bindLightMatrixBufferVS(SHADOW_CASCADE_COUNT - 1, lightMatrixBufferIndexOffset);
 
-		m_deviceContext->OMSetRenderTargets(1, m_translucentShadowInstance.getShadowMapRTVConstPtr(), nullptr);
+		m_deviceContext->OMSetRenderTargets(1, m_translucentShadowInstance.getTranslucentShadowMapRTVConstPtr(), m_translucentShadowInstance.getShadowMapDSV());
 
 		for (size_t i = 0; i < transparentObjects.size(); i++)
 		{
@@ -1070,7 +1146,7 @@ void ViewLayer::render(iGameState* gameState)
 			m_deviceContext->VSSetConstantBuffers(0, 1, m_wvpCBufferFromState->at(wvpIndex).GetAddressOf());
 
 			// Draw Model
-			model->draw(false);
+			model->draw();
 			m_shadowmapDrawCallCount++;
 		}
 		m_annotation->EndEvent();
@@ -1095,18 +1171,20 @@ void ViewLayer::render(iGameState* gameState)
 	m_GBufferShaders.setShaders();
 
 	// Set Shadow Map
-	const uint32_t SHADOW_COUNT = 2;
-	ID3D11ShaderResourceView* shadowTextures[SHADOW_COUNT] = {
+	ID3D11ShaderResourceView* shadowTextures[] = {
 		m_shadowInstance.getShadowMapSRV(),
-		m_translucentShadowsBluredRT.srv
+		m_translucentShadowsBluredRT.srv,
+		m_translucentColorBluredRT.srv
 	};
-
-	m_deviceContext->PSSetShaderResources(1, SHADOW_COUNT, shadowTextures);
+	
+	// Diffuse Texture set to slot 0
+	const uint32_t shadowTextureSlotOffset = 1;
+	m_deviceContext->PSSetShaderResources(shadowTextureSlotOffset, ARRAYSIZE(shadowTextures), shadowTextures);
 
 	// Constant Buffer
 	m_deviceContext->PSSetConstantBuffers(1, 1, m_shadowPerFrameBuffer.GetAddressOf());
 	for (uint32_t i = 0; i < SHADOW_CASCADE_COUNT; i++)
-		m_shadowInstance.bindLightMatrixBufferVS(i, lightMatricBufferIndexOffset + i);
+		m_shadowInstance.bindLightMatrixBufferVS(i, lightMatrixBufferIndexOffset + i);
 
 	// G-Buffer Draw
 	for (size_t i = 0; i < m_gameObjectsFromState->size(); i++)
@@ -1127,10 +1205,28 @@ void ViewLayer::render(iGameState* gameState)
 				if (!cameraFrustum.Intersects(obb)) { continue; }
 			}
 
-			if (model->m_material.getMaterial()->diffuse.w < 1.f)
-				continue;
-			
 			int wvpIndex = gObject->getWvpCBufferIndex();
+			if (model->m_material.getMaterial()->diffuse.w < 1.f)
+			{
+				if (!m_shadowMappingToggle)
+				{
+					bool found = false;
+					for (uint32_t j = 0; j < (uint32_t)transparentObjects.size(); j++)
+					{
+						if (transparentObjects[j]->getWvpCBufferIndex() == wvpIndex)
+						{
+							found = true;
+							break;
+						}
+					}
+					if (!found)
+					{
+						transparentObjects.push_back(gObject);
+					}
+				}
+				continue;
+			}
+			
 			// Set Constant buffer
 			m_deviceContext->VSSetConstantBuffers(0, 1, m_wvpCBufferFromState->at(wvpIndex).GetAddressOf());
 			// Draw Model
@@ -1161,11 +1257,29 @@ void ViewLayer::render(iGameState* gameState)
 					if (!cameraFrustum.Intersects(obb)) { continue; }
 				}
 
+				int wvpIndex = gObject->getWvpCBufferIndex();
 				if (model->m_material.getMaterial()->diffuse.w < 1.f)
+				{
+					if (!m_shadowMappingToggle)
+					{
+						bool found = false;
+						for (uint32_t j = 0; j < (uint32_t)transparentObjects.size(); j++)
+						{
+							if (transparentObjects[j]->getWvpCBufferIndex() == wvpIndex)
+							{
+								found = true;
+								break;
+							}
+						}
+						if (!found)
+						{
+							transparentObjects.push_back(gObject);
+						}
+					}
 					continue;
+				}
 			
 				// Set Constant buffer
-				int wvpIndex = gObject->getWvpCBufferIndex();
 				m_deviceContext->VSSetConstantBuffers(0, 1, m_wvpCBufferFromState->at(wvpIndex).GetAddressOf());
 
 				// Draw Model
@@ -1281,13 +1395,13 @@ void ViewLayer::render(iGameState* gameState)
 		m_forwardLightingShaders.setShaders();
 	
 		// Set Shadow Map
-		m_deviceContext->PSSetShaderResources(1, SHADOW_COUNT, shadowTextures);
+		m_deviceContext->PSSetShaderResources(1, ARRAYSIZE(shadowTextures), shadowTextures);
 		// Set SSAO map
-		m_deviceContext->PSSetShaderResources(SHADOW_COUNT + 1, 1, &m_gBuffer[GBufferType::AMBIENT_OCCLUSION_GB].srv);
+		m_deviceContext->PSSetShaderResources(ARRAYSIZE(shadowTextures) + 1, 1, &m_gBuffer[GBufferType::AMBIENT_OCCLUSION_GB].srv);
 
 		// Constant Buffers
 		for (uint32_t i = 0; i < SHADOW_CASCADE_COUNT; i++) {
-			m_shadowInstance.bindLightMatrixBufferVS(i, lightMatricBufferIndexOffset + i);
+			m_shadowInstance.bindLightMatrixBufferVS(i, lightMatrixBufferIndexOffset + i);
 		}
 		m_deviceContext->PSSetConstantBuffers(1, 1, m_perFrameBuffer.GetAddressOf());
 		m_deviceContext->PSSetConstantBuffers(2, 1, m_shadowPerFrameBuffer.GetAddressOf());
@@ -1495,9 +1609,9 @@ void ViewLayer::render(iGameState* gameState)
 			m_spriteBatch->Draw(m_shadowInstance.getShadowMapSRV(), shadowMapImg);
 
 			shadowMapImg.bottom = (long)m_options->height;
-			shadowMapImg.top = shadowMapImg.bottom - dimension;
-			shadowMapImg.left = shadowMapImg.right - dimension;
-			m_spriteBatch->Draw(m_translucentShadowsBluredRT.srv, shadowMapImg);
+			shadowMapImg.top = shadowMapImg.bottom - dimension * 2;
+			shadowMapImg.left = shadowMapImg.right - dimension * 2;
+			m_spriteBatch->Draw(m_translucentColorBluredRT.srv, shadowMapImg);
 		}
 		m_annotation->EndEvent();
 	}

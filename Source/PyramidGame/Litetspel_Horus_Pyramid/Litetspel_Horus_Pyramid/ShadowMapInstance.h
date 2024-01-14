@@ -43,9 +43,11 @@ private:
 
 	// Shadow Map Data
 	bool m_cascadedShadowMapsEnabled = true;
+	bool m_translucentShadowMapsToggle = false;
 
 	ShadowFrustumData m_singleMapData;
 	ShadowTextureData m_singleMapTextureData;
+	ShadowTextureData m_translucentTextureData;
 
 	ShadowFrustumData m_cascadeMapsData[SHADOW_CASCADE_COUNT];
 	ShadowTextureData m_cascadeMapsTextureData;
@@ -74,7 +76,6 @@ public:
 	ShadowMapInstance();
 	~ShadowMapInstance();
 
-	bool translucentShadowMapsToggle = false;
 	DirectX::BoundingOrientedBox getLightBoundingBox(uint32_t index = UINT_MAX) const;
 
 	// Initialize
@@ -89,9 +90,11 @@ public:
 
 	// Render
 	ID3D11ShaderResourceView* getShadowMapSRV();
+	ID3D11ShaderResourceView* getTranslucentShadowMapSRV();
 	ID3D11ShaderResourceView* const* getShadowMapSRVConstPtr();
+	ID3D11ShaderResourceView* const* getTranslucentShadowMapSRVConstPtr();
 	ID3D11DepthStencilView* getShadowMapDSV();
-	ID3D11RenderTargetView* const* getShadowMapRTVConstPtr();
+	ID3D11RenderTargetView* const* getTranslucentShadowMapRTVConstPtr();
 	void clearShadowmap();
 	void setComparisonSampler();
 	void bindLightMatrixBufferVS(uint32_t index, uint32_t slot);
