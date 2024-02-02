@@ -14,15 +14,6 @@ static const float ditherPattern[16] =
     0.9375f, 0.4375f, 0.8125f, 0.3125
 };
 
-struct LightRay
-{
-    float3 startPosition;
-    float3 endPosition;
-    float3 delta;
-    float raymarchDistance;
-    float stepSize;
-};
-
 // Constant Buffers
 cbuffer CameraCB : register(b0)
 {
@@ -34,10 +25,10 @@ cbuffer CameraCB : register(b0)
 
 cbuffer shadowCB : register(b1)
 {
-    matrix lightViewMatrix[CASCADING_LIGHT_COUNT];
-    matrix lightProjectionMatrix[CASCADING_LIGHT_COUNT];
-    float frustumCoverage[CASCADING_LIGHT_COUNT];
-    uint shadowTextureSize;
+    matrix lightViewProjMatrix[CASCADING_LIGHT_COUNT];
+    float frustumCoverage0;
+    float frustumCoverage1;
+    float frustumCoverage2;
 };
 
 cbuffer SkyLightDataCB : register(b2)
@@ -54,10 +45,35 @@ RWTexture2D<float4> OutputTexture : register(u0);
 Texture2D<float> DepthTexture : register(t0);
 Texture2D<float> ShadowTexture : register(t1);
 
+SamplerComparisonState shadowSampler : SAMPLER : register(s1);
+
 // Functions
 float2 getTexcoord(uint2 id)
 {
     return (float2) id * textureStep;
+}
+
+float sampleShadow(float2 textureOffset, float4 shadowPosition)
+{
+    float2 shadowUV = shadowPosition.xy / shadowPosition.w * 0.5f + 0.5f;
+    shadowUV.y = 1.0f - shadowUV.y;
+    shadowUV.x /= CASCADING_LIGHT_COUNT;
+    shadowUV += textureOffset;
+    float shadowDepth = shadowPosition.z / shadowPosition.w;
+
+    float shadowFactor = 0;
+    const int sampleRange = 1;
+    [unroll]
+    for (int x = -sampleRange; x <= sampleRange; x++)
+    {
+        [unroll]
+        for (int y = -sampleRange; y <= sampleRange; y++)
+        {
+            shadowFactor += ShadowTexture.SampleCmpLevelZero(shadowSampler, shadowUV, shadowDepth, int2(x, y));
+        }
+    }
+    shadowFactor /= ((sampleRange * 2 + 1) * (sampleRange * 2 + 1));
+    return shadowFactor;
 }
 
 // Mie scaterring approximated with Henyey-Greenstein phase function.
@@ -66,6 +82,11 @@ float ComputeScattering(float lightDotView)
     float result = 1.0f - LIGHT_SCATTERING_G * LIGHT_SCATTERING_G;
     result /= (4.0f * PI * pow(1.0f + LIGHT_SCATTERING_G * LIGHT_SCATTERING_G - (2.0f * LIGHT_SCATTERING_G) * lightDotView, 1.5f));
     return result;
+}
+
+float invLerp(float a, float b, float v)
+{
+    return (v - a) / (b - a);
 }
 
 // Main
@@ -80,64 +101,54 @@ void main(uint3 groupId : SV_GroupID, uint3 groupThreadId : SV_GroupThreadID, ui
     float z = DepthTexture.Load(int3(pixelIndex, 0)).r;
     float x = uv.x * 2.f - 1.f;
     float y = (1.f - uv.y) * 2.f - 1.f;
-    float4 clipPosition = float4(x, y, clamp(z, 0.5f, 1.f), 1.f);
-    float4 startViewPosition = mul(clipPosition, projInverseMatrix);
+    float4 startViewPosition = mul(float4(x, y, z, 1.f), projInverseMatrix);
     float4 endViewPosition = mul(float4(x, y, 0.f, 1.f), projInverseMatrix);
-    
     startViewPosition /= startViewPosition.w;
     endViewPosition /= endViewPosition.w;
     
-    float ditherValue = ditherPattern[(clipPosition.x % 4.f) * 4.f + (clipPosition.y % 4.f)];
-    
-    // Worldspace
     float3 startPositionW = mul(startViewPosition, viewInverseMatrix).xyz;
     float3 endPositionW = mul(endViewPosition, viewInverseMatrix).xyz;
-    float3 deltaW = normalize(endPositionW - startPositionW);
+    float3 endToStartW = endPositionW - startPositionW;
     
-    float raymarchDistanceW = length(endPositionW - startPositionW);
+    // Ray
+    float3 deltaW = normalize(endToStartW);
+    float raymarchDistanceW = length(endToStartW);
     float stepSizeW = raymarchDistanceW / RAY_STEPS;
+    
+    float ditherValue = ditherPattern[(x % 4.f) * 4.f + (y % 4.f)];
     float4 rayPositionW = float4(startPositionW + ditherValue * stepSizeW * deltaW, 1.f);
     
-    // Lightspace
-    float3 startPositionL = mul(float4(startPositionW, 1.f), lightViewMatrix[2]).xyz;
-    float3 endPositionL = mul(float4(endPositionW, 1.f), lightViewMatrix[2]).xyz;
-    float3 deltaL = normalize(endPositionL - startPositionL);
-    float raymarchDistanceL = length(endPositionL - startPositionL);
-    float stepSizeL = raymarchDistanceL / RAY_STEPS;
-    
-    //LightRay lr[CASCADING_LIGHT_COUNT];
-    //[unroll]
-    //for (uint i = 0; i < CASCADING_LIGHT_COUNT; i++)
     //{
-    //    lr[i].startPosition = mul(float4(startPositionW, 1.f), lightViewMatrix[i]).xyz;
-    //    lr[i].endPosition = mul(float4(endPositionW, 1.f), lightViewMatrix[i]).xyz;
-    //    lr[i].delta = normalize(lr[i].endPosition - lr[i].startPosition);
-    //    lr[i].raymarchDistance = length(lr[i].endPosition - lr[i].startPosition);
-    //    lr[i].stepSize = lr[i].raymarchDistance / RAY_STEPS;
+    //    float shadowDistance = distance(cameraPosition, startPositionW.xyz);
+    //    uint shadowIndex = 0;
+    //    float2 textureOffset = (float2) 0;
+    //    float3 debugColor = float3(0.f, 0.f, 0.f);
+    //    if (shadowDistance >= frustumCoverage0 && shadowDistance < frustumCoverage1)
+    //    {
+    //        shadowIndex = 1;
+    //        textureOffset = float2((1.f / CASCADING_LIGHT_COUNT), 0.f);
+    //        debugColor = float3(0.f, 1.f, 0.f) * saturate(invLerp(frustumCoverage0, frustumCoverage1, shadowDistance) + 0.1f);
+    //    }
+    //    else if (shadowDistance >= frustumCoverage1 && shadowDistance < frustumCoverage2)
+    //    {
+    //        shadowIndex = 2;
+    //        textureOffset = float2(1.f - (1.f / CASCADING_LIGHT_COUNT), 0.f);
+    //        debugColor = float3(0.f, 0.f, 1.f) * saturate(invLerp(frustumCoverage1, frustumCoverage2, shadowDistance) + 0.1f);
+    //    }
+    //    float4 rayPositionLightClipspace = mul(float4(startPositionW.xyz, 1.f), lightViewProjMatrix[shadowIndex]);
+    
+    //    float shadowTerm = sampleShadow(textureOffset, rayPositionLightClipspace);
+    //    //OutputTexture[pixelIndex] = float4(debugColor, 1.f);
+    //    OutputTexture[pixelIndex] = float4(shadowTerm, shadowTerm, shadowTerm, 1.f);
+    //    return;
     //}
-    
-    //OutputTexture[pixelIndex] = float4(startPositionL.xyz, 1.f);
-    //return;
-    
-    float4 rayPositionL = float4(startPositionL + ditherValue * stepSizeL * deltaL, 1.f);
-    
-    //float4 rayPositionLightClipspace = mul(float4(rayPositionL.xyz, 1.f), lightProjectionMatrix);
-    //float2 shadowUV = rayPositionLightClipspace.xy / rayPositionLightClipspace.w * 0.5f + 0.5f;
-    //shadowUV.y = 1.0f - shadowUV.y;
-    //float shadowDepth = rayPositionLightClipspace.z / rayPositionLightClipspace.w;
-    
-    //float shadowTerm = ShadowTexture.Load(int3(shadowUV * shadowTextureSize, 0));
-    //OutputTexture[pixelIndex] = float4(shadowTerm, shadowTerm, shadowTerm, 1.f);
-    //return;
     
     // Light Values
     float tau = 0.0001f;
-    float intensity = 100000000.f; //1000000.f; //skyLightIntensity
+    float intensity = 100000000.f;
     float4 lightPosition = float4(skyLightDirection * 5000.f, 1.f);
     
     // Raymarch loop
-    matrix lPMat;
-    float2 textureOffset;
     float lightContribution = 0.f;
     for (float l = raymarchDistanceW; l > stepSizeW; l -= stepSizeW)
     {
@@ -145,53 +156,35 @@ void main(uint3 groupId : SV_GroupID, uint3 groupThreadId : SV_GroupThreadID, ui
         float shadowDistance = distance(cameraPosition, rayPositionW.xyz);
     
         uint shadowIndex = 0;
-        //if (shadowDistance < frustumCoverage[0])
-        //{
-        //    shadowIndex = 0;
-        //}
-        //else if (shadowDistance >= frustumCoverage[0] && shadowDistance < frustumCoverage[1])
-        //{
-        //    shadowIndex = 1;
-        //}
-        //else if (shadowDistance >= frustumCoverage[1] && shadowDistance < frustumCoverage[2])
-        //{
-        //    shadowIndex = 2;
-        //}
-        //shadowIndex = step(frustumCoverage[0], shadowDistance) - step(frustumCoverage[1], shadowDistance);
-        
-        lPMat = lightProjectionMatrix[shadowIndex];
-        textureOffset = float2(shadowTextureSize * shadowIndex, 0);
-        
-        float4 rayPositionLightClipspace = mul(float4(rayPositionL.xyz, 1.f), lPMat);
-        float2 shadowUV = rayPositionLightClipspace.xy / rayPositionLightClipspace.w * 0.5f + 0.5f;
-        shadowUV.y = 1.0f - shadowUV.y;
-        float shadowPositionDepth = rayPositionLightClipspace.z / rayPositionLightClipspace.w;
-        
-        // check if in shadow or not, and set shadow_term accordingly
-        float shadowMapDepth = 1.f;
-        if (!(shadowUV.x < 0 || shadowUV.x > 1.f || shadowUV.y < 0 || shadowUV.y > 1.f))
+        float2 textureOffset = (float2) 0;
+        if (shadowDistance >= frustumCoverage0 && shadowDistance < frustumCoverage1)
         {
-            shadowMapDepth = ShadowTexture.Load(int3((shadowUV * shadowTextureSize) * textureOffset, 0))
-            -0.001f;
+            shadowIndex = 1;
+            textureOffset = float2((1.f / CASCADING_LIGHT_COUNT), 0.f);
         }
-		
-        float shadowTerm = 1.0;
-        if (shadowPositionDepth > shadowMapDepth) {
-            shadowTerm = 0.0;
+        else if (shadowDistance >= frustumCoverage1 && shadowDistance < frustumCoverage2)
+        {
+            shadowIndex = 2;
+            textureOffset = float2(1.f - (1.f / CASCADING_LIGHT_COUNT), 0.f);
         }
+        float4 rayPositionLightClipspace = mul(float4(rayPositionW.xyz, 1.f), lightViewProjMatrix[shadowIndex]);
+        float shadowTerm = sampleShadow(textureOffset, rayPositionLightClipspace);
+        
         // get distance in world space
         float d = length(rayPositionW - lightPosition);
         // multiplication is faster than division, so do it once
         float dRcp = 1.f / d;
     
         // accumulate to light contribution based on approximation of radiative transport equation
-        lightContribution += tau * (shadowTerm * (intensity * 0.25 * PI_RCP) * dRcp * dRcp) *
+        lightContribution += tau * (shadowTerm * (intensity * 0.25f * PI_RCP) * dRcp * dRcp) *
         exp(-d * tau) * exp(-l * tau) * stepSizeW;
         
         // continue ray marching
         rayPositionW += stepSizeW * float4(deltaW, 0.f);
-        rayPositionL += stepSizeL * float4(deltaL, 0.f);
     }
     
-    OutputTexture[pixelIndex] = float4((pow(lightContribution, 0.2f) / 1.5f) * skyLightColor, 1.f);
+    // Tonemap Light Contribution
+    lightContribution = pow(lightContribution, 0.15f) / 2.f;
+    
+    OutputTexture[pixelIndex] = float4(saturate(lightContribution) * skyLightColor, 1.f);
 }

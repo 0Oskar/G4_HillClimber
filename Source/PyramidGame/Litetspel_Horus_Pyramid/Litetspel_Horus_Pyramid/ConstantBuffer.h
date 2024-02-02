@@ -39,11 +39,12 @@ struct CAMERA_BUFFER
 
 struct CASCADING_LIGHT_CAMERA_BUFFER
 {
-	XMMATRIX invViewMatrix[CASCADING_LIGHT_COUNT];
-	XMMATRIX invProjMatrix[CASCADING_LIGHT_COUNT];
-	uint32_t textureSize[CASCADING_LIGHT_COUNT];
-	float frustumCoverage[CASCADING_LIGHT_COUNT];
-	float pad[2];
+
+	XMMATRIX viewProjMatrix[CASCADING_LIGHT_COUNT];
+	float frustumCoverage0;
+	float frustumCoverage1;
+	float frustumCoverage2;
+	float pad;
 };
 
 struct SHADOW_PER_FRAME_BUFFER
@@ -74,7 +75,7 @@ struct PS_PER_FRAME_BUFFER
 struct DIR_LIGHT_DATA
 {
 	DirectX::XMFLOAT3 lightDirection;
-	uint32_t use_custom_horizon_color;
+	uint32_t useVolumetricLightColor;
 	DirectX::XMFLOAT3 lightColor;
 	float pad;
 };

@@ -33,7 +33,6 @@ void finalRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& active
 			}
 		}
 
-
 		//Do once to correct the positioning of the axes due to them being rotated differently at export
 
 		if (doOnceAtStart != 1)
@@ -87,14 +86,17 @@ void finalRoom::update(float dt, Camera* camera, Room*& activeRoom, bool& active
 			}
 		}
 		//Axe collisions
-		for (int i = 0; i < 3; i++)
+		if (!m_player->getGodMode())
 		{
-			if (axeBB[i].Intersects(m_player->getAABB()))
+			for (int i = 0; i < 3; i++)
 			{
-				timesHit++;
-				m_player->respawn();
-				//OutputDebugStringA(timesHitString.c_str());
-				//OutputDebugStringA("\n");
+				if (axeBB[i].Intersects(m_player->getAABB()))
+				{
+					timesHit++;
+					m_player->respawn();
+					//OutputDebugStringA(timesHitString.c_str());
+					//OutputDebugStringA("\n");
+				}
 			}
 		}
 
@@ -183,7 +185,7 @@ void finalRoom::createSceneObjects()
 	m_objectTest->setPosition({ 0, 0, 0 }); //We can now set positions etc
 
 	vec = DirectX::XMVectorSet(-0.f, -4.3f, 0.f, 1.f);
-	addGameObjectToRoom(false, false, 2, &m_models->at("endRoom.obj"), vec, DirectX::XMVectorSet(1, 1, 1, 1), DirectX::XMFLOAT3(1.f, 1.f, 1.f));
+	addGameObjectToRoom(false, false, 2, &m_models->at("endRoom2.obj"), vec, DirectX::XMVectorSet(1, 1, 1, 1), DirectX::XMFLOAT3(1.f, 1.f, 1.f));
 	m_gameObjects.back()->setRotation({ 0.0f, XMConvertToRadians(180), 0.0f, 0.f });
 
 	//Platform hookable hawk
@@ -239,7 +241,7 @@ void finalRoom::createSceneObjects()
 	m_orientedBoundingBoxes.emplace_back(BoundingOrientedBox(axePos, XMFLOAT3(2.8f, 30.f, 0.8f), rot));
 
 	//Lever
-	vec = DirectX::XMVectorSet(-12.7f, 2.f, 73.f, 1.f);
+	vec = DirectX::XMVectorSet(-11.7f, 4.f, 73.f, 1.f);
 	rotation = DirectX::XMVectorSet(0.f, pMath::convertDegreesToRadians(-90), pMath::convertDegreesToRadians(-270), 1.f);
 	addLeverToRoom(&m_models->at("Lever.obj"), vec, rotation, DirectX::XMFLOAT3(4.f, 3.f, 4.f));
 
@@ -247,6 +249,13 @@ void finalRoom::createSceneObjects()
 
 	lever->setScale(XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f));
 	lever->setPlayerBoundingBox(m_player->getAABBPtr());
+
+	PointLight light;
+	light.diffuse = { 0.8f, 0.f, 0.f };
+	light.range = 8.f;
+	vec += XMVectorSet(0.f, 1.f, 1.f, 0.f);
+	XMStoreFloat3(&light.position, vec);
+	createLight(light);
 
 	//Player spawn rotation save
 	spawnRotation = m_player->getMoveCompPtr()->rotation;

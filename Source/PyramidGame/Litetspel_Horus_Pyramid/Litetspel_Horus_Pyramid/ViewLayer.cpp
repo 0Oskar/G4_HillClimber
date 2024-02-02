@@ -62,7 +62,7 @@ void ViewLayer::initDeviceAndSwapChain()
 	backBuffer->Release();
 }
 
-void ViewLayer::initRenderTarget(RenderTexture& rtv, std::string name, UINT width, UINT height, DXGI_FORMAT format, UINT mipLevels)
+void ViewLayer::initRenderTarget(RenderTexture& rtv, UINT bindFlags, std::string name, UINT width, UINT height, DXGI_FORMAT format, UINT mipLevels)
 {
 	size_t length = name.copy(rtv.name, name.length(), 0);
 	rtv.name[length] = '\0';
@@ -77,7 +77,7 @@ void ViewLayer::initRenderTarget(RenderTexture& rtv, std::string name, UINT widt
 	textureDesc.Format = format;
 	textureDesc.SampleDesc.Count = 1;
 	textureDesc.Usage = D3D11_USAGE_DEFAULT;
-	textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
+	textureDesc.BindFlags = bindFlags;
 	textureDesc.CPUAccessFlags = 0;
 	textureDesc.MiscFlags = 0;
 	if (mipLevels > 1)
@@ -87,34 +87,44 @@ void ViewLayer::initRenderTarget(RenderTexture& rtv, std::string name, UINT widt
 	assert(SUCCEEDED(hr) && "Error, render target texture could not be created!");
 
 	// Render Rarget View
-	D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
-	ZeroMemory(&renderTargetViewDesc, sizeof(D3D11_RENDER_TARGET_VIEW_DESC));
-	renderTargetViewDesc.Format = textureDesc.Format;
-	renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-	renderTargetViewDesc.Texture2D.MipSlice = 0;
+	if (bindFlags & D3D11_BIND_RENDER_TARGET)
+	{
+		D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
+		ZeroMemory(&renderTargetViewDesc, sizeof(D3D11_RENDER_TARGET_VIEW_DESC));
+		renderTargetViewDesc.Format = textureDesc.Format;
+		renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+		renderTargetViewDesc.Texture2D.MipSlice = 0;
 
-	hr = m_device->CreateRenderTargetView(rtv.rtt, &renderTargetViewDesc, &rtv.rtv);
-	assert(SUCCEEDED(hr) && "Error, render target view could not be created!");
+		hr = m_device->CreateRenderTargetView(rtv.rtt, &renderTargetViewDesc, &rtv.rtv);
+		assert(SUCCEEDED(hr) && "Error, render target view could not be created!");
+	}
 
 	// Shader Resource View
-	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
-	ZeroMemory(&srvDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
-	srvDesc.Format = textureDesc.Format;
-	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-	srvDesc.Texture2D.MostDetailedMip = 0;
-	srvDesc.Texture2D.MipLevels = mipLevels;
+	if (bindFlags & D3D11_BIND_SHADER_RESOURCE)
+	{
+		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+		ZeroMemory(&srvDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
+		srvDesc.Format = textureDesc.Format;
+		srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+		srvDesc.Texture2D.MostDetailedMip = 0;
+		srvDesc.Texture2D.MipLevels = mipLevels;
 
-	hr = m_device->CreateShaderResourceView(rtv.rtt, &srvDesc, &rtv.srv);
-	assert(SUCCEEDED(hr) && "Error, shader resource view could not be created!");
+		hr = m_device->CreateShaderResourceView(rtv.rtt, &srvDesc, &rtv.srv);
+		assert(SUCCEEDED(hr) && "Error, shader resource view could not be created!");
+	}
+
 
 	// Unordered Access View
-	D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
-	uavDesc.Format = textureDesc.Format;
-	uavDesc.ViewDimension = D3D11_UAV_DIMENSION::D3D11_UAV_DIMENSION_TEXTURE2D;
-	uavDesc.Texture2D.MipSlice = 0;
+	if (bindFlags & D3D11_BIND_UNORDERED_ACCESS)
+	{
+		D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
+		uavDesc.Format = textureDesc.Format;
+		uavDesc.ViewDimension = D3D11_UAV_DIMENSION::D3D11_UAV_DIMENSION_TEXTURE2D;
+		uavDesc.Texture2D.MipSlice = 0;
 
-	hr = m_device->CreateUnorderedAccessView(rtv.rtt, &uavDesc, &rtv.uav);
-	assert(SUCCEEDED(hr) && "Error, unordered access view could not be created!");
+		hr = m_device->CreateUnorderedAccessView(rtv.rtt, &uavDesc, &rtv.uav);
+		assert(SUCCEEDED(hr) && "Error, unordered access view could not be created!");
+	}
 }
 
 void ViewLayer::initViewPort()
@@ -217,6 +227,9 @@ void ViewLayer::initShaders()
 	sf.ps = L"";
 	sf.cs = L"Shader Files\\TranslucentShadowBlurCS.hlsl";
 	m_translucentShadowBlurShader.initialize(m_device.Get(), m_deviceContext.Get(), sf, LayoutType::POS_TEX);
+	
+	sf.cs = L"Shader Files\\BlurCS.hlsl";
+	m_blurShader.initialize(m_device.Get(), m_deviceContext.Get(), sf, LayoutType::POS_TEX);
 
 	sf.cs = L"Shader Files\\VolumetricLightCS.hlsl";
 	m_volumetricLightShader.initialize(m_device.Get(), m_deviceContext.Get(), sf, LayoutType::POS_TEX);
@@ -482,94 +495,13 @@ void ViewLayer::blurSSAOPass()
 
 void ViewLayer::initBlurTranslucentShadowsPass(uint32_t translucentTextureSize)
 {
-	// Translucent Shadows Blured RT
+	// Render Targets
+	UINT bindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
+	initRenderTarget(m_translucentShadowsBlurPingPongRT, bindFlags, "Translucent Shadows Ping Pong RT", translucentTextureSize, translucentTextureSize, DXGI_FORMAT_R32_FLOAT);
+	initRenderTarget(m_translucentColorBlurPingPongRT, bindFlags, "Translucent Color Ping Pong RT", translucentTextureSize, translucentTextureSize, DXGI_FORMAT_R8G8B8A8_UNORM);
 
-	std::string name = "Translucent Shadows Ping Pong RT";
-	size_t length = name.copy(m_translucentShadowsBlurPingPongRT.name, name.length(), 0);
-	m_translucentShadowsBlurPingPongRT.name[length] = '\0';
-
-	name = "Translucent Color Ping Pong RT";
-	length = name.copy(m_translucentColorBlurPingPongRT.name, name.length(), 0);
-	m_translucentColorBlurPingPongRT.name[length] = '\0';
-
-	name = "Translucent Shadow Blured RT";
-	length = name.copy(m_translucentShadowsBluredRT.name, name.length(), 0);
-	m_translucentShadowsBluredRT.name[length] = '\0';
-
-	name = "Translucent Color Blured RT";
-	length = name.copy(m_translucentColorBluredRT.name, name.length(), 0);
-	m_translucentColorBluredRT.name[length] = '\0';
-
-	// Texture
-	D3D11_TEXTURE2D_DESC textureDesc;
-	ZeroMemory(&textureDesc, sizeof(D3D11_TEXTURE2D_DESC));
-	textureDesc.Width = translucentTextureSize;
-	textureDesc.Height = translucentTextureSize;
-	textureDesc.MipLevels = 1;
-	textureDesc.ArraySize = 1;
-	textureDesc.Format = DXGI_FORMAT_R32_FLOAT;
-	textureDesc.SampleDesc.Count = 1;
-	textureDesc.Usage = D3D11_USAGE_DEFAULT;
-	textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
-	textureDesc.CPUAccessFlags = 0;
-	textureDesc.MiscFlags = 0;
-
-	// Shadow Depth
-	HRESULT hr = m_device->CreateTexture2D(&textureDesc, NULL, &m_translucentShadowsBlurPingPongRT.rtt);
-	assert(SUCCEEDED(hr) && "Error, translucent shadow blur ping pong texture could not be created!");
-	hr = m_device->CreateTexture2D(&textureDesc, NULL, &m_translucentShadowsBluredRT.rtt);
-	assert(SUCCEEDED(hr) && "Error, translucent shadow blured texture could not be created!");
-
-	// Color
-	textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	hr = m_device->CreateTexture2D(&textureDesc, NULL, &m_translucentColorBluredRT.rtt);
-	assert(SUCCEEDED(hr) && "Error, translucent color blured texture could not be created!");
-	hr = m_device->CreateTexture2D(&textureDesc, NULL, &m_translucentColorBlurPingPongRT.rtt);
-	assert(SUCCEEDED(hr) && "Error, translucent color blur ping pong texture could not be created!");
-	
-	// Shader Resource View
-	{
-		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
-		ZeroMemory(&srvDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
-		srvDesc.Format = DXGI_FORMAT_R32_FLOAT;
-		srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-		srvDesc.Texture2D.MostDetailedMip = 0;
-		srvDesc.Texture2D.MipLevels = textureDesc.MipLevels;
-
-		// Shadow Depth
-		hr = m_device->CreateShaderResourceView(m_translucentShadowsBlurPingPongRT.rtt, &srvDesc, &m_translucentShadowsBlurPingPongRT.srv);
-		assert(SUCCEEDED(hr) && "Error, translucent shadow blur ping pong shader resource view could not be created!");
-		hr = m_device->CreateShaderResourceView(m_translucentShadowsBluredRT.rtt, &srvDesc, &m_translucentShadowsBluredRT.srv);
-		assert(SUCCEEDED(hr) && "Error, translucent shadow shader resource view could not be created!");
-
-		// Color
-		srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-		hr = m_device->CreateShaderResourceView(m_translucentColorBlurPingPongRT.rtt, &srvDesc, &m_translucentColorBlurPingPongRT.srv);
-		assert(SUCCEEDED(hr) && "Error, translucent color blur ping pong shader resource view could not be created!");
-		hr = m_device->CreateShaderResourceView(m_translucentColorBluredRT.rtt, &srvDesc, &m_translucentColorBluredRT.srv);
-		assert(SUCCEEDED(hr) && "Error, translucent color shader resource view could not be created!");
-	}
-
-	// Unordered Access View
-	{
-		D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
-		uavDesc.Format = DXGI_FORMAT_R32_FLOAT;
-		uavDesc.ViewDimension = D3D11_UAV_DIMENSION::D3D11_UAV_DIMENSION_TEXTURE2D;
-		uavDesc.Texture2D.MipSlice = 0;
-
-		// Shadow Depth
-		hr = m_device->CreateUnorderedAccessView(m_translucentShadowsBlurPingPongRT.rtt, &uavDesc, &m_translucentShadowsBlurPingPongRT.uav);
-		assert(SUCCEEDED(hr) && "Error, translucent shadow blur pass ping pong unordered access view could not be created!");
-		hr = m_device->CreateUnorderedAccessView(m_translucentShadowsBluredRT.rtt, &uavDesc, &m_translucentShadowsBluredRT.uav);
-		assert(SUCCEEDED(hr) && "Error, translucent shadow unordered access view could not be created!");
-
-		// Color
-		uavDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-		hr = m_device->CreateUnorderedAccessView(m_translucentColorBlurPingPongRT.rtt, &uavDesc, &m_translucentColorBlurPingPongRT.uav);
-		assert(SUCCEEDED(hr) && "Error, translucent color blur pass ping pong unordered access view could not be created!");
-		hr = m_device->CreateUnorderedAccessView(m_translucentColorBluredRT.rtt, &uavDesc, &m_translucentColorBluredRT.uav);
-		assert(SUCCEEDED(hr) && "Error, translucent color unordered access view could not be created!");
-	}
+	initRenderTarget(m_translucentShadowsBluredRT, bindFlags, "Translucent Shadow Blured RT", translucentTextureSize, translucentTextureSize, DXGI_FORMAT_R32_FLOAT);
+	initRenderTarget(m_translucentColorBluredRT, bindFlags, "Translucent Color Blured RT", translucentTextureSize, translucentTextureSize, DXGI_FORMAT_R8G8B8A8_UNORM);
 
 	// Blur Data
 	initGaussianBlurCB(&m_translucentShadowblurCData, 2);
@@ -631,47 +563,14 @@ void ViewLayer::blurTranslucentShadowsPass()
 
 void ViewLayer::initVolumetricLightPass()
 {
-	// Rendertarget
-	std::string name = "Volumetric Light RT";
-	size_t length = name.copy(m_volumetricLightRT.name, name.length(), 0);
-	m_volumetricLightRT.name[length] = '\0';
-
-	// Texture
-	D3D11_TEXTURE2D_DESC textureDesc;
-	ZeroMemory(&textureDesc, sizeof(D3D11_TEXTURE2D_DESC));
-	textureDesc.Width = m_options->width;
-	textureDesc.Height = m_options->height;
-	textureDesc.MipLevels = 1;
-	textureDesc.ArraySize = 1;
-	textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	textureDesc.SampleDesc.Count = 1;
-	textureDesc.Usage = D3D11_USAGE_DEFAULT;
-	textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
-	textureDesc.CPUAccessFlags = 0;
-	textureDesc.MiscFlags = 0;
-
-	HRESULT hr = m_device->CreateTexture2D(&textureDesc, NULL, &m_volumetricLightRT.rtt);
-	assert(SUCCEEDED(hr) && "Error, volumetric light render target texture could not be created!");
-
-	// Shader Resource View
-	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
-	ZeroMemory(&srvDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
-	srvDesc.Format = textureDesc.Format;
-	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-	srvDesc.Texture2D.MostDetailedMip = 0;
-	srvDesc.Texture2D.MipLevels = textureDesc.MipLevels;
-
-	hr = m_device->CreateShaderResourceView(m_volumetricLightRT.rtt, &srvDesc, &m_volumetricLightRT.srv);
-	assert(SUCCEEDED(hr) && "Error, volumetric light shader resource view could not be created!");
-
-	// Unordered Access View
-	D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
-	uavDesc.Format = textureDesc.Format;
-	uavDesc.ViewDimension = D3D11_UAV_DIMENSION::D3D11_UAV_DIMENSION_TEXTURE2D;
-	uavDesc.Texture2D.MipSlice = 0;
-
-	hr = m_device->CreateUnorderedAccessView(m_volumetricLightRT.rtt, &uavDesc, &m_volumetricLightRT.uav);
-	assert(SUCCEEDED(hr) && "Error, volumetric light unordered access view could not be created!");
+	// Render Targets
+	UINT bindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
+	initRenderTarget(m_volumetricLightRT, bindFlags, "Volumetric Light RT", m_options->width, m_options->height, DXGI_FORMAT_R8G8B8A8_UNORM);
+	initRenderTarget(m_volumetricLightBlurPingPongRT, bindFlags, "Volumetric Light Blur Ping Pong RT", m_options->width, m_options->height, DXGI_FORMAT_R8G8B8A8_UNORM);
+	initRenderTarget(m_volumetricLightBluredRT, bindFlags, "Volumetric Light Blured RT", m_options->width, m_options->height, DXGI_FORMAT_R8G8B8A8_UNORM);
+	
+	// Blur Data
+	initGaussianBlurCB(&m_volumetricLightblurCData, 2);
 }
 
 void ViewLayer::volumetricLightPass()
@@ -689,14 +588,18 @@ void ViewLayer::volumetricLightPass()
 	m_deviceContext->CSSetConstantBuffers(0, 1, m_cameraBuffer.GetAddressOf());
 
 	// - Light Camera Data
-	uint32_t textureSize = (uint32_t)m_shadowInstance.getShadowTextureSize().y;
-	for (uint32_t i = 0; i < SHADOW_CASCADE_COUNT; i++)
-	{
-		ShadowFrustumData* shadowData = m_shadowInstance.getShadowData(i);
-		m_lightCameraBuffer.m_data.invViewMatrix[i] = XMMatrixTranspose(shadowData->matrixData.viewMatrix);
-		m_lightCameraBuffer.m_data.invProjMatrix[i] = XMMatrixTranspose(shadowData->matrixData.projMatrix);
-		m_lightCameraBuffer.m_data.textureSize[i] = textureSize;
-	}
+	ShadowFrustumData* shadowData = m_shadowInstance.getShadowData(0);
+	m_lightCameraBuffer.m_data.viewProjMatrix[0] = XMMatrixTranspose(shadowData->matrixData.viewMatrix * shadowData->matrixData.projMatrix);
+	m_lightCameraBuffer.m_data.frustumCoverage0 = shadowData->frustumCoverage;
+
+	shadowData = m_shadowInstance.getShadowData(1);
+	m_lightCameraBuffer.m_data.viewProjMatrix[1] = XMMatrixTranspose(shadowData->matrixData.viewMatrix * shadowData->matrixData.projMatrix);
+	m_lightCameraBuffer.m_data.frustumCoverage1 = shadowData->frustumCoverage;
+
+	shadowData = m_shadowInstance.getShadowData(2);
+	m_lightCameraBuffer.m_data.viewProjMatrix[2] = XMMatrixTranspose(shadowData->matrixData.viewMatrix * shadowData->matrixData.projMatrix);
+	m_lightCameraBuffer.m_data.frustumCoverage2 = shadowData->frustumCoverage;
+
 	m_lightCameraBuffer.upd();
 	m_deviceContext->CSSetConstantBuffers(1, 1, m_lightCameraBuffer.GetAddressOf());
 
@@ -729,6 +632,54 @@ void ViewLayer::volumetricLightPass()
 	m_annotation->EndEvent();
 }
 
+void ViewLayer::blurVolumetricLightPass()
+{
+	m_annotation->BeginEvent(L"Volumetric Light Blur");
+	UINT cOffset = -1;
+
+	m_deviceContext->OMSetRenderTargets(1, &m_nullRTV, NULL);
+	m_deviceContext->CSSetUnorderedAccessViews(0, 2, m_nullUAVs, &cOffset);
+	m_deviceContext->PSSetShaderResources(0, 2, m_nullSRVs);
+
+	m_blurShader.setShaders();
+
+	ID3D11ShaderResourceView* blurSRVs[] =
+	{
+		m_volumetricLightRT.srv,
+		m_volumetricLightBlurPingPongRT.srv
+	};
+
+	ID3D11UnorderedAccessView* blurUAVs[] =
+	{
+		m_volumetricLightBlurPingPongRT.uav,
+		m_volumetricLightBluredRT.uav
+	};
+
+	for (UINT i = 0; i < 2; i++)
+	{
+		// Blur Constant Buffer
+		m_volumetricLightblurCData.direction = i;
+
+		m_blurCBuffer.m_data = m_volumetricLightblurCData;
+		m_blurCBuffer.upd();
+		m_deviceContext->CSSetConstantBuffers(0, 1, m_blurCBuffer.GetAddressOf());
+
+		// Set Rescources
+		m_deviceContext->CSSetShaderResources(0, 1, &blurSRVs[m_volumetricLightblurCData.direction]);
+		m_deviceContext->CSSetUnorderedAccessViews(0, 1, &blurUAVs[m_volumetricLightblurCData.direction], &cOffset);
+
+		// Dispatch Shader
+		UINT clientWidth = (UINT)std::ceil((m_options->width / 16.f) + 0.5f);
+		UINT clientHeight = (UINT)std::ceil((m_options->height / 16.f) + 0.5f);
+		m_deviceContext->Dispatch(clientWidth, clientHeight, 1);
+
+		// Unbind Unordered Access View and Shader Resource View
+		m_deviceContext->CSSetShaderResources(0, 2, m_nullSRVs);
+		m_deviceContext->CSSetUnorderedAccessViews(0, 2, m_nullUAVs, &cOffset);
+	}
+	m_annotation->EndEvent();
+}
+
 void ViewLayer::initSamplerState()
 {
 	D3D11_SAMPLER_DESC samplerDesc;
@@ -743,16 +694,6 @@ void ViewLayer::initSamplerState()
 	samplerDesc.MinLOD = 0;
 
 	HRESULT hr = m_device->CreateSamplerState(&samplerDesc, m_samplerState.GetAddressOf());
-	assert(SUCCEEDED(hr) && "Error when creating sampler state!");
-
-	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
-	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
-	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
-	samplerDesc.BorderColor[0] = 1.f;
-	samplerDesc.BorderColor[1] = 1.f;
-	samplerDesc.BorderColor[2] = 1.f;
-	samplerDesc.BorderColor[3] = 1.f;
-	hr = m_device->CreateSamplerState(&samplerDesc, m_samplerShadowState.GetAddressOf());
 	assert(SUCCEEDED(hr) && "Error when creating sampler state!");
 }
 
@@ -773,15 +714,16 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 
 	// G-Buffer
 	// - Diffuse
-	initRenderTarget(m_gBuffer[GBufferType::DIFFUSE_GB], "DIFFUSE_GB", m_options->width, m_options->height, DXGI_FORMAT_R8G8B8A8_UNORM);
+	UINT bindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
+	initRenderTarget(m_gBuffer[GBufferType::DIFFUSE_GB], bindFlags, "DIFFUSE_GB", m_options->width, m_options->height, DXGI_FORMAT_R8G8B8A8_UNORM);
 	// - Normal
-	initRenderTarget(m_gBuffer[GBufferType::NORMAL_GB], "NORMAL_GB", m_options->width, m_options->height, DXGI_FORMAT_R32G32B32A32_FLOAT);
+	initRenderTarget(m_gBuffer[GBufferType::NORMAL_GB], bindFlags, "NORMAL_GB", m_options->width, m_options->height, DXGI_FORMAT_R32G32B32A32_FLOAT);
 	// - Specular, Shininess
-	initRenderTarget(m_gBuffer[GBufferType::SPECULAR_SHININESS_GB], "SPECULAR_SHININESS_GB", m_options->width, m_options->height, DXGI_FORMAT_R8G8B8A8_UNORM);
+	initRenderTarget(m_gBuffer[GBufferType::SPECULAR_SHININESS_GB], bindFlags, "SPECULAR_SHININESS_GB", m_options->width, m_options->height, DXGI_FORMAT_R8G8B8A8_UNORM);
 	// - Ambient, Global Ambient Contribution
-	initRenderTarget(m_gBuffer[GBufferType::AMBIENT_GLOBALAMBIENTCONTR_GB], "AMBIENT_GLOBALAMBIENTCONTR_GB", m_options->width, m_options->height, DXGI_FORMAT_R8G8B8A8_UNORM);
+	initRenderTarget(m_gBuffer[GBufferType::AMBIENT_GLOBALAMBIENTCONTR_GB], bindFlags, "AMBIENT_GLOBALAMBIENTCONTR_GB", m_options->width, m_options->height, DXGI_FORMAT_R8G8B8A8_UNORM);
 	// - Shadow
-	initRenderTarget(m_gBuffer[GBufferType::SHADOW_GB], "SHADOW_GB", m_options->width, m_options->height, DXGI_FORMAT_R8G8B8A8_UNORM);
+	initRenderTarget(m_gBuffer[GBufferType::SHADOW_GB], bindFlags, "SHADOW_GB", m_options->width, m_options->height, DXGI_FORMAT_R8G8B8A8_UNORM);
 
 	// SSAO
 	m_SSAOInstance.initialize(m_device.Get(), m_deviceContext.Get(), m_options->width, m_options->height);
@@ -795,11 +737,13 @@ void ViewLayer::initialize(HWND window, GameOptions* options)
 	// - Directional Light buffer
 	perFrameData.skyLightColor = DirectX::XMFLOAT3(0.f, 0.f, 0.f);
 	perFrameData.skyLightIntensity = 1.f;
-	perFrameData.skyLightDirection = DirectX::XMFLOAT3(-0.8f, 1.0f, -0.7f);
+
+	XMVECTOR skyLightDirection = XMVectorSet(-0.8f, 1.0f, -0.7f, 0);
+	XMStoreFloat3(&perFrameData.skyLightDirection, DirectX::XMVector3Normalize(skyLightDirection));
 	// - Fog, Just set for init, change in room with m_fogData member variable.
 	perFrameData.fogStart = 50.0f;
 	perFrameData.fogEnd = 100.0f;
-	perFrameData.ambientColor = XMFLOAT3(0.8f, 0.8f, 0.8f);
+	perFrameData.ambientColor = XMFLOAT3(0.25f, 0.55f, 0.9f);
 
 	m_perFrameBuffer.m_data = perFrameData;
 	m_perFrameBuffer.upd();
@@ -893,6 +837,7 @@ void ViewLayer::reloadShaders()
 	m_SSAOInstance.updateShaders();
 	m_skyShaders.reloadShaders();
 	m_volumetricLightShader.reloadShaders();
+	m_blurShader.reloadShaders();
 }
 
 void ViewLayer::update(float dt)
@@ -992,6 +937,7 @@ void ViewLayer::render(iGameState* gameState)
 		m_translucentShadowInstance.clearShadowmap();
 	}
 	m_deviceContext->ClearUnorderedAccessViewFloat(m_volumetricLightRT.uav, m_clearColorBlack);
+	m_deviceContext->ClearUnorderedAccessViewFloat(m_volumetricLightBluredRT.uav, m_clearColorBlack);
 
 	// Set Samplers
 	m_deviceContext->PSSetSamplers(0, 1, m_samplerState.GetAddressOf());
@@ -1322,8 +1268,8 @@ void ViewLayer::render(iGameState* gameState)
 
 		// Set Constant Buffer
 		float fogEnd = m_perFrameBuffer.m_data.fogEnd;
-		if (m_volumetricLightToggle)
-			m_perFrameBuffer.m_data.fogEnd = 0.f;
+		/*if (m_volumetricLightToggle)
+			m_perFrameBuffer.m_data.fogEnd = 0.f;*/
 		
 		m_perFrameBuffer.upd();
 		m_deviceContext->PSSetConstantBuffers(1, 1, m_perFrameBuffer.GetAddressOf());
@@ -1365,7 +1311,7 @@ void ViewLayer::render(iGameState* gameState)
 		m_deviceContext->VSSetConstantBuffers(0, 1, m_skyboxCameraBuffer.GetAddressOf());
 
 		m_skyboxSunLightBuffer.m_data.lightColor = m_perFrameBuffer.m_data.skyLightColor;
-		m_skyboxSunLightBuffer.m_data.use_custom_horizon_color = m_volumetricLightToggle ? 1 : 0;
+		m_skyboxSunLightBuffer.m_data.useVolumetricLightColor = (uint32_t)m_volumetricLightToggle;
 		m_skyboxSunLightBuffer.m_data.lightDirection = m_perFrameBuffer.m_data.skyLightDirection;
 		m_skyboxSunLightBuffer.upd();
 		m_deviceContext->PSSetConstantBuffers(2, 1, m_skyboxSunLightBuffer.GetAddressOf());
@@ -1381,6 +1327,7 @@ void ViewLayer::render(iGameState* gameState)
 	if (m_volumetricLightToggle)
 	{
 		volumetricLightPass();
+		blurVolumetricLightPass();
 	}
 
 	// Transparent Meshes
@@ -1432,7 +1379,7 @@ void ViewLayer::render(iGameState* gameState)
 		m_deviceContext->OMSetBlendState(m_states->Additive(), nullptr, 0xFFFFFFFF);
 		m_deviceContext->OMSetDepthStencilState(m_states->DepthNone(), 0);
 
-		m_deviceContext->PSSetShaderResources(0, 1, &m_volumetricLightRT.srv);
+		m_deviceContext->PSSetShaderResources(0, 1, &m_volumetricLightBluredRT.srv);
 
 		m_transition->render();
 		m_postProcessDrawCallCount++;
@@ -1638,7 +1585,8 @@ void ViewLayer::render(iGameState* gameState)
 		m_annotation->EndEvent();
 	}
 
-	if (m_volumetricLightToggle) {
+	if (m_volumetricLightToggle)
+	{
 		m_annotation->BeginEvent(L"Volumetric Light Debug");
 		uint32_t width = m_options->width / 4;
 		uint32_t height = m_options->height / 4;
@@ -1648,7 +1596,8 @@ void ViewLayer::render(iGameState* gameState)
 		img.left = m_options->width / gBufferDebugtextureCount;
 		img.right = img.left + width;
 		img.bottom = height;
-		m_spriteBatch->Draw(m_volumetricLightRT.srv, img);
+
+		m_spriteBatch->Draw(m_volumetricLightBluredRT.srv, img);
 
 		m_annotation->EndEvent();
 	}

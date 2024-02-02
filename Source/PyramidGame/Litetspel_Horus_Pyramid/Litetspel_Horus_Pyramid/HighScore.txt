@@ -1,5 +1,6 @@
 Player1 43
 Player1 45
+Player1 69
 Player1 87
 Player1 112
 Player1 138

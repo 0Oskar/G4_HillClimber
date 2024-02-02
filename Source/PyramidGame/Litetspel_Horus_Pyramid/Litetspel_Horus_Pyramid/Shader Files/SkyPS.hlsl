@@ -8,7 +8,7 @@ struct PS_IN
 cbuffer directionalLight : register(b2)
 {
     float3 dirLightDirection;
-    bool use_custom_horizon_color;
+    bool useVolumetricLightColor;
     float3 dirLightColor;
 };
 
@@ -20,12 +20,11 @@ float remap(float value, float2 inMinMax, float2 outMinMax)
 
 float4 main(PS_IN input) : SV_TARGET
 {
-    float3 finalColor;
-    
     // Sky
-    const float3 skyColor = float3(0.25, 0.55, 0.9);
-    const float3 horizonColor = use_custom_horizon_color ? skyColor : float3(0.89, 0.824, 0.651);
-    const float3 groundColor = float3(1.0, 0.871, 0.55);
+    const float3 skyColor = useVolumetricLightColor ? float3(0.25, 0.55, 0.9) : float3(0.5f, 0.8f, 1.f);
+    //const float3 horizonColor = useVolumetricLightColor ? float3(0.59, 0.524, 0.3) : float3(0.89, 0.824, 0.651);
+    const float3 horizonColor = float3(0.2f, 0.5f, 0.8f);
+    const float3 groundColor = horizonColor;
     const float skyStrength = 0.8;
     const float blendStrength = 1.0;
     
@@ -36,13 +35,15 @@ float4 main(PS_IN input) : SV_TARGET
     float groundBlend = pow(clamp(clampedAltitude, -1.0, 0.0) * -1.0, blendStrength);
     float horizonBlend = pow(1.0 - (skyBlend + groundBlend), blendStrength);
     
-    finalColor = (skyColor * skyBlend) + (groundColor * groundBlend) + (horizonColor * horizonBlend);
+    float3 finalColor = (skyColor * skyBlend) + (groundColor * groundBlend) + (horizonColor * horizonBlend);
+    
+    if (useVolumetricLightColor)
+        return float4(finalColor, 1.f);
     
     // Sun
+    float angleToSun = saturate(dot(normalize(input.WPosition), -normalize(dirLightDirection)));
     const float sunRadiusA = 0.02f;
     const float sunRadiusB = 0.035f;
-    
-    float angleToSun = saturate(dot(normalize(input.WPosition), -normalize(dirLightDirection)));
     float circleRadiusMin = min(sunRadiusA, sunRadiusB);
     circleRadiusMin *= circleRadiusMin;
     float circleRadiusMax = max(sunRadiusA, sunRadiusB);
@@ -55,6 +56,5 @@ float4 main(PS_IN input) : SV_TARGET
     float3 sunFinalColor = dirLightColor * circleResult;
     
     finalColor.rgb = (sunFinalColor * sunFinalStrength) + (finalColor.rgb * (1.f - length(sunFinalColor)));
-    
-    return float4(finalColor, 1.0);
+    return float4(finalColor, 1.f);
 }

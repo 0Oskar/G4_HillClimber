@@ -46,6 +46,9 @@
     <FxCompile Include="Shader Files\VolumetricLightCS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
+    <FxCompile Include="Shader Files\BlurCS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -155,7 +158,7 @@
       <Filter>Source\Game Logic\Rooms</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
-      <Filter>Shaders</Filter>
+      <Filter>Header</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

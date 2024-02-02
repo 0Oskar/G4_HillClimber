@@ -66,7 +66,6 @@ private:
 
 	// SamplerState
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> m_samplerState;
-	Microsoft::WRL::ComPtr<ID3D11SamplerState> m_samplerShadowState;
 
 	// Shaders
 	Shaders m_GBufferShaders;
@@ -75,6 +74,7 @@ private:
 	Shaders m_skyShaders;
 	Shaders m_translucentShadowBlurShader;
 	Shaders m_volumetricLightShader;
+	Shaders m_blurShader;
 
 	// Texture Handler
 	ResourceHandler* resourceHandler;
@@ -140,6 +140,10 @@ private:
 
 	// Volumetric Lighting
 	RenderTexture m_volumetricLightRT;
+	RenderTexture m_volumetricLightBlurPingPongRT;
+	RenderTexture m_volumetricLightBluredRT;
+
+	CS_BLUR_CBUFFER m_volumetricLightblurCData;
 
 	// Sky
 	Model m_skyCube;
@@ -162,7 +166,7 @@ private:
 
 	// Initialization Functions
 	void initDeviceAndSwapChain();
-	void initRenderTarget(RenderTexture& rtv, std::string name, UINT width, UINT height, DXGI_FORMAT format, UINT mipLevels = 1);
+	void initRenderTarget(RenderTexture& rtv, UINT bindFlags, std::string name, UINT width, UINT height, DXGI_FORMAT format, UINT mipLevels = 1);
 	void initViewPort();
 	void initDepthStencilBuffer();
 	void initSamplerState();
@@ -178,6 +182,7 @@ private:
 
 	void initVolumetricLightPass();
 	void volumetricLightPass();
+	void blurVolumetricLightPass();
 
 public:
 	ViewLayer();
@@ -217,14 +222,14 @@ public:
 	bool m_drawPhysicsPrimitives = false;
 	bool m_drawModelBoxPrimitives = false;
 	bool m_drawLightsDebug = false;
-	bool m_drawShadowmapDebug = true;
+	bool m_drawShadowmapDebug = false;
 	bool m_drawGBufferDebug = false;
 	bool m_drawDrawCallStatsDebug = true;
 
 	// Feature Toggles
 	bool m_ssaoToggle = true;
 	bool m_shadowMappingToggle = true;
-	bool m_volumetricLightToggle = false;
+	bool m_volumetricLightToggle = true;
 	bool m_frustumCullingToggle = false;
 	bool m_ignorePositionShadowToggle = false;
 	float m_ignorePositionShadowTimer = 0;

@@ -203,10 +203,10 @@ void ShadowMapInstance::initialize(ID3D11Device* device, ID3D11DeviceContext* de
 	D3D11_RASTERIZER_DESC rasterizerDesc;
 	ZeroMemory(&rasterizerDesc, sizeof(rasterizerDesc));
 	rasterizerDesc.DepthBias = 0;
-	rasterizerDesc.DepthBiasClamp = 4.f;
-	rasterizerDesc.SlopeScaledDepthBias = 0.f;
+	rasterizerDesc.DepthBiasClamp = 5.f;
+	rasterizerDesc.SlopeScaledDepthBias = 2.f;
 	rasterizerDesc.FillMode = D3D11_FILL_SOLID;
-	rasterizerDesc.CullMode = m_translucentShadowMapsToggle ? D3D11_CULL_NONE : D3D11_CULL_BACK;
+	rasterizerDesc.CullMode = 1 ? D3D11_CULL_NONE : D3D11_CULL_BACK;
 	rasterizerDesc.FrontCounterClockwise = false;
 	rasterizerDesc.DepthClipEnable = true;
 
@@ -584,6 +584,7 @@ void ShadowMapInstance::clearShadowmap()
 void ShadowMapInstance::setComparisonSampler()
 {
 	m_deviceContext->PSSetSamplers(1, 1, m_comparisonSampler.GetAddressOf());
+	m_deviceContext->CSSetSamplers(1, 1, m_comparisonSampler.GetAddressOf());
 }
 
 void ShadowMapInstance::bindLightMatrixBufferVS(uint32_t index, uint32_t slot)

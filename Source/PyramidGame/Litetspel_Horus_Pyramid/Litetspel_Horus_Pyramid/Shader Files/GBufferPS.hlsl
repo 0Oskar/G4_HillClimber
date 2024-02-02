@@ -85,7 +85,6 @@ float3 calculateTranslucentShadowFactor(float4 shadowPosition)
     {
         shadowFactor += translucentShadowColor.Sample(samplerState, shadowUV);
     }
-    //shadowFactor += 1 - float3(shadowSampledDepth, shadowSampledDepth, shadowSampledDepth);
     
     return shadowFactor;
 }
@@ -116,6 +115,7 @@ PS_OUT main(PS_IN input)
         if (shadowDistance < frustumCoverage0)
         {
             shadowPosition = input.positionShadow0;
+            shadowFactor = calculateShadowFactor(textureOffset, shadowPosition);
             if (shadowDebug)
                 diffuse.xyz = float3(1.f, 0.f, 0.f) * saturate(invLerp(0.f, frustumCoverage0, shadowDistance) + 0.1f);
         }
@@ -123,6 +123,7 @@ PS_OUT main(PS_IN input)
         {
             shadowPosition = input.positionShadow1;
             textureOffset = float2((1.f / CASCADING_LIGHT_COUNT), 0.f);
+            shadowFactor = calculateShadowFactor(textureOffset, shadowPosition);
             if (shadowDebug)
                 diffuse.xyz = float3(0.f, 1.f, 0.f) * saturate(invLerp(frustumCoverage0, frustumCoverage1, shadowDistance) + 0.1f);
         }
@@ -130,10 +131,10 @@ PS_OUT main(PS_IN input)
         {
             shadowPosition = input.positionShadow2;
             textureOffset = float2(1.f - (1.f / CASCADING_LIGHT_COUNT), 0.f);
+            shadowFactor = calculateShadowFactor(textureOffset, shadowPosition);
             if (shadowDebug)
                 diffuse.xyz = float3(0.f, 0.f, 1.f) * saturate(invLerp(frustumCoverage1, frustumCoverage2, shadowDistance) + 0.1f);
         }
-        shadowFactor = calculateShadowFactor(textureOffset, shadowPosition);
         
         translucentshadowcolor = calculateTranslucentShadowFactor(input.positionShadow2);
         shadowColor = float3(shadowFactor, shadowFactor, shadowFactor) - translucentshadowcolor;

@@ -201,7 +201,7 @@ void MenuState::loadModels()
 	//0 Desert Ground
 	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
 	mat.globalAmbientContribution = 0.f;
-	addNewModelInit("desertGround.obj", mat, L"sandTexture.png");
+	addNewModelInit("desertGroundBig.obj", mat, L"sandTexture.png");
 
 	//1 Pyramid
 	mat.diffuse = { 0.9f, 0.7f, 0.3f, 1.f };
@@ -433,7 +433,7 @@ void MenuState::loadModels()
 	//28. finalRoom
 	mat.diffuse = { 1.f, 1.f, 1.f, 1.f };
 	mat.globalAmbientContribution = 0.4f;
-	addNewModelInitAsync("endRoom.obj", mat, L"ColorTexture.png");
+	addNewModelInitAsync("endRoom2.obj", mat, L"ColorTexture.png");
 	mat.globalAmbientContribution = 1.f;
 
 	// Start async loading threads

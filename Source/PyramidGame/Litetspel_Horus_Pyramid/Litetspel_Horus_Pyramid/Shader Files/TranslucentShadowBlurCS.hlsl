@@ -18,7 +18,7 @@ cbuffer blurBuffer : register(b0)
 void main(uint3 gruoupId : SV_GroupID, uint3 groupThredId : SV_GroupThreadID, uint groupIndex : SV_GroupIndex, uint3 dispatchId : SV_DispatchThreadID)
 {
     uint2 pixelIndex = uint2(dispatchId.x, dispatchId.y);
-    float blurWeights[12] =
+    static const float blurWeights[12] =
     {
         weights[0].x, weights[0].y, weights[0].z, weights[0].w,
         weights[1].x, weights[1].y, weights[1].z, weights[1].w,
