@@ -15,7 +15,7 @@ cbuffer materialBuffer : register(b0)
 float4 main(PS_IN input) : SV_TARGET
 {
     float opacity = diffuseM.a;
-    float4 color = float4(diffuseM.rgb * (1.f - opacity), input.pos.z);
+    float3 diffuse = diffuseM.rgb;
     
-    return color;
+    return float4(float3(diffuse * (1.f - opacity)), 1);
 }

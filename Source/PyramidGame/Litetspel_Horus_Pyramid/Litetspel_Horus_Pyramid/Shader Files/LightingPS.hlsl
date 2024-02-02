@@ -39,6 +39,7 @@ Texture2D ambientGlobalAContributionRT  : TEXTURE : register(t3);
 Texture2D shadowRT                      : TEXTURE : register(t4);
 Texture2D ambientOcclusionRT            : TEXTURE : register(t5);
 Texture2D depthBuffer                   : TEXTURE : register(t6);
+Texture2D volumetricLightingTexture     : TEXTURE : register(t7);
 SamplerState samplerState               : SAMPLER : register(s0);
 
 float3 pointLightCalculation(float3 ambient, float3 diffuse, float3 position, float3 normal, PointLight light)
@@ -80,8 +81,8 @@ float4 main(PS_IN input) : SV_TARGET
     
     // Global Ambient
     const float3 skyColor = float3(0.25, 0.55, 0.9);
-    const float3 horizonColor = float3(0.89, 0.824, 0.651);
-    const float3 groundColor = float3(1.0, 0.871, 0.55);
+    const float3 horizonColor = float3(0.2f, 0.5f, 0.8f);
+    const float3 groundColor = float3(1.0, 0.86, 0.4);
     const float skyStrength = 0.8;
     const float blendStrength = 1.0;
     
@@ -121,10 +122,13 @@ float4 main(PS_IN input) : SV_TARGET
         float groundBlend = pow(clamp(clampedAltitude, -1.0, 0.0) * -1.0, blendStrength);
         float horizonBlend = pow(1.0 - (skyBlend + groundBlend), blendStrength);
     
-        float3 skyFogColor = (skyColor * skyBlend) + (groundColor * groundBlend) + (horizonColor * horizonBlend);
+        float3 skyFogColor = (skyColor * skyBlend) + (horizonColor * groundBlend) + (horizonColor * horizonBlend);
         
         float fogLerp = saturate((distance - fogStart) / fogEnd);
         fColor = lerp(fColor, skyFogColor, fogLerp);
     }
+    // Volumetric Lighting
+    fColor.rgb += volumetricLightingTexture.Sample(samplerState, input.texcoord).rgb;
+    
     return float4(fColor, 1.f);
 }

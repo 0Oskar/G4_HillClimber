@@ -40,18 +40,21 @@ cbuffer PerFrameBuffer : register(b1)
 };
 
 Texture2D diffuseTexture : TEXTURE : register(t0);
-Texture2D shadowMap0 : TEXTURE : register(t1);
-Texture2D shadowMap1 : TEXTURE : register(t2);
-Texture2D shadowMap2 : TEXTURE : register(t3);
-Texture2D translucentShadowMap : TEXTURE : register(t4);
+Texture2D shadowMap : TEXTURE : register(t1);
+Texture2D translucentShadowMap : TEXTURE : register(t2);
+Texture2D translucentShadowColor : TEXTURE : register(t3);
 
 SamplerState samplerState : SAMPLER : register(s0);
 SamplerComparisonState shadowSampler : SAMPLER : register(s1);
 
-float calculateShadowFactor(Texture2D shadowMap, float4 shadowPosition)
+#define CASCADING_LIGHT_COUNT 3
+
+float calculateShadowFactor(float2 textureOffset, float4 shadowPosition)
 {
     float2 shadowUV = shadowPosition.xy / shadowPosition.w * 0.5f + 0.5f;
     shadowUV.y = 1.0f - shadowUV.y;
+    shadowUV.x /= CASCADING_LIGHT_COUNT;
+    shadowUV += textureOffset;
     float shadowDepth = shadowPosition.z / shadowPosition.w;
 
     float shadowFactor = 0;
@@ -69,27 +72,20 @@ float calculateShadowFactor(Texture2D shadowMap, float4 shadowPosition)
     return shadowFactor;
 }
 
-float3 calculateTranslucentShadowFactor(Texture2D shadowMap, float4 shadowPosition)
+float3 calculateTranslucentShadowFactor(float4 shadowPosition)
 {
     float2 shadowUV = shadowPosition.xy / shadowPosition.w * 0.5f + 0.5f;
     shadowUV.y = 1.0f - shadowUV.y;
     float shadowDepth = shadowPosition.z / shadowPosition.w;
 
     float3 shadowFactor = (float3)0;
-    float4 shadowSample = (float4)0;
-    const int sampleRange = 1;
-    [unroll]
-    for (int x = -sampleRange; x <= sampleRange; x++)
+    float shadowSampledDepth = translucentShadowMap.Sample(samplerState, shadowUV);
+    
+    if (shadowDepth > shadowSampledDepth)
     {
-        [unroll]
-        for (int y = -sampleRange; y <= sampleRange; y++)
-        {
-            shadowSample = shadowMap.Sample(samplerState, shadowUV, int2(x, y));
-            if (shadowDepth < shadowSample.a)
-                shadowFactor += shadowSample.rgb;
-        }
+        shadowFactor += translucentShadowColor.Sample(samplerState, shadowUV);
     }
-    shadowFactor /= ((sampleRange * 2 + 1) * (sampleRange * 2 + 1));
+    
     return shadowFactor;
 }
 
@@ -109,35 +105,43 @@ PS_OUT main(PS_IN input)
     float shadowFactor = 1.f;
     float3 shadowColor = (float3)1.f;
     float3 translucentshadowcolor = (float3)0;
+    float2 textureOffset = (float2)0;
+    
     if (cascadingShadowMapsToggle)
     {
+        float4 shadowPosition = (float4)0;
         float shadowDistance = distance(cameraPos, input.positionW);
         
         if (shadowDistance < frustumCoverage0)
         {
-            shadowFactor = calculateShadowFactor(shadowMap0, input.positionShadow0);
+            shadowPosition = input.positionShadow0;
+            shadowFactor = calculateShadowFactor(textureOffset, shadowPosition);
             if (shadowDebug)
                 diffuse.xyz = float3(1.f, 0.f, 0.f) * saturate(invLerp(0.f, frustumCoverage0, shadowDistance) + 0.1f);
         }
         else if (shadowDistance >= frustumCoverage0 && shadowDistance < frustumCoverage1)
         {
-            shadowFactor = calculateShadowFactor(shadowMap1, input.positionShadow1);
+            shadowPosition = input.positionShadow1;
+            textureOffset = float2((1.f / CASCADING_LIGHT_COUNT), 0.f);
+            shadowFactor = calculateShadowFactor(textureOffset, shadowPosition);
             if (shadowDebug)
                 diffuse.xyz = float3(0.f, 1.f, 0.f) * saturate(invLerp(frustumCoverage0, frustumCoverage1, shadowDistance) + 0.1f);
         }
         else if (shadowDistance >= frustumCoverage1 && shadowDistance < frustumCoverage2)
         {
-            shadowFactor = calculateShadowFactor(shadowMap2, input.positionShadow2);
+            shadowPosition = input.positionShadow2;
+            textureOffset = float2(1.f - (1.f / CASCADING_LIGHT_COUNT), 0.f);
+            shadowFactor = calculateShadowFactor(textureOffset, shadowPosition);
             if (shadowDebug)
                 diffuse.xyz = float3(0.f, 0.f, 1.f) * saturate(invLerp(frustumCoverage1, frustumCoverage2, shadowDistance) + 0.1f);
         }
         
-        translucentshadowcolor = calculateTranslucentShadowFactor(translucentShadowMap, input.positionShadow2);
+        translucentshadowcolor = calculateTranslucentShadowFactor(input.positionShadow2);
         shadowColor = float3(shadowFactor, shadowFactor, shadowFactor) - translucentshadowcolor;
     }
     else
     {
-        shadowFactor = calculateShadowFactor(shadowMap0, input.positionShadow0);
+        shadowFactor = calculateShadowFactor(textureOffset, input.positionShadow0);
         shadowColor = float3(shadowFactor, shadowFactor, shadowFactor);
     }
     

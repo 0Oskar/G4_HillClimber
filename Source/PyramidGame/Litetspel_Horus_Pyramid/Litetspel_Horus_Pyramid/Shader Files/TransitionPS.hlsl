@@ -1,6 +1,7 @@
 struct PS_IN
 {
-    float4 pos : SV_POSITION;
+    float4 Position : SV_POSITION;
+    float2 TexCoord : TEXCOORD;
 };
 
 cbuffer fadeBuffer : register(b0)
@@ -9,10 +10,11 @@ cbuffer fadeBuffer : register(b0)
     float alpha;
 };
 
-Texture2D objTexture : TEXTURE : register(t0);
+Texture2D volumetricLightingTexture : TEXTURE : register(t0);
 SamplerState samplerState : SAMPLER : register(s0);
 
 float4 main(PS_IN input) : SV_TARGET
 {
-    return float4(color, alpha);
+    float3 volumetricColor = volumetricLightingTexture.Sample(samplerState, input.TexCoord);
+    return float4((color * alpha) + volumetricColor, 1.f);
 }

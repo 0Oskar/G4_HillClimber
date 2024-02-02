@@ -143,19 +143,6 @@ Application::Application()
 		}
 	});
 	m_options.push_back({
-		'U',
-		"U : Cascading Shadow Maps Toggle",
-		[](Application* app) {
-			bool* cascadingShadowsToggle = app->m_viewLayerPtr->usingCascadingShadowmaps();
-			*cascadingShadowsToggle = !(*cascadingShadowsToggle);
-
-			if (!(*cascadingShadowsToggle))
-				StatusTextHandler::get().sendText("Draw Shadowmapping ON!", 0.5f);
-			else
-				StatusTextHandler::get().sendText("Draw Shadowmapping OFF!", 0.5f);
-		}
-	});
-	m_options.push_back({
 		'Y',
 		"Y : Cascading ShadowMap Debug Toggle",
 		[](Application* app) {
@@ -170,6 +157,18 @@ Application::Application()
 				*shadowmapDebugToggle = 0;
 				StatusTextHandler::get().sendText("Draw Cascading Shadowmap Debug OFF!", 0.5f);
 			}
+		}
+	});
+	m_options.push_back({
+		'T',
+		"T : Volumetric Light Toggle",
+		[](Application* app) {
+			app->m_viewLayerPtr->m_volumetricLightToggle = !app->m_viewLayerPtr->m_volumetricLightToggle;
+
+			if (app->m_viewLayerPtr->m_volumetricLightToggle)
+				StatusTextHandler::get().sendText("Volumetric Light ON!", 0.5f);
+			else
+				StatusTextHandler::get().sendText("Volumetric Light OFF!", 0.5f);
 		}
 	});
 	m_options.push_back({

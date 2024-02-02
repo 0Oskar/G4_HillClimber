@@ -221,7 +221,7 @@ void GameState::loadModels()
 	//0 - Desert Ground
 	m_models.emplace_back();
 	mat.diffuse = DirectX::XMFLOAT4(1.f, 1.f, 1.f, 1.f);
-	m_models[0].loadVertexFromOBJ(m_device, m_dContext, L"Models/desertGround.obj", mat, L"Textures/sandTexture.png");
+	m_models[0].loadVertexFromOBJ(m_device, m_dContext, L"Models/desertGroundBig.obj", mat, L"Textures/sandTexture.png");
 
 	//1 - Pyramid
 	m_models.emplace_back();
@@ -864,7 +864,7 @@ states GameState::handleInput(Keyboard* keyboard, Mouse* mousePtr, float dt)
 		{
 			if (keyboard->isKeyPressed(VK_SHIFT))
 			{
-				playerSpeedMultiplier = 3.f;
+				playerSpeedMultiplier = 10.f;
 			}
 
 			if (keyboard->isKeyPressed(VK_CONTROL))

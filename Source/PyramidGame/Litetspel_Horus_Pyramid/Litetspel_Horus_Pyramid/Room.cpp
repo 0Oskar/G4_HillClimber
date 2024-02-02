@@ -56,7 +56,8 @@ void Room::initParent()
 	m_entrencePosition = DirectX::XMVectorZero();
 	m_worldPosition = DirectX::XMVectorZero();
 
-	m_perFrameData.skyLightDirection = {-0.8f, 1.0f, -0.7f, };
+	XMVECTOR skyLightDirection = XMVectorSet(-0.8f, 1.0f, -0.7f, 0);
+	XMStoreFloat3(&m_perFrameData.skyLightDirection, DirectX::XMVector3Normalize(skyLightDirection));
 	m_perFrameData.skyLightColor = DirectX::XMFLOAT3(1.f, 1.0f, 1.0f);
 	m_perFrameData.skyLightIntensity = 1.f;
 	m_perFrameData.cameraPos = XMFLOAT3(0, 0, 0);

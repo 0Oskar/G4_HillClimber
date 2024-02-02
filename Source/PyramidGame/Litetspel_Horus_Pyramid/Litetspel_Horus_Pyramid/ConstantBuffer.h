@@ -14,10 +14,37 @@ struct VS_WVPW_CONSTANT_BUFFER
 	XMMATRIX wvp;
 	XMMATRIX worldMatrix;
 };
-struct VS_VP_MATRICES_CBUFFER
+struct VP_MATRICES_CBUFFER
 {
 	XMMATRIX viewMatrix;
 	XMMATRIX projMatrix;
+};
+struct SHADOW_MATRICES_CBUFFER
+{
+	XMMATRIX viewMatrix;
+	XMMATRIX projMatrix;
+	XMFLOAT2 textureOffset;
+	float pad[2];
+};
+
+struct CAMERA_BUFFER
+{
+	XMMATRIX invViewMatrix;
+	XMMATRIX invProjMatrix;
+	DirectX::XMFLOAT3 cameraPosition;
+	float pad;
+};
+
+#define CASCADING_LIGHT_COUNT 3
+
+struct CASCADING_LIGHT_CAMERA_BUFFER
+{
+
+	XMMATRIX viewProjMatrix[CASCADING_LIGHT_COUNT];
+	float frustumCoverage0;
+	float frustumCoverage1;
+	float frustumCoverage2;
+	float pad;
 };
 
 struct SHADOW_PER_FRAME_BUFFER
@@ -48,18 +75,29 @@ struct PS_PER_FRAME_BUFFER
 struct DIR_LIGHT_DATA
 {
 	DirectX::XMFLOAT3 lightDirection;
+	uint32_t useVolumetricLightColor;
 	DirectX::XMFLOAT3 lightColor;
-	DirectX::XMFLOAT2 pad;
+	float pad;
 };
 
-const int MAX_BLUR_RADIUS = 15;
+struct VOLUMETRIC_LIGHT_DATA
+{
+	DirectX::XMFLOAT3 skyLightDirection;
+	float skyLightIntensity;
+	DirectX::XMFLOAT3 skyLightColor;
+	float pad;
+	DirectX::XMFLOAT2 textureStep;
+	float pad2[2];
+};
+
+const int MAX_BLUR_RADIUS = 10;
 struct CS_BLUR_CBUFFER
 {
 	XMMATRIX projectionMatrix;
 	int radius;
 	BOOL direction;
 	XMFLOAT2 pad;
-	alignas(16) float weights[MAX_BLUR_RADIUS]; // BLUR_RADIUS + 1 * 4 bytes
+	alignas(16) float weights[(MAX_BLUR_RADIUS * 2) + 1]; // BLUR_RADIUS + 1 * 4 bytes
 };
 
 template<class T>

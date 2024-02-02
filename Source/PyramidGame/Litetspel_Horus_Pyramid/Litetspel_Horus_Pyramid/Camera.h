@@ -22,6 +22,7 @@ private:
 
 public:
 	Camera();
+	Camera(Camera &camera);
 	~Camera();
 
 	// Getters

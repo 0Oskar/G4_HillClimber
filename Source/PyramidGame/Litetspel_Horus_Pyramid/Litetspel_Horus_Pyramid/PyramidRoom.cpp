@@ -5,9 +5,10 @@ PyramidRoom::PyramidRoom()
 {
 	Room::initParent();
 	completedRooms = 0;
-	m_perFrameData.fogStart = 250.0f;
-	m_perFrameData.fogEnd = 600.0f;
-	m_perFrameData.ambientColor = { 0.7f, 0.7f, 0.7f };
+	m_perFrameData.fogStart = 150.f;
+	m_perFrameData.fogEnd = 1000.0f;
+	m_perFrameData.ambientColor = { 0.7f, 0.6f, 0.35f };
+	m_perFrameData.skyLightColor = { 1.f, 0.99f, 0.9f };
 }
 PyramidRoom::~PyramidRoom()
 {
@@ -278,7 +279,7 @@ void PyramidRoom::createSceneObjects()
 	// Ground
 	NormalScale = DirectX::XMVectorSet(1, 1, 1, 1);
 	vec = DirectX::XMVectorSet(0.f, -10.f, 0.f, 1.f);
-	addGameObjectToRoom(false, true, 0, &m_models->at("desertGround.obj"), vec, NormalScale, DirectX::XMFLOAT3(1000.f, 10.f, 1000.f));
+	addGameObjectToRoom(false, true, 0, &m_models->at("desertGroundBig.obj"), vec, NormalScale, DirectX::XMFLOAT3(1000.f, 10.f, 1000.f));
 
 	// Pyramid
 	vec = DirectX::XMVectorSet(0.f, 0.f, 648.f, 1.f);
