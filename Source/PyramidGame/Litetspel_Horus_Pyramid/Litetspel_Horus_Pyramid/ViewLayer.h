@@ -223,6 +223,7 @@ public:
 	bool m_drawModelBoxPrimitives = false;
 	bool m_drawLightsDebug = false;
 	bool m_drawShadowmapDebug = false;
+	bool m_drawVolumetricLightDebug = false;
 	bool m_drawGBufferDebug = false;
 	bool m_drawDrawCallStatsDebug = true;
 

@@ -1585,7 +1585,7 @@ void ViewLayer::render(iGameState* gameState)
 		m_annotation->EndEvent();
 	}
 
-	if (m_volumetricLightToggle)
+	if (m_drawVolumetricLightDebug)
 	{
 		m_annotation->BeginEvent(L"Volumetric Light Debug");
 		uint32_t width = m_options->width / 4;
